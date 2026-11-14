@@ -1,7 +1,8 @@
 # Art license
 
-The images of Tessavar, the Aseprite sources under `art/` and the PNG images under `resources/`, are licensed under the
-[Creative Commons Attribution-ShareAlike 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/)
+The images of Tessavar, the Aseprite sources under `art/`, the PNG images under `resources/`, and the images made from
+them, the banners under `docs/media/`, the game's icons `icon.png` and `src/jsMain/resources/appicon.png`, are licensed
+under the [Creative Commons Attribution-ShareAlike 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/)
 (CC BY-SA 4.0), except the placeholders listed in [CREDITS.md](CREDITS.md), which keep their own license.
 
 Copyright (C) 2026 maarkeez and the Tessavar contributors.

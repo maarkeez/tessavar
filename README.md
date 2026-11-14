@@ -1,5 +1,7 @@
 # Tessavar
 
+[![Tessavar: the party on the battlefield](docs/media/banner.png)](https://maarkeez.github.io/tessavar/?ref=github)
+
 Tessavar is a turn-based RPG where a party explores the battlefield and fights battles on its tiles: recruit members in
 the village, take on quests, trade with its merchants, and face the goat wizard. It is built with Kotlin and
 [KorGE](https://docs.korge.org/korge/), and plays in the browser, on a phone or a computer.
