@@ -1,6 +1,6 @@
 # Plan: every product event of a session carries the referral of the link it was opened from
 
-> **Status:** to do.
+> **Status:** built on `main`, the screenshots of M2 still to be approved.
 >
 > **Summary:** Today no product event says how a player found the game: e.g.: someone taps the game's link on Bluesky,
 > opens the main menu on GitHub Pages, accepts the privacy notice and starts a new game, and the telemetry collector
@@ -50,7 +50,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 | #  | Milestone              | Done when                                                                                                                                                          | Status | Done in  |
 |----|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
 | M1 | The collector keeps it | The telemetry collector deployed by `telemetry-collector.yml` keeps a product event's referral, rejects an invalid one, and still keeps product events without it. | ✅      | 47993406 |
-| M2 | The game sends it      | The game on GitHub Pages stamps every product event of a session opened with `?ref=` with its referral, and the privacy notice version 3 screenshots are approved. | ⬜      |          |
+| M2 | The game sends it      | The game on GitHub Pages stamps every product event of a session opened with `?ref=` with its referral, and the privacy notice version 3 screenshots are approved. | ✅      | bdf764a6 |
 
 ### M1 commits
 
@@ -142,3 +142,18 @@ Each milestone is a few commits straight on `main`, green on CI.
 - Anyone can open the game with any valid `?ref=`, so a referral says which link was typed, not that the player really came from that site.
 - The privacy notice version 3 asks every player again, and deletes the product events still queued when it does.
 - The privacy notice's panel was made 640 tall for the version 2 text in Spanish; the longer version 3 text may need it taller, which the screenshots of M2 show.
+
+## Changes while building
+
+- **`Referral` lives inside `Telemetry`.** `DomainArchitectureTest` only allows `Telemetry`, `TelemetryEvent`,
+  `TelemetryRepository` and `TelemetryError` at the top of `telemetry.domain`, so `Referral` is a private value class of
+  `Telemetry`, like `SessionId`. `Telemetry.startSession(sessionId, referral)` takes the text and keeps it only when it
+  is a lowercase word, and `StartSession` passes the text through. So `ReferralTest` became two tests of `TelemetryTest`:
+  `Telemetry should keep the referral of the session when the link names a lowercase word of letters, digits and hyphens`
+  and `Telemetry should keep no referral when the link holds capitals, spaces or more than 32 characters`.
+- **`TelemetryApi` takes `referral` with no default.** `ApiConstructorArchitectureTest` forbids default values in an
+  Api's constructor, so every test and `SaveFixtureTest` pass `referral = null`.
+- **`ReferralQuery` decodes the referral** (`?ref=Hello%20World` gives `Hello World`, then rejected by `Telemetry`), with
+  one more test: `ReferralQuery should decode the referral when it is URL-encoded`.
+- **The privacy notice's panel stays 640 tall:** the version 3 text fits in English and Spanish.
+- **The collector's sample batch test** also checks the referral `bluesky` is kept.
