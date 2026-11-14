@@ -30,8 +30,68 @@ class TelemetryTest {
                 lootableItemId = null,
                 price = null,
                 unitId = null,
+                referral = null,
             ),
         )
+    }
+
+    @Test
+    fun `Telemetry should stamp every product event with the referral of the session when the session was opened from a link`() {
+        // Given
+        val telemetry = Telemetry.notAsked().startSession("s1", "bluesky").giveConsent(installId = "i1", decidedAt = 0.0)
+        // When
+        val (events, _) =
+            telemetry
+                .startGame(gameId = "g1", occurredAt = 1.0)
+                .memberRecruited(unitId = "herbalist", occurredAt = 2.0)
+                .pullEvents()
+        // Then
+        events.filterIsInstance<ProductEventRecorded>().map { productEvent -> productEvent.name to productEvent.referral }.shouldContainExactly(
+            Name.GAME_STARTED to "bluesky",
+            Name.MEMBER_RECRUITED to "bluesky",
+        )
+    }
+
+    @Test
+    fun `Telemetry should keep the referral of the session when the link names a lowercase word of letters, digits and hyphens`() {
+        // When
+        val referrals =
+            listOf("bluesky", "x", "reddit-webgames", "a".repeat(32)).map { referral ->
+                Telemetry
+                    .notAsked()
+                    .startSession("s1", referral)
+                    .toDto()
+                    .referral
+            }
+        // Then
+        referrals shouldBe listOf("bluesky", "x", "reddit-webgames", "a".repeat(32))
+    }
+
+    @Test
+    fun `Telemetry should keep no referral when the link holds capitals, spaces or more than 32 characters`() {
+        // When
+        val referrals =
+            listOf("Bluesky", "hello world", "", "a".repeat(33), "player@example.com", null).map { referral ->
+                Telemetry
+                    .notAsked()
+                    .startSession("s1", referral)
+                    .toDto()
+                    .referral
+            }
+        // Then
+        referrals shouldBe listOf(null, null, null, null, null, null)
+    }
+
+    @Test
+    fun `Telemetry should add product events with no referral when the session was opened without a link`() {
+        // When
+        val (events, _) = consented().startGame(gameId = "g1", occurredAt = 1.0).pullEvents()
+        // Then
+        events
+            .filterIsInstance<ProductEventRecorded>()
+            .single()
+            .referral
+            .shouldBeNull()
     }
 
     @Test

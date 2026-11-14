@@ -51,6 +51,7 @@ describe("the telemetry collector", () => {
       lootable_item_id: "health-potion",
       price: 10,
       game_id: "00112233445566778899aabbccddeeff",
+      referral: "bluesky",
     });
   });
 

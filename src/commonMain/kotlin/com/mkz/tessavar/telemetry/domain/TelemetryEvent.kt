@@ -26,6 +26,7 @@ sealed interface TelemetryEvent : DomainEvent {
         val lootableItemId: String?,
         val price: Int?,
         val unitId: String?,
+        val referral: String?,
     ) : TelemetryEvent {
         enum class Name {
             MAIN_MENU_OPENED,

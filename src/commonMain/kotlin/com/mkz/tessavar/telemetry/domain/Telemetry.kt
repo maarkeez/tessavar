@@ -10,6 +10,7 @@ data class Telemetry private constructor(
     private val consent: Consent,
     private val installId: InstallId?,
     private val sessionId: SessionId?,
+    private val referral: Referral?,
     private val gameId: GameId?,
     private val events: Set<TelemetryEvent>,
 ) {
@@ -25,6 +26,7 @@ data class Telemetry private constructor(
                 consent = Consent(status = ConsentStatusDto.NOT_ASKED, noticeVersion = null, decidedAt = null),
                 installId = null,
                 sessionId = null,
+                referral = null,
                 gameId = null,
                 events = emptySet(),
             )
@@ -34,6 +36,7 @@ data class Telemetry private constructor(
                 consent = Consent(status = dto.consent.status, noticeVersion = dto.consent.noticeVersion, decidedAt = dto.consent.decidedAt),
                 installId = dto.installId?.let(::InstallId),
                 sessionId = dto.sessionId?.let(::SessionId),
+                referral = Referral.of(dto.referral),
                 gameId = dto.gameId?.let(::GameId),
                 events = emptySet(),
             )
@@ -44,10 +47,14 @@ data class Telemetry private constructor(
             consent = Dto.ConsentDto(status = consent.status, noticeVersion = consent.noticeVersion, decidedAt = consent.decidedAt),
             installId = installId?.value,
             sessionId = sessionId?.value,
+            referral = referral?.value,
             gameId = gameId?.value,
         )
 
-    fun startSession(sessionId: String): Telemetry = copy(sessionId = SessionId(sessionId))
+    fun startSession(
+        sessionId: String,
+        referral: String? = null,
+    ): Telemetry = copy(sessionId = SessionId(sessionId), referral = Referral.of(referral))
 
     fun giveConsent(
         installId: String,
@@ -161,6 +168,7 @@ data class Telemetry private constructor(
                         lootableItemId = details.lootableItemId,
                         price = details.price,
                         unitId = details.unitId,
+                        referral = referral?.value,
                     ),
         )
     }
@@ -185,6 +193,16 @@ data class Telemetry private constructor(
         val value: String,
     )
 
+    @JvmInline private value class Referral private constructor(
+        val value: String,
+    ) {
+        companion object {
+            private val WORD = Regex("[a-z0-9-]{1,32}")
+
+            fun of(text: String?): Referral? = text?.takeIf(WORD::matches)?.let(::Referral)
+        }
+    }
+
     private data class Details(
         val questId: String? = null,
         val slot: Int? = null,
@@ -197,6 +215,7 @@ data class Telemetry private constructor(
         val consent: ConsentDto,
         val installId: String?,
         val sessionId: String?,
+        val referral: String?,
         val gameId: String?,
     ) {
         data class ConsentDto(

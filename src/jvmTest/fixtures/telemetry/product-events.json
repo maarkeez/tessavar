@@ -10,7 +10,8 @@
             "slot": null,
             "lootableItemId": null,
             "price": null,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "GAME_STARTED",
@@ -22,7 +23,8 @@
             "slot": null,
             "lootableItemId": null,
             "price": null,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "GAME_SAVED",
@@ -34,7 +36,8 @@
             "slot": 1,
             "lootableItemId": null,
             "price": null,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "GAME_LOADED",
@@ -46,7 +49,8 @@
             "slot": 1,
             "lootableItemId": null,
             "price": null,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "QUEST_STARTED",
@@ -58,7 +62,8 @@
             "slot": null,
             "lootableItemId": null,
             "price": null,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "BATTLE_STARTED",
@@ -70,7 +75,8 @@
             "slot": null,
             "lootableItemId": null,
             "price": null,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "BATTLE_FINISHED",
@@ -82,7 +88,8 @@
             "slot": null,
             "lootableItemId": null,
             "price": null,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "QUEST_COMPLETED",
@@ -94,7 +101,8 @@
             "slot": null,
             "lootableItemId": null,
             "price": null,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "ITEM_BOUGHT",
@@ -106,7 +114,8 @@
             "slot": null,
             "lootableItemId": "health-potion",
             "price": 10,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "ITEM_SOLD",
@@ -118,7 +127,8 @@
             "slot": null,
             "lootableItemId": "bee-essence",
             "price": 3,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "MEMBER_RECRUITED",
@@ -130,7 +140,8 @@
             "slot": null,
             "lootableItemId": null,
             "price": null,
-            "unitId": "viking-warrior"
+            "unitId": "viking-warrior",
+            "referral": "bluesky"
         },
         {
             "name": "QUEST_ABANDONED",
@@ -142,7 +153,8 @@
             "slot": null,
             "lootableItemId": null,
             "price": null,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         },
         {
             "name": "GAME_OVER",
@@ -154,7 +166,8 @@
             "slot": null,
             "lootableItemId": null,
             "price": null,
-            "unitId": null
+            "unitId": null,
+            "referral": "bluesky"
         }
     ]
 }

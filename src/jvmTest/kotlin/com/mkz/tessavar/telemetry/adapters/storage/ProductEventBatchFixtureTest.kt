@@ -16,6 +16,7 @@ class ProductEventBatchFixtureTest {
         const val SESSION_ID = "a1b2c3d4e5f60718293a4b5c6d7e8f90"
         const val GAME_ID = "00112233445566778899aabbccddeeff"
         const val STARTED_AT = 1_794_607_613_037.0
+        const val REFERRAL = "bluesky"
     }
 
     private val fixture = File("src/jvmTest/fixtures/telemetry/product-events.json")
@@ -29,7 +30,7 @@ class ProductEventBatchFixtureTest {
         val (events, _) =
             Telemetry
                 .notAsked()
-                .startSession(SESSION_ID)
+                .startSession(SESSION_ID, REFERRAL)
                 .giveConsent(installId = INSTALL_ID, decidedAt = STARTED_AT)
                 .mainMenuOpened(occurredAt++)
                 .startGame(gameId = GAME_ID, occurredAt = occurredAt++)

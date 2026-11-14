@@ -18,5 +18,6 @@ object ProductEventMother {
         lootableItemId = null,
         price = null,
         unitId = null,
+        referral = null,
     )
 }

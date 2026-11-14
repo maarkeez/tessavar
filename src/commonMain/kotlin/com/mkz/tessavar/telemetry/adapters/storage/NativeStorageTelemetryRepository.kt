@@ -24,6 +24,7 @@ class NativeStorageTelemetryRepository(
     }
 
     private var sessionId: String? = null
+    private var referral: String? = null
     private var gameId: String? = null
 
     fun search(): Telemetry? {
@@ -34,6 +35,7 @@ class NativeStorageTelemetryRepository(
                 consent = consent ?: ConsentDto(status = ConsentStatusDto.NOT_ASKED, noticeVersion = null, decidedAt = null),
                 installId = storage.getOrNull(INSTALL_ID_KEY),
                 sessionId = sessionId,
+                referral = referral,
                 gameId = gameId,
             ),
         )
@@ -49,6 +51,7 @@ class NativeStorageTelemetryRepository(
         val installId = dto.installId
         if (installId == null) storage.remove(INSTALL_ID_KEY) else storage[INSTALL_ID_KEY] = installId
         sessionId = dto.sessionId
+        referral = dto.referral
         gameId = dto.gameId
     }
 

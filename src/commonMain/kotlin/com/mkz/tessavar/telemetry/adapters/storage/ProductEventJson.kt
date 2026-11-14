@@ -43,6 +43,7 @@ private data class ProductEventFile(
     val lootableItemId: String?,
     val price: Int?,
     val unitId: String?,
+    val referral: String? = null,
 ) {
     companion object {
         fun of(productEvent: ProductEventRecorded) =
@@ -57,6 +58,7 @@ private data class ProductEventFile(
                 lootableItemId = productEvent.lootableItemId,
                 price = productEvent.price,
                 unitId = productEvent.unitId,
+                referral = productEvent.referral,
             )
     }
 
@@ -73,6 +75,7 @@ private data class ProductEventFile(
             lootableItemId = lootableItemId,
             price = price,
             unitId = unitId,
+            referral = referral,
         )
     }
 }
