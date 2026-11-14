@@ -11,6 +11,8 @@ and what it does in the [telemetry collector plan](../docs/plans/telemetry-colle
 - Every night at 03:17 UTC, it deletes the product events received more than 90 days ago.
 - It keeps the product events as the game sends them, and when they were received: never the IP address, the browser
   or the country of the request.
+- A product event may carry the referral of its session, the name of the link the game was opened from, such as
+  `bluesky`: a lowercase word of at most 32 letters, digits and hyphens. Any other referral gets a 400.
 
 The shape of a batch is [the sample batch](../src/jvmTest/fixtures/telemetry/product-events.json), written by
 `ProductEventBatchFixtureTest` in the game and read by the tests here, so a change on one side breaks a test.
@@ -70,3 +72,17 @@ npx wrangler d1 execute rpg-telemetry --remote --command "
 ```
 
 `occurred_at` and `received_at` are milliseconds since 1970, `occurred_at` from the player's clock.
+
+The monthly review of the marketing posts: how many sessions and installs each referral brought, `null` being the
+sessions opened without one:
+
+```
+npx wrangler d1 execute rpg-telemetry --remote --command "
+  SELECT referral, COUNT(DISTINCT session_id) AS sessions, COUNT(DISTINCT install_id) AS installs
+  FROM product_events
+  GROUP BY referral
+  ORDER BY sessions DESC"
+```
+
+Only players who accepted the privacy notice send product events, so these numbers are a floor, and a player who opens
+the game from two links counts once for each.
