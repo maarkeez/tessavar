@@ -22,7 +22,10 @@ class ConsentPresenterTest {
     private val consentView = ConsentView(messages)
     private val privacyNoticeView = PrivacyNoticeView(messages)
 
-    private fun telemetryApi() = TelemetryApi(storage, RemoteTelemetryRepository(collectorUrl = null, httpClient = FakeHttpClient()), TestScope(UnconfinedTestDispatcher()), Random(1)) { 1_000.0 }
+    private fun telemetryApi() =
+        TelemetryApi(storage, RemoteTelemetryRepository(collectorUrl = null, httpClient = FakeHttpClient()), TestScope(UnconfinedTestDispatcher()), Random(1), referral = null) {
+            1_000.0
+        }
 
     private fun presenter() = ConsentPresenter(consentView, privacyNoticeView, telemetryApi())
 

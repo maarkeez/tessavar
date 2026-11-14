@@ -21,7 +21,10 @@ class MenuSceneTest : ViewsForTesting() {
     private val storage = InmemoryStorage()
     private val browser = FakeBrowser()
 
-    private fun telemetryApi() = TelemetryApi(storage, RemoteTelemetryRepository(collectorUrl = null, httpClient = FakeHttpClient()), TestScope(UnconfinedTestDispatcher()), Random(1)) { 1_000.0 }
+    private fun telemetryApi() =
+        TelemetryApi(storage, RemoteTelemetryRepository(collectorUrl = null, httpClient = FakeHttpClient()), TestScope(UnconfinedTestDispatcher()), Random(1), referral = null) {
+            1_000.0
+        }
 
     @Test
     fun `MenuScene should open the signup form of the mailing list when Wishlist is clicked`() =

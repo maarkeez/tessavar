@@ -51,6 +51,7 @@ class TelemetryApi(
     remoteTelemetryRepository: RemoteTelemetryRepository,
     scope: CoroutineScope,
     private val random: Random,
+    referral: String?,
     now: () -> Double,
 ) {
     private companion object {
@@ -86,7 +87,7 @@ class TelemetryApi(
     val snapshottable: Snapshottable = TelemetrySnapshottable(SearchTelemetrySnapshot(telemetryRepository), LoadTelemetrySnapshot(telemetryRepository))
 
     init {
-        startSession(newId())
+        startSession(newId(), referral)
     }
 
     fun listen(eventBus: EventBus): List<Subscription> =

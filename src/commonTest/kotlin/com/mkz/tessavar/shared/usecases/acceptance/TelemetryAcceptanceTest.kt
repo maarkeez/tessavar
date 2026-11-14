@@ -52,7 +52,10 @@ class TelemetryAcceptanceTest {
         storage["telemetry.installId"] = "i1"
     }
 
-    private fun launch(seed: Int = 1) = TelemetryApi(storage, remoteTelemetryRepository, TestScope(UnconfinedTestDispatcher()), Random(seed)) { 1_000.0 }
+    private fun launch(
+        seed: Int = 1,
+        referral: String? = null,
+    ) = TelemetryApi(storage, remoteTelemetryRepository, TestScope(UnconfinedTestDispatcher()), Random(seed), referral) { 1_000.0 }
 
     private fun TelemetryApi.publishOnASceneBus(vararg events: DomainEvent) {
         val eventBus = InMemoryEventBus()
@@ -139,6 +142,20 @@ class TelemetryAcceptanceTest {
         sessionIds.take(3).distinct().shouldHaveSize(1)
         (sessionIds.first() == sessionIds.last()) shouldBe false
         sessionIds.first().length shouldBe 32
+    }
+
+    @Test
+    fun `A first visit from a Bluesky link should send its game started with the referral when consent is given after the main menu opened`() {
+        // Given
+        val telemetryApi = launch(referral = "bluesky")
+        telemetryApi.publishOnASceneBus(TelemetryEvent.RequestRecordMainMenuOpened)
+        // When
+        telemetryApi.giveConsent()
+        telemetryApi.publishOnASceneBus(TelemetryEvent.RequestStartGame)
+        // Then
+        remoteTelemetryRepository.created.map { productEvent -> productEvent.name to productEvent.referral }.shouldContainExactly(
+            Name.GAME_STARTED to "bluesky",
+        )
     }
 
     @Test

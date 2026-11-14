@@ -11,6 +11,7 @@ import com.mkz.tessavar.storybook.adapters.page.StorybookPage
 import com.mkz.tessavar.storybook.adapters.page.platformStorybookPage
 import com.mkz.tessavar.storybook.adapters.presentation.StorybookScene
 import com.mkz.tessavar.storybook.usecases.services.StoryLocation
+import com.mkz.tessavar.telemetry.adapters.location.takeLinkReferral
 import com.mkz.tessavar.telemetry.adapters.presentation.TelemetryApi
 import com.mkz.tessavar.telemetry.adapters.storage.RemoteTelemetryRepository
 import com.mkz.tessavar.telemetry.adapters.storage.TELEMETRY_COLLECTOR_URL
@@ -63,6 +64,7 @@ suspend fun Stage.startApp(
             RemoteTelemetryRepository(TELEMETRY_COLLECTOR_URL, createHttpClient()),
             CoroutineScope(views.coroutineContext),
             random,
+            referral = takeLinkReferral(),
         ) { DateTime.nowUnixMillis() }
 
     sceneContainer.changeTo { MenuScene(localizationApi, telemetryApi, storage, random) }

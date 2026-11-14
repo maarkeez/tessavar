@@ -93,7 +93,13 @@ class SaveFixtureTest {
                 set("telemetry.installId", "i1")
             }
         val telemetryApi =
-            TelemetryApi(storage, RemoteTelemetryRepository(collectorUrl = null, httpClient = FakeHttpClient()), TestScope(UnconfinedTestDispatcher()), Random(if (isPlayed) 1 else 2)) {
+            TelemetryApi(
+                storage,
+                RemoteTelemetryRepository(collectorUrl = null, httpClient = FakeHttpClient()),
+                TestScope(UnconfinedTestDispatcher()),
+                Random(if (isPlayed) 1 else 2),
+                referral = null,
+            ) {
                 1_793_385_720_000.0
             }.also { telemetryApi ->
                 telemetryApi.listen(apis.eventBus)
