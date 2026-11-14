@@ -47,10 +47,10 @@ For example, a player taps `https://maarkeez.github.io/tessavar/?ref=bluesky` fo
 
 Each milestone is a few commits straight on `main`, green on CI.
 
-| #  | Milestone              | Done when                                                                                                                                                          | Status | Done in |
-|----|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
-| M1 | The collector keeps it | The telemetry collector deployed by `telemetry-collector.yml` keeps a product event's referral, rejects an invalid one, and still keeps product events without it. | ⬜      |         |
-| M2 | The game sends it      | The game on GitHub Pages stamps every product event of a session opened with `?ref=` with its referral, and the privacy notice version 3 screenshots are approved. | ⬜      |         |
+| #  | Milestone              | Done when                                                                                                                                                          | Status | Done in  |
+|----|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
+| M1 | The collector keeps it | The telemetry collector deployed by `telemetry-collector.yml` keeps a product event's referral, rejects an invalid one, and still keeps product events without it. | ✅      | 47993406 |
+| M2 | The game sends it      | The game on GitHub Pages stamps every product event of a session opened with `?ref=` with its referral, and the privacy notice version 3 screenshots are approved. | ⬜      |          |
 
 ### M1 commits
 
