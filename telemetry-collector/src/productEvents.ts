@@ -33,6 +33,7 @@ export interface ProductEvent {
   lootableItemId: string | null;
   price: number | null;
   unitId: string | null;
+  referral: string | null;
 }
 
 export type ParsedBatch = { productEvents: ProductEvent[] } | { rejected: string };
@@ -50,7 +51,13 @@ const FIELDS = [
   "unitId",
 ] as const satisfies readonly (keyof ProductEvent)[];
 
+// Fields a product event may leave out, read as null: the game sent no referral before the privacy notice version 3
+const OPTIONAL_FIELDS = ["referral"] as const satisfies readonly (keyof ProductEvent)[];
+
 const ID = /^[0-9a-f]{32}$/;
+
+/** The name of the link the session was opened from, as the game's `Referral` checks it. */
+export const REFERRAL = /^[a-z0-9-]{1,32}$/;
 
 /** Returns the product events of a batch, or why it is rejected. */
 export function parseBatch(body: unknown): ParsedBatch {
@@ -63,14 +70,16 @@ export function parseBatch(body: unknown): ParsedBatch {
   for (const [index, productEvent] of productEvents.entries()) {
     const reason = rejectionOf(productEvent);
     if (reason !== null) return { rejected: `product event ${index}: ${reason}` };
-    parsed.push(productEvent as ProductEvent);
+    parsed.push({ ...(productEvent as ProductEvent), referral: (productEvent as Partial<ProductEvent>).referral ?? null });
   }
   return { productEvents: parsed };
 }
 
 function rejectionOf(productEvent: unknown): string | null {
-  if (!isObject(productEvent) || !hasExactly(productEvent, FIELDS)) return `its fields are not ${FIELDS.join(", ")}`;
-  const { name, installId, sessionId, gameId, occurredAt, questId, slot, lootableItemId, price, unitId } = productEvent;
+  if (!isObject(productEvent) || !hasExactly(productEvent, FIELDS, OPTIONAL_FIELDS)) {
+    return `its fields are not ${FIELDS.join(", ")}, with ${OPTIONAL_FIELDS.join(", ")} optional`;
+  }
+  const { name, installId, sessionId, gameId, occurredAt, questId, slot, lootableItemId, price, unitId, referral } = productEvent;
   if (!PRODUCT_EVENT_NAMES.includes(name as ProductEventName)) return "unknown name";
   if (!isId(installId)) return "installId is not 32 lowercase hex digits";
   if (!isId(sessionId)) return "sessionId is not 32 lowercase hex digits";
@@ -81,6 +90,7 @@ function rejectionOf(productEvent: unknown): string | null {
   if (!isTextOrNull(lootableItemId)) return "lootableItemId is not a short text or null";
   if (!isIntegerOrNull(price)) return "price is not a whole number or null";
   if (!isTextOrNull(unitId)) return "unitId is not a short text or null";
+  if (!isReferralOrAbsent(referral)) return "referral is not a lowercase word of at most 32 characters";
   return null;
 }
 
@@ -88,9 +98,12 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function hasExactly(value: Record<string, unknown>, fields: readonly string[]): boolean {
+function hasExactly(value: Record<string, unknown>, fields: readonly string[], optionalFields: readonly string[] = []): boolean {
   const keys = Object.keys(value);
-  return keys.length === fields.length && fields.every((field) => Object.hasOwn(value, field));
+  return (
+    fields.every((field) => Object.hasOwn(value, field)) &&
+    keys.every((key) => fields.includes(key) || optionalFields.includes(key))
+  );
 }
 
 function isId(value: unknown): value is string {
@@ -99,6 +112,10 @@ function isId(value: unknown): value is string {
 
 function isTextOrNull(value: unknown): boolean {
   return value === null || (typeof value === "string" && value.length > 0 && value.length <= MAX_TEXT_LENGTH);
+}
+
+function isReferralOrAbsent(value: unknown): boolean {
+  return value === undefined || value === null || (typeof value === "string" && REFERRAL.test(value));
 }
 
 function isIntegerOrNull(value: unknown): boolean {

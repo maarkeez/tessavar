@@ -49,8 +49,8 @@ async function deleteExpired(db: D1Database, now: number): Promise<void> {
 async function keep(db: D1Database, productEvents: ProductEvent[], receivedAt: number): Promise<void> {
   const insert = db.prepare(
     `INSERT OR IGNORE INTO product_events
-       (install_id, session_id, game_id, name, occurred_at, quest_id, slot, lootable_item_id, price, unit_id, received_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (install_id, session_id, game_id, name, occurred_at, quest_id, slot, lootable_item_id, price, unit_id, referral, received_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
   await db.batch(
     productEvents.map((productEvent) =>
@@ -65,6 +65,7 @@ async function keep(db: D1Database, productEvents: ProductEvent[], receivedAt: n
         productEvent.lootableItemId,
         productEvent.price,
         productEvent.unitId,
+        productEvent.referral,
         receivedAt,
       ),
     ),

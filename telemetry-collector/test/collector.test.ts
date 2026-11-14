@@ -74,6 +74,38 @@ describe("the telemetry collector", () => {
     expect(await rows()).toHaveLength(0);
   });
 
+  it("the telemetry collector should keep the referral of a product event", async () => {
+    // Given
+    const [first] = sampleBatch.productEvents;
+    // When
+    const response = await send({ productEvents: [{ ...first, referral: "reddit-playmygame" }] });
+    // Then
+    expect(response.status).toBe(204);
+    expect(await rows()).toMatchObject([{ name: "MAIN_MENU_OPENED", referral: "reddit-playmygame" }]);
+  });
+
+  it("the telemetry collector should keep a product event without a referral", async () => {
+    // Given
+    const { referral: _, ...withoutReferral } = { ...sampleBatch.productEvents[0], referral: undefined };
+    // When
+    const response = await send({ productEvents: [withoutReferral] });
+    // Then
+    expect(response.status).toBe(204);
+    expect(await rows()).toMatchObject([{ name: "MAIN_MENU_OPENED", referral: null }]);
+  });
+
+  it("the telemetry collector should reject a product event whose referral is not a lowercase word", async () => {
+    // Given
+    const [first] = sampleBatch.productEvents;
+    // When
+    const responses = await Promise.all(
+      ["Bluesky", "hello world", "", "a".repeat(33), 7].map((referral) => send({ productEvents: [{ ...first, referral }] })),
+    );
+    // Then
+    expect(responses.map((response) => response.status)).toEqual([400, 400, 400, 400, 400]);
+    expect(await rows()).toHaveLength(0);
+  });
+
   it("the telemetry collector should reject a batch of 101 product events", async () => {
     // Given
     const [first] = sampleBatch.productEvents;
@@ -110,6 +142,7 @@ describe("the telemetry collector", () => {
       "price",
       "unit_id",
       "received_at",
+      "referral",
     ]);
     expect(JSON.stringify(await rows())).not.toContain("203.0.113.7");
   });
