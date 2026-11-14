@@ -1281,6 +1281,10 @@ _Avoid_: Player id, user id, device id
 One run of the game, from its launch until it is closed.
 _Avoid_: Play session
 
+**Referral**:
+The place whose link a session was opened from, such as Bluesky or a subreddit, named by the link itself.
+_Avoid_: Ref, referrer, source, campaign, UTM, channel
+
 **Game id**:
 The random id a game gets when it is started new, kept in its saves, so a loaded game keeps it.
 _Avoid_: Save id, playthrough id
