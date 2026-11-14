@@ -1,6 +1,6 @@
 # Plan: every product event of a session carries the referral of the link it was opened from
 
-> **Status:** built on `main`, the screenshots of M2 still to be approved.
+> **Status:** done.
 >
 > **Summary:** Today no product event says how a player found the game: e.g.: someone taps the game's link on Bluesky,
 > opens the main menu on GitHub Pages, accepts the privacy notice and starts a new game, and the telemetry collector
