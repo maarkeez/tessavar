@@ -1,6 +1,6 @@
 # Plan: anyone builds a world in the world builder and shares it by pull request, played by everyone as a community world
 
-> **Status:** to do.
+> **Status:** in progress: M1 built on `main`, its screenshots still to be approved.
 >
 > **Summary:** Today the world builder only paints terrain. E.g.: a player paints a lake of water on a 24 × 32 world,
 > taps Export, and gets the TOML of `resources/battlefield/battlefield.toml` on their clipboard, which nobody else can
@@ -68,7 +68,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 
 | #  | Milestone            | Done when                                                                                                                                                                                         | Status | Done in |
 |----|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
-| M1 | Builder UX           | The world builder has the hamburger menu with Resize, Import, Export and Back; Paint and Fill; undo and redo; Export saves a file; the world survives a reload. Screenshots approved.              | ⬜      |         |
+| M1 | Builder UX           | The world builder has the hamburger menu with Resize, Import, Export and Back; Paint and Fill; undo and redo; Export saves a file; the world survives a reload. Screenshots approved.              | ✅      | 8d617625 |
 | M2 | One world format     | The campaign is played from `resources/world/tessavar.toml` as before; saves record their world; the world builder imports and exports it unchanged and edits its name and author in Details.  | ⬜      |         |
 | M3 | Placing and playtest | The world builder places and erases buildings, battle units and npcs with their stock, and playtests the world. Screenshots approved.                                                             | ⬜      |         |
 | M4 | Quest editor         | The world builder configures main and side quests, and the tiles of the current visit task are marked on the battlefield, in the campaign too. Screenshots approved.                              | ⬜      |         |
@@ -308,3 +308,25 @@ What stays in the catalog: `resources/building/fortress.toml` keeps `rows` and `
   again.
 - World files exported before M2, battlefield TOML only, are refused by the world builder.
 - A first-time contributor's pull request needs the maintainer's approval before GitHub runs its CI.
+
+## Changes while building
+
+### M1
+
+- **Back leaves at once.** `WorldBuilderCallToActionView` and its leave confirmation are deleted, instead of keeping only
+  the confirmation: once the world is kept in the storage, leaving loses nothing, so "The world is lost when leaving" was
+  no longer true.
+- **`OpenWorld` replaces `CreateWorld`**, and `WorldOpened` replaces `WorldCreated`: the world builder opens the world
+  kept from the last time, or a new one when there is none.
+- **`NativeStorageWorldBuilderRepository`**, not `StorageWorldBuilderRepository`, named like the other repositories of
+  the storage. Until M2 it keeps the world as its battlefield TOML; the selected terrain and the edits to undo only last
+  while the world builder is open. `InMemoryWorldBuilderRepository` stays for the use case tests.
+- **Export saves `world.toml`** until Details names the world in M2. On the JVM, KorGE's save dialog can't suggest the
+  name, so the player types it.
+- **No end-to-end test of Export**, as the web build downloads a real file: `GameWindowWorldFileSaverTest` and
+  `WorldBuilderPresenterTest` cover it.
+- **The stories went in with their views**, rather than in a commit of their own. The HUD's **› Smallest world** and
+  **› Largest world** stories moved to **Screen / World builder resize**, and **Screen / World builder call to action**
+  is deleted with its view.
+- **No New world option**: starting again from an empty world takes Import, Resize or Fill, now that the world is kept.
+
