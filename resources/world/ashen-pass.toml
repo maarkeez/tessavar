@@ -1,0 +1,147 @@
+version = 1
+name = "Ashen Pass"
+author = "maarkeez"
+
+[battlefield]
+tiles = [
+    ["void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void"],
+    ["void",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void"],
+    ["void",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void"],
+    ["void",   "sand",   "sand",   "grass",  "grass",  "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void",   "void"],
+    ["void",   "sand",   "sand",   "grass",  "grass",  "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void"],
+    ["void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void"],
+    ["void",   "void",   "void",   "void",   "void",   "void",   "void",   "sand",   "sand",   "sand",   "sand",   "void",   "void",   "void"],
+    ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void"],
+    ["void",   "void",   "sand",   "lava",   "lava",   "sand",   "sand",   "sand",   "sand",   "lava",   "lava",   "lava",   "sand",   "void"],
+    ["void",   "void",   "sand",   "lava",   "lava",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void"],
+    ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void"],
+    ["void",   "void",   "void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void",   "void",   "void"],
+    ["void",   "void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void",   "void"],
+    ["void",   "void",   "sand",   "sand",   "lava",   "lava",   "lava",   "lava",   "lava",   "sand",   "sand",   "sand",   "void",   "void"],
+    ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void"],
+    ["void",   "void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void",   "void"],
+    ["void",   "void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void",   "void",   "void"],
+    ["void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void"],
+]
+
+[[battleUnits]]
+id = "hero"
+unitId = "hero"
+playerId = "player-one"
+row = 1
+column = 3
+
+[[battleUnits]]
+id = "road-bat-1"
+unitId = "bat"
+playerId = "player-two"
+row = 7
+column = 11
+
+[[battleUnits]]
+id = "road-rat-1"
+unitId = "rat"
+playerId = "player-two"
+row = 10
+column = 4
+
+[[battleUnits]]
+id = "road-rat-2"
+unitId = "rat"
+playerId = "player-two"
+row = 10
+column = 10
+
+[[battleUnits]]
+id = "pass-bat-1"
+unitId = "bat"
+playerId = "player-two"
+row = 12
+column = 4
+
+[[battleUnits]]
+id = "pass-bat-2"
+unitId = "bat"
+playerId = "player-two"
+row = 14
+column = 9
+
+[[battleUnits]]
+id = "goat-wizard"
+unitId = "goat-wizard"
+playerId = "player-two"
+row = 15
+column = 6
+
+[[npcs]]
+id = "elder"
+row = 2
+column = 4
+
+[[npcs]]
+id = "blacksmith"
+row = 4
+column = 7
+stock = ["hammer", "iron-hammer", "health-potion"]
+
+[[npcs]]
+id = "farmer"
+row = 7
+column = 3
+
+[[npcs]]
+id = "viking"
+row = 12
+column = 9
+
+[[quests]]
+id = "rats-on-the-ash-road"
+type = "SIDE"
+questGiverNpcId = "farmer"
+name = "Rats on the Ash Road"
+description = "Rats gnaw at the Farmer's sacks on the road below the pass."
+lines = { start = "Ash on the crops, and now rats on the road! Two of them chew through my sacks every night. Chase them off, and I pay.", reminder = "Two rats, down the road between the lava pools. My sacks will not last another night.", completed = "Not a sack chewed since you came by. The pass is no place for a farm, but it is my farm." }
+
+[[quests.tasks]]
+type = "DEFEAT"
+unitId = "rat"
+requiredDefeats = 2
+text = "Defeat 2 Rats"
+
+[[quests.tasks]]
+type = "TALK"
+npcId = "farmer"
+text = "Talk to the Farmer"
+line = "The road is quiet again! Here is your gold, and a potion: the pass is hot further down."
+
+[quests.reward]
+gold = 30
+lootableItemIds = ["health-potion"]
+
+[[quests]]
+id = "through-the-ashen-pass"
+type = "MAIN"
+startTiles = [[2, 2], [2, 3], [2, 4]]
+name = "Through the Ashen Pass"
+description = "The Goat Wizard has settled past the lava, at the far end of the Ashen Pass, and nobody crosses anymore."
+
+[[quests.tasks]]
+type = "TALK"
+npcId = "elder"
+text = "Talk to the Elder"
+line = "The pass has burned for as long as I remember, but it was never closed. Now the Goat Wizard waits past the last lava pool. Go down through the narrows, and the Viking may lend you an axe."
+
+[[quests.tasks]]
+type = "VISIT"
+tiles = [[11, 6], [11, 7]]
+text = "Reach the narrows"
+
+[[quests.tasks]]
+type = "DEFEAT"
+unitId = "goat-wizard"
+requiredDefeats = 1
+text = "Defeat the Goat Wizard"
+
+[quests.reward]
+gold = 120
+lootableItemIds = ["rune-hammer"]
