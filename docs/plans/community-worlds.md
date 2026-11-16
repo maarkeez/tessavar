@@ -1,6 +1,6 @@
 # Plan: anyone builds a world in the world builder and shares it by pull request, played by everyone as a community world
 
-> **Status:** in progress: M1 to M3 built on `main`, their screenshots still to be approved.
+> **Status:** in progress: M1 to M4 built on `main`, their screenshots still to be approved.
 >
 > **Summary:** Today the world builder only paints terrain. E.g.: a player paints a lake of water on a 24 × 32 world,
 > taps Export, and gets the TOML of `resources/battlefield/battlefield.toml` on their clipboard, which nobody else can
@@ -71,7 +71,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 | M1 | Builder UX           | The world builder has the hamburger menu with Resize, Import, Export and Back; Paint and Fill; undo and redo; Export saves a file; the world survives a reload. Screenshots approved.              | ✅      | 8d617625 |
 | M2 | One world format     | The campaign is played from `resources/world/tessavar.toml` as before; saves record their world; the world builder imports and exports it unchanged and edits its name and author in Details.  | ✅      | fae1b7f6 |
 | M3 | Placing and playtest | The world builder places and erases buildings, battle units and npcs with their stock, and playtests the world. Screenshots approved.                                                             | ✅      | dd21f702 |
-| M4 | Quest editor         | The world builder configures main and side quests, and the tiles of the current visit task are marked on the battlefield, in the campaign too. Screenshots approved.                              | ⬜      |         |
+| M4 | Quest editor         | The world builder configures main and side quests, and the tiles of the current visit task are marked on the battlefield, in the campaign too. Screenshots approved.                              | ✅      | 08110784 |
 | M5 | Community worlds     | The main menu lists 2 community worlds by maarkeez; `GAME_STARTED` carries the world id under the privacy notice version 4; CI checks every world file; the contributing docs and templates are on `main`. | ⬜      |         |
 
 ### M1 commits
@@ -381,3 +381,25 @@ What stays in the catalog: `resources/building/fortress.toml` keeps `rows` and `
   reopens the world kept in the storage, so the edits to undo are lost.
 - **`PlaytestEndToEndTest`**, not `PlaytestAcceptanceTest`, as it goes from one scene to another; it playtests the campaign
   kept in the storage.
+
+### M4
+
+- **One commit**, not five, for the same reason as M3.
+- **One `WorldBuilderFormView`**, not `WorldBuilderQuestsView` and `WorldBuilderQuestView`: a scrolling list of rows
+  (headings, texts, choices, toggles, steppers and actions) filled by `WorldBuilderQuestForms`, which shows the quests of
+  the world or the quest being edited. A quest has too many fields for a fixed 390 × 300 panel, so it is scrolled by
+  dragging. Its stories are **Screen / World builder form › Campaign quests**, **› Main quest**, **› Side quest** and
+  **› Picking tiles**, built from rows, as the storybook may not import the world builder's domain.
+- **`AddQuest`, `RemoveQuest` and `EditQuest`**: a new quest is named `quest-1`, `quest-2`…, and `EditQuest` replaces
+  the whole quest. A second main quest is rejected, whether added or edited into one. Choices step through the npcs
+  standing in the world, and the units of the CPU's battle units (every unit when there is none).
+- **Tiles are picked on the world**: tapping Start tiles or a visit task's Tiles picks or unpicks each tile tapped,
+  highlighted, until the row is tapped again; the world stays visible above the form.
+- **Erase**: erasing an npc removes the talk tasks naming it and the side quests it gives; erasing the last battle unit
+  of a unit removes the defeat tasks naming that unit, as a task names a unit, not a battle unit.
+- **The world builder holds the quests**, so the codec reads and writes them, and keeps only tables it does not know.
+  `WorldBuilder.Dto.unplayableReasons` lists what a world lacks to be playable. Playtest refuses a world without a battle
+  unit of the human player, without one main quest, or with a quest without tasks, which the game can not set up; Export
+  saves any world and tells the first thing it lacks. This replaces the main quest count of M3.
+- **Visit markers**: `QuestMarkerDto` gains `tiles` and the sign `VISIT_TASK`, and its `npcId` may be null; the quest
+  marker is drawn over every tile of the current visit task.
