@@ -19,9 +19,11 @@ object WorldBuilderMenuViewStories : StoryBinding {
         listOf(
             UiMessage.WORLD_BUILDER_RESIZE,
             UiMessage.WORLD_BUILDER_DETAILS,
+            UiMessage.WORLD_BUILDER_QUESTS,
             UiMessage.WORLD_BUILDER_PLAYTEST,
             UiMessage.WORLD_BUILDER_IMPORT,
             UiMessage.WORLD_BUILDER_EXPORT,
+            UiMessage.WORLD_BUILDER_HOW_TO_SHARE,
             UiMessage.WORLD_BUILDER_BACK,
         )
 
@@ -33,7 +35,7 @@ object WorldBuilderMenuViewStories : StoryBinding {
         StoryDto(
             id = "screen-world-builder-menu--open",
             name = "Open",
-            description = "The options below the button, as the world builder lists them: Resize, Details, Quests, Playtest, Import, Export and Back.",
+            description = "The options below the button, as the world builder lists them: Resize, Details, Quests, Playtest, Import, Export, How to share and Back.",
             args =
                 mapOf(
                     OPEN to ValueDto.boolean(true),

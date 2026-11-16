@@ -21,11 +21,11 @@ for how the game reads the translations.
 
 ## Contributing
 
-Tessavar is free and open source, and contributions are welcome, from art to code and translations. See
-[CONTRIBUTING.md](CONTRIBUTING.md), and [CREDITS.md](CREDITS.md) for who made what.
+Tessavar is free and open source, and contributions are welcome, from worlds built in the world builder to art, code
+and translations. See [CONTRIBUTING.md](CONTRIBUTING.md), and [CREDITS.md](CREDITS.md) for who made what.
 
 ## License
 
-The code is licensed under the GNU General Public License version 3 or later, see [LICENSE](LICENSE). The art is
-licensed under CC BY-SA 4.0, see [LICENSE-ART.md](LICENSE-ART.md), except the placeholders listed in
+The code is licensed under the GNU General Public License version 3 or later, see [LICENSE](LICENSE). The art and the
+world files are licensed under CC BY-SA 4.0, see [LICENSE-ART.md](LICENSE-ART.md), except the placeholders listed in
 [CREDITS.md](CREDITS.md).

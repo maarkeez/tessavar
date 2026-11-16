@@ -3,10 +3,17 @@
 
 name: "🧪 Testing"
 
-# Skipped when a push only changes documentation or the telemetry collector, which has its own workflow; it can still be
+# Skipped when a push or a pull request only changes documentation or the telemetry collector, which has its own workflow; it can still be
 # run by hand from the Actions tab
 on:
   push:
+    paths-ignore:
+      - "docs/**"
+      - "GLOSSARY.md"
+      - "README.md"
+      - "telemetry-collector/**"
+  # A pull request from a fork, such as a community world uploaded on GitHub, is tested before it is merged
+  pull_request:
     paths-ignore:
       - "docs/**"
       - "GLOSSARY.md"
@@ -19,7 +26,7 @@ env:
   JAVA_VERSION: 21
 
 concurrency:
-  group: "testing"
+  group: "testing-${{ github.ref }}"
   cancel-in-progress: false
 
 jobs:

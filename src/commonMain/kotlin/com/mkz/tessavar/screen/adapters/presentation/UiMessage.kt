@@ -121,6 +121,7 @@ enum class UiMessage(
     WORLD_BUILDER_PLAYTEST("ui.worldBuilderMenu.playtest"),
     WORLD_BUILDER_IMPORT("ui.worldBuilderMenu.import"),
     WORLD_BUILDER_EXPORT("ui.worldBuilderMenu.export"),
+    WORLD_BUILDER_HOW_TO_SHARE("ui.worldBuilderMenu.howToShare"),
     WORLD_BUILDER_BACK("ui.worldBuilderMenu.back"),
     WORLD_BUILDER_WORLD_EXPORTED("ui.worldBuilder.worldExported"),
     WORLD_BUILDER_WORLD_IMPORTED("ui.worldBuilder.worldImported"),

@@ -38,6 +38,7 @@ class WorldBuilderPresenter(
     private val worldFileSaver: WorldFileSaver,
     private val worldFilePicker: WorldFilePicker,
     private val textPrompt: TextPrompt?,
+    private val browser: Browser,
     private val coroutineScope: CoroutineScope,
     private val onLeft: () -> Unit,
     private val onPlaytest: (worldFile: String) -> Unit,
@@ -50,6 +51,7 @@ class WorldBuilderPresenter(
     WorldBuilderFormView.Delegate {
     companion object {
         const val WORLD_FILE_NAME = "world"
+        const val HOW_TO_SHARE_URL = "https://github.com/maarkeez/tessavar/blob/main/CONTRIBUTING.md#share-a-world"
         const val WORLD_FILE_EXTENSION = ".toml"
         const val QUESTS_FORM = "quests"
         const val GOLD_STEP = 5
@@ -120,6 +122,7 @@ class WorldBuilderPresenter(
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_PLAYTEST]) { playtest() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_IMPORT]) { importWorld() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_EXPORT]) { exportWorld() },
+                WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_HOW_TO_SHARE]) { coroutineScope.launchImmediately { browser.open(HOW_TO_SHARE_URL) } },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_BACK]) { onLeft() },
             ),
         )

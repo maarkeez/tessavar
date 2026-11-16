@@ -78,6 +78,7 @@ class WorldBuilderScene(
             worldFileSaver = GameWindowWorldFileSaver(views.gameWindow, messages),
             worldFilePicker = GameWindowWorldFilePicker(views.gameWindow, messages),
             textPrompt = if (needsTextPrompt()) GameWindowTextPrompt(views.gameWindow) else null,
+            browser = GameWindowBrowser(views.gameWindow),
             coroutineScope = this@WorldBuilderScene,
             onLeft = { launchImmediately { sceneContainer.changeTo { MenuScene(localizationApi, telemetryApi, storage) } } },
             onPlaytest = { worldFile -> launchImmediately { sceneContainer.changeTo { GameScene(localizationApi, telemetryApi, storage, playtestWorldFile = worldFile) } } },

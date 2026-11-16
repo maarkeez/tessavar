@@ -1,15 +1,28 @@
 # Contributing
 
-Tessavar is a free, open source game, and contributions are welcome: art, code, translations, and feedback from
+Tessavar is a free, open source game, and contributions are welcome: worlds, art, code, translations, and feedback from
 playing it at https://maarkeez.github.io/tessavar/.
 
 Open an [issue](https://github.com/maarkeez/tessavar/issues) to share an idea or a bug, or to say what you would like to
 work on before you start, so we can agree on it. Then send a pull request.
 
+## Share a world
+
+Build a world in *Build a world*, on the main menu, and share it with every player: once its world file is added to
+[`resources/world/`](resources/world) by a pull request, it is listed under *Community worlds* after the next deploy.
+No git and no code are needed: GitHub's web upload opens the pull request. Every pull request is reviewed by the
+maintainer, and every world merged is announced crediting its author.
+
+- [How to share a world](docs/contributing/share-a-world.md): from the world builder to the pull request.
+- [World file reference](docs/contributing/world-file.md): every table and key of a world file.
+
+New buildings, units or npcs are not part of a world: they are a regular change to the game, drawn as described in
+[Drawing for Tessavar](#drawing-for-tessavar).
+
 ## Licensing of contributions
 
 What you contribute is released under the licenses of the repository: code under the GNU General Public License
-version 3 or later ([LICENSE](LICENSE)), and art under CC BY-SA 4.0 ([LICENSE-ART.md](LICENSE-ART.md)). You keep the
+version 3 or later ([LICENSE](LICENSE)), and art and world files under CC BY-SA 4.0 ([LICENSE-ART.md](LICENSE-ART.md)). You keep the
 copyright of your work, and there is no agreement to sign. By sending a pull request, you confirm the work is yours to
 contribute under those licenses.
 

@@ -581,6 +581,11 @@ msgctxt "ui.worldBuilderMenu.export"
 msgid "Export"
 msgstr ""
 
+#. Opens, in the browser, how to share the world with every player, by adding its file to the game on GitHub.
+msgctxt "ui.worldBuilderMenu.howToShare"
+msgid "How to share"
+msgstr ""
+
 #. Goes back to the menu.
 msgctxt "ui.worldBuilderMenu.back"
 msgid "Back"

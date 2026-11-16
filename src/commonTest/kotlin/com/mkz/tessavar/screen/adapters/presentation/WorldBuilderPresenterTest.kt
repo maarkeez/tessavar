@@ -43,6 +43,7 @@ class WorldBuilderPresenterTest {
     private val menuView = FakeWorldBuilderMenuView()
     private val worldFileSaver = FakeWorldFileSaver()
     private val worldFilePicker = FakeWorldFilePicker()
+    private val browser = FakeBrowser()
     private var leftCount = 0
 
     init {
@@ -62,6 +63,7 @@ class WorldBuilderPresenterTest {
             worldFileSaver = worldFileSaver,
             worldFilePicker = worldFilePicker,
             textPrompt = textPrompt,
+            browser = browser,
             coroutineScope = CoroutineScope(Dispatchers.Unconfined),
             onLeft = { leftCount++ },
             onPlaytest = { worldFile -> playtests += worldFile },
@@ -385,9 +387,17 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `WorldBuilderMenuView should offer resizing, the details, the quests, playtesting, importing, exporting and going back when the world builder is displayed`() {
+    fun `WorldBuilderMenuView should offer resizing, the details, the quests, playtesting, importing, exporting, how to share and going back when the world builder is displayed`() {
         // Then
-        menuView.displayedOptions.map(WorldBuilderMenuView.Option::label).shouldContainExactly("Resize", "Details", "Quests", "Playtest", "Import", "Export", "Back")
+        menuView.displayedOptions.map(WorldBuilderMenuView.Option::label).shouldContainExactly("Resize", "Details", "Quests", "Playtest", "Import", "Export", "How to share", "Back")
+    }
+
+    @Test
+    fun `HowToShare should open how to share a world in the browser when it is selected`() {
+        // When
+        menuView.select("How to share")
+        // Then
+        browser.openedUrls.shouldContainExactly("https://github.com/maarkeez/tessavar/blob/main/CONTRIBUTING.md#share-a-world")
     }
 
     @Test
