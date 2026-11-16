@@ -5,14 +5,12 @@ import korlibs.render.GameWindow
 import korlibs.render.openFileDialog
 
 interface WorldFileSaver {
-    /** Saves the world file, and tells whether it was saved: false when the player cancels. */
     suspend fun saveWorld(
         fileName: String,
         text: String,
     ): Boolean
 }
 
-/** Downloads the file on the web, and asks where to save it with a dialog everywhere else. */
 class GameWindowWorldFileSaver(
     private val gameWindow: GameWindow,
     messages: Messages,
@@ -31,7 +29,6 @@ class GameWindowWorldFileSaver(
     }
 }
 
-/** Downloads a text file named [fileName], and tells whether the platform can: only the web can. */
 expect fun downloadFile(
     fileName: String,
     text: String,

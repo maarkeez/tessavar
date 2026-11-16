@@ -29,7 +29,6 @@ data class WorldBuilder private constructor(
         const val DEFAULT_TERRAIN_ID = "sand"
         const val UNDO_STEPS = 50
 
-        /** The world kept from an earlier visit to the world builder, with nothing to undo. */
         fun restore(tiles: List<List<String>>): WorldBuilder {
             require(tiles.isNotEmpty() && tiles.all { row -> row.size == tiles.first().size } && isValidSize(tiles.size) && isValidSize(tiles.first().size)) {
                 "The world kept is not 1 to 128 tiles wide and tall"

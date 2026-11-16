@@ -7,11 +7,6 @@ import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderRepository
 import korlibs.korge.service.storage.IStorage
 
-/**
- * Keeps the world being built in the storage, written as its world file on every save, so it survives leaving the world
- * builder and a reload. What can't be written in a world file, the selected terrain and the edits to undo, only lasts
- * while the world builder is open.
- */
 class NativeStorageWorldBuilderRepository(
     private val storage: IStorage,
     private val exportBattlefield: ExportBattlefield,
