@@ -632,7 +632,7 @@ class WorldBuilderPresenterTest {
         // When
         selectTile(row = 3, column = 4)
         // Then
-        infoView.errors.last() shouldBe "Nothing can stand on Lava"
+        infoView.errors.last() shouldBe "Something stands on or next to this tile: Lava would leave it nowhere to stand"
     }
 
     @Test

@@ -150,10 +150,11 @@ data class WorldBuilder private constructor(
         if (forbiddenAdjacentTerrainId != null) {
             return copy(events = events + TilePaintRejected(row = row, column = column, terrainId = terrainId, adjacentTerrainId = forbiddenAdjacentTerrainId))
         }
-        if (!isOccupiable(terrainId) && !occupants.isVacant(row, column)) {
+        val paintedTiles = tiles.paint(row, column, selectedTerrainId)
+        if (occupants.misplacedOccupantId(paintedTiles, isOccupiable) != null) {
             return copy(events = events + OccupiedTilePaintRejected(row = row, column = column, terrainId = terrainId))
         }
-        return edit(TilePainted(row = row, column = column, terrainId = terrainId), editedTiles = tiles.paint(row, column, selectedTerrainId))
+        return edit(TilePainted(row = row, column = column, terrainId = terrainId), editedTiles = paintedTiles)
     }
 
     fun fill(
@@ -176,10 +177,11 @@ data class WorldBuilder private constructor(
         if (forbiddenAdjacentTerrainId != null) {
             return copy(events = events + TilePaintRejected(row = row, column = column, terrainId = terrainId, adjacentTerrainId = forbiddenAdjacentTerrainId))
         }
-        if (!isOccupiable(terrainId) && area.any { (areaRow, areaColumn) -> !occupants.isVacant(areaRow, areaColumn) }) {
+        val filledTiles = tiles.paint(area, selectedTerrainId)
+        if (occupants.misplacedOccupantId(filledTiles, isOccupiable) != null) {
             return copy(events = events + OccupiedTilePaintRejected(row = row, column = column, terrainId = terrainId))
         }
-        return edit(AreaFilled(row = row, column = column, terrainId = terrainId, tileCount = area.size), editedTiles = tiles.paint(area, selectedTerrainId))
+        return edit(AreaFilled(row = row, column = column, terrainId = terrainId, tileCount = area.size), editedTiles = filledTiles)
     }
 
     fun import(
@@ -359,6 +361,9 @@ data class WorldBuilder private constructor(
         footprint.forEach { (footprintRow, footprintColumn) ->
             val terrainId = tiles.terrainId(footprintRow, footprintColumn) ?: return rejectPlace(row, column, OccupantPlaceRejected.Reason.OUT_OF_WORLD)
             if (!isOccupiable(terrainId.value)) return rejectPlace(row, column, OccupantPlaceRejected.Reason.NOT_OCCUPIABLE, terrainId.value)
+            tiles.corneringTerrainId(footprintRow, footprintColumn, isOccupiable)?.let { corneringTerrainId ->
+                return rejectPlace(row, column, OccupantPlaceRejected.Reason.CORNERED, corneringTerrainId.value)
+            }
             if (!others.isVacant(footprintRow, footprintColumn)) return rejectPlace(row, column, OccupantPlaceRejected.Reason.NOT_VACANT)
         }
         return edit(OccupantPlaced(occupantId = occupantId, row = row, column = column), editedOccupants = placed())
@@ -536,8 +541,7 @@ data class WorldBuilder private constructor(
             val taken = mutableSetOf<Pair<Int, Int>>()
             footprints().forEach { (occupantId, footprint) ->
                 footprint.forEach { position ->
-                    val terrainId = tiles.terrainId(position.first, position.second)
-                    if (terrainId == null || !isOccupiable(terrainId.value) || !taken.add(position)) return occupantId
+                    if (!tiles.isOccupiable(position.first, position.second, isOccupiable) || !taken.add(position)) return occupantId
                 }
             }
             return null
@@ -605,6 +609,26 @@ data class WorldBuilder private constructor(
             row: Int,
             column: Int,
         ): List<TerrainId> = adjacentPositions(row, column).mapNotNull { (adjacentRow, adjacentColumn) -> terrainId(adjacentRow, adjacentColumn) }
+
+        fun isOccupiable(
+            row: Int,
+            column: Int,
+            isOccupiable: (terrainId: String) -> Boolean,
+        ): Boolean {
+            val terrainId = terrainId(row, column) ?: return false
+            return isOccupiable(terrainId.value) && corneringTerrainId(row, column, isOccupiable) == null
+        }
+
+        fun corneringTerrainId(
+            row: Int,
+            column: Int,
+            isOccupiable: (terrainId: String) -> Boolean,
+        ): TerrainId? {
+            val blocking = { blockingRow: Int, blockingColumn: Int -> terrainId(blockingRow, blockingColumn)?.takeUnless { terrainId -> isOccupiable(terrainId.value) } }
+            val vertical = blocking(row - 1, column) ?: blocking(row + 1, column)
+            val horizontal = blocking(row, column + 1) ?: blocking(row, column - 1)
+            return if (vertical != null && horizontal != null) vertical else null
+        }
 
         fun adjacentPositions(
             row: Int,

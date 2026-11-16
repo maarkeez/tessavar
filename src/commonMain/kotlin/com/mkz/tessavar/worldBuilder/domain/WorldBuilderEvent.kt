@@ -83,6 +83,7 @@ sealed interface WorldBuilderEvent : DomainEvent {
         enum class Reason {
             OUT_OF_WORLD,
             NOT_OCCUPIABLE,
+            CORNERED,
             NOT_VACANT,
         }
     }

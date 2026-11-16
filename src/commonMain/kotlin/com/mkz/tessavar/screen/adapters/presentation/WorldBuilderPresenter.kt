@@ -102,7 +102,7 @@ class WorldBuilderPresenter(
             eventBus.subscribe<WorldBuilderEvent.NpcRestocked> { displayWorld() },
             eventBus.subscribe<WorldBuilderEvent.OccupantPlaceRejected> { event -> infoView.displayError(placeRejectedMessage(event)) },
             eventBus.subscribe<WorldBuilderEvent.OccupiedTilePaintRejected> { event ->
-                infoView.displayError(messages[UiMessage.WORLD_BUILDER_NOT_OCCUPIABLE, "terrain" to messages.terrainName(event.terrainId)])
+                infoView.displayError(messages[UiMessage.WORLD_BUILDER_OCCUPIED_TILE, "terrain" to messages.terrainName(event.terrainId)])
             },
         )
 
@@ -423,6 +423,8 @@ class WorldBuilderPresenter(
             WorldBuilderEvent.OccupantPlaceRejected.Reason.OUT_OF_WORLD -> messages[UiMessage.WORLD_BUILDER_OUT_OF_WORLD]
             WorldBuilderEvent.OccupantPlaceRejected.Reason.NOT_OCCUPIABLE ->
                 messages[UiMessage.WORLD_BUILDER_NOT_OCCUPIABLE, "terrain" to messages.terrainName(event.terrainId.orEmpty())]
+            WorldBuilderEvent.OccupantPlaceRejected.Reason.CORNERED ->
+                messages[UiMessage.WORLD_BUILDER_CORNERED, "terrain" to messages.terrainName(event.terrainId.orEmpty())]
             WorldBuilderEvent.OccupantPlaceRejected.Reason.NOT_VACANT -> messages[UiMessage.WORLD_BUILDER_NOT_VACANT]
         }
 

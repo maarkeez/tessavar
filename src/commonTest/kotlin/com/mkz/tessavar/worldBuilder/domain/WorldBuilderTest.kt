@@ -506,6 +506,42 @@ class WorldBuilderTest {
     }
 
     @Test
+    fun `WorldBuilder should reject placing a battle unit when void stands above or below it and to one side of it, as in the game`() {
+        // Given
+        val worldBuilder =
+            voidAt(row = 1, column = 2)
+                .selectTerrain("void")
+                .paint(row = 2, column = 1, canBeAdjacent, isOccupiable)
+                .pullEvents()
+                .second
+        // When
+        val (events, rejected) = worldBuilder.placeBattleUnit(unitId = "knight", playerId = "player-one", row = 2, column = 2, isOccupiable).pullEvents()
+        // Then
+        rejected.toDto().battleUnits.shouldBeEmpty()
+        events.shouldContainExactly(OccupantPlaceRejected(row = 2, column = 2, reason = OccupantPlaceRejected.Reason.CORNERED, terrainId = "void"))
+    }
+
+    @Test
+    fun `WorldBuilder should place a battle unit when void stands only above and below it`() {
+        // Given
+        val worldBuilder =
+            voidAt(row = 1, column = 2)
+                .selectTerrain("void")
+                .paint(row = 3, column = 2, canBeAdjacent, isOccupiable)
+                .pullEvents()
+                .second
+        // When
+        val (events, placed) = worldBuilder.placeBattleUnit(unitId = "knight", playerId = "player-one", row = 2, column = 2, isOccupiable).pullEvents()
+        // Then
+        placed
+            .toDto()
+            .battleUnits
+            .map(WorldBuilder.Dto.BattleUnitDto::id)
+            .shouldContainExactly("knight-1")
+        events.shouldContainExactly(OccupantPlaced(occupantId = "knight-1", row = 2, column = 2))
+    }
+
+    @Test
     fun `WorldBuilder should reject placing a building when it would stand partly out of the world`() {
         // When
         val (events, _) = newWorld().placeBuilding(buildingId = "fortress", row = 15, column = 0, catalog, isOccupiable).pullEvents()
@@ -649,6 +685,36 @@ class WorldBuilderTest {
         val (events, _) = newWorld().import(file, currentVersion = 1, catalog, isKnownTerrain = { true }, canBeAdjacent, isOccupiable).pullEvents()
         // Then
         events.shouldContainExactly(WorldImportRejected(reason = Reason.UNKNOWN_OCCUPANT, occupantId = "castle"))
+    }
+
+    @Test
+    fun `WorldBuilder should reject painting void that would corner a battle unit next to it`() {
+        // Given
+        val worldBuilder =
+            voidAt(row = 1, column = 2)
+                .placeBattleUnit(unitId = "knight", playerId = "player-one", row = 2, column = 2, isOccupiable)
+                .selectTerrain("void")
+                .pullEvents()
+                .second
+        // When
+        val (events, rejected) = worldBuilder.paint(row = 2, column = 1, canBeAdjacent, isOccupiable).pullEvents()
+        // Then
+        rejected.toDto().tiles[2][1] shouldBe "sand"
+        events.shouldContainExactly(OccupiedTilePaintRejected(row = 2, column = 1, terrainId = "void"))
+    }
+
+    @Test
+    fun `WorldBuilder should reject the import with the occupant when it stands in a corner of void`() {
+        // Given
+        val file =
+            WorldBuilderMother.file(
+                tiles = listOf(listOf("void", "void", "void"), listOf("void", "sand", "sand"), listOf("void", "sand", "sand")),
+                npcs = listOf(WorldBuilder.Dto.NpcDto(id = "alchemist", row = 1, column = 1, stock = emptyList())),
+            )
+        // When
+        val (events, _) = newWorld().import(file, currentVersion = 1, catalog, isKnownTerrain = { true }, canBeAdjacent, isOccupiable).pullEvents()
+        // Then
+        events.shouldContainExactly(WorldImportRejected(reason = Reason.MISPLACED_OCCUPANT, occupantId = "alchemist"))
     }
 
     @Test

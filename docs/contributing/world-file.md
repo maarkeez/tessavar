@@ -89,6 +89,9 @@ Lootable item ids: `bee-essence`, `hammer`, `health-elixir`, `health-potion`, `i
 ## Occupied tiles
 
 Every tile of a building, a battle unit or an npc is inside the world, of an occupiable terrain, and holds nothing else.
+A tile is not occupiable either when a terrain nothing can stand on, such as `void`, is both above or below it and to
+its left or right: a corner. E.g.: in a world bordered with `void`, row `1`, column `1` is a corner, while row `1`,
+column `2` is not.
 
 ## `[[quests]]`
 

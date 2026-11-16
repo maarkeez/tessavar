@@ -637,10 +637,20 @@ msgctxt "ui.worldBuilder.forbiddenAdjacentTerrains"
 msgid "{terrain} can not be next to {adjacentTerrain}"
 msgstr "{terrain} no puede estar junto a {adjacentTerrain}"
 
-#. Displayed when placing on, or painting under, something standing on a terrain nothing can stand on.
+#. Displayed when placing something on a terrain nothing can stand on.
 msgctxt "ui.worldBuilder.notOccupiable"
 msgid "Nothing can stand on {terrain}"
 msgstr "Nada puede estar sobre {terrain}"
+
+#. Displayed when placing on a tile with a terrain nothing can stand on both above or below it and to one side of it.
+msgctxt "ui.worldBuilder.cornered"
+msgid "Nothing can stand in a corner of {terrain}"
+msgstr "Nada puede estar en una esquina de {terrain}"
+
+#. Displayed when painting or filling would leave something standing on or next to the tile on a tile it can no longer stand on.
+msgctxt "ui.worldBuilder.occupiedTile"
+msgid "Something stands on or next to this tile: {terrain} would leave it nowhere to stand"
+msgstr "Algo está en esta casilla o al lado: {terrain} lo dejaría sin sitio donde estar"
 
 #. Displayed when placing on a tile where a building, a battle unit or an npc stands.
 msgctxt "ui.worldBuilder.notVacant"

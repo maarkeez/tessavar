@@ -133,6 +133,8 @@ enum class UiMessage(
     WORLD_BUILDER_UNKNOWN_TERRAIN("ui.worldBuilder.unknownTerrain"),
     WORLD_BUILDER_FORBIDDEN_ADJACENT_TERRAINS("ui.worldBuilder.forbiddenAdjacentTerrains"),
     WORLD_BUILDER_NOT_OCCUPIABLE("ui.worldBuilder.notOccupiable"),
+    WORLD_BUILDER_CORNERED("ui.worldBuilder.cornered"),
+    WORLD_BUILDER_OCCUPIED_TILE("ui.worldBuilder.occupiedTile"),
     WORLD_BUILDER_NOT_VACANT("ui.worldBuilder.notVacant"),
     WORLD_BUILDER_OUT_OF_WORLD("ui.worldBuilder.outOfWorld"),
     WORLD_BUILDER_UNKNOWN_OCCUPANT("ui.worldBuilder.unknownOccupant"),
