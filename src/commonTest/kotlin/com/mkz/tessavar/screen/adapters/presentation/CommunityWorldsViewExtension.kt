@@ -19,7 +19,7 @@ fun CommunityWorldsView.worldLabels(): List<String> =
 
 fun CommunityWorldsView.isEmptyMessageShown(): Boolean = emptyText.isShown()
 
-fun CommunityWorldsView.emptyMessage(): String = emptyText.text
+fun CommunityWorldsView.emptyMessage(): String = emptyText.plainText
 
 fun CommunityWorldsView.listTop(): Double = list.y
 

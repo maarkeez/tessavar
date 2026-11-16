@@ -16,7 +16,7 @@ object CommunityWorldsViewStories : StoryBinding {
             CommunityWorldsView.Entry(worldId = "the-drowned-mill", name = "The Drowned Mill", author = "maarkeez"),
             CommunityWorldsView.Entry(worldId = "goat-hill", name = "Goat Hill", author = "a-player"),
             CommunityWorldsView.Entry(worldId = "lava-lake", name = "Lava Lake", author = "a-player"),
-            CommunityWorldsView.Entry(worldId = "the-long-road-to-the-northern-fortress", name = "The Long Road to the Northern Fortress", author = "someone"),
+            CommunityWorldsView.Entry(worldId = "a-long-road-to-the-northern-fortress", name = "A Long Road to the Northern Fortress", author = "someone"),
             CommunityWorldsView.Entry(worldId = "sandy-shore", name = "Sandy Shore", author = "someone"),
         )
 
@@ -38,7 +38,7 @@ object CommunityWorldsViewStories : StoryBinding {
         StoryDto(
             id = "screen-community-worlds--many-worlds",
             name = "Many worlds",
-            description = "More community worlds than the panel holds: the list is scrolled by dragging, and a long name wraps onto two lines.",
+            description = "More community worlds than the panel holds: the list is scrolled by dragging, and a long name fits its button.",
             args = mapOf(WORLDS to ValueDto.int(sampleWorlds.size)),
         )
 
