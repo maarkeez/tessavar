@@ -11,6 +11,7 @@ import com.mkz.tessavar.worldBuilder.usecases.commands.ImportWorld
 import com.mkz.tessavar.worldBuilder.usecases.commands.OpenWorld
 import com.mkz.tessavar.worldBuilder.usecases.commands.PaintTile
 import com.mkz.tessavar.worldBuilder.usecases.commands.RedoEdit
+import com.mkz.tessavar.worldBuilder.usecases.commands.RenameWorld
 import com.mkz.tessavar.worldBuilder.usecases.commands.ResizeWorld
 import com.mkz.tessavar.worldBuilder.usecases.commands.SelectTerrain
 import com.mkz.tessavar.worldBuilder.usecases.commands.UndoEdit
@@ -35,6 +36,7 @@ class WorldBuilderApi(
     val paintTile = PaintTile(worldBuilderRepository, terrainApi.hasTerrainTransition, eventBus)
     val fillTile = FillTile(worldBuilderRepository, terrainApi.hasTerrainTransition, eventBus)
     val importWorld = ImportWorld(worldBuilderRepository, worldFileCodec, terrainApi.searchTerrainById, terrainApi.hasTerrainTransition, eventBus)
+    val renameWorld = RenameWorld(worldBuilderRepository, eventBus)
     val undoEdit = UndoEdit(worldBuilderRepository, eventBus)
     val redoEdit = RedoEdit(worldBuilderRepository, eventBus)
 

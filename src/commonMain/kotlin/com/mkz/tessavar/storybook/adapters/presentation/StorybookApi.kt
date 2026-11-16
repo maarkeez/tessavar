@@ -90,6 +90,7 @@ class StorybookApi(
                 WorldBuilderInfoViewStories,
                 WorldBuilderHudViewStories,
                 WorldBuilderResizeViewStories,
+                WorldBuilderDetailsViewStories,
                 WorldBuilderMenuViewStories,
                 ShopViewStories,
             )

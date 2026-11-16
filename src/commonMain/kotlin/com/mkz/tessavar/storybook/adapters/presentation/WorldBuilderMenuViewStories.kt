@@ -15,7 +15,8 @@ object WorldBuilderMenuViewStories : StoryBinding {
     private const val OPTIONS_LIMIT = 10
     private val BUTTON_SIZE = Size(WorldBuilderMenuView.BUTTON_WIDTH, WorldBuilderMenuView.BUTTON_HEIGHT)
 
-    private val WORLD_BUILDER_OPTIONS = listOf(UiMessage.WORLD_BUILDER_RESIZE, UiMessage.WORLD_BUILDER_IMPORT, UiMessage.WORLD_BUILDER_EXPORT, UiMessage.WORLD_BUILDER_BACK)
+    private val WORLD_BUILDER_OPTIONS =
+        listOf(UiMessage.WORLD_BUILDER_RESIZE, UiMessage.WORLD_BUILDER_DETAILS, UiMessage.WORLD_BUILDER_IMPORT, UiMessage.WORLD_BUILDER_EXPORT, UiMessage.WORLD_BUILDER_BACK)
 
     private const val OPEN = "open"
     private const val OPTIONS = "options"
@@ -25,7 +26,7 @@ object WorldBuilderMenuViewStories : StoryBinding {
         StoryDto(
             id = "screen-world-builder-menu--open",
             name = "Open",
-            description = "The options below the button, as the world builder lists them: Resize, Import, Export and Back.",
+            description = "The options below the button, as the world builder lists them: Resize, Details, Import, Export and Back.",
             args =
                 mapOf(
                     OPEN to ValueDto.boolean(true),

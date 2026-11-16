@@ -32,6 +32,8 @@ class WorldBuilderPresenterTest {
     private val infoView = FakeWorldBuilderInfoView()
     private val hudView = FakeWorldBuilderHudView()
     private val resizeView = FakeWorldBuilderResizeView()
+    private val detailsView = FakeWorldBuilderDetailsView()
+    private val textPrompt = FakeTextPrompt(answer = "The Sunken Keep")
     private val menuView = FakeWorldBuilderMenuView()
     private val worldFileSaver = FakeWorldFileSaver()
     private val worldFilePicker = FakeWorldFilePicker()
@@ -43,6 +45,7 @@ class WorldBuilderPresenterTest {
             infoView = infoView,
             hudView = hudView,
             resizeView = resizeView,
+            detailsView = detailsView,
             menuView = menuView,
             worldBuilderApi = worldBuilderApi,
             battlefieldApi = apis.battlefieldApi,
@@ -50,6 +53,7 @@ class WorldBuilderPresenterTest {
             messages = MessagesMother.messages(),
             worldFileSaver = worldFileSaver,
             worldFilePicker = worldFilePicker,
+            textPrompt = textPrompt,
             coroutineScope = CoroutineScope(Dispatchers.Unconfined),
             onLeft = { leftCount++ },
             eventBus = eventBus,
@@ -350,9 +354,9 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `WorldBuilderMenuView should offer resizing, importing, exporting and going back when the world builder is displayed`() {
+    fun `WorldBuilderMenuView should offer resizing, the details, importing, exporting and going back when the world builder is displayed`() {
         // Then
-        menuView.displayedOptions.map(WorldBuilderMenuView.Option::label).shouldContainExactly("Resize", "Import", "Export", "Back")
+        menuView.displayedOptions.map(WorldBuilderMenuView.Option::label).shouldContainExactly("Resize", "Details", "Import", "Export", "Back")
     }
 
     @Test
@@ -451,5 +455,39 @@ class WorldBuilderPresenterTest {
         importFile(WorldFileCodecMother.codec().encode(WorldBuilderMother.file(listOf(listOf("sand")), version = 2)))
         // Then
         infoView.errors.shouldContainExactly("The world in the file is not of world version 1")
+    }
+
+    @Test
+    fun `Details should open the details dialog with the name and the author of the world when Details is selected`() {
+        // Given
+        givenWorldCreated()
+        worldBuilderApi.renameWorld(name = "The Sunken Keep", author = "maarkeez")
+        // When
+        menuView.select("Details")
+        // Then
+        detailsView.openedWith shouldBe ("The Sunken Keep" to "maarkeez")
+    }
+
+    @Test
+    fun `DetailsChanged should name the world, and Export save it in a file named after its id, when the details are changed`() {
+        // Given
+        givenWorldCreated()
+        // When
+        detailsView.delegate!!.detailsChanged(name = "The Sunken Keep", author = "maarkeez")
+        eventBus.dispatch()
+        menuView.select("Export")
+        // Then
+        worldFileSaver.savedFiles.single().first shouldBe "the-sunken-keep.toml"
+    }
+
+    @Test
+    fun `FieldTapped should ask for the text with a prompt and display it when the platform needs a prompt`() {
+        // Given
+        givenWorldCreated()
+        // When
+        detailsView.delegate!!.fieldTapped(WorldBuilderDetailsView.Field.NAME)
+        // Then
+        textPrompt.prompts.shouldContainExactly("Name" to "")
+        detailsView.displayedFields.shouldContainExactly(WorldBuilderDetailsView.Field.NAME to "The Sunken Keep")
     }
 }

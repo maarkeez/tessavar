@@ -11,6 +11,7 @@ import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImportRejecte
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImportRejected.Reason
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImported
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldOpened
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldRenamed
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldResized
 import kotlin.jvm.JvmInline
 
@@ -152,6 +153,14 @@ data class WorldBuilder private constructor(
         }
         val importedTiles = Tiles(tiles.map { row -> row.map(::TerrainId) })
         return edit(importedTiles, WorldImported(rows = importedTiles.rows, columns = importedTiles.columns), Details.of(file))
+    }
+
+    fun rename(
+        name: String,
+        author: String,
+    ): WorldBuilder {
+        if (name == details.name && author == details.author) return this
+        return edit(tiles, WorldRenamed(name = name, author = author), details.copy(name = name, author = author))
     }
 
     fun undo(): WorldBuilder {

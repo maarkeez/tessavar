@@ -381,4 +381,22 @@ class WorldBuilderTest {
         // Then
         events.shouldContainExactly(WorldOpened(rows = 3, columns = 5))
     }
+
+    @Test
+    fun `should hold the name and the author typed, and undo them, when it is renamed`() {
+        // When
+        val (events, renamed) = newWorld().rename(name = "The Sunken Keep", author = "maarkeez").pullEvents()
+        // Then
+        (renamed.toDto().name to renamed.toDto().author) shouldBe ("The Sunken Keep" to "maarkeez")
+        events.shouldContainExactly(WorldBuilderEvent.WorldRenamed(name = "The Sunken Keep", author = "maarkeez"))
+        renamed.undo().toDto().name shouldBe ""
+    }
+
+    @Test
+    fun `should announce nothing when it is renamed to its name and author`() {
+        // When
+        val (events, _) = newWorld().rename(name = "", author = "").pullEvents()
+        // Then
+        events.shouldBeEmpty()
+    }
 }

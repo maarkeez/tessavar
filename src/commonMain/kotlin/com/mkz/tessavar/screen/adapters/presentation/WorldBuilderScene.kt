@@ -39,6 +39,7 @@ class WorldBuilderScene(
     val infoView = WorldBuilderInfoView(messages)
     val hudView = WorldBuilderHudView(messages)
     val resizeView = WorldBuilderResizeView(messages)
+    val detailsView = WorldBuilderDetailsView(messages)
     val menuView = WorldBuilderMenuView()
 
     override suspend fun SContainer.sceneInit() {
@@ -62,6 +63,7 @@ class WorldBuilderScene(
             infoView = infoView,
             hudView = hudView,
             resizeView = resizeView,
+            detailsView = detailsView,
             menuView = menuView,
             worldBuilderApi = worldBuilderApi,
             battlefieldApi = battlefieldApi,
@@ -69,6 +71,7 @@ class WorldBuilderScene(
             messages = messages,
             worldFileSaver = GameWindowWorldFileSaver(views.gameWindow, messages),
             worldFilePicker = GameWindowWorldFilePicker(views.gameWindow, messages),
+            textPrompt = if (needsTextPrompt()) GameWindowTextPrompt(views.gameWindow) else null,
             coroutineScope = this@WorldBuilderScene,
             onLeft = { launchImmediately { sceneContainer.changeTo { MenuScene(localizationApi, telemetryApi, storage) } } },
             eventBus = eventBus,
@@ -83,6 +86,7 @@ class WorldBuilderScene(
                 container {
                     addChild(hudView)
                     addChild(resizeView)
+                    addChild(detailsView)
                 }
             }
         }

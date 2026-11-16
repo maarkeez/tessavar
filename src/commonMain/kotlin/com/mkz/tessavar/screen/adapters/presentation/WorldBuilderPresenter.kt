@@ -19,6 +19,7 @@ class WorldBuilderPresenter(
     private val infoView: WorldBuilderInfoView,
     private val hudView: WorldBuilderHudView,
     private val resizeView: WorldBuilderResizeView,
+    private val detailsView: WorldBuilderDetailsView,
     private val menuView: WorldBuilderMenuView,
     private val worldBuilderApi: WorldBuilderApi,
     private val battlefieldApi: BattlefieldApi,
@@ -26,14 +27,17 @@ class WorldBuilderPresenter(
     private val messages: Messages,
     private val worldFileSaver: WorldFileSaver,
     private val worldFilePicker: WorldFilePicker,
+    private val textPrompt: TextPrompt?,
     private val coroutineScope: CoroutineScope,
     private val onLeft: () -> Unit,
     eventBus: EventBus,
 ) : BattlefieldView.Delegate,
     WorldBuilderHudView.Delegate,
-    WorldBuilderResizeView.Delegate {
+    WorldBuilderResizeView.Delegate,
+    WorldBuilderDetailsView.Delegate {
     companion object {
-        const val WORLD_FILE_NAME = "world.toml"
+        const val WORLD_FILE_NAME = "world"
+        const val WORLD_FILE_EXTENSION = ".toml"
     }
 
     private var tool = WorldBuilderHudView.Tool.PAINT
@@ -64,10 +68,12 @@ class WorldBuilderPresenter(
         battlefieldView.setDelegate(this)
         hudView.setDelegate(this)
         resizeView.setDelegate(this)
+        detailsView.setDelegate(this)
         hudView.selectTool(tool)
         menuView.displayOptions(
             listOf(
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_RESIZE]) { resizeView.open() },
+                WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_DETAILS]) { openDetails() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_IMPORT]) { importWorld() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_EXPORT]) { exportWorld() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_BACK]) { onLeft() },
@@ -114,7 +120,7 @@ class WorldBuilderPresenter(
         coroutineScope.launchImmediately {
             val saved =
                 try {
-                    worldFileSaver.saveWorld(WORLD_FILE_NAME, text)
+                    worldFileSaver.saveWorld(worldFileName(), text)
                 } catch (exception: CancellationException) {
                     throw exception
                 } catch (_: Exception) {
@@ -124,6 +130,31 @@ class WorldBuilderPresenter(
             if (saved) infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_WORLD_EXPORTED])
         }
     }
+
+    private fun worldFileName(): String = World.idOf(worldBuilderApi.searchWorld()?.name.orEmpty()).ifEmpty { WORLD_FILE_NAME } + WORLD_FILE_EXTENSION
+
+    private fun openDetails() {
+        val world = worldBuilderApi.searchWorld() ?: return
+        detailsView.open(name = world.name, author = world.author)
+    }
+
+    override fun fieldTapped(field: WorldBuilderDetailsView.Field) {
+        val prompt = textPrompt ?: return
+        val world = worldBuilderApi.searchWorld() ?: return
+        val (label, current) =
+            when (field) {
+                WorldBuilderDetailsView.Field.NAME -> messages[UiMessage.WORLD_BUILDER_DETAILS_NAME] to world.name
+                WorldBuilderDetailsView.Field.AUTHOR -> messages[UiMessage.WORLD_BUILDER_DETAILS_AUTHOR] to world.author
+            }
+        coroutineScope.launchImmediately {
+            prompt.prompt(label, current)?.let { text -> detailsView.displayField(field, text) }
+        }
+    }
+
+    override fun detailsChanged(
+        name: String,
+        author: String,
+    ) = worldBuilderApi.renameWorld(name = name, author = author)
 
     private fun importWorld() {
         coroutineScope.launchImmediately {

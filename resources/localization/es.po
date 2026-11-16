@@ -477,10 +477,35 @@ msgctxt "ui.worldBuilderResize.done"
 msgid "Done"
 msgstr "Hecho"
 
+#. The title of the dialog where the name of the world and its author are typed.
+msgctxt "ui.worldBuilderDetails.title"
+msgid "Details of the world"
+msgstr "Detalles del mundo"
+
+#. The name of the world.
+msgctxt "ui.worldBuilderDetails.name"
+msgid "Name"
+msgstr "Nombre"
+
+#. Whoever is credited for building the world.
+msgctxt "ui.worldBuilderDetails.author"
+msgid "Author"
+msgstr "Autor"
+
+#. Keeps the name and the author typed, and closes the dialog.
+msgctxt "ui.worldBuilderDetails.done"
+msgid "Done"
+msgstr "Hecho"
+
 #. Opens the dialog that changes how many tiles tall and wide the world is.
 msgctxt "ui.worldBuilderMenu.resize"
 msgid "Resize"
 msgstr "Cambiar tamaño"
+
+#. Opens the dialog where the name of the world and its author are typed.
+msgctxt "ui.worldBuilderMenu.details"
+msgid "Details"
+msgstr "Detalles"
 
 #. Imports a world from a file.
 msgctxt "ui.worldBuilderMenu.import"

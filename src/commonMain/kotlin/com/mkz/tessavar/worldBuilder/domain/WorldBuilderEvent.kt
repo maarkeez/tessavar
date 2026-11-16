@@ -40,6 +40,11 @@ sealed interface WorldBuilderEvent : DomainEvent {
         val columns: Int,
     ) : WorldBuilderEvent
 
+    data class WorldRenamed(
+        val name: String,
+        val author: String,
+    ) : WorldBuilderEvent
+
     data class WorldImported(
         val rows: Int,
         val columns: Int,
