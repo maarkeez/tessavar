@@ -32,15 +32,23 @@ internal object QuestMapper {
         val currentTaskIndex = quest.progress.currentTaskIndex
         return QuestInfo(
             id = quest.id,
-            name = messages.questName(quest.id),
-            description = messages.questDescription(quest.id),
+            name = messages.questName(quest.id, quest.texts.name),
+            description = messages.questDescription(quest.id, quest.texts.description),
             tasks =
                 quest.tasks.take(currentTaskIndex + 1).mapIndexed { taskIndex, task ->
                     val requiredDefeats = requiredDefeatsOf(task)
                     val isDone = isCompleted || taskIndex < currentTaskIndex
                     QuestInfo.Task(
                         kind = kindOf(task),
-                        text = messages.questTask(quest.id, taskIndex),
+                        text =
+                            messages.questTask(
+                                quest.id,
+                                taskIndex,
+                                quest.texts.tasks
+                                    .getOrNull(taskIndex)
+                                    ?.text
+                                    .orEmpty(),
+                            ),
                         defeatsCounted = if (isDone) requiredDefeats else quest.progress.currentTaskDefeats,
                         requiredDefeats = requiredDefeats,
                         portraitPath = portraitPathOf(task),
@@ -64,18 +72,19 @@ internal object QuestMapper {
 
     fun lineOf(
         line: QuestLineDto,
+        texts: Quest.Dto.TextsDto,
         messages: Messages,
-    ): String =
-        messages.questLine(
-            line.questId,
+    ): String {
+        val (key, english) =
             when (line.kind) {
-                QuestLineDto.KindDto.START -> "start"
-                QuestLineDto.KindDto.REMINDER -> "reminder"
-                QuestLineDto.KindDto.TALK_TASK -> "task.${line.taskIndex}"
-                QuestLineDto.KindDto.COMPLETED -> "completed"
-                QuestLineDto.KindDto.START_AGAIN -> "startAgain"
-            },
-        )
+                QuestLineDto.KindDto.START -> "start" to texts.lines.start
+                QuestLineDto.KindDto.REMINDER -> "reminder" to texts.lines.reminder
+                QuestLineDto.KindDto.TALK_TASK -> "task.${line.taskIndex}" to line.taskIndex?.let { taskIndex -> texts.tasks.getOrNull(taskIndex)?.line }
+                QuestLineDto.KindDto.COMPLETED -> "completed" to texts.lines.completed
+                QuestLineDto.KindDto.START_AGAIN -> "startAgain" to texts.lines.startAgain
+            }
+        return messages.questLine(line.questId, key, english.orEmpty())
+    }
 
     private fun kindOf(task: TaskDto): QuestInfo.Kind =
         when (task.type) {

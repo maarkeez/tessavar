@@ -9,15 +9,18 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
 class ResourcesBuildingLoaderTest {
+    private val files =
+        MemoryVfsMix(
+            "world/world.toml" to "version = 1\n\n[[buildings]]\nid = \"fortress\"\nrow = 17\ncolumn = 13\n",
+            "world/unknown.toml" to "[[buildings]]\nid = \"castle\"\nrow = 1\ncolumn = 1\n",
+            "building/fortress.toml" to "rows = 4\ncolumns = 4\n",
+        )
+
     @Test
-    fun `should load one building per toml file when the building resources are initialised`() =
+    fun `ResourcesBuildingLoader should decode its section when given a world file, with the size of each building of the catalog`() =
         runTest {
             // Given
-            val buildingRoot =
-                MemoryVfsMix(
-                    "building/fortress.toml" to "row = 17\ncolumn = 13\nrows = 4\ncolumns = 4\n",
-                )["building"]
-            val loader = ResourcesBuildingLoader(buildingRoot = buildingRoot)
+            val loader = ResourcesBuildingLoader(worldFile = files["world/world.toml"], buildingRoot = files["building"])
             // When
             loader.initResources()
             // Then
@@ -25,14 +28,13 @@ class ResourcesBuildingLoaderTest {
         }
 
     @Test
-    fun `should fail with the file when the building has no size`() =
+    fun `ResourcesBuildingLoader should fail with the world file when a building is not in the catalog`() =
         runTest {
             // Given
-            val buildingRoot = MemoryVfsMix("building/fortress.toml" to "row = 17\ncolumn = 13\n")["building"]
-            val loader = ResourcesBuildingLoader(buildingRoot = buildingRoot)
+            val loader = ResourcesBuildingLoader(worldFile = files["world/unknown.toml"], buildingRoot = files["building"])
             // When
             val initialisation = suspend { loader.initResources() }
             // Then
-            shouldThrow<IllegalStateException> { initialisation() }.message.shouldContain("building/fortress.toml")
+            shouldThrow<IllegalStateException> { initialisation() }.message.shouldContain("world/unknown.toml").shouldContain("castle")
         }
 }

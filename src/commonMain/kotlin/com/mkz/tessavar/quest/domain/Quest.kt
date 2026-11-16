@@ -39,6 +39,7 @@ data class Quest private constructor(
     private val tasks: Tasks,
     private val reward: Reward,
     private val progress: Progress,
+    private val texts: Dto.TextsDto,
     private val events: Set<QuestEvent>,
 ) {
     companion object {
@@ -57,6 +58,7 @@ data class Quest private constructor(
                 tasks = Tasks(dto.tasks.map(Task::create)),
                 reward = Reward(gold = dto.reward.gold, lootableItemIds = dto.reward.lootableItemIds),
                 progress = Progress(status = StatusDto.NOT_STARTED, currentTaskIndex = 0, currentTaskDefeats = 0, isPinned = false),
+                texts = dto.texts,
                 events = emptySet(),
             )
         }
@@ -161,6 +163,7 @@ data class Quest private constructor(
             repeatable = repeatable,
             tasks = tasks.value.map(Task::toDto),
             reward = RewardDto(gold = reward.gold, lootableItemIds = reward.lootableItemIds),
+            texts = texts,
             progress =
                 ProgressDto(
                     questId = id.value,
@@ -252,6 +255,7 @@ data class Quest private constructor(
         val repeatable: Boolean,
         val tasks: List<TaskDto>,
         val reward: RewardDto,
+        val texts: TextsDto,
         val progress: ProgressDto,
     ) {
         enum class QuestTypeDto {
@@ -323,6 +327,29 @@ data class Quest private constructor(
         data class PositionDto(
             val row: Int,
             val column: Int,
+        )
+
+        data class TextsDto(
+            val name: String,
+            val description: String,
+            val tasks: List<TaskTextDto>,
+            val lines: LinesDto,
+        ) {
+            companion object {
+                fun none() = TextsDto(name = "", description = "", tasks = emptyList(), lines = LinesDto(start = null, reminder = null, completed = null, startAgain = null))
+            }
+        }
+
+        data class TaskTextDto(
+            val text: String,
+            val line: String?,
+        )
+
+        data class LinesDto(
+            val start: String?,
+            val reminder: String?,
+            val completed: String?,
+            val startAgain: String?,
         )
 
         data class RewardDto(

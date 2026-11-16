@@ -1,54 +1,83 @@
 package com.mkz.tessavar.quest.adapters.resources
 
 import com.mkz.tessavar.quest.domain.Quest
+import com.mkz.tessavar.quest.domain.Quest.Dto.LinesDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.PositionDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.ProgressDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.QuestTypeDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.RewardDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.TaskDto
+import com.mkz.tessavar.quest.domain.Quest.Dto.TaskTextDto
+import com.mkz.tessavar.quest.domain.Quest.Dto.TextsDto
 import com.mkz.tessavar.quest.usecases.services.QuestLoader
 import com.mkz.tessavar.shared.adapters.resources.ResourcesBundle
 import com.mkz.tessavar.shared.adapters.toml.enumOf
 import com.mkz.tessavar.shared.adapters.toml.fromResource
-import com.mkz.tessavar.shared.adapters.toml.readTomlFiles
+import com.mkz.tessavar.shared.adapters.toml.readTomlSection
 import com.mkz.tessavar.shared.adapters.toml.required
 import korlibs.io.file.VfsFile
 import kotlinx.serialization.Serializable
 
 class ResourcesQuestLoader(
-    private val questRoot: VfsFile = ResourcesBundle.root["quest"],
+    private val worldFile: VfsFile = ResourcesBundle.root[ResourcesBundle.CAMPAIGN_WORLD_FILE],
 ) : QuestLoader {
     private var quests = emptyList<Quest.Dto>()
 
     override suspend fun initResources() {
         quests =
-            questRoot.readTomlFiles<QuestDefinition>().map { (questId, definition) ->
-                fromResource("quest/$questId.toml") { definition.toDto(questId) }
+            worldFile.readTomlSection<QuestsSection>().quests.map { definition ->
+                fromResource(worldFile.path) { definition.toDto() }
             }
     }
 
     override fun loadQuests(): List<Quest.Dto> = quests
 
     @Serializable
+    data class QuestsSection(
+        val quests: List<QuestDefinition> = emptyList(),
+    )
+
+    @Serializable
     data class QuestDefinition(
+        val id: String,
         val type: String,
         val questGiverNpcId: String? = null,
         val startTiles: List<List<Int>> = emptyList(),
         val repeatable: Boolean = false,
+        val name: String,
+        val description: String,
+        val lines: LinesDefinition = LinesDefinition(),
         val tasks: List<TaskDefinition> = emptyList(),
         val reward: RewardDefinition,
     ) {
-        fun toDto(questId: String): Quest.Dto =
+        fun toDto(): Quest.Dto =
             Quest.Dto(
-                id = questId,
+                id = id,
                 type = enumOf<QuestTypeDto>("type", type),
                 questGiverNpcId = questGiverNpcId,
                 startTiles = startTiles.map { tile -> positionOf("startTiles", tile) },
                 repeatable = repeatable,
                 tasks = tasks.map(TaskDefinition::toDto),
                 reward = reward.toDto(),
-                progress = ProgressDto.notStarted(questId),
+                texts =
+                    TextsDto(
+                        name = name,
+                        description = description,
+                        tasks = tasks.map { task -> TaskTextDto(text = task.text, line = task.line) },
+                        lines = lines.toDto(),
+                    ),
+                progress = ProgressDto.notStarted(id),
             )
+    }
+
+    @Serializable
+    data class LinesDefinition(
+        val start: String? = null,
+        val reminder: String? = null,
+        val completed: String? = null,
+        val startAgain: String? = null,
+    ) {
+        fun toDto(): LinesDto = LinesDto(start = start, reminder = reminder, completed = completed, startAgain = startAgain)
     }
 
     @Serializable
@@ -58,6 +87,8 @@ class ResourcesQuestLoader(
         val requiredDefeats: Int? = null,
         val npcId: String? = null,
         val tiles: List<List<Int>>? = null,
+        val text: String,
+        val line: String? = null,
     ) {
         fun toDto(): TaskDto =
             when (enumOf<TaskDto.TypeDto>("tasks.type", type)) {

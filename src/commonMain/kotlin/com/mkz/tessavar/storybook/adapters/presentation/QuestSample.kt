@@ -14,15 +14,15 @@ private const val ELDER_PORTRAIT = "npc/elder_portrait.png"
 private fun goatWizard(messages: Messages) =
     QuestInfo(
         id = GOAT_WIZARD_QUEST,
-        name = messages.questName(GOAT_WIZARD_QUEST),
-        description = messages.questDescription(GOAT_WIZARD_QUEST),
+        name = messages.questName(GOAT_WIZARD_QUEST, "The Goat Wizard's Lair"),
+        description = messages.questDescription(GOAT_WIZARD_QUEST, "A goat swallowed a wizard's magic and now rules the lair down south."),
         tasks = listOf(goatWizardTask(messages)),
         gold = 150,
         isMain = true,
         isPinned = true,
     )
 
-private fun goatWizardTask(messages: Messages) = Task(Kind.DEFEAT, messages.questTask(GOAT_WIZARD_QUEST, 0), portraitPath = GOAT_WIZARD_PORTRAIT)
+private fun goatWizardTask(messages: Messages) = Task(Kind.DEFEAT, messages.questTask(GOAT_WIZARD_QUEST, 0, "Talk to the Elder"), portraitPath = GOAT_WIZARD_PORTRAIT)
 
 private fun completed(quest: QuestInfo) = quest.copy(isCompleted = true, tasks = quest.tasks.map { task -> task.copy(isDone = true, defeatsCounted = task.requiredDefeats) })
 

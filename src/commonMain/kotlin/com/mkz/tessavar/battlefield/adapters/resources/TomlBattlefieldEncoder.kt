@@ -4,7 +4,7 @@ import com.mkz.tessavar.battlefield.usecases.services.BattlefieldEncoder
 
 class TomlBattlefieldEncoder : BattlefieldEncoder {
     private companion object {
-        const val HEADER = "# Terrain id of each tile. Each line is a row of the battlefield, from top to bottom."
+        const val HEADER = "[battlefield]"
         const val INDENTATION = "    "
 
         const val SPACES_BETWEEN_COLUMNS = 2

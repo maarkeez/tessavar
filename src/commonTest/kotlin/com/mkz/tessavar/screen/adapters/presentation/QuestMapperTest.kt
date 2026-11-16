@@ -5,6 +5,7 @@ import com.mkz.tessavar.quest.domain.Quest.Dto.ProgressDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.QuestLineDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.QuestLineDto.KindDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.StatusDto
+import com.mkz.tessavar.quest.domain.Quest.Dto.TextsDto
 import com.mkz.tessavar.quest.domain.QuestMother.defeat
 import com.mkz.tessavar.quest.domain.QuestMother.mainQuest
 import com.mkz.tessavar.quest.domain.QuestMother.reward
@@ -173,7 +174,7 @@ class QuestMapperTest {
                 QuestLineDto(questId = "bats-in-the-meadow", kind = KindDto.REMINDER, taskIndex = null),
                 QuestLineDto(questId = "bats-in-the-meadow", kind = KindDto.COMPLETED, taskIndex = null),
                 QuestLineDto(questId = "rats-in-the-fields", kind = KindDto.START_AGAIN, taskIndex = null),
-            ).map { line -> QuestMapper.lineOf(line, messages) }
+            ).map { line -> QuestMapper.lineOf(line, TextsDto.none(), messages) }
         // Then
         lines.shouldContainExactly(
             "Thank you for dealing with that bat! More of them nest in my meadow, off the path. Defeat three of them and I will pay you well. My village is just south.",
@@ -186,7 +187,7 @@ class QuestMapperTest {
     @Test
     fun `lineOf should translate the line of a talk task by the place of its task`() {
         // When
-        val line = QuestMapper.lineOf(QuestLineDto(questId = goatWizardQuestId, kind = KindDto.TALK_TASK, taskIndex = 0), MessagesMother.messages("es"))
+        val line = QuestMapper.lineOf(QuestLineDto(questId = goatWizardQuestId, kind = KindDto.TALK_TASK, taskIndex = 0), TextsDto.none(), MessagesMother.messages("es"))
         // Then
         line shouldBe
             "Hace mucho, una cabra se comió el libro de hechizos de un mago y se tragó su magia. El Mago Cabra gobierna ahora la guarida del sur. Derrótalo, y puede que sus abejas acudan a tu llamada."

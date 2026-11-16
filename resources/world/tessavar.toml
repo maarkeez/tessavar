@@ -1,4 +1,8 @@
-# Terrain id of each tile. Each line is a row of the battlefield, from top to bottom.
+version = 1
+name = "Tessavar"
+author = "maarkeez"
+
+[battlefield]
 tiles = [
     ["void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void"],
     ["void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "sand",   "sand",   "sand",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void"],
@@ -41,3 +45,234 @@ tiles = [
     ["void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "sand",   "sand",   "sand",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void"],
     ["void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void",   "void"],
 ]
+
+[[buildings]]
+id = "fortress"
+row = 17
+column = 13
+
+[[battleUnits]]
+id = "field-bat-1"
+unitId = "bat"
+playerId = "player-two"
+row = 29
+column = 13
+
+[[battleUnits]]
+id = "field-bat-2"
+unitId = "bat"
+playerId = "player-two"
+row = 26
+column = 11
+
+[[battleUnits]]
+id = "field-rat-1"
+unitId = "rat"
+playerId = "player-two"
+row = 28
+column = 10
+
+[[battleUnits]]
+id = "field-rat-2"
+unitId = "rat"
+playerId = "player-two"
+row = 27
+column = 16
+
+[[battleUnits]]
+id = "gate-bat"
+unitId = "bat"
+playerId = "player-two"
+row = 2
+column = 12
+
+[[battleUnits]]
+id = "goat-wizard"
+unitId = "goat-wizard"
+playerId = "player-two"
+row = 36
+column = 11
+
+[[battleUnits]]
+id = "hero"
+unitId = "hero"
+playerId = "player-one"
+row = 2
+column = 1
+
+[[battleUnits]]
+id = "lair-bat-1"
+unitId = "bat"
+playerId = "player-two"
+row = 33
+column = 10
+
+[[battleUnits]]
+id = "lair-bat-2"
+unitId = "bat"
+playerId = "player-two"
+row = 33
+column = 13
+
+[[battleUnits]]
+id = "lair-rat-1"
+unitId = "rat"
+playerId = "player-two"
+row = 35
+column = 9
+
+[[battleUnits]]
+id = "lair-rat-2"
+unitId = "rat"
+playerId = "player-two"
+row = 35
+column = 14
+
+[[battleUnits]]
+id = "meadow-bat-1"
+unitId = "bat"
+playerId = "player-two"
+row = 12
+column = 3
+
+[[battleUnits]]
+id = "meadow-bat-2"
+unitId = "bat"
+playerId = "player-two"
+row = 9
+column = 3
+
+[[battleUnits]]
+id = "meadow-bat-3"
+unitId = "bat"
+playerId = "player-two"
+row = 13
+column = 20
+
+[[npcs]]
+id = "alchemist"
+row = 21
+column = 18
+stock = ["health-potion", "mana-potion", "health-elixir", "mana-elixir", "teleport-essence"]
+
+[[npcs]]
+id = "blacksmith"
+row = 21
+column = 5
+stock = ["hammer", "iron-hammer", "rune-hammer"]
+
+[[npcs]]
+id = "elder"
+row = 16
+column = 8
+
+[[npcs]]
+id = "elf"
+row = 19
+column = 19
+
+[[npcs]]
+id = "farmer"
+row = 8
+column = 12
+
+[[npcs]]
+id = "herbalist"
+row = 16
+column = 15
+
+[[npcs]]
+id = "princess"
+row = 38
+column = 11
+
+[[npcs]]
+id = "viking"
+row = 28
+column = 20
+
+[[quests]]
+id = "bats-in-the-meadow"
+type = "SIDE"
+questGiverNpcId = "farmer"
+name = "Bats in the Meadow"
+description = "Bats nest in the meadow near the farm, and the Farmer wants them gone."
+lines = { start = "Thank you for dealing with that bat! More of them nest in my meadow, off the path. Defeat three of them and I will pay you well. My village is just south.", reminder = "The bats still nest in my meadow, off the path. Three less of them, and I can sleep again.", completed = "No bat has bothered me since. My village is just south, past this meadow: tell them the Farmer sent you." }
+
+[[quests.tasks]]
+type = "DEFEAT"
+unitId = "bat"
+requiredDefeats = 3
+text = "Defeat 3 Bats"
+
+[[quests.tasks]]
+type = "TALK"
+npcId = "farmer"
+text = "Talk to the Farmer"
+line = "Three bats gone! The meadow is quiet at last. Here, take this gold: you have earned it."
+
+[quests.reward]
+gold = 40
+
+[[quests]]
+id = "defeat-the-goat-wizard"
+type = "MAIN"
+startTiles = [[14, 10], [14, 11], [14, 12]]
+name = "The Goat Wizard's Lair"
+description = "A goat swallowed a wizard's magic and now rules the lair down south."
+
+[[quests.tasks]]
+type = "TALK"
+npcId = "elder"
+text = "Talk to the Elder"
+line = "Long ago a goat chewed up a wizard's spellbook and swallowed its magic. The Goat Wizard now rules the lair down south. Beat it, and its bees may answer your call."
+
+[[quests.tasks]]
+type = "DEFEAT"
+unitId = "goat-wizard"
+requiredDefeats = 1
+text = "Defeat the Goat Wizard"
+
+[quests.reward]
+gold = 150
+
+[[quests]]
+id = "rats-in-the-fields"
+type = "SIDE"
+questGiverNpcId = "elf"
+repeatable = true
+name = "Rats in the Fields"
+description = "Rats keep coming back to the southern fields. The Elf pays to thin them out, as often as it takes."
+lines = { start = "The forest whispers of strangers who outwit goats and bats alike. Then rats will not trouble you: thin them out in the southern fields, and I pay in gold.", reminder = "Two rats, travellers, in the southern fields. My arrows stay here, watching over this village.", startAgain = "Well done, travellers. But the rats are back in the southern fields, as always. Thin them out again: same task, same gold." }
+
+[[quests.tasks]]
+type = "DEFEAT"
+unitId = "rat"
+requiredDefeats = 2
+text = "Defeat 2 Rats"
+
+[quests.reward]
+gold = 20
+
+[[quests]]
+id = "the-blacksmiths-errand"
+type = "SIDE"
+questGiverNpcId = "blacksmith"
+name = "The Blacksmith's Errand"
+description = "The Blacksmith wants to know whether the path to the southern fields is still open."
+lines = { start = "Fresh from the forge! Before you buy: my iron comes up through the southern fields. Go and see whether the path is still open, and I will make it worth your while.", reminder = "Have you been to the southern fields yet? I need to know whether that path is open. Meanwhile, a sturdy hammer keeps you standing for longer.", completed = "Fresh from the forge! A sturdy hammer keeps you standing for longer. And thank you again for walking to the fields." }
+
+[[quests.tasks]]
+type = "VISIT"
+tiles = [[25, 3], [25, 4]]
+text = "Visit the southern fields"
+
+[[quests.tasks]]
+type = "TALK"
+npcId = "blacksmith"
+text = "Talk to the Blacksmith"
+line = "The path is open? Good news for my forge! Take this gold, and a potion for the road."
+
+[quests.reward]
+gold = 25
+lootableItemIds = ["health-potion"]

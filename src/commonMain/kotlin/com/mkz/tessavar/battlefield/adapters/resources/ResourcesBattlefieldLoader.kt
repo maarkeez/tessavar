@@ -3,21 +3,26 @@ package com.mkz.tessavar.battlefield.adapters.resources
 import com.mkz.tessavar.battlefield.usecases.services.BattlefieldLoader
 import com.mkz.tessavar.shared.adapters.resources.ResourcesBundle
 import com.mkz.tessavar.shared.adapters.toml.fromResource
-import com.mkz.tessavar.shared.adapters.toml.readTomlFile
+import com.mkz.tessavar.shared.adapters.toml.readTomlSection
 import korlibs.io.file.VfsFile
 import kotlinx.serialization.Serializable
 
 class ResourcesBattlefieldLoader(
-    private val battlefieldFile: VfsFile = ResourcesBundle.root["battlefield/battlefield.toml"],
+    private val worldFile: VfsFile = ResourcesBundle.root[ResourcesBundle.CAMPAIGN_WORLD_FILE],
 ) : BattlefieldLoader {
     private var tiles = emptyList<List<String>>()
 
     override suspend fun initResources() {
-        val definition = battlefieldFile.readTomlFile<BattlefieldDefinition>()
-        tiles = fromResource("battlefield/battlefield.toml") { definition.toTiles() }
+        val section = worldFile.readTomlSection<BattlefieldSection>()
+        tiles = fromResource(worldFile.path) { section.battlefield.toTiles() }
     }
 
     override fun loadTiles(): List<List<String>> = tiles
+
+    @Serializable
+    data class BattlefieldSection(
+        val battlefield: BattlefieldDefinition,
+    )
 
     @Serializable
     data class BattlefieldDefinition(

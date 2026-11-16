@@ -10,7 +10,7 @@ class TomlBattlefieldEncoderTest {
     private val encoder = TomlBattlefieldEncoder()
 
     private suspend fun load(toml: String): List<List<String>> {
-        val loader = ResourcesBattlefieldLoader(battlefieldFile = MemoryVfsMix("battlefield/battlefield.toml" to toml)["battlefield/battlefield.toml"])
+        val loader = ResourcesBattlefieldLoader(worldFile = MemoryVfsMix("world/world.toml" to toml)["world/world.toml"])
         loader.initResources()
         return loader.loadTiles()
     }
@@ -24,7 +24,7 @@ class TomlBattlefieldEncoderTest {
         // Then
         toml shouldBe
             """
-            |# Terrain id of each tile. Each line is a row of the battlefield, from top to bottom.
+            |[battlefield]
             |tiles = [
             |    ["sand",   "water"],
             |    ["lava",   "sand"],
@@ -45,13 +45,14 @@ class TomlBattlefieldEncoderTest {
         }
 
     @Test
-    fun `should write the game battlefield exactly as its resource when its tiles are encoded`() =
+    fun `should write the campaign's battlefield exactly as its world file holds it when its tiles are encoded`() =
         runTest {
             // Given
-            val resource = ResourcesBundle.root["battlefield/battlefield.toml"].readString()
+            val worldFile = ResourcesBundle.root[ResourcesBundle.CAMPAIGN_WORLD_FILE].readString()
+            val section = worldFile.substringAfter("[battlefield]\n").substringBefore("\n]\n") + "\n]\n"
             // When
-            val toml = encoder.encode(load(resource))
+            val toml = encoder.encode(load(worldFile))
             // Then
-            toml shouldBe resource
+            toml shouldBe "[battlefield]\n$section"
         }
 }

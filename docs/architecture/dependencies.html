@@ -211,7 +211,7 @@ const DATA = {
     {"name": "battle", "files": 21, "fanIn": 8, "fanOut": 1, "instability": 0.11, "importsIn": 39, "importsOut": 22},
     {"name": "battleUnit", "files": 61, "fanIn": 7, "fanOut": 7, "instability": 0.5, "importsIn": 69, "importsOut": 168},
     {"name": "battlefield", "files": 44, "fanIn": 10, "fanOut": 4, "instability": 0.29, "importsIn": 113, "importsOut": 40},
-    {"name": "building", "files": 10, "fanIn": 2, "fanOut": 2, "instability": 0.5, "importsIn": 4, "importsOut": 12},
+    {"name": "building", "files": 10, "fanIn": 2, "fanOut": 2, "instability": 0.5, "importsIn": 4, "importsOut": 14},
     {"name": "cpuBattleBrain", "files": 35, "fanIn": 2, "fanOut": 10, "instability": 0.83, "importsIn": 7, "importsOut": 107},
     {"name": "cpuWanderBrain", "files": 26, "fanIn": 1, "fanOut": 7, "instability": 0.88, "importsIn": 1, "importsOut": 56},
     {"name": "effect", "files": 13, "fanIn": 9, "fanOut": 1, "instability": 0.1, "importsIn": 68, "importsOut": 13},
@@ -220,18 +220,18 @@ const DATA = {
     {"name": "lootDrop", "files": 23, "fanIn": 3, "fanOut": 4, "instability": 0.57, "importsIn": 8, "importsOut": 32},
     {"name": "lootTable", "files": 11, "fanIn": 3, "fanOut": 2, "instability": 0.4, "importsIn": 7, "importsOut": 12},
     {"name": "lootableItem", "files": 12, "fanIn": 5, "fanOut": 2, "instability": 0.29, "importsIn": 28, "importsOut": 14},
-    {"name": "npc", "files": 19, "fanIn": 3, "fanOut": 4, "instability": 0.57, "importsIn": 12, "importsOut": 29},
+    {"name": "npc", "files": 19, "fanIn": 3, "fanOut": 4, "instability": 0.57, "importsIn": 12, "importsOut": 31},
     {"name": "party", "files": 43, "fanIn": 8, "fanOut": 6, "instability": 0.43, "importsIn": 60, "importsOut": 77},
     {"name": "player", "files": 15, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 34, "importsOut": 12},
-    {"name": "quest", "files": 28, "fanIn": 3, "fanOut": 5, "instability": 0.63, "importsIn": 22, "importsOut": 35},
+    {"name": "quest", "files": 28, "fanIn": 3, "fanOut": 5, "instability": 0.63, "importsIn": 23, "importsOut": 35},
     {"name": "save", "files": 11, "fanIn": 1, "fanOut": 1, "instability": 0.5, "importsIn": 12, "importsOut": 8},
-    {"name": "screen", "files": 112, "fanIn": 1, "fanOut": 24, "instability": 0.96, "importsIn": 118, "importsOut": 290},
-    {"name": "shared", "files": 14, "fanIn": 25, "fanOut": 0, "instability": 0.0, "importsIn": 542, "importsOut": 0},
+    {"name": "screen", "files": 112, "fanIn": 1, "fanOut": 24, "instability": 0.96, "importsIn": 118, "importsOut": 293},
+    {"name": "shared", "files": 14, "fanIn": 25, "fanOut": 0, "instability": 0.0, "importsIn": 546, "importsOut": 0},
     {"name": "storybook", "files": 108, "fanIn": 0, "fanOut": 3, "instability": 1.0, "importsIn": 0, "importsOut": 136},
     {"name": "telemetry", "files": 45, "fanIn": 2, "fanOut": 5, "instability": 0.71, "importsIn": 8, "importsOut": 41},
     {"name": "terrain", "files": 13, "fanIn": 5, "fanOut": 1, "instability": 0.17, "importsIn": 16, "importsOut": 7},
     {"name": "unit", "files": 14, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 17, "importsOut": 11},
-    {"name": "world", "files": 8, "fanIn": 1, "fanOut": 16, "instability": 0.94, "importsIn": 2, "importsOut": 20},
+    {"name": "world", "files": 8, "fanIn": 1, "fanOut": 16, "instability": 0.94, "importsIn": 4, "importsOut": 20},
     {"name": "worldBuilder", "files": 17, "fanIn": 1, "fanOut": 3, "instability": 0.75, "importsIn": 5, "importsOut": 22}
   ],
   "edges": [
@@ -428,7 +428,7 @@ const DATA = {
       {"file": "com/mkz/tessavar/battleUnit/adapters/presentation/BattleUnitApi.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
       {"file": "com/mkz/tessavar/battleUnit/adapters/presentation/BattleUnitApi.kt", "layer": "adapters", "name": "shared.domain.Snapshottable"},
       {"file": "com/mkz/tessavar/battleUnit/adapters/resources/ResourcesBattleUnitLoader.kt", "layer": "adapters", "name": "shared.adapters.resources.ResourcesBundle"},
-      {"file": "com/mkz/tessavar/battleUnit/adapters/resources/ResourcesBattleUnitLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlFiles"},
+      {"file": "com/mkz/tessavar/battleUnit/adapters/resources/ResourcesBattleUnitLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlSection"},
       {"file": "com/mkz/tessavar/battleUnit/adapters/save/BattleUnitSnapshottable.kt", "layer": "adapters", "name": "shared.adapters.save.SnapshotJson"},
       {"file": "com/mkz/tessavar/battleUnit/adapters/save/BattleUnitSnapshottable.kt", "layer": "adapters", "name": "shared.domain.Snapshottable"},
       {"file": "com/mkz/tessavar/battleUnit/domain/BattleUnit.kt", "layer": "domain", "name": "shared.domain.DomainEvent"},
@@ -490,7 +490,7 @@ const DATA = {
       {"file": "com/mkz/tessavar/battlefield/adapters/presentation/BattlefieldApi.kt", "layer": "adapters", "name": "shared.domain.Snapshottable"},
       {"file": "com/mkz/tessavar/battlefield/adapters/resources/ResourcesBattlefieldLoader.kt", "layer": "adapters", "name": "shared.adapters.resources.ResourcesBundle"},
       {"file": "com/mkz/tessavar/battlefield/adapters/resources/ResourcesBattlefieldLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.fromResource"},
-      {"file": "com/mkz/tessavar/battlefield/adapters/resources/ResourcesBattlefieldLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlFile"},
+      {"file": "com/mkz/tessavar/battlefield/adapters/resources/ResourcesBattlefieldLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlSection"},
       {"file": "com/mkz/tessavar/battlefield/adapters/resources/TomlBattlefieldDecoder.kt", "layer": "adapters", "name": "shared.adapters.toml.TomlService"},
       {"file": "com/mkz/tessavar/battlefield/adapters/save/BattlefieldSnapshottable.kt", "layer": "adapters", "name": "shared.adapters.save.SnapshotJson"},
       {"file": "com/mkz/tessavar/battlefield/adapters/save/BattlefieldSnapshottable.kt", "layer": "adapters", "name": "shared.domain.Snapshottable"},
@@ -513,12 +513,14 @@ const DATA = {
       {"file": "com/mkz/tessavar/building/domain/Building.kt", "layer": "domain", "name": "battlefield.domain.BattlefieldEvent.RequestOccupyTiles"},
       {"file": "com/mkz/tessavar/building/usecases/commands/PlaceBuildings.kt", "layer": "usecases", "name": "battlefield.usecases.queries.IsTileVacant"}
     ]},
-    {"from": "building", "to": "shared", "weight": 9, "files": 6, "imports": [
+    {"from": "building", "to": "shared", "weight": 11, "files": 6, "imports": [
       {"file": "com/mkz/tessavar/building/adapters/events/OnRequestPlaceBuildings.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
       {"file": "com/mkz/tessavar/building/adapters/events/OnRequestPlaceBuildings.kt", "layer": "adapters", "name": "shared.domain.subscribe"},
       {"file": "com/mkz/tessavar/building/adapters/presentation/BuildingApi.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
       {"file": "com/mkz/tessavar/building/adapters/resources/ResourcesBuildingLoader.kt", "layer": "adapters", "name": "shared.adapters.resources.ResourcesBundle"},
+      {"file": "com/mkz/tessavar/building/adapters/resources/ResourcesBuildingLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.fromResource"},
       {"file": "com/mkz/tessavar/building/adapters/resources/ResourcesBuildingLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlFiles"},
+      {"file": "com/mkz/tessavar/building/adapters/resources/ResourcesBuildingLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlSection"},
       {"file": "com/mkz/tessavar/building/domain/Building.kt", "layer": "domain", "name": "shared.domain.DomainEvent"},
       {"file": "com/mkz/tessavar/building/domain/BuildingEvent.kt", "layer": "domain", "name": "shared.domain.DomainEvent"},
       {"file": "com/mkz/tessavar/building/usecases/commands/PlaceBuildings.kt", "layer": "usecases", "name": "shared.domain.DomainEvent"},
@@ -915,7 +917,7 @@ const DATA = {
       {"file": "com/mkz/tessavar/npc/usecases/commands/TalkToAdjacentNpc.kt", "layer": "usecases", "name": "party.domain.PartyEvent.RequestStartTalk"},
       {"file": "com/mkz/tessavar/npc/usecases/commands/TalkToAdjacentNpc.kt", "layer": "usecases", "name": "party.usecases.queries.SearchParty"}
     ]},
-    {"from": "npc", "to": "shared", "weight": 16, "files": 10, "imports": [
+    {"from": "npc", "to": "shared", "weight": 18, "files": 10, "imports": [
       {"file": "com/mkz/tessavar/npc/adapters/events/OnNpcTalkFinished.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
       {"file": "com/mkz/tessavar/npc/adapters/events/OnNpcTalkFinished.kt", "layer": "adapters", "name": "shared.domain.subscribe"},
       {"file": "com/mkz/tessavar/npc/adapters/events/OnRequestPlaceNpcs.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
@@ -923,7 +925,9 @@ const DATA = {
       {"file": "com/mkz/tessavar/npc/adapters/presentation/NpcApi.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
       {"file": "com/mkz/tessavar/npc/adapters/presentation/NpcApi.kt", "layer": "adapters", "name": "shared.domain.Snapshottable"},
       {"file": "com/mkz/tessavar/npc/adapters/resources/ResourcesNpcLoader.kt", "layer": "adapters", "name": "shared.adapters.resources.ResourcesBundle"},
+      {"file": "com/mkz/tessavar/npc/adapters/resources/ResourcesNpcLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.fromResource"},
       {"file": "com/mkz/tessavar/npc/adapters/resources/ResourcesNpcLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlFiles"},
+      {"file": "com/mkz/tessavar/npc/adapters/resources/ResourcesNpcLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlSection"},
       {"file": "com/mkz/tessavar/npc/adapters/save/NpcSnapshottable.kt", "layer": "adapters", "name": "shared.adapters.save.SnapshotJson"},
       {"file": "com/mkz/tessavar/npc/adapters/save/NpcSnapshottable.kt", "layer": "adapters", "name": "shared.domain.Snapshottable"},
       {"file": "com/mkz/tessavar/npc/domain/Npc.kt", "layer": "domain", "name": "shared.domain.DomainEvent"},
@@ -1072,7 +1076,7 @@ const DATA = {
       {"file": "com/mkz/tessavar/quest/adapters/resources/ResourcesQuestLoader.kt", "layer": "adapters", "name": "shared.adapters.resources.ResourcesBundle"},
       {"file": "com/mkz/tessavar/quest/adapters/resources/ResourcesQuestLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.enumOf"},
       {"file": "com/mkz/tessavar/quest/adapters/resources/ResourcesQuestLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.fromResource"},
-      {"file": "com/mkz/tessavar/quest/adapters/resources/ResourcesQuestLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlFiles"},
+      {"file": "com/mkz/tessavar/quest/adapters/resources/ResourcesQuestLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlSection"},
       {"file": "com/mkz/tessavar/quest/adapters/resources/ResourcesQuestLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.required"},
       {"file": "com/mkz/tessavar/quest/adapters/save/QuestSnapshottable.kt", "layer": "adapters", "name": "shared.adapters.save.SnapshotJson"},
       {"file": "com/mkz/tessavar/quest/adapters/save/QuestSnapshottable.kt", "layer": "adapters", "name": "shared.domain.Snapshottable"},
@@ -1288,8 +1292,9 @@ const DATA = {
       {"file": "com/mkz/tessavar/screen/adapters/presentation/selection/usecases/commands/ProcessTileSelected.kt", "layer": "adapters", "name": "player.domain.Player"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/selection/usecases/commands/ProcessTileSelected.kt", "layer": "adapters", "name": "player.usecases.queries.SearchPlayerById"}
     ]},
-    {"from": "screen", "to": "quest", "weight": 18, "files": 4, "imports": [
+    {"from": "screen", "to": "quest", "weight": 19, "files": 4, "imports": [
       {"file": "com/mkz/tessavar/screen/adapters/presentation/ExplorationPresenter.kt", "layer": "adapters", "name": "quest.adapters.presentation.QuestApi"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/ExplorationPresenter.kt", "layer": "adapters", "name": "quest.domain.Quest"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "quest.adapters.presentation.QuestApi"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "quest.adapters.resources.ResourcesQuestLoader"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/QuestMapper.kt", "layer": "adapters", "name": "quest.domain.Quest"},
@@ -1418,9 +1423,11 @@ const DATA = {
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "unit.adapters.presentation.UnitApi"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "unit.adapters.resources.ResourcesUnitLoader"}
     ]},
-    {"from": "screen", "to": "world", "weight": 2, "files": 1, "imports": [
+    {"from": "screen", "to": "world", "weight": 4, "files": 2, "imports": [
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.adapters.presentation.WorldApi"},
-      {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.adapters.resources.ResourcesWorldLoader"}
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.adapters.resources.ResourcesWorldLoader"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.domain.World"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/Messages.kt", "layer": "adapters", "name": "world.domain.World"}
     ]},
     {"from": "screen", "to": "worldBuilder", "weight": 5, "files": 2, "imports": [
       {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderPresenter.kt", "layer": "adapters", "name": "worldBuilder.adapters.presentation.WorldBuilderApi"},

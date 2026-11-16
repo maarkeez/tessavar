@@ -5,9 +5,13 @@ import com.mkz.tessavar.localization.adapters.resources.ResourcesLocalizationLoa
 import com.mkz.tessavar.localization.adapters.resources.TestCatalogs
 import com.mkz.tessavar.localization.usecases.services.FakeLocalizationLoader
 import com.mkz.tessavar.shared.adapters.events.InMemoryEventBus
+import com.mkz.tessavar.world.domain.World
 
 object MessagesMother {
-    fun messages(languageCode: String = ResourcesLocalizationLoader.SOURCE_LANGUAGE_CODE): Messages = Messages(localizationApi(languageCode))
+    fun messages(
+        languageCode: String = ResourcesLocalizationLoader.SOURCE_LANGUAGE_CODE,
+        worldId: String = World.CAMPAIGN_ID,
+    ): Messages = Messages(localizationApi(languageCode), worldId)
 
     fun localizationApi(languageCode: String = ResourcesLocalizationLoader.SOURCE_LANGUAGE_CODE): LocalizationApi {
         val localization = ResourcesLocalizationLoader.localizationOf(TestCatalogs.files)

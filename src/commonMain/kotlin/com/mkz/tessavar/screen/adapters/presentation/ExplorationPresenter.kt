@@ -19,6 +19,7 @@ import com.mkz.tessavar.party.domain.PartyEvent.PauseOpened
 import com.mkz.tessavar.party.domain.PartyEvent.QuestClosed
 import com.mkz.tessavar.party.domain.PartyEvent.QuestOpened
 import com.mkz.tessavar.quest.adapters.presentation.QuestApi
+import com.mkz.tessavar.quest.domain.Quest
 import com.mkz.tessavar.save.domain.SaveEvent.GameLoaded
 import com.mkz.tessavar.screen.adapters.presentation.ShopView.Mode
 import com.mkz.tessavar.screen.adapters.presentation.selection.domain.SelectionEvent
@@ -261,7 +262,11 @@ class ExplorationPresenter(
     }
 
     private fun displayTalkPanel(npc: Npc.Dto) {
-        val line = questApi.searchQuestLine(npc.id)?.let { questLine -> QuestMapper.lineOf(questLine, messages) } ?: messages.npcOwnLine(npc.id)
+        val line =
+            questApi.searchQuestLine(npc.id)?.let { questLine ->
+                val texts = questApi.searchQuests().firstOrNull { quest -> quest.id == questLine.questId }?.texts ?: Quest.Dto.TextsDto.none()
+                QuestMapper.lineOf(questLine, texts, messages)
+            } ?: messages.npcOwnLine(npc.id)
         talkView.display(TalkInfo(npcId = npc.id, unitId = npc.unitId, name = messages.npcName(npc.id), line = line))
         virtualPadView.visible = false
         talkView.visible = true

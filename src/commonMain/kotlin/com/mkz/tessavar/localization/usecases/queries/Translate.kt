@@ -9,5 +9,6 @@ class Translate(
     operator fun invoke(
         key: String,
         arguments: Map<String, String> = emptyMap(),
-    ): String = (localizationRepository.search() ?: throw LocalizationNotFound()).translate(key, arguments)
+        fallback: String? = null,
+    ): String = (localizationRepository.search() ?: throw LocalizationNotFound()).translate(key, arguments, fallback)
 }

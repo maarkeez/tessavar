@@ -21,11 +21,11 @@ class TomlBattlefieldDecoderTest {
     }
 
     @Test
-    fun `should read the game battlefield as the loader does when its resource is decoded`() =
+    fun `should read the campaign's battlefield as the loader does when its world file is decoded`() =
         runTest {
             // Given
-            val resource = ResourcesBundle.root["battlefield/battlefield.toml"]
-            val loader = ResourcesBattlefieldLoader(battlefieldFile = resource).also { loader -> loader.initResources() }
+            val resource = ResourcesBundle.root[ResourcesBundle.CAMPAIGN_WORLD_FILE]
+            val loader = ResourcesBattlefieldLoader(worldFile = resource).also { loader -> loader.initResources() }
             // When
             val decodedTiles = decoder.decode(resource.readString())
             // Then
@@ -43,7 +43,7 @@ class TomlBattlefieldDecoderTest {
     @Test
     fun `should fail when the rows have different number of columns`() {
         // When
-        val decode = { decoder.decode("tiles = [[\"sand\", \"void\"], [\"grass\"]]\n") }
+        val decode = { decoder.decode("[battlefield]\ntiles = [[\"sand\", \"void\"], [\"grass\"]]\n") }
         // Then
         shouldThrow<InvalidBattlefieldFormat> { decode() }
     }

@@ -2,9 +2,11 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.localization.adapters.presentation.LocalizationApi
 import com.mkz.tessavar.localization.domain.Localization.Dto.LanguageDto
+import com.mkz.tessavar.world.domain.World
 
 class Messages(
     private val localizationApi: LocalizationApi,
+    private val worldId: String = World.CAMPAIGN_ID,
 ) {
     operator fun get(
         text: UiMessage,
@@ -33,19 +35,32 @@ class Messages(
 
     fun terrainName(terrainId: String): String = localizationApi.translate("terrain.$terrainId.name")
 
-    fun questName(questId: String): String = localizationApi.translate("quest.$questId.name")
+    fun questName(
+        questId: String,
+        english: String,
+    ): String = worldText("quest.$questId.name", english)
 
-    fun questDescription(questId: String): String = localizationApi.translate("quest.$questId.description")
+    fun questDescription(
+        questId: String,
+        english: String,
+    ): String = worldText("quest.$questId.description", english)
 
     fun questTask(
         questId: String,
         taskIndex: Int,
-    ): String = localizationApi.translate("quest.$questId.task.$taskIndex")
+        english: String,
+    ): String = worldText("quest.$questId.task.$taskIndex", english)
 
     fun questLine(
         questId: String,
         line: String,
-    ): String = localizationApi.translate("quest.$questId.line.$line")
+        english: String,
+    ): String = worldText("quest.$questId.line.$line", english)
+
+    private fun worldText(
+        key: String,
+        english: String,
+    ): String = localizationApi.translate("world.$worldId.$key", fallback = english)
 
     fun languages(): List<LanguageDto> = localizationApi.searchLanguages()
 

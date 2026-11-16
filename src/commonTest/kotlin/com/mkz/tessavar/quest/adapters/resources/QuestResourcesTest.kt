@@ -5,15 +5,27 @@ import com.mkz.tessavar.npc.adapters.resources.ResourcesNpcLoader
 import com.mkz.tessavar.quest.domain.Quest
 import com.mkz.tessavar.quest.domain.Quest.Dto.QuestTypeDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.TaskDto
+import com.mkz.tessavar.shared.adapters.resources.ResourcesBundle
 import com.mkz.tessavar.unit.adapters.resources.ResourcesUnitLoader
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.maps.shouldBeEmpty
+import io.kotest.matchers.maps.shouldNotBeEmpty
+import korlibs.io.file.VfsFile
+import korlibs.io.file.baseName
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
 class QuestResourcesTest {
-    private suspend fun quests(): List<Quest.Dto> = ResourcesQuestLoader().also { loader -> loader.initResources() }.loadQuests()
+    private suspend fun worldFiles(): List<VfsFile> =
+        ResourcesBundle.root["world"]
+            .listNames()
+            .filter { fileName -> fileName.endsWith(".toml") }
+            .map { fileName -> ResourcesBundle.root["world/$fileName"] }
+
+    private suspend fun questsOf(worldFile: VfsFile): List<Quest.Dto> = ResourcesQuestLoader(worldFile).also { loader -> loader.initResources() }.loadQuests()
+
+    private suspend fun quests(): List<Quest.Dto> = worldFiles().flatMap { worldFile -> questsOf(worldFile) }
 
     @Test
     fun `should find the unit of every defeat task in the unit resources`() =
@@ -33,16 +45,19 @@ class QuestResourcesTest {
         }
 
     @Test
-    fun `should find the npc of every talk task and quest giver, and none recruitable, in the npc resources`() =
+    fun `should find the npc of every talk task and quest giver, and none recruitable, among the npcs of its world file`() =
         runTest {
-            // Given
-            val quests = quests()
-            val npcIds = quests.flatMap(Quest.Dto::tasks).mapNotNull(TaskDto::talk).map(TaskDto.TalkDto::npcId) + quests.mapNotNull(Quest.Dto::questGiverNpcId)
             // When
-            val npcs = ResourcesNpcLoader().also { loader -> loader.initResources() }.loadNpcs()
-            val notRecruitableNpcIds = npcs.filter { npc -> npc.unitId == null }.map { npc -> npc.id }.toSet()
+            val missing =
+                worldFiles().flatMap { worldFile ->
+                    val quests = questsOf(worldFile)
+                    val npcIds = quests.flatMap(Quest.Dto::tasks).mapNotNull(TaskDto::talk).map(TaskDto.TalkDto::npcId) + quests.mapNotNull(Quest.Dto::questGiverNpcId)
+                    val npcs = ResourcesNpcLoader(worldFile).also { loader -> loader.initResources() }.loadNpcs()
+                    val notRecruitableNpcIds = npcs.filter { npc -> npc.unitId == null }.map { npc -> npc.id }.toSet()
+                    npcIds.filterNot(notRecruitableNpcIds::contains).map { npcId -> "${worldFile.baseName}: $npcId" }
+                }
             // Then
-            npcIds.filterNot(notRecruitableNpcIds::contains).shouldBeEmpty()
+            missing.shouldBeEmpty()
         }
 
     @Test
@@ -62,11 +77,12 @@ class QuestResourcesTest {
         }
 
     @Test
-    fun `should hold exactly one main quest`() =
+    fun `should hold exactly one main quest in every world file`() =
         runTest {
             // When
-            val mainQuests = quests().filter { quest -> quest.type == QuestTypeDto.MAIN }
+            val mainQuestCounts = worldFiles().associate { worldFile -> worldFile.baseName to questsOf(worldFile).count { quest -> quest.type == QuestTypeDto.MAIN } }
             // Then
-            mainQuests.shouldHaveSize(1)
+            mainQuestCounts.filterValues { count -> count != 1 }.shouldBeEmpty()
+            mainQuestCounts.shouldNotBeEmpty()
         }
 }

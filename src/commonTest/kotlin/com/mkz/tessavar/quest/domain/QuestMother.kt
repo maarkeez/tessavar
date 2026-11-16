@@ -5,6 +5,7 @@ import com.mkz.tessavar.quest.domain.Quest.Dto.ProgressDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.QuestTypeDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.RewardDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.TaskDto
+import com.mkz.tessavar.quest.domain.Quest.Dto.TextsDto
 import korlibs.io.util.UUID
 
 object QuestMother {
@@ -15,7 +16,17 @@ object QuestMother {
         startTiles: List<PositionDto> = listOf(PositionDto(row = 0, column = 0)),
     ): Quest =
         Quest.create(
-            Quest.Dto(id = id, type = QuestTypeDto.MAIN, questGiverNpcId = null, startTiles = startTiles, repeatable = false, tasks = tasks, reward = reward, progress = ProgressDto.notStarted(id)),
+            Quest.Dto(
+                id = id,
+                type = QuestTypeDto.MAIN,
+                questGiverNpcId = null,
+                startTiles = startTiles,
+                repeatable = false,
+                tasks = tasks,
+                reward = reward,
+                texts = TextsDto.none(),
+                progress = ProgressDto.notStarted(id),
+            ),
         )
 
     fun sideQuest(
@@ -34,6 +45,7 @@ object QuestMother {
                 repeatable = repeatable,
                 tasks = tasks,
                 reward = reward,
+                texts = TextsDto.none(),
                 progress = ProgressDto.notStarted(id),
             ),
         )

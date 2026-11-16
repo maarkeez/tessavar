@@ -10,14 +10,14 @@ import kotlin.test.Test
 
 class ResourcesBattleUnitLoaderTest {
     @Test
-    fun `should load one deployment per toml file when battle unit resources are initialised`() =
+    fun `should load one deployment per battle unit of the world file when battle unit resources are initialised`() =
         runTest {
             // Given
-            val battleUnitRoot =
+            val worldFile =
                 MemoryVfsMix(
-                    "battleUnit/player-1-unit-1.toml" to "unitId = \"knight\"\nplayerId = \"player-one\"\nrow = 6\ncolumn = 7\n",
-                )["battleUnit"]
-            val loader = ResourcesBattleUnitLoader(battleUnitRoot = battleUnitRoot)
+                    "world/world.toml" to "version = 1\n\n[[battleUnits]]\nid = \"player-1-unit-1\"\nunitId = \"knight\"\nplayerId = \"player-one\"\nrow = 6\ncolumn = 7\n",
+                )["world/world.toml"]
+            val loader = ResourcesBattleUnitLoader(worldFile = worldFile)
             // When
             loader.initResources()
             // Then
@@ -30,11 +30,11 @@ class ResourcesBattleUnitLoaderTest {
     fun `should fail with the file when a field is missing`() =
         runTest {
             // Given
-            val battleUnitRoot = MemoryVfsMix("battleUnit/player-1-unit-1.toml" to "unitId = \"knight\"\n")["battleUnit"]
-            val loader = ResourcesBattleUnitLoader(battleUnitRoot = battleUnitRoot)
+            val worldFile = MemoryVfsMix("world/world.toml" to "[[battleUnits]]\nid = \"player-1-unit-1\"\nunitId = \"knight\"\n")["world/world.toml"]
+            val loader = ResourcesBattleUnitLoader(worldFile = worldFile)
             // When
             val initialisation = suspend { loader.initResources() }
             // Then
-            shouldThrow<IllegalStateException> { initialisation() }.message.shouldContain("battleUnit/player-1-unit-1.toml")
+            shouldThrow<IllegalStateException> { initialisation() }.message.shouldContain("world/world.toml")
         }
 }

@@ -76,11 +76,21 @@ class MessagesTest {
     }
 
     @Test
-    fun `questLine should return the line of the quest`() {
+    fun `questLine should return the line of the campaign's quest from the catalog when the campaign is played`() {
         // When
-        val line = messages.questLine("bats-in-the-meadow", "task.1")
+        val line = messages.questLine("bats-in-the-meadow", "task.1", english = "Not the catalog")
         // Then
         line shouldBe "Three bats gone! The meadow is quiet at last. Here, take this gold: you have earned it."
+    }
+
+    @Test
+    fun `questName should return the English of the world file when the world is not translated`() {
+        // Given
+        val communityMessages = MessagesMother.messages(worldId = "the-sunken-keep")
+        // When
+        val name = communityMessages.questName("bats-in-the-meadow", english = "Bats in the Keep")
+        // Then
+        name shouldBe "Bats in the Keep"
     }
 
     @Test

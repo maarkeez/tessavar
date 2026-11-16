@@ -11,6 +11,7 @@ import kotlinx.coroutines.Deferred
 
 object ResourcesBundle {
     const val FILE_NAME = "resources.zip"
+    const val CAMPAIGN_WORLD_FILE = "world/tessavar.toml"
 
     val root: VfsFile = BundleVfs().root
 

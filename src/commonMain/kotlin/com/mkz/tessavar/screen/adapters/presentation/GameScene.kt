@@ -41,6 +41,7 @@ import com.mkz.tessavar.unit.adapters.presentation.UnitApi
 import com.mkz.tessavar.unit.adapters.resources.ResourcesUnitLoader
 import com.mkz.tessavar.world.adapters.presentation.WorldApi
 import com.mkz.tessavar.world.adapters.resources.ResourcesWorldLoader
+import com.mkz.tessavar.world.domain.World
 import korlibs.io.async.launchImmediately
 import korlibs.korge.scene.Scene
 import korlibs.korge.service.storage.IStorage
@@ -61,6 +62,7 @@ class GameScene(
     private val storage: IStorage? = null,
     private val random: Random = Random.Default,
     private val slot: Int? = null,
+    private val worldId: String = World.CAMPAIGN_ID,
 ) : Scene() {
     private companion object {
         const val QUEST_DETAIL_X = 6.0
@@ -68,7 +70,7 @@ class GameScene(
 
     override val coroutineContext by lazy { super.coroutineContext + views.gameWindow.coroutineDispatcher }
 
-    private val messages = Messages(localizationApi)
+    private val messages = Messages(localizationApi, worldId)
     private val resourcesLoader = GameSceneResourcesLoader()
     val battlefieldView = BattlefieldView(resourcesLoader)
     val battleUnitInfoView = BattleUnitInfoView(resourcesLoader, messages)
@@ -107,25 +109,27 @@ class GameScene(
         }
         telemetryApi.listen(eventBus)
 
+        val worldLoader = ResourcesWorldLoader()
+        val worldFile = worldLoader.worldFile(worldId)
         val terrainApi = TerrainApi(eventBus, ResourcesTerrainLoader())
         val unitApi = UnitApi(eventBus, ResourcesUnitLoader())
         val playerApi = PlayerApi(eventBus, ResourcesPlayerLoader())
-        val battlefieldApi = BattlefieldApi(terrainApi, eventBus, ResourcesBattlefieldLoader(), TomlBattlefieldEncoder(), TomlBattlefieldDecoder())
-        val buildingApi = BuildingApi(battlefieldApi, eventBus, ResourcesBuildingLoader())
+        val battlefieldApi = BattlefieldApi(terrainApi, eventBus, ResourcesBattlefieldLoader(worldFile), TomlBattlefieldEncoder(), TomlBattlefieldDecoder())
+        val buildingApi = BuildingApi(battlefieldApi, eventBus, ResourcesBuildingLoader(worldFile))
         val effectApi = EffectApi(eventBus, ResourcesEffectLoader())
         val abilityApi = AbilityApi(effectApi, eventBus, ResourcesAbilityLoader())
         val lootableItemApi = LootableItemApi(effectApi, eventBus, ResourcesLootableItemLoader())
         val lootTableApi = LootTableApi(lootableItemApi, eventBus, ResourcesLootTableLoader())
-        val battleUnitApi = BattleUnitApi(effectApi, abilityApi, unitApi, playerApi, battlefieldApi, eventBus, ResourcesBattleUnitLoader())
+        val battleUnitApi = BattleUnitApi(effectApi, abilityApi, unitApi, playerApi, battlefieldApi, eventBus, ResourcesBattleUnitLoader(worldFile))
         val lootDropApi = LootDropApi(unitApi, lootTableApi, eventBus, ResourcesLootDropLoader(), Random.Default)
         val battleApi = BattleApi(eventBus)
         val cpuBattleBrainApi = CpuBattleBrainApi(unitApi, playerApi, battleUnitApi, battlefieldApi, terrainApi, effectApi, abilityApi, eventBus, random)
         val partyApi = PartyApi(playerApi, battleUnitApi, battlefieldApi, eventBus)
         val cpuWanderBrainApi = CpuWanderBrainApi(playerApi, battleUnitApi, battlefieldApi, cpuBattleBrainApi, partyApi, eventBus)
-        val npcApi = NpcApi(battlefieldApi, lootableItemApi, partyApi, eventBus, ResourcesNpcLoader())
+        val npcApi = NpcApi(battlefieldApi, lootableItemApi, partyApi, eventBus, ResourcesNpcLoader(worldFile))
         val inventoryApi = InventoryApi(effectApi, lootableItemApi, unitApi, battleApi, partyApi, npcApi, eventBus)
-        val questApi = QuestApi(battlefieldApi, partyApi, eventBus, ResourcesQuestLoader())
-        val worldApi = WorldApi(eventBus, ResourcesWorldLoader())
+        val questApi = QuestApi(battlefieldApi, partyApi, eventBus, ResourcesQuestLoader(worldFile))
+        val worldApi = WorldApi(eventBus, worldLoader)
         val saveApi =
             SaveApi(
                 storage = storage ?: views.storage,

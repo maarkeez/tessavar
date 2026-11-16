@@ -45,7 +45,8 @@ data class Localization private constructor(
     fun translate(
         key: String,
         arguments: Map<String, String> = emptyMap(),
-    ): String = format(message(key, count = null) ?: key, arguments)
+        fallback: String? = null,
+    ): String = format(message(key, count = null) ?: fallback ?: key, arguments)
 
     fun translatePlural(
         key: String,

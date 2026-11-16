@@ -30,7 +30,6 @@ class LocalizationResourcesTest {
             "lootableItem" to listOf("name"),
             "npc" to listOf("name"),
             "player" to listOf("name"),
-            "quest" to listOf("name", "description"),
             "terrain" to listOf("name"),
             "unit" to listOf("name"),
         )
@@ -61,17 +60,23 @@ class LocalizationResourcesTest {
         }
 
     @Test
-    fun `should have a text in the source catalog for every task of every quest`() =
+    fun `should have the English of its world file as the msgid of every quest text of a translated world`() =
         runTest {
-            val missing = questTaskKeys().filter { key -> key !in sourceEntries }
-            withClue("Quest tasks missing from $SOURCE_FILE_NAME: $missing") { missing.shouldBeEmpty() }
+            val worldTexts = worldQuestTexts()
+            val stale =
+                sourceCatalog.entries
+                    .filter { entry -> entry.context?.startsWith("world.") == true }
+                    .filter { entry -> worldTexts[entry.context] != entry.id }
+                    .map { entry -> entry.context }
+            withClue("Quest texts of $SOURCE_FILE_NAME missing from their world file, or with another English text: $stale") { stale.shouldBeEmpty() }
         }
 
     @Test
-    fun `should have every line of every quest in the source catalog`() =
+    fun `should have every line every quest needs in its world file`() =
         runTest {
-            val missing = questLineKeys().filter { key -> key !in sourceEntries }
-            withClue("Quest lines missing from $SOURCE_FILE_NAME: $missing") { missing.shouldBeEmpty() }
+            val worldTexts = worldQuestTexts()
+            val missing = questLineKeys().filter { key -> worldTexts[key].isNullOrBlank() }
+            withClue("Quest lines missing from their world file: $missing") { missing.shouldBeEmpty() }
         }
 
     @Test
@@ -84,7 +89,7 @@ class LocalizationResourcesTest {
     @Test
     fun `should only have the keys the screen translates in the source catalog`() =
         runTest {
-            val keys = UiMessage.entries.map(UiMessage::key).toSet() + Localization.LANGUAGE_NAME_KEY + gameDataKeys() + questTaskKeys() + questLineKeys() + npcOwnLineKeys()
+            val keys = UiMessage.entries.map(UiMessage::key).toSet() + Localization.LANGUAGE_NAME_KEY + gameDataKeys() + worldQuestTexts().keys + npcOwnLineKeys()
             val orphans = sourceCatalog.entries.map { entry -> entry.context ?: entry.id }.filter { key -> key !in keys }
             withClue("Entries of $SOURCE_FILE_NAME the screen does not translate, or without msgctxt: $orphans") { orphans.shouldBeEmpty() }
         }
@@ -149,16 +154,35 @@ class LocalizationResourcesTest {
                     .flatMap { fileName -> fields.map { field -> "$folder.${fileName.removeSuffix(".toml")}.$field" } }
             }.toSet()
 
-    private suspend fun questTaskKeys(): Set<String> =
-        quests()
-            .flatMap { quest -> quest.tasks.indices.map { taskIndex -> "quest.${quest.id}.task.$taskIndex" } }
-            .toSet()
+    private suspend fun worldQuests(): Map<String, List<Quest.Dto>> =
+        ResourcesBundle.root["world"]
+            .listNames()
+            .filter { fileName -> fileName.endsWith(".toml") }
+            .associate { fileName ->
+                fileName.removeSuffix(".toml") to ResourcesQuestLoader(ResourcesBundle.root["world/$fileName"]).also { loader -> loader.initResources() }.loadQuests()
+            }
 
-    private suspend fun quests(): List<Quest.Dto> = ResourcesQuestLoader().also { loader -> loader.initResources() }.loadQuests()
+    private suspend fun quests(): List<Quest.Dto> = worldQuests().values.flatten()
+
+    private suspend fun worldQuestTexts(): Map<String, String?> =
+        worldQuests()
+            .flatMap { (worldId, quests) ->
+                quests.flatMap { quest ->
+                    val texts = quest.texts
+                    val lines = texts.lines
+                    (
+                        listOf("name" to texts.name, "description" to texts.description) +
+                            texts.tasks.flatMapIndexed { taskIndex, task -> listOf("task.$taskIndex" to task.text, "line.task.$taskIndex" to task.line) } +
+                            listOf("line.start" to lines.start, "line.reminder" to lines.reminder, "line.completed" to lines.completed, "line.startAgain" to lines.startAgain)
+                    ).map { (suffix, text) -> "world.$worldId.quest.${quest.id}.$suffix" to text }
+                }
+            }.filter { (_, text) -> text != null }
+            .toMap()
 
     private suspend fun questLineKeys(): Set<String> =
-        quests()
-            .flatMap { quest ->
+        worldQuests()
+            .flatMap { (worldId, quests) -> quests.map { quest -> worldId to quest } }
+            .flatMap { (worldId, quest) ->
                 val talkTaskLines =
                     quest.tasks.indices
                         .filter { taskIndex -> quest.tasks[taskIndex].type == TaskDto.TypeDto.TALK }
@@ -169,7 +193,7 @@ class LocalizationResourcesTest {
                             val hasReminder = quest.tasks.any { task -> task.talk?.npcId != questGiverNpcId }
                             listOfNotNull("start", "reminder".takeIf { hasReminder }, if (quest.repeatable) "startAgain" else "completed")
                         }.orEmpty()
-                (talkTaskLines + questGiverLines).map { line -> "quest.${quest.id}.line.$line" }
+                (talkTaskLines + questGiverLines).map { line -> "world.$worldId.quest.${quest.id}.line.$line" }
             }.toSet()
 
     private suspend fun npcOwnLineKeys(): Set<String> {

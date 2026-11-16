@@ -9,62 +9,39 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
 class ResourcesNpcLoaderTest {
-    @Test
-    fun `should load one npc per toml file when the npc resources are initialised`() =
-        runTest {
-            // Given
-            val npcRoot =
-                MemoryVfsMix(
-                    "npc/the-guy.toml" to "row = 10\ncolumn = 2\n",
-                )["npc"]
-            val loader = ResourcesNpcLoader(npcRoot = npcRoot)
-            // When
-            loader.initResources()
-            // Then
-            loader.loadNpcs().shouldContainExactly(Npc.Dto(id = "the-guy", row = 10, column = 2, unitId = null, stock = emptyList()))
-        }
+    private val files =
+        MemoryVfsMix(
+            "world/world.toml" to
+                "version = 1\n\n[[npcs]]\nid = \"the-guy\"\nrow = 10\ncolumn = 2\n\n" +
+                "[[npcs]]\nid = \"viking\"\nrow = 12\ncolumn = 2\n\n" +
+                "[[npcs]]\nid = \"merchant\"\nrow = 14\ncolumn = 2\nstock = [\"mana-potion\", \"hammer\"]\n",
+            "world/no-row.toml" to "[[npcs]]\nid = \"the-guy\"\ncolumn = 2\n",
+            "npc/the-guy.toml" to "# An npc of the game.\n",
+            "npc/merchant.toml" to "",
+            "npc/viking.toml" to "unitId = \"viking\"\n",
+        )
+
+    private suspend fun load(worldFile: String): List<Npc.Dto> = ResourcesNpcLoader(worldFile = files[worldFile], npcRoot = files["npc"]).also { loader -> loader.initResources() }.loadNpcs()
 
     @Test
-    fun `should load the unit of a recruitable npc when it has one`() =
+    fun `ResourcesNpcLoader should decode its section when given a world file, with the unit of a recruitable npc and the stock of a merchant in its order`() =
         runTest {
-            // Given
-            val npcRoot =
-                MemoryVfsMix(
-                    "npc/viking.toml" to "row = 12\ncolumn = 2\nunitId = \"viking\"\n",
-                )["npc"]
-            val loader = ResourcesNpcLoader(npcRoot = npcRoot)
             // When
-            loader.initResources()
+            val npcs = load("world/world.toml")
             // Then
-            loader.loadNpcs().shouldContainExactly(Npc.Dto(id = "viking", row = 12, column = 2, unitId = "viking", stock = emptyList()))
-        }
-
-    @Test
-    fun `should load the stock of a merchant, in its order, when it has one`() =
-        runTest {
-            // Given
-            val npcRoot =
-                MemoryVfsMix(
-                    "npc/merchant.toml" to "row = 14\ncolumn = 2\nstock = [\"mana-potion\", \"hammer\"]\n",
-                )["npc"]
-            val loader = ResourcesNpcLoader(npcRoot = npcRoot)
-            // When
-            loader.initResources()
-            // Then
-            loader.loadNpcs().shouldContainExactly(
+            npcs.shouldContainExactly(
+                Npc.Dto(id = "the-guy", row = 10, column = 2, unitId = null, stock = emptyList()),
+                Npc.Dto(id = "viking", row = 12, column = 2, unitId = "viking", stock = emptyList()),
                 Npc.Dto(id = "merchant", row = 14, column = 2, unitId = null, stock = listOf("mana-potion", "hammer")),
             )
         }
 
     @Test
-    fun `should fail with the file when the npc has no row`() =
+    fun `ResourcesNpcLoader should fail with the world file when an npc has no row`() =
         runTest {
-            // Given
-            val npcRoot = MemoryVfsMix("npc/the-guy.toml" to "column = 2\n")["npc"]
-            val loader = ResourcesNpcLoader(npcRoot = npcRoot)
             // When
-            val initialisation = suspend { loader.initResources() }
+            val loading = suspend { load("world/no-row.toml") }
             // Then
-            shouldThrow<IllegalStateException> { initialisation() }.message.shouldContain("npc/the-guy.toml")
+            shouldThrow<IllegalStateException> { loading() }.message.shouldContain("world/no-row.toml")
         }
 }

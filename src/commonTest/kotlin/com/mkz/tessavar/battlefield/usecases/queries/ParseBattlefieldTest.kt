@@ -12,7 +12,7 @@ class ParseBattlefieldTest {
     @Test
     fun `should read the terrain id of each tile when the text is a battlefield`() {
         // When
-        val tiles = parseBattlefield("tiles = [\n    [\"sand\", \"lava\"],\n]\n")
+        val tiles = parseBattlefield("[battlefield]\ntiles = [\n    [\"sand\", \"lava\"],\n]\n")
         // Then
         tiles shouldBe listOf(listOf("sand", "lava"))
     }
@@ -20,7 +20,7 @@ class ParseBattlefieldTest {
     @Test
     fun `should fail when the text is not a battlefield`() {
         // When
-        val parse = { parseBattlefield("tiles = 3") }
+        val parse = { parseBattlefield("[battlefield]\ntiles = 3") }
         // Then
         shouldThrow<InvalidBattlefieldFormat> { parse() }
     }
