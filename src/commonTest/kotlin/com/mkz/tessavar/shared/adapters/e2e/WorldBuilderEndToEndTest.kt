@@ -17,6 +17,7 @@ import com.mkz.tessavar.screen.adapters.presentation.worldBuilderCallToActionVie
 import com.mkz.tessavar.screen.adapters.presentation.worldBuilderHudView
 import com.mkz.tessavar.screen.adapters.presentation.worldBuilderInfoView
 import com.mkz.tessavar.screen.adapters.presentation.worldBuilderMenuView
+import com.mkz.tessavar.screen.adapters.presentation.worldBuilderResizeView
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.assertions.withClue
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -75,8 +76,11 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             startWorldBuilder()
+            val builderMenuView = worldBuilderMenuView()!!
+            clickMenuButton(builderMenuView)
+            clickMenuOption(builderMenuView, "Resize")
             // When
-            clickRowsStep(worldBuilderHudView()!!, step = -8)
+            clickRowsStep(worldBuilderResizeView()!!, step = -8)
             // Then
             waitUntil { battlefieldView()?.tileCount() == 128 }
             battlefieldView()!!.tileCount() shouldBe 128
@@ -87,8 +91,10 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             startWorldBuilder()
+            val builderMenuView = worldBuilderMenuView()!!
+            clickMenuButton(builderMenuView)
             // When
-            clickPrimaryAction(worldBuilderCallToActionView()!!)
+            clickMenuOption(builderMenuView, "Export")
             // Then
             waitUntil { worldBuilderInfoView()!!.subtitleText() == "World copied to the clipboard" }
             worldBuilderInfoView()!!.subtitleText() shouldBe "World copied to the clipboard"
@@ -100,7 +106,9 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
             // Given
             startWorldBuilder()
             val callToActionView = worldBuilderCallToActionView()!!
-            clickSecondaryAction(callToActionView)
+            val builderMenuView = worldBuilderMenuView()!!
+            clickMenuButton(builderMenuView)
+            clickMenuOption(builderMenuView, "Back")
             withClue("Expected leaving to be confirmed first") { callToActionView.actionLabels() shouldBe ("Stay" to "Leave") }
             // When
             clickPrimaryAction(callToActionView)
@@ -116,11 +124,13 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
             // Given
             startWorldBuilder()
             val callToActionView = worldBuilderCallToActionView()!!
-            clickSecondaryAction(callToActionView)
+            val builderMenuView = worldBuilderMenuView()!!
+            clickMenuButton(builderMenuView)
+            clickMenuOption(builderMenuView, "Back")
             // When
             clickSecondaryAction(callToActionView)
             // Then
-            callToActionView.actionLabels() shouldBe ("Back" to "Export")
+            callToActionView.actionLabels() shouldBe null
             menuView() shouldBe null
             battlefieldView() shouldNotBe null
         }
@@ -130,10 +140,10 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             startWorldBuilder()
-            val menuView = worldBuilderMenuView()!!
-            clickMenuButton(menuView)
+            val builderMenuView = worldBuilderMenuView()!!
+            clickMenuButton(builderMenuView)
             // When
-            clickMenuOption(menuView, "Import")
+            clickMenuOption(builderMenuView, "Import")
             // Then
             waitUntil { worldBuilderInfoView()!!.subtitleText() == "The file can not be read" }
             worldBuilderInfoView()!!.subtitleText() shouldBe "The file can not be read"

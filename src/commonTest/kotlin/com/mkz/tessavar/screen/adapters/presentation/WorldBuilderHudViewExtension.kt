@@ -1,32 +1,9 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.clickOn
-import com.mkz.tessavar.shared.adapters.presentation.isFaded
 import korlibs.image.bitmap.Bitmap
 import korlibs.korge.tests.ViewsForTesting
 import korlibs.korge.view.Image
-
-fun WorldBuilderHudView.rowsText(): String = rowsValue.text
-
-fun WorldBuilderHudView.columnsText(): String = columnsValue.text
-
-fun WorldBuilderHudView.enabledRowsSteps(): List<Int> = rowsStepButtons.filterValues { button -> button.enabled }.keys.sorted()
-
-fun WorldBuilderHudView.enabledColumnsSteps(): List<Int> = columnsStepButtons.filterValues { button -> button.enabled }.keys.sorted()
-
-fun WorldBuilderHudView.fadedRowsSteps(): List<Int> = rowsStepButtons.filterValues { button -> button.isFaded() }.keys.sorted()
-
-fun WorldBuilderHudView.fadedColumnsSteps(): List<Int> = columnsStepButtons.filterValues { button -> button.isFaded() }.keys.sorted()
-
-suspend fun ViewsForTesting.clickRowsStep(
-    hudView: WorldBuilderHudView,
-    step: Int,
-) = clickOn(hudView.rowsStepButtons.getValue(step))
-
-suspend fun ViewsForTesting.clickColumnsStep(
-    hudView: WorldBuilderHudView,
-    step: Int,
-) = clickOn(hudView.columnsStepButtons.getValue(step))
 
 fun WorldBuilderHudView.paletteTerrainIds(): List<String> = terrainButtons.keys.toList()
 

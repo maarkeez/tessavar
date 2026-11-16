@@ -89,6 +89,7 @@ class StorybookApi(
                 PrivacyNoticeViewStories,
                 WorldBuilderInfoViewStories,
                 WorldBuilderHudViewStories,
+                WorldBuilderResizeViewStories,
                 WorldBuilderCallToActionViewStories,
                 WorldBuilderMenuViewStories,
                 ShopViewStories,

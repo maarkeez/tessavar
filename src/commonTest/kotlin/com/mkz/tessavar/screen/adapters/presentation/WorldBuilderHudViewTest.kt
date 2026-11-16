@@ -9,17 +9,9 @@ import korlibs.korge.tests.ViewsForTesting
 import kotlin.test.Test
 
 class WorldBuilderHudViewTest : ViewsForTesting() {
-    private val sizes = mutableListOf<Pair<Int, Int>>()
     private val selectedTerrains = mutableListOf<String>()
     private val delegate =
         object : WorldBuilderHudView.Delegate {
-            override fun sizeChanged(
-                rows: Int,
-                columns: Int,
-            ) {
-                sizes += rows to columns
-            }
-
             override fun terrainSelected(terrainId: String) {
                 selectedTerrains += terrainId
             }
@@ -30,70 +22,6 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
     private val terrains = listOf(WorldBuilderHudView.TerrainOption("lava", lavaBitmap), WorldBuilderHudView.TerrainOption("sand", sandBitmap))
 
     private fun newHudView() = WorldBuilderHudView(MessagesMother.messages()).also { hudView -> hudView.setDelegate(delegate) }
-
-    @Test
-    fun `DisplaySize should display the rows and the columns when the size is displayed`() =
-        sharedViewsTest {
-            // Given
-            val hudView = newHudView()
-            // When
-            hudView.displaySize(rows = 12, columns = 40, allowedSizes = 1..128)
-            // Then
-            hudView.rowsText() shouldBe "12"
-            hudView.columnsText() shouldBe "40"
-        }
-
-    @Test
-    fun `DisplaySize should disable the steps out of 1 to 128 when the size is close to the limits`() =
-        sharedViewsTest {
-            // Given
-            val hudView = newHudView()
-            // When
-            hudView.displaySize(rows = 5, columns = 124, allowedSizes = 1..128)
-            // Then
-            hudView.enabledRowsSteps().shouldContainExactly(-1, 1, 8)
-            hudView.enabledColumnsSteps().shouldContainExactly(-8, -1, 1)
-            hudView.fadedRowsSteps().shouldContainExactly(-8)
-            hudView.fadedColumnsSteps().shouldContainExactly(8)
-        }
-
-    @Test
-    fun `DisplaySize should disable the steps out of the allowed sizes when the allowed sizes are 4 to 20`() =
-        sharedViewsTest {
-            // Given
-            val hudView = newHudView()
-            // When
-            hudView.displaySize(rows = 11, columns = 18, allowedSizes = 4..20)
-            // Then
-            hudView.enabledRowsSteps().shouldContainExactly(-1, 1, 8)
-            hudView.enabledColumnsSteps().shouldContainExactly(-8, -1, 1)
-        }
-
-    @Test
-    fun `RowsStep should ask for the size with the rows stepped when a rows step is clicked`() =
-        sharedViewsTest {
-            // Given
-            val hudView = newHudView()
-            hudView.displaySize(rows = 16, columns = 20, allowedSizes = 1..128)
-            addChild(hudView)
-            // When
-            clickRowsStep(hudView, step = 8)
-            // Then
-            sizes.shouldContainExactly(24 to 20)
-        }
-
-    @Test
-    fun `ColumnsStep should ask for the size with the columns stepped when a columns step is clicked`() =
-        sharedViewsTest {
-            // Given
-            val hudView = newHudView()
-            hudView.displaySize(rows = 16, columns = 20, allowedSizes = 1..128)
-            addChild(hudView)
-            // When
-            clickColumnsStep(hudView, step = -1)
-            // Then
-            sizes.shouldContainExactly(16 to 19)
-        }
 
     @Test
     fun `DisplayTerrains should display each terrain tile and highlight the selected one when the terrains are displayed`() =

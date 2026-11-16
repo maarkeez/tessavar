@@ -29,6 +29,7 @@ class WorldBuilderPresenterTest {
     private val battlefieldView = FakeBattlefieldView()
     private val infoView = FakeWorldBuilderInfoView()
     private val hudView = FakeWorldBuilderHudView()
+    private val resizeView = FakeWorldBuilderResizeView()
     private val callToActionView = FakeWorldBuilderCallToActionView()
     private val menuView = FakeWorldBuilderMenuView()
     private val clipboard = FakeClipboard()
@@ -40,6 +41,7 @@ class WorldBuilderPresenterTest {
             battlefieldView = battlefieldView,
             infoView = infoView,
             hudView = hudView,
+            resizeView = resizeView,
             callToActionView = callToActionView,
             menuView = menuView,
             worldBuilderApi = worldBuilderApi,
@@ -72,8 +74,6 @@ class WorldBuilderPresenterTest {
         eventBus.dispatch()
     }
 
-    private fun exportAndBack() = callToActionView.displayedActions.shouldBeInstanceOf<Actions.ExportAndBack>()
-
     @Test
     fun `WorldCreated should display the world on the battlefield as the battle would when the world is created`() {
         // When
@@ -81,8 +81,8 @@ class WorldBuilderPresenterTest {
         // Then
         battlefieldView.displayedBattlefields.shouldContainExactly(BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(List(16) { List(16) { "sand" } })))
         infoView.displayedSize shouldBe (16 to 16)
-        hudView.displayedSize shouldBe (16 to 16)
-        hudView.displayedAllowedSizes shouldBe (1..128)
+        resizeView.displayedSize shouldBe (16 to 16)
+        resizeView.displayedAllowedSizes shouldBe (1..128)
     }
 
     @Test
@@ -93,12 +93,6 @@ class WorldBuilderPresenterTest {
         hudView.displayedTerrains shouldBe
             listOf("lava", "sand", "water").map { terrainId -> WorldBuilderHudView.TerrainOption(terrainId, battlefieldView.terrainTileBitmap(terrainId, null)) }
         hudView.selectedTerrainId shouldBe "sand"
-    }
-
-    @Test
-    fun `WorldCreated should display exporting and going back when the world builder is displayed`() {
-        // Then
-        exportAndBack()
     }
 
     @Test
@@ -156,12 +150,22 @@ class WorldBuilderPresenterTest {
         // Given
         givenWorldCreated()
         // When
-        hudView.delegate!!.sizeChanged(rows = 24, columns = 8)
+        resizeView.delegate!!.sizeChanged(rows = 24, columns = 8)
         eventBus.dispatch()
         // Then
         battlefieldView.displayedBattlefields.last() shouldBe BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(List(24) { List(8) { "sand" } }))
         infoView.displayedSize shouldBe (24 to 8)
-        hudView.displayedSize shouldBe (24 to 8)
+        resizeView.displayedSize shouldBe (24 to 8)
+    }
+
+    @Test
+    fun `Resize should open the resize dialog when Resize is selected`() {
+        // Given
+        givenWorldCreated()
+        // When
+        menuView.select("Resize")
+        // Then
+        resizeView.opened shouldBe true
     }
 
     @Test
@@ -171,7 +175,7 @@ class WorldBuilderPresenterTest {
         selectTerrain("lava")
         selectTile(row = 0, column = 0)
         // When
-        exportAndBack().onExported()
+        menuView.select("Export")
         // Then
         clipboard.copiedTexts.shouldContainExactly(worldBuilderApi.exportWorld())
         infoView.infos.shouldContainExactly("World copied to the clipboard")
@@ -182,7 +186,7 @@ class WorldBuilderPresenterTest {
         // Given
         givenWorldCreated()
         // When
-        exportAndBack().onBack()
+        menuView.select("Back")
         // Then
         callToActionView.displayedActions.shouldBeInstanceOf<Actions.LeaveConfirmation>()
         infoView.infos.shouldContainExactly("The world is lost when leaving")
@@ -190,14 +194,14 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `Stay should display exporting and going back again when staying is selected`() {
+    fun `Stay should remove the leave confirmation when staying is selected`() {
         // Given
         givenWorldCreated()
-        exportAndBack().onBack()
+        menuView.select("Back")
         // When
         callToActionView.displayedActions.shouldBeInstanceOf<Actions.LeaveConfirmation>().onStayed()
         // Then
-        exportAndBack()
+        callToActionView.displayedActions shouldBe null
         leftCount shouldBe 0
     }
 
@@ -205,7 +209,7 @@ class WorldBuilderPresenterTest {
     fun `Leave should leave the world builder when leaving is confirmed`() {
         // Given
         givenWorldCreated()
-        exportAndBack().onBack()
+        menuView.select("Back")
         // When
         callToActionView.displayedActions.shouldBeInstanceOf<Actions.LeaveConfirmation>().onLeft()
         // Then
@@ -230,9 +234,9 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `WorldBuilderMenuView should offer importing a world when the world builder is displayed`() {
+    fun `WorldBuilderMenuView should offer resizing, importing, exporting and going back when the world builder is displayed`() {
         // Then
-        menuView.displayedOptions.map(WorldBuilderMenuView.Option::label).shouldContainExactly("Import")
+        menuView.displayedOptions.map(WorldBuilderMenuView.Option::label).shouldContainExactly("Resize", "Import", "Export", "Back")
     }
 
     @Test
@@ -245,7 +249,7 @@ class WorldBuilderPresenterTest {
         // Then
         battlefieldView.displayedBattlefields.last() shouldBe BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(tiles))
         infoView.displayedSize shouldBe (2 to 3)
-        hudView.displayedSize shouldBe (2 to 3)
+        resizeView.displayedSize shouldBe (2 to 3)
         infoView.infos.shouldContainExactly("World imported")
     }
 

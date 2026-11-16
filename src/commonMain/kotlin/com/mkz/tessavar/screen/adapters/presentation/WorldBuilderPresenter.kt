@@ -17,6 +17,7 @@ class WorldBuilderPresenter(
     private val battlefieldView: BattlefieldView,
     private val infoView: WorldBuilderInfoView,
     private val hudView: WorldBuilderHudView,
+    private val resizeView: WorldBuilderResizeView,
     private val callToActionView: WorldBuilderCallToActionView,
     private val menuView: WorldBuilderMenuView,
     private val worldBuilderApi: WorldBuilderApi,
@@ -29,7 +30,8 @@ class WorldBuilderPresenter(
     private val onLeft: () -> Unit,
     eventBus: EventBus,
 ) : BattlefieldView.Delegate,
-    WorldBuilderHudView.Delegate {
+    WorldBuilderHudView.Delegate,
+    WorldBuilderResizeView.Delegate {
     private val subscriptions =
         listOf(
             eventBus.subscribe<WorldBuilderEvent.WorldCreated> {
@@ -52,8 +54,15 @@ class WorldBuilderPresenter(
     init {
         battlefieldView.setDelegate(this)
         hudView.setDelegate(this)
-        menuView.displayOptions(listOf(WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_IMPORT]) { importWorld() }))
-        displayExportAndBack()
+        resizeView.setDelegate(this)
+        menuView.displayOptions(
+            listOf(
+                WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_RESIZE]) { resizeView.open() },
+                WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_IMPORT]) { importWorld() },
+                WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_EXPORT]) { exportWorld() },
+                WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_BACK]) { askToLeave() },
+            ),
+        )
     }
 
     fun dispose() {
@@ -64,7 +73,7 @@ class WorldBuilderPresenter(
         val world = worldBuilderApi.searchWorld() ?: return
         battlefieldView.displayBattlefield(BattlefieldMapper.terrain(battlefieldApi.previewBattlefield(world.tiles)))
         infoView.displaySize(rows = world.rows, columns = world.columns)
-        hudView.displaySize(rows = world.rows, columns = world.columns, allowedSizes = WorldBuilder.MINIMUM_SIZE..WorldBuilder.MAXIMUM_SIZE)
+        resizeView.displaySize(rows = world.rows, columns = world.columns, allowedSizes = WorldBuilder.MINIMUM_SIZE..WorldBuilder.MAXIMUM_SIZE)
     }
 
     private fun displayTerrains() {
@@ -86,10 +95,6 @@ class WorldBuilderPresenter(
                 .filter { (tileRow, tileColumn) -> tileRow in 0 until world.rows && tileColumn in 0 until world.columns }
                 .map { (tileRow, tileColumn) -> TilePosition(tileRow, tileColumn) }
         battlefieldView.updateTerrain(BattlefieldMapper.terrain(battlefieldApi.previewBattlefield(world.tiles)), positions)
-    }
-
-    private fun displayExportAndBack() {
-        callToActionView.displayExportAndBack(onExported = { exportWorld() }, onBack = { askToLeave() })
     }
 
     private fun exportWorld() {
@@ -131,7 +136,7 @@ class WorldBuilderPresenter(
 
     private fun askToLeave() {
         infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_WORLD_LOST_WHEN_LEAVING])
-        callToActionView.displayLeaveConfirmation(onLeft = onLeft, onStayed = { displayExportAndBack() })
+        callToActionView.displayLeaveConfirmation(onLeft = onLeft, onStayed = { callToActionView.clear() })
     }
 
     override fun tileSelected(

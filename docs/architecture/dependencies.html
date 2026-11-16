@@ -226,9 +226,9 @@ const DATA = {
     {"name": "player", "files": 15, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 34, "importsOut": 12},
     {"name": "quest", "files": 28, "fanIn": 3, "fanOut": 5, "instability": 0.63, "importsIn": 22, "importsOut": 35},
     {"name": "save", "files": 11, "fanIn": 1, "fanOut": 1, "instability": 0.5, "importsIn": 12, "importsOut": 8},
-    {"name": "screen", "files": 112, "fanIn": 1, "fanOut": 24, "instability": 0.96, "importsIn": 118, "importsOut": 287},
+    {"name": "screen", "files": 113, "fanIn": 1, "fanOut": 24, "instability": 0.96, "importsIn": 119, "importsOut": 287},
     {"name": "shared", "files": 14, "fanIn": 25, "fanOut": 0, "instability": 0.0, "importsIn": 534, "importsOut": 0},
-    {"name": "storybook", "files": 108, "fanIn": 0, "fanOut": 3, "instability": 1.0, "importsIn": 0, "importsOut": 136},
+    {"name": "storybook", "files": 109, "fanIn": 0, "fanOut": 3, "instability": 1.0, "importsIn": 0, "importsOut": 137},
     {"name": "telemetry", "files": 45, "fanIn": 2, "fanOut": 5, "instability": 0.71, "importsIn": 8, "importsOut": 41},
     {"name": "terrain", "files": 13, "fanIn": 5, "fanOut": 1, "instability": 0.17, "importsIn": 15, "importsOut": 7},
     {"name": "unit", "files": 14, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 17, "importsOut": 11},
@@ -1430,11 +1430,11 @@ const DATA = {
       {"file": "com/mkz/tessavar/screen/adapters/presentation/ShopPresenter.kt", "layer": "adapters", "name": "shared.domain.subscribe"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/ShopView.kt", "layer": "adapters", "name": "shared.adapters.presentation.GameButton"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/ShopView.kt", "layer": "adapters", "name": "shared.adapters.presentation.gameButton"},
-      {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderHudView.kt", "layer": "adapters", "name": "shared.adapters.presentation.GameButton"},
-      {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderHudView.kt", "layer": "adapters", "name": "shared.adapters.presentation.gameButton"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderPresenter.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderPresenter.kt", "layer": "adapters", "name": "shared.domain.Subscription"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderPresenter.kt", "layer": "adapters", "name": "shared.domain.subscribe"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderResizeView.kt", "layer": "adapters", "name": "shared.adapters.presentation.GameButton"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderResizeView.kt", "layer": "adapters", "name": "shared.adapters.presentation.gameButton"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderScene.kt", "layer": "adapters", "name": "shared.adapters.events.InMemoryEventBus"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/selection/adapters/presentation/SelectionApi.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/selection/domain/SelectionEvent.kt", "layer": "adapters", "name": "shared.domain.DomainEvent"},
@@ -1479,7 +1479,7 @@ const DATA = {
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/StorybookScene.kt", "layer": "adapters", "name": "localization.adapters.presentation.LocalizationApi"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/ToolbarView.kt", "layer": "adapters", "name": "localization.domain.Localization.Dto.LanguageDto"}
     ]},
-    {"from": "storybook", "to": "screen", "weight": 118, "files": 66, "imports": [
+    {"from": "storybook", "to": "screen", "weight": 119, "files": 67, "imports": [
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/AbilityButtonViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.AbilityButtonView"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/AbilityInfoViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.AbilityInfoView"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/AbilityInfoViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.AbilityInfoView.AbilityInfo"},
@@ -1597,7 +1597,8 @@ const DATA = {
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/WorldBuilderHudViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.WorldBuilderHudView"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/WorldBuilderInfoViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.WorldBuilderInfoView"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/WorldBuilderMenuViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.UiMessage"},
-      {"file": "com/mkz/tessavar/storybook/adapters/presentation/WorldBuilderMenuViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.WorldBuilderMenuView"}
+      {"file": "com/mkz/tessavar/storybook/adapters/presentation/WorldBuilderMenuViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.WorldBuilderMenuView"},
+      {"file": "com/mkz/tessavar/storybook/adapters/presentation/WorldBuilderResizeViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.WorldBuilderResizeView"}
     ]},
     {"from": "storybook", "to": "shared", "weight": 16, "files": 14, "imports": [
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/BarViewStories.kt", "layer": "adapters", "name": "shared.adapters.presentation.BarView"},

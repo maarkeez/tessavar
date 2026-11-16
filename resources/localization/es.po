@@ -435,27 +435,27 @@ msgctxt "ui.worldBuilderInfo.size"
 msgid "{rows} x {columns}"
 msgstr "{rows} x {columns}"
 
-msgctxt "ui.worldBuilderHud.rows"
-msgid "Rows"
-msgstr "Filas"
-
-msgctxt "ui.worldBuilderHud.columns"
-msgid "Columns"
-msgstr "Columnas"
-
 msgctxt "ui.worldBuilderHud.terrain"
 msgid "Terrain"
 msgstr "Terreno"
 
-#. Goes back to the menu.
-msgctxt "ui.worldBuilderCallToAction.back"
-msgid "Back"
-msgstr "Volver"
+#. The title of the dialog that changes how many tiles tall and wide the world is.
+msgctxt "ui.worldBuilderResize.title"
+msgid "Resize the world"
+msgstr "Cambiar el tamaño del mundo"
 
-#. Copies the world to the clipboard.
-msgctxt "ui.worldBuilderCallToAction.export"
-msgid "Export"
-msgstr "Exportar"
+msgctxt "ui.worldBuilderResize.rows"
+msgid "Rows"
+msgstr "Filas"
+
+msgctxt "ui.worldBuilderResize.columns"
+msgid "Columns"
+msgstr "Columnas"
+
+#. Closes the dialog.
+msgctxt "ui.worldBuilderResize.done"
+msgid "Done"
+msgstr "Hecho"
 
 msgctxt "ui.worldBuilderCallToAction.stay"
 msgid "Stay"
@@ -466,10 +466,25 @@ msgctxt "ui.worldBuilderCallToAction.leave"
 msgid "Leave"
 msgstr "Salir"
 
+#. Opens the dialog that changes how many tiles tall and wide the world is.
+msgctxt "ui.worldBuilderMenu.resize"
+msgid "Resize"
+msgstr "Cambiar tamaño"
+
 #. Imports a world from a file.
 msgctxt "ui.worldBuilderMenu.import"
 msgid "Import"
 msgstr "Importar"
+
+#. Saves the world in a file.
+msgctxt "ui.worldBuilderMenu.export"
+msgid "Export"
+msgstr "Exportar"
+
+#. Goes back to the menu.
+msgctxt "ui.worldBuilderMenu.back"
+msgid "Back"
+msgstr "Volver"
 
 msgctxt "ui.worldBuilder.worldCopied"
 msgid "World copied to the clipboard"

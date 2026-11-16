@@ -12,8 +12,10 @@ import korlibs.korge.view.addUpdater
 import korlibs.math.geom.Size
 
 object WorldBuilderMenuViewStories : StoryBinding {
-    private const val OPTIONS_LIMIT = 6
+    private const val OPTIONS_LIMIT = 10
     private val BUTTON_SIZE = Size(WorldBuilderMenuView.BUTTON_WIDTH, WorldBuilderMenuView.BUTTON_HEIGHT)
+
+    private val WORLD_BUILDER_OPTIONS = listOf(UiMessage.WORLD_BUILDER_RESIZE, UiMessage.WORLD_BUILDER_IMPORT, UiMessage.WORLD_BUILDER_EXPORT, UiMessage.WORLD_BUILDER_BACK)
 
     private const val OPEN = "open"
     private const val OPTIONS = "options"
@@ -23,7 +25,7 @@ object WorldBuilderMenuViewStories : StoryBinding {
         StoryDto(
             id = "screen-world-builder-menu--open",
             name = "Open",
-            description = "The options below the button, as the world builder lists them: Import.",
+            description = "The options below the button, as the world builder lists them: Resize, Import, Export and Back.",
             args =
                 mapOf(
                     OPEN to ValueDto.boolean(true),
@@ -34,7 +36,7 @@ object WorldBuilderMenuViewStories : StoryBinding {
             id = "screen-world-builder-menu--several-options",
             name = "Several options",
             description = "More options than the world builder has, one under the other.",
-            args = mapOf(OPEN to ValueDto.boolean(true), OPTIONS to ValueDto.int(4)),
+            args = mapOf(OPEN to ValueDto.boolean(true), OPTIONS to ValueDto.int(OPTIONS_LIMIT)),
         )
 
     override fun component(context: StoryContext) =
@@ -44,7 +46,7 @@ object WorldBuilderMenuViewStories : StoryBinding {
             title = "World builder menu",
             description = "At the top right of the world builder: a hamburger button which opens a list of options below it, over the screen. open: whether the options are listed. options: how many.",
             controls = listOf(ControlDto.boolean(OPEN), ControlDto.int(OPTIONS, minimum = 1, maximum = OPTIONS_LIMIT)),
-            args = mapOf(OPEN to ValueDto.boolean(false), OPTIONS to ValueDto.int(1)),
+            args = mapOf(OPEN to ValueDto.boolean(false), OPTIONS to ValueDto.int(WORLD_BUILDER_OPTIONS.size)),
             stories = listOf(closed, open, severalOptions),
         )
 
@@ -52,7 +54,8 @@ object WorldBuilderMenuViewStories : StoryBinding {
         args: Args,
         context: StoryContext,
     ): View {
-        val labels = listOf(context.messages[UiMessage.WORLD_BUILDER_IMPORT]) + (2..args.int(OPTIONS)).map { number -> "Option $number" }
+        val worldBuilderLabels = WORLD_BUILDER_OPTIONS.map { message -> context.messages[message] }
+        val labels = (1..args.int(OPTIONS)).map { number -> worldBuilderLabels.getOrElse(number - 1) { "Option $number" } }
         val menuView =
             WorldBuilderMenuView().apply {
                 displayOptions(

@@ -18,6 +18,7 @@ import korlibs.korge.ui.uiSpacing
 import korlibs.korge.ui.uiVerticalStack
 import korlibs.korge.view.SContainer
 import korlibs.korge.view.addUpdater
+import korlibs.korge.view.container
 import korlibs.math.geom.Size
 
 class WorldBuilderScene(
@@ -36,6 +37,7 @@ class WorldBuilderScene(
     val battlefieldView = BattlefieldView(resourcesLoader)
     val infoView = WorldBuilderInfoView(messages)
     val hudView = WorldBuilderHudView(messages)
+    val resizeView = WorldBuilderResizeView(messages)
     val callToActionView = WorldBuilderCallToActionView(messages)
     val menuView = WorldBuilderMenuView()
 
@@ -59,6 +61,7 @@ class WorldBuilderScene(
             battlefieldView = battlefieldView,
             infoView = infoView,
             hudView = hudView,
+            resizeView = resizeView,
             callToActionView = callToActionView,
             menuView = menuView,
             worldBuilderApi = worldBuilderApi,
@@ -78,7 +81,10 @@ class WorldBuilderScene(
             addChild(battlefieldView)
             uiVerticalStack(padding = 5.0) {
                 uiSpacing(Size(0, 10))
-                addChild(hudView)
+                container {
+                    addChild(hudView)
+                    addChild(resizeView)
+                }
                 uiSpacing(Size(0, 5))
                 addChild(callToActionView)
             }

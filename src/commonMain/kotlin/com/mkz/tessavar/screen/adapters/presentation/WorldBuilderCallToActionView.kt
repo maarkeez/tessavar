@@ -10,18 +10,15 @@ open class WorldBuilderCallToActionView(
         const val CALL_TO_ACTION = "CALL_TO_ACTION"
     }
 
-    open fun displayExportAndBack(
-        onExported: () -> Unit,
-        onBack: () -> Unit,
-    ) {
-        display(CancelAndConfirmView(onCancelled = onBack, onConfirmed = onExported, cancelLabel = messages[UiMessage.WORLD_BUILDER_BACK], confirmLabel = messages[UiMessage.WORLD_BUILDER_EXPORT]))
-    }
-
     open fun displayLeaveConfirmation(
         onLeft: () -> Unit,
         onStayed: () -> Unit,
     ) {
         display(CancelAndConfirmView(onCancelled = onStayed, onConfirmed = onLeft, cancelLabel = messages[UiMessage.WORLD_BUILDER_STAY], confirmLabel = messages[UiMessage.WORLD_BUILDER_LEAVE]))
+    }
+
+    open fun clear() {
+        callToAction?.removeFromParent()
     }
 
     internal val callToAction: CancelAndConfirmView?

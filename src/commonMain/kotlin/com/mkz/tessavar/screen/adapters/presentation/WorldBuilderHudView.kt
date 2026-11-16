@@ -1,17 +1,12 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import com.mkz.tessavar.shared.adapters.presentation.GameButton
-import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.bitmap.Bitmap
 import korlibs.image.color.Colors
-import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
-import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIButton
 import korlibs.korge.ui.UIContainer
-import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiButton
 import korlibs.korge.ui.uiHorizontalStack
 import korlibs.korge.ui.uiText
@@ -27,10 +22,7 @@ open class WorldBuilderHudView(
     messages: Messages,
 ) : UIContainer(Size(width = 390, height = 300)) {
     companion object {
-        val SIZE_STEPS = listOf(-8, -1, 1, 8)
-        const val STEP_BUTTON_WIDTH = 44.0
         const val LABEL_WIDTH = 80.0
-        const val VALUE_WIDTH = 50.0
 
         const val TERRAIN_BUTTON_SIZE = 48.0
         const val TERRAIN_SCALE = 3.0
@@ -44,58 +36,24 @@ open class WorldBuilderHudView(
     )
 
     interface Delegate {
-        fun sizeChanged(
-            rows: Int,
-            columns: Int,
-        )
-
         fun terrainSelected(terrainId: String)
     }
 
     private var delegate: Delegate? = null
-    private var rows = 0
-    private var columns = 0
-    private var allowedSizes = IntRange.EMPTY
 
-    internal val rowsValue: UIText
-    internal val columnsValue: UIText
-    internal val rowsStepButtons: Map<Int, GameButton>
-    internal val columnsStepButtons: Map<Int, GameButton>
     internal lateinit var terrainPalette: Container
     internal val terrainButtons = mutableMapOf<String, UIButton>()
     internal var selectionBorder: SolidRect? = null
 
     init {
-        lateinit var rowsStepper: Pair<UIText, Map<Int, GameButton>>
-        lateinit var columnsStepper: Pair<UIText, Map<Int, GameButton>>
         uiVerticalStack(padding = 10.0) {
-            rowsStepper = stepper(label = messages[UiMessage.WORLD_BUILDER_HUD_ROWS]) { step -> delegate?.sizeChanged(rows = rows + step, columns = columns) }
-            columnsStepper = stepper(label = messages[UiMessage.WORLD_BUILDER_HUD_COLUMNS]) { step -> delegate?.sizeChanged(rows = rows, columns = columns + step) }
             uiText(text = messages[UiMessage.WORLD_BUILDER_HUD_TERRAIN], size = Size(width = LABEL_WIDTH, height = 20)) { styles.textSize = 15.0 }
             terrainPalette = container()
         }
-        rowsValue = rowsStepper.first
-        rowsStepButtons = rowsStepper.second
-        columnsValue = columnsStepper.first
-        columnsStepButtons = columnsStepper.second
     }
 
     open fun setDelegate(delegate: Delegate) {
         this.delegate = delegate
-    }
-
-    open fun displaySize(
-        rows: Int,
-        columns: Int,
-        allowedSizes: IntRange,
-    ) {
-        this.rows = rows
-        this.columns = columns
-        this.allowedSizes = allowedSizes
-        rowsValue.text = "$rows"
-        columnsValue.text = "$columns"
-        rowsStepButtons.forEach { (step, button) -> button.enabled = isAllowedSize(rows + step) }
-        columnsStepButtons.forEach { (step, button) -> button.enabled = isAllowedSize(columns + step) }
     }
 
     open fun displayTerrains(
@@ -136,36 +94,4 @@ open class WorldBuilderHudView(
             }
         terrainPalette.sendChildToBack(selectionBorder!!)
     }
-
-    private fun isAllowedSize(size: Int): Boolean = size in allowedSizes
-
-    private fun Container.stepper(
-        label: String,
-        onStep: (Int) -> Unit,
-    ): Pair<UIText, Map<Int, GameButton>> {
-        lateinit var value: UIText
-        val stepButtons = mutableMapOf<Int, GameButton>()
-        uiHorizontalStack(padding = 4.0) {
-            uiText(text = label, size = Size(width = LABEL_WIDTH, height = 32)) {
-                styles.textSize = 15.0
-                styles.textAlignment = TextAlignment.MIDDLE_LEFT
-            }
-            SIZE_STEPS.filter { step -> step < 0 }.forEach { step -> stepButtons[step] = stepButton(step, onStep) }
-            value =
-                uiText(text = "", size = Size(width = VALUE_WIDTH, height = 32)) {
-                    styles.textSize = 15.0
-                    styles.textAlignment = TextAlignment.MIDDLE_CENTER
-                }
-            SIZE_STEPS.filter { step -> step > 0 }.forEach { step -> stepButtons[step] = stepButton(step, onStep) }
-        }
-        return value to stepButtons
-    }
-
-    private fun Container.stepButton(
-        step: Int,
-        onStep: (Int) -> Unit,
-    ): GameButton =
-        gameButton(label = if (step > 0) "+$step" else "$step", size = Size(STEP_BUTTON_WIDTH, 32.0)) {
-            onClick { onStep(step) }
-        }
 }

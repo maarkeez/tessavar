@@ -10,36 +10,10 @@ class WorldBuilderCallToActionViewTest : ViewsForTesting() {
     private val actions = mutableListOf<String>()
 
     @Test
-    fun `DisplayExportAndBack should display going back and exporting when it is displayed`() =
+    fun `DisplayLeaveConfirmation should display staying and leaving when it is displayed`() =
         sharedViewsTest {
             // Given
             val callToActionView = WorldBuilderCallToActionView(MessagesMother.messages())
-            // When
-            callToActionView.displayExportAndBack(onExported = {}, onBack = {})
-            // Then
-            callToActionView.actionLabels() shouldBe ("Back" to "Export")
-        }
-
-    @Test
-    fun `DisplayExportAndBack should export and go back when they are clicked`() =
-        sharedViewsTest {
-            // Given
-            val callToActionView = WorldBuilderCallToActionView(MessagesMother.messages())
-            callToActionView.displayExportAndBack(onExported = { actions += "export" }, onBack = { actions += "back" })
-            addChild(callToActionView)
-            // When
-            clickPrimaryAction(callToActionView)
-            clickSecondaryAction(callToActionView)
-            // Then
-            actions.shouldContainExactly("export", "back")
-        }
-
-    @Test
-    fun `DisplayLeaveConfirmation should replace the actions with staying and leaving when it is displayed`() =
-        sharedViewsTest {
-            // Given
-            val callToActionView = WorldBuilderCallToActionView(MessagesMother.messages())
-            callToActionView.displayExportAndBack(onExported = {}, onBack = {})
             // When
             callToActionView.displayLeaveConfirmation(onLeft = {}, onStayed = {})
             // Then
@@ -58,5 +32,17 @@ class WorldBuilderCallToActionViewTest : ViewsForTesting() {
             clickSecondaryAction(callToActionView)
             // Then
             actions.shouldContainExactly("leave", "stay")
+        }
+
+    @Test
+    fun `Clear should remove the leave confirmation when it is cleared`() =
+        sharedViewsTest {
+            // Given
+            val callToActionView = WorldBuilderCallToActionView(MessagesMother.messages())
+            callToActionView.displayLeaveConfirmation(onLeft = {}, onStayed = {})
+            // When
+            callToActionView.clear()
+            // Then
+            callToActionView.actionLabels() shouldBe null
         }
 }
