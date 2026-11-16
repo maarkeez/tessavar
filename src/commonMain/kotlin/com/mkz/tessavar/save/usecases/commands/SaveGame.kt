@@ -12,6 +12,7 @@ class SaveGame(
     private val canSave: () -> Boolean,
     private val leaderUnitId: () -> String?,
     private val partySize: () -> Int,
+    private val worldId: String,
     private val nowUnixMillis: () -> Double,
     private val eventBus: EventBus,
 ) {
@@ -19,7 +20,7 @@ class SaveGame(
         Save.requireSlot(slot)
         if (!canSave()) throw NotPaused()
         val snapshots = snapshottables.associate { snapshottable -> snapshottable.key to snapshottable.snapshot() }
-        val (events, save) = Save.save(slot = slot, savedAt = nowUnixMillis(), leaderUnitId = leaderUnitId(), partySize = partySize(), snapshots = snapshots).pullEvents()
+        val (events, save) = Save.save(slot = slot, savedAt = nowUnixMillis(), leaderUnitId = leaderUnitId(), partySize = partySize(), worldId = worldId, snapshots = snapshots).pullEvents()
         saveRepository.save(save)
         eventBus.publish(events)
     }

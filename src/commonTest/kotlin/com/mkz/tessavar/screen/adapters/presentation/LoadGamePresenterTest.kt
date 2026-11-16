@@ -10,6 +10,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldEndWith
+import io.kotest.matchers.string.shouldStartWith
 import korlibs.korge.service.storage.InmemoryStorage
 import korlibs.time.DateTime
 import kotlin.test.Test
@@ -25,6 +26,7 @@ class LoadGamePresenterTest {
             canSave = { false },
             leaderUnitId = { null },
             partySize = { 0 },
+            worldId = "tessavar",
             now = { DateTime.nowUnixMillis() },
         )
     private val menuView = MenuView(texts, onNewGameSelected = {}, onLoadGameSelected = {}, onWorldBuilderSelected = {}, onPrivacySelected = {}, onWishlistSelected = {})
@@ -32,16 +34,17 @@ class LoadGamePresenterTest {
     private val confirmDialogView = ConfirmDialogView()
     private val callToActionView = FakeCallToActionView()
     private val loadedSlots = mutableListOf<Int>()
+    private val loadedWorldIds = mutableListOf<String>()
 
     init {
-        storage["save.slot2"] = """{"summary":{"version":${Save.SAVE_VERSION},"savedAt":0.0,"leaderUnitId":"knight","partySize":3},"snapshots":{}}"""
+        storage["save.slot2"] = """{"summary":{"version":${Save.SAVE_VERSION},"savedAt":0.0,"leaderUnitId":"knight","partySize":3,"worldId":"tessavar"},"snapshots":{}}"""
         storage["save.slot3"] = """{"summary":{"version":0,"savedAt":0.0,"leaderUnitId":"knight","partySize":1},"snapshots":{}}"""
     }
 
     private fun presenter(incompatibleSlot: Int? = null) =
-        LoadGamePresenter(menuView, saveSlotsView, confirmDialogView, callToActionView, saveApi, texts, incompatibleSlot) { slot ->
-            loadedSlots +=
-                slot
+        LoadGamePresenter(menuView, saveSlotsView, confirmDialogView, callToActionView, saveApi, texts, { worldId -> "Tessavar".takeIf { worldId == "tessavar" } }, incompatibleSlot) { slot, worldId ->
+            loadedSlots += slot
+            loadedWorldIds += worldId
         }
 
     private fun slotStates() = saveApi.searchSaveSlots().map(Save.Dto.SlotDto::state)
@@ -57,6 +60,7 @@ class LoadGamePresenterTest {
         saveSlotsView.visible.shouldBeTrue()
         saveSlotsView.title() shouldBe "Load a game"
         saveSlotsView.slotLabels()[0] shouldBe "Empty"
+        saveSlotsView.slotLabels()[1] shouldStartWith "Tessavar · "
         saveSlotsView.slotLabels()[1] shouldEndWith "Knight · party of 3"
         saveSlotsView.slotLabels()[2] shouldBe "Incompatible save"
         saveSlotsView.enabledSlots().shouldContainExactly(false, true, false)
@@ -71,6 +75,19 @@ class LoadGamePresenterTest {
         presenter.saveSlotSelected(2)
         // Then
         loadedSlots.shouldContainExactly(2)
+        loadedWorldIds.shouldContainExactly("tessavar")
+    }
+
+    @Test
+    fun `LoadGamePresenter should list a save as incompatible when its world is no longer shipped`() {
+        // Given
+        storage["save.slot1"] = """{"summary":{"version":${Save.SAVE_VERSION},"savedAt":0.0,"leaderUnitId":"knight","partySize":3,"worldId":"the-sunken-keep"},"snapshots":{}}"""
+        val presenter = presenter().apply { open() }
+        // When
+        presenter.saveSlotSelected(1)
+        // Then
+        saveSlotsView.slotLabels()[0] shouldBe "Incompatible save"
+        loadedSlots.shouldBeEmpty()
     }
 
     @Test

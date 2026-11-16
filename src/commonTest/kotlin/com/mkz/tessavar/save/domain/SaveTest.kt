@@ -6,15 +6,16 @@ import io.kotest.matchers.types.shouldBeTypeOf
 import kotlin.test.Test
 
 class SaveTest {
-    private fun saved(slot: Int = 2) = Save.save(slot = slot, savedAt = 1_793_385_720_000.0, leaderUnitId = "knight", partySize = 3, snapshots = mapOf("party" to "{}")).pullEvents().second
+    private fun saved(slot: Int = 2) =
+        Save.save(slot = slot, savedAt = 1_793_385_720_000.0, leaderUnitId = "knight", partySize = 3, worldId = "tessavar", snapshots = mapOf("party" to "{}")).pullEvents().second
 
     @Test
     fun `Save should announce the game is saved into the slot`() {
         // When
-        val save = Save.save(slot = 2, savedAt = 0.0, leaderUnitId = "knight", partySize = 3, snapshots = emptyMap())
+        val save = Save.save(slot = 2, savedAt = 0.0, leaderUnitId = "knight", partySize = 3, worldId = "tessavar", snapshots = emptyMap())
         // Then
         save.pullEvents().first.shouldContainExactly(SaveEvent.GameSaved(slot = 2))
-        save.toDto().summary shouldBe Save.Dto.SummaryDto(version = Save.SAVE_VERSION, savedAt = 0.0, leaderUnitId = "knight", partySize = 3)
+        save.toDto().summary shouldBe Save.Dto.SummaryDto(version = Save.SAVE_VERSION, savedAt = 0.0, leaderUnitId = "knight", partySize = 3, worldId = "tessavar")
     }
 
     @Test

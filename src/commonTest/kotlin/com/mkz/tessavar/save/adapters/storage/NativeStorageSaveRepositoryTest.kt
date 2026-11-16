@@ -13,7 +13,7 @@ class NativeStorageSaveRepositoryTest {
     private val storage = InmemoryStorage()
     private val repository = NativeStorageSaveRepository(storage)
     private val save =
-        Save.save(slot = 2, savedAt = 1_793_385_720_000.0, leaderUnitId = "knight", partySize = 3, snapshots = mapOf("party" to """{"playerId":"human"}""")).pullEvents().second
+        Save.save(slot = 2, savedAt = 1_793_385_720_000.0, leaderUnitId = "knight", partySize = 3, worldId = "tessavar", snapshots = mapOf("party" to """{"playerId":"human"}""")).pullEvents().second
 
     @Test
     fun `Search should read the game as it was saved when a game is saved in the slot`() {

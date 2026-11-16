@@ -6,6 +6,9 @@ import com.mkz.tessavar.save.adapters.presentation.SaveApi
 import com.mkz.tessavar.shared.adapters.events.InMemoryEventBus
 import com.mkz.tessavar.telemetry.adapters.presentation.TelemetryApi
 import com.mkz.tessavar.telemetry.domain.TelemetryEvent
+import com.mkz.tessavar.world.adapters.presentation.WorldApi
+import com.mkz.tessavar.world.adapters.resources.ResourcesWorldLoader
+import com.mkz.tessavar.world.domain.World
 import korlibs.io.async.launchImmediately
 import korlibs.korge.scene.Scene
 import korlibs.korge.service.storage.IStorage
@@ -40,6 +43,8 @@ class MenuScene(
         val eventBus = InMemoryEventBus()
         addUpdater { eventBus.dispatch() }
         telemetryApi.listen(eventBus)
+        val worldApi = WorldApi(eventBus, ResourcesWorldLoader())
+        worldApi.init()
         val saveApi =
             SaveApi(
                 storage = storage ?: views.storage,
@@ -48,6 +53,7 @@ class MenuScene(
                 canSave = { false },
                 leaderUnitId = { null },
                 partySize = { 0 },
+                worldId = World.CAMPAIGN_ID,
                 now = { DateTime.nowUnixMillis() },
             )
         lateinit var loadGamePresenter: LoadGamePresenter
@@ -72,8 +78,8 @@ class MenuScene(
         listOf(menuView, saveSlotsView, confirmDialogView, callToActionView, consentView, privacyNoticeView).forEach(::addChild)
         listOf(saveSlotsView, confirmDialogView).forEach { view -> view.y = (GAME_WINDOW_SIZE.height - PANEL_HEIGHT) / 2 }
         loadGamePresenter =
-            LoadGamePresenter(menuView, saveSlotsView, confirmDialogView, callToActionView, saveApi, messages, incompatibleSlot) { slot ->
-                launchImmediately { sceneContainer.changeTo { GameScene(localizationApi, telemetryApi, storage, random, slot) } }
+            LoadGamePresenter(menuView, saveSlotsView, confirmDialogView, callToActionView, saveApi, messages, { id -> worldApi.searchWorld(id)?.name }, incompatibleSlot) { slot, worldId ->
+                launchImmediately { sceneContainer.changeTo { GameScene(localizationApi, telemetryApi, storage, random, slot, worldId) } }
             }
         consentPresenter = ConsentPresenter(consentView, privacyNoticeView, telemetryApi)
         eventBus.publish(TelemetryEvent.RequestRecordMainMenuOpened)

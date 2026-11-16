@@ -21,7 +21,7 @@ class SaveGameTest {
     private val snapshottables = listOf(FakeSnapshottable("battleUnit"), FakeSnapshottable("battlefield"), FakeSnapshottable("party"))
     private var isPaused = true
 
-    private val saveGame = SaveGame(saveRepository, snapshottables, { isPaused }, { "knight" }, { 3 }, { 1_793_385_720_000.0 }, eventBus)
+    private val saveGame = SaveGame(saveRepository, snapshottables, { isPaused }, { "knight" }, { 3 }, "tessavar", { 1_793_385_720_000.0 }, eventBus)
 
     @Test
     fun `SaveGame should write every snapshot in order when the party is exploring`() {
@@ -33,7 +33,7 @@ class SaveGameTest {
             .toList()
             .shouldContainExactly("battleUnit", "battlefield", "party")
         save.snapshots["party"] shouldBe "{\"party\":1}"
-        save.summary shouldBe Save.Dto.SummaryDto(version = Save.SAVE_VERSION, savedAt = 1_793_385_720_000.0, leaderUnitId = "knight", partySize = 3)
+        save.summary shouldBe Save.Dto.SummaryDto(version = Save.SAVE_VERSION, savedAt = 1_793_385_720_000.0, leaderUnitId = "knight", partySize = 3, worldId = "tessavar")
         eventBus.shouldHavePublishedEvents(SaveEvent.GameSaved(slot = 2))
     }
 

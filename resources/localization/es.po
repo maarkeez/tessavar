@@ -396,10 +396,10 @@ msgctxt "ui.saveSlots.incompatible"
 msgid "Incompatible save"
 msgstr "Partida incompatible"
 
-#. A save slot with a game saved in it. {date}: when it was saved, {leader}: the party leader's name, {members}: the party size.
+#. A save slot with a game saved in it. {world}: the name of the world it is played in, {date}: when it was saved, {leader}: the party leader's name, {members}: the party size.
 msgctxt "ui.saveSlots.summary"
-msgid "{date} · {leader} · party of {members}"
-msgstr "{date} · {leader} · grupo de {members}"
+msgid "{world} · {date} · {leader} · party of {members}"
+msgstr "{world} · {date} · {leader} · grupo de {members}"
 
 #. Deletes the game saved in the slot, once confirmed.
 msgctxt "ui.saveSlots.delete"

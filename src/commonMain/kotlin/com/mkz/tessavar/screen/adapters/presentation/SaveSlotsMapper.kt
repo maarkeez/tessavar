@@ -12,11 +12,12 @@ object SaveSlotsMapper {
         slots: List<Save.Dto.SlotDto>,
         messages: Messages,
         isLoading: Boolean,
+        worldName: (worldId: String) -> String?,
     ): List<SaveSlotsView.Slot> =
         slots.map { slot ->
             SaveSlotsView.Slot(
                 number = slot.slot,
-                label = label(slot, messages),
+                label = label(slot, messages, worldName),
                 isEnabled = !isLoading || slot.state == Save.Dto.SlotStateDto.SAVED,
                 isDeletable = isLoading && slot.state != Save.Dto.SlotStateDto.EMPTY,
             )
@@ -25,6 +26,7 @@ object SaveSlotsMapper {
     private fun label(
         slot: Save.Dto.SlotDto,
         messages: Messages,
+        worldName: (worldId: String) -> String?,
     ): String {
         val summary = slot.summary
         return when {
@@ -33,6 +35,7 @@ object SaveSlotsMapper {
             else ->
                 messages[
                     UiMessage.SAVE_SLOTS_SUMMARY,
+                    "world" to (summary.worldId?.let(worldName) ?: "-"),
                     "date" to DateTime.fromUnixMillis(summary.savedAt).local.format(DATE_FORMAT),
                     "leader" to (summary.leaderUnitId?.let(messages::unitName) ?: "-"),
                     "members" to summary.partySize,

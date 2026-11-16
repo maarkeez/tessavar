@@ -225,13 +225,13 @@ const DATA = {
     {"name": "player", "files": 15, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 34, "importsOut": 12},
     {"name": "quest", "files": 28, "fanIn": 3, "fanOut": 5, "instability": 0.63, "importsIn": 23, "importsOut": 35},
     {"name": "save", "files": 11, "fanIn": 1, "fanOut": 1, "instability": 0.5, "importsIn": 12, "importsOut": 8},
-    {"name": "screen", "files": 112, "fanIn": 1, "fanOut": 24, "instability": 0.96, "importsIn": 118, "importsOut": 293},
+    {"name": "screen", "files": 112, "fanIn": 1, "fanOut": 24, "instability": 0.96, "importsIn": 118, "importsOut": 296},
     {"name": "shared", "files": 14, "fanIn": 25, "fanOut": 0, "instability": 0.0, "importsIn": 546, "importsOut": 0},
     {"name": "storybook", "files": 108, "fanIn": 0, "fanOut": 3, "instability": 1.0, "importsIn": 0, "importsOut": 136},
     {"name": "telemetry", "files": 45, "fanIn": 2, "fanOut": 5, "instability": 0.71, "importsIn": 8, "importsOut": 41},
     {"name": "terrain", "files": 13, "fanIn": 5, "fanOut": 1, "instability": 0.17, "importsIn": 16, "importsOut": 7},
     {"name": "unit", "files": 14, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 17, "importsOut": 11},
-    {"name": "world", "files": 8, "fanIn": 1, "fanOut": 16, "instability": 0.94, "importsIn": 4, "importsOut": 20},
+    {"name": "world", "files": 8, "fanIn": 1, "fanOut": 16, "instability": 0.94, "importsIn": 7, "importsOut": 20},
     {"name": "worldBuilder", "files": 17, "fanIn": 1, "fanOut": 3, "instability": 0.75, "importsIn": 5, "importsOut": 22}
   ],
   "edges": [
@@ -1423,10 +1423,13 @@ const DATA = {
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "unit.adapters.presentation.UnitApi"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "unit.adapters.resources.ResourcesUnitLoader"}
     ]},
-    {"from": "screen", "to": "world", "weight": 4, "files": 2, "imports": [
+    {"from": "screen", "to": "world", "weight": 7, "files": 3, "imports": [
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.adapters.presentation.WorldApi"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.adapters.resources.ResourcesWorldLoader"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.domain.World"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/MenuScene.kt", "layer": "adapters", "name": "world.adapters.presentation.WorldApi"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/MenuScene.kt", "layer": "adapters", "name": "world.adapters.resources.ResourcesWorldLoader"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/MenuScene.kt", "layer": "adapters", "name": "world.domain.World"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/Messages.kt", "layer": "adapters", "name": "world.domain.World"}
     ]},
     {"from": "screen", "to": "worldBuilder", "weight": 5, "files": 2, "imports": [

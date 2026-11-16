@@ -30,7 +30,7 @@ class LoadGameTest {
         )
 
     private fun save(snapshots: Map<String, String> = mapOf("battleUnit" to "{\"hp\":18}", "battlefield" to "{}", "party" to "{}")) =
-        saveRepository.save(Save.save(slot = 2, savedAt = 0.0, leaderUnitId = "knight", partySize = 3, snapshots = snapshots))
+        saveRepository.save(Save.save(slot = 2, savedAt = 0.0, leaderUnitId = "knight", partySize = 3, worldId = "tessavar", snapshots = snapshots))
 
     @Test
     fun `LoadGame should load every snapshot in order and publish GameLoaded when the slot is compatible`() {

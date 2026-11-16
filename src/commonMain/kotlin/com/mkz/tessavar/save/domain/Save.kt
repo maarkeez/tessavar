@@ -15,7 +15,7 @@ data class Save private constructor(
     private val events: Set<SaveEvent>,
 ) {
     companion object {
-        const val SAVE_VERSION = 10
+        const val SAVE_VERSION = 11
 
         const val SLOTS = 3
 
@@ -24,12 +24,13 @@ data class Save private constructor(
             savedAt: Double,
             leaderUnitId: String?,
             partySize: Int,
+            worldId: String,
             snapshots: Map<String, String>,
         ): Save =
             Save(
                 slot = Slot(slot),
                 version = Version(SAVE_VERSION),
-                summary = Summary(savedAt = savedAt, leaderUnitId = leaderUnitId, partySize = partySize),
+                summary = Summary(savedAt = savedAt, leaderUnitId = leaderUnitId, partySize = partySize, worldId = worldId),
                 snapshots = Snapshots(snapshots),
                 events = setOf(GameSaved(slot = slot)),
             )
@@ -38,7 +39,7 @@ data class Save private constructor(
             Save(
                 slot = Slot(dto.slot),
                 version = Version(dto.summary.version),
-                summary = Summary(savedAt = dto.summary.savedAt, leaderUnitId = dto.summary.leaderUnitId, partySize = dto.summary.partySize),
+                summary = Summary(savedAt = dto.summary.savedAt, leaderUnitId = dto.summary.leaderUnitId, partySize = dto.summary.partySize, worldId = dto.summary.worldId),
                 snapshots = Snapshots(dto.snapshots),
                 events = emptySet(),
             )
@@ -88,8 +89,9 @@ data class Save private constructor(
         val savedAt: Double,
         val leaderUnitId: String?,
         val partySize: Int,
+        val worldId: String?,
     ) {
-        fun toDto(version: Version) = Dto.SummaryDto(version = version.value, savedAt = savedAt, leaderUnitId = leaderUnitId, partySize = partySize)
+        fun toDto(version: Version) = Dto.SummaryDto(version = version.value, savedAt = savedAt, leaderUnitId = leaderUnitId, partySize = partySize, worldId = worldId)
     }
 
     @JvmInline private value class Snapshots(
@@ -106,6 +108,7 @@ data class Save private constructor(
             val savedAt: Double,
             val leaderUnitId: String?,
             val partySize: Int,
+            val worldId: String?,
         )
 
         data class SlotDto(

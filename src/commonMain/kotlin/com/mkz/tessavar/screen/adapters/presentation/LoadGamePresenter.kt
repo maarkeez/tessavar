@@ -10,8 +10,9 @@ class LoadGamePresenter(
     private val callToActionView: CallToActionView,
     private val saveApi: SaveApi,
     private val messages: Messages,
+    private val worldName: (worldId: String) -> String?,
     private var incompatibleSlot: Int?,
-    private val onLoad: (slot: Int) -> Unit,
+    private val onLoad: (slot: Int, worldId: String) -> Unit,
 ) : SaveSlotsView.Delegate {
     init {
         saveSlotsView.visible = false
@@ -26,10 +27,11 @@ class LoadGamePresenter(
     }
 
     override fun saveSlotSelected(number: Int) {
-        if (slots().firstOrNull { slot -> slot.slot == number }?.state != SlotStateDto.SAVED) return
+        val slot = slots().firstOrNull { slot -> slot.slot == number }?.takeIf { slot -> slot.state == SlotStateDto.SAVED } ?: return
+        val worldId = slot.summary?.worldId ?: return
         saveSlotsView.visible = false
         callToActionView.hideButtons()
-        onLoad(number)
+        onLoad(number, worldId)
     }
 
     override fun deleteSaveSelected(number: Int) {
@@ -58,7 +60,7 @@ class LoadGamePresenter(
     }
 
     private fun displaySlots() {
-        saveSlotsView.display(title = messages[UiMessage.SAVE_SLOTS_LOAD_TITLE], slots = SaveSlotsMapper.slots(slots(), messages, isLoading = true))
+        saveSlotsView.display(title = messages[UiMessage.SAVE_SLOTS_LOAD_TITLE], slots = SaveSlotsMapper.slots(slots(), messages, isLoading = true, worldName))
         confirmDialogView.visible = false
         saveSlotsView.visible = true
         callToActionView.displayButtons(listOf(ButtonRowView.Action(messages[UiMessage.SAVE_SLOTS_BACK]) { backSelected() }))
@@ -66,6 +68,7 @@ class LoadGamePresenter(
 
     private fun slots() =
         saveApi.searchSaveSlots().map { slot ->
-            if (slot.slot == incompatibleSlot && slot.state == SlotStateDto.SAVED) slot.copy(state = SlotStateDto.INCOMPATIBLE, summary = null) else slot
+            val isWorldShipped = slot.summary?.worldId?.let(worldName) != null
+            if (slot.state == SlotStateDto.SAVED && (slot.slot == incompatibleSlot || !isWorldShipped)) slot.copy(state = SlotStateDto.INCOMPATIBLE, summary = null) else slot
         }
 }

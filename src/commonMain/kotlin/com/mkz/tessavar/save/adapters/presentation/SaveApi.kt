@@ -17,11 +17,12 @@ class SaveApi(
     canSave: () -> Boolean,
     leaderUnitId: () -> String?,
     partySize: () -> Int,
+    worldId: String,
     now: () -> Double,
 ) {
     private val saveRepository: SaveRepository = NativeStorageSaveRepository(storage)
 
-    val saveGame = SaveGame(saveRepository, snapshottables, canSave, leaderUnitId, partySize, now, eventBus)
+    val saveGame = SaveGame(saveRepository, snapshottables, canSave, leaderUnitId, partySize, worldId, now, eventBus)
     val loadGame = LoadGame(saveRepository, snapshottables, eventBus)
     val deleteSave = DeleteSave(saveRepository, eventBus)
 

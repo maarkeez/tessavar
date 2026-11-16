@@ -19,7 +19,7 @@ class DeleteSaveTest {
     @Test
     fun `DeleteSave should empty the slot when a game is saved in it`() {
         // Given
-        saveRepository.save(Save.save(slot = 3, savedAt = 0.0, leaderUnitId = "knight", partySize = 1, snapshots = emptyMap()))
+        saveRepository.save(Save.save(slot = 3, savedAt = 0.0, leaderUnitId = "knight", partySize = 1, worldId = "tessavar", snapshots = emptyMap()))
         // When
         deleteSave(slot = 3)
         // Then

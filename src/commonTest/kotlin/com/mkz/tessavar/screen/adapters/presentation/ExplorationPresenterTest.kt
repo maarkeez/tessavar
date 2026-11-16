@@ -106,8 +106,9 @@ class ExplorationPresenterTest {
             apis.partyApi,
             SaveApi(InmemoryStorage(), eventBus, emptyList(), {
                 false
-            }, { null }, { 0 }, { DateTime.nowUnixMillis() }),
+            }, { null }, { 0 }, "tessavar", { DateTime.nowUnixMillis() }),
             MessagesMother.messages(),
+            { "Tessavar" },
             timeline,
             eventBus,
         ) { quits++ }
@@ -403,8 +404,9 @@ class ExplorationPresenterTest {
                 apis.partyApi,
                 SaveApi(InmemoryStorage(), apis.eventBus, emptyList(), {
                     false
-                }, { null }, { 0 }, { DateTime.nowUnixMillis() }),
+                }, { null }, { 0 }, "tessavar", { DateTime.nowUnixMillis() }),
                 MessagesMother.messages(),
+                { "Tessavar" },
                 timeline,
                 apis.eventBus,
             ) {}

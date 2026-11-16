@@ -14,6 +14,7 @@ class PausePresenter(
     private val partyApi: PartyApi,
     private val saveApi: SaveApi,
     private val messages: Messages,
+    private val worldName: (worldId: String) -> String?,
     private val timeline: GameSceneTimeline,
     private val eventBus: EventBus,
     private val onQuit: () -> Unit,
@@ -92,7 +93,7 @@ class PausePresenter(
     }
 
     private fun displaySaveSlots() {
-        saveSlotsView.display(title = messages[UiMessage.SAVE_SLOTS_SAVE_TITLE], slots = SaveSlotsMapper.slots(saveApi.searchSaveSlots(), messages, isLoading = false))
+        saveSlotsView.display(title = messages[UiMessage.SAVE_SLOTS_SAVE_TITLE], slots = SaveSlotsMapper.slots(saveApi.searchSaveSlots(), messages, isLoading = false, worldName))
         pauseView.visible = false
         confirmDialogView.visible = false
         saveSlotsView.visible = true

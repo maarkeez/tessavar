@@ -29,10 +29,11 @@ data class SaveSummaryFile(
     val savedAt: Double,
     val leaderUnitId: String?,
     val partySize: Int,
+    val worldId: String? = null,
 ) {
     companion object {
-        fun from(dto: Save.Dto.SummaryDto) = SaveSummaryFile(version = dto.version, savedAt = dto.savedAt, leaderUnitId = dto.leaderUnitId, partySize = dto.partySize)
+        fun from(dto: Save.Dto.SummaryDto) = SaveSummaryFile(version = dto.version, savedAt = dto.savedAt, leaderUnitId = dto.leaderUnitId, partySize = dto.partySize, worldId = dto.worldId)
     }
 
-    fun toDto() = Save.Dto.SummaryDto(version = version, savedAt = savedAt, leaderUnitId = leaderUnitId, partySize = partySize)
+    fun toDto() = Save.Dto.SummaryDto(version = version, savedAt = savedAt, leaderUnitId = leaderUnitId, partySize = partySize, worldId = worldId)
 }

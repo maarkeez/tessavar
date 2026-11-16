@@ -155,6 +155,7 @@ class GameScene(
                         ?.unitId
                 },
                 partySize = { partyApi.searchParty()?.battleUnitIds?.size ?: 0 },
+                worldId = worldId,
                 now = { DateTime.nowUnixMillis() },
             )
 
@@ -171,6 +172,7 @@ class GameScene(
         battleUnitApi.init()
         npcApi.init()
         questApi.init()
+        worldApi.init()
 
         val timeline = GameSceneTimeline(this@GameScene)
         val battlefieldPresenter =
@@ -284,7 +286,7 @@ class GameScene(
                     )
                 val formationPresenter = FormationPresenter(formationView, battlefieldView, callToActionView, partyApi, battleUnitApi, battlefieldApi, messages, timeline)
                 val pausePresenter =
-                    PausePresenter(pauseView, saveSlotsView, confirmDialogView, callToActionView, partyApi, saveApi, messages, timeline, eventBus) {
+                    PausePresenter(pauseView, saveSlotsView, confirmDialogView, callToActionView, partyApi, saveApi, messages, { id -> worldApi.searchWorld(id)?.name }, timeline, eventBus) {
                         launchImmediately { sceneContainer.changeTo { MenuScene(localizationApi, telemetryApi, storage, random) } }
                     }
                 val explorationPresenter =

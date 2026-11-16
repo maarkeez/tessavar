@@ -37,7 +37,7 @@ object SaveSlotsViewStories : StoryBinding {
             id = "screen-save-slots",
             group = "Screen",
             title = "Save slots",
-            description = "The 3 save slots, each empty, saved with when, its leader and its party size, or incompatible, evenly apart. Its Back is in the row of the call to action.",
+            description = "The 3 save slots, each empty, saved with its world, when, its leader and its party size, or incompatible, evenly apart. Its Back is in the row of the call to action.",
             controls = SLOT_ARGS.map { slot -> ControlDto.pick(slot, STATES) } + ControlDto.boolean(LOADING),
             args = mapOf(SLOT_ARGS[0] to ValueDto.text(EMPTY), SLOT_ARGS[1] to ValueDto.text(SAVED), SLOT_ARGS[2] to ValueDto.text(INCOMPATIBLE), LOADING to ValueDto.boolean(false)),
             stories = listOf(save, load),
@@ -57,6 +57,7 @@ object SaveSlotsViewStories : StoryBinding {
                         SAVED ->
                             context.messages[
                                 UiMessage.SAVE_SLOTS_SUMMARY,
+                                "world" to "Tessavar",
                                 "date" to "2026-10-30 18:4$index",
                                 "leader" to context.messages.unitName(unitIds[index % unitIds.size]),
                                 "members" to index + 2,

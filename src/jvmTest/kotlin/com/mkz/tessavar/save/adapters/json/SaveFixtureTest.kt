@@ -128,6 +128,7 @@ class SaveFixtureTest {
                         ?.battleUnitIds
                         ?.size ?: 0
                 },
+                worldId = "tessavar",
                 now = { 1_793_385_720_000.0 },
             )
 
