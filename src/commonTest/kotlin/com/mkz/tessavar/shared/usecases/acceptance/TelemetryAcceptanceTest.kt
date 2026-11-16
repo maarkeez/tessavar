@@ -13,6 +13,7 @@ import com.mkz.tessavar.telemetry.domain.Telemetry
 import com.mkz.tessavar.telemetry.domain.TelemetryEvent
 import com.mkz.tessavar.telemetry.domain.TelemetryEvent.ProductEventRecorded
 import com.mkz.tessavar.telemetry.domain.TelemetryEvent.ProductEventRecorded.Name
+import com.mkz.tessavar.world.domain.World
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
@@ -33,7 +34,7 @@ class TelemetryAcceptanceTest {
     private val everyEvent =
         listOf(
             TelemetryEvent.RequestRecordMainMenuOpened,
-            TelemetryEvent.RequestStartGame,
+            TelemetryEvent.RequestStartGame(World.CAMPAIGN_ID),
             QuestEvent.QuestStarted(questId = "bats-in-the-meadow"),
             PartyEvent.PartyJoined(playerId = "human", battleUnitId = "elf-1", unitId = "elf"),
             InventoryEvent.ItemBought(battleUnitId = "knight-1", lootableItemId = "health_potion", price = 10),
@@ -134,7 +135,7 @@ class TelemetryAcceptanceTest {
         val telemetryApi = launch()
         // When
         telemetryApi.publishOnASceneBus(TelemetryEvent.RequestRecordMainMenuOpened)
-        telemetryApi.publishOnASceneBus(TelemetryEvent.RequestStartGame, BattleEvent.BattleStarted)
+        telemetryApi.publishOnASceneBus(TelemetryEvent.RequestStartGame(World.CAMPAIGN_ID), BattleEvent.BattleStarted)
         launch(seed = 2).publishOnASceneBus(TelemetryEvent.RequestRecordMainMenuOpened)
         // Then
         val sessionIds = remoteTelemetryRepository.created.map(ProductEventRecorded::sessionId)
@@ -151,7 +152,7 @@ class TelemetryAcceptanceTest {
         telemetryApi.publishOnASceneBus(TelemetryEvent.RequestRecordMainMenuOpened)
         // When
         telemetryApi.giveConsent()
-        telemetryApi.publishOnASceneBus(TelemetryEvent.RequestStartGame)
+        telemetryApi.publishOnASceneBus(TelemetryEvent.RequestStartGame(World.CAMPAIGN_ID))
         // Then
         remoteTelemetryRepository.created.map { productEvent -> productEvent.name to productEvent.referral }.shouldContainExactly(
             Name.GAME_STARTED to "bluesky",
@@ -173,5 +174,18 @@ class TelemetryAcceptanceTest {
             listOf(Name.QUEST_COMPLETED),
         )
         storage.getOrNull("telemetry.productEvents").shouldBeNull()
+    }
+
+    @Test
+    fun `A game started in a community world should send its world id when consent is given`() {
+        // Given
+        val telemetryApi = launch()
+        telemetryApi.giveConsent()
+        // When
+        telemetryApi.publishOnASceneBus(TelemetryEvent.RequestStartGame("the-drowned-mill"))
+        // Then
+        remoteTelemetryRepository.created.map { productEvent -> productEvent.name to productEvent.worldId }.shouldContainExactly(
+            Name.GAME_STARTED to "the-drowned-mill",
+        )
     }
 }

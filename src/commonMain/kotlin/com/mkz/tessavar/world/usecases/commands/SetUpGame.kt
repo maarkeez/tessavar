@@ -16,11 +16,15 @@ import com.mkz.tessavar.shared.domain.EventBus
 import com.mkz.tessavar.telemetry.domain.TelemetryEvent
 import com.mkz.tessavar.terrain.domain.TerrainEvent
 import com.mkz.tessavar.unit.domain.UnitEvent
+import com.mkz.tessavar.world.domain.World
 
 class SetUpGame(
     private val eventBus: EventBus,
 ) {
-    operator fun invoke(isLoadingASave: Boolean = false) {
+    operator fun invoke(
+        worldId: String = World.CAMPAIGN_ID,
+        isLoadingASave: Boolean = false,
+    ) {
         eventBus.publish(TerrainEvent.RequestInitialiseTerrains)
         eventBus.publish(EffectEvent.RequestInitialiseEffects)
         eventBus.publish(LootableItemEvent.RequestInitialiseLootableItems)
@@ -36,6 +40,6 @@ class SetUpGame(
         eventBus.publish(BattleUnitEvent.RequestInitialiseBattleUnits)
         eventBus.publish(NpcEvent.RequestPlaceNpcs)
         eventBus.publish(PartyEvent.RequestStartExploration)
-        eventBus.publish(TelemetryEvent.RequestStartGame)
+        eventBus.publish(TelemetryEvent.RequestStartGame(worldId))
     }
 }

@@ -34,6 +34,7 @@ export interface ProductEvent {
   price: number | null;
   unitId: string | null;
   referral: string | null;
+  worldId: string | null;
 }
 
 export type ParsedBatch = { productEvents: ProductEvent[] } | { rejected: string };
@@ -51,13 +52,17 @@ const FIELDS = [
   "unitId",
 ] as const satisfies readonly (keyof ProductEvent)[];
 
-// Fields a product event may leave out, read as null: the game sent no referral before the privacy notice version 3
-const OPTIONAL_FIELDS = ["referral"] as const satisfies readonly (keyof ProductEvent)[];
+// Fields a product event may leave out, read as null: the game sent no referral before the privacy notice version 3,
+// and no world id before version 4, and sends one only on a game started
+const OPTIONAL_FIELDS = ["referral", "worldId"] as const satisfies readonly (keyof ProductEvent)[];
 
 const ID = /^[0-9a-f]{32}$/;
 
 /** The name of the link the session was opened from, as the game's `Referral` checks it. */
 export const REFERRAL = /^[a-z0-9-]{1,32}$/;
+
+/** The id of the world a game started is played in, as the game's `WorldId` checks it. */
+export const WORLD_ID = /^[a-z0-9-]{1,64}$/;
 
 /** Returns the product events of a batch, or why it is rejected. */
 export function parseBatch(body: unknown): ParsedBatch {
@@ -70,7 +75,8 @@ export function parseBatch(body: unknown): ParsedBatch {
   for (const [index, productEvent] of productEvents.entries()) {
     const reason = rejectionOf(productEvent);
     if (reason !== null) return { rejected: `product event ${index}: ${reason}` };
-    parsed.push({ ...(productEvent as ProductEvent), referral: (productEvent as Partial<ProductEvent>).referral ?? null });
+    const { referral, worldId } = productEvent as Partial<ProductEvent>;
+    parsed.push({ ...(productEvent as ProductEvent), referral: referral ?? null, worldId: worldId ?? null });
   }
   return { productEvents: parsed };
 }
@@ -79,7 +85,7 @@ function rejectionOf(productEvent: unknown): string | null {
   if (!isObject(productEvent) || !hasExactly(productEvent, FIELDS, OPTIONAL_FIELDS)) {
     return `its fields are not ${FIELDS.join(", ")}, with ${OPTIONAL_FIELDS.join(", ")} optional`;
   }
-  const { name, installId, sessionId, gameId, occurredAt, questId, slot, lootableItemId, price, unitId, referral } = productEvent;
+  const { name, installId, sessionId, gameId, occurredAt, questId, slot, lootableItemId, price, unitId, referral, worldId } = productEvent;
   if (!PRODUCT_EVENT_NAMES.includes(name as ProductEventName)) return "unknown name";
   if (!isId(installId)) return "installId is not 32 lowercase hex digits";
   if (!isId(sessionId)) return "sessionId is not 32 lowercase hex digits";
@@ -91,6 +97,7 @@ function rejectionOf(productEvent: unknown): string | null {
   if (!isIntegerOrNull(price)) return "price is not a whole number or null";
   if (!isTextOrNull(unitId)) return "unitId is not a short text or null";
   if (!isReferralOrAbsent(referral)) return "referral is not a lowercase word of at most 32 characters";
+  if (!isWorldIdOrAbsent(worldId)) return "worldId is not lowercase words of at most 64 characters";
   return null;
 }
 
@@ -116,6 +123,10 @@ function isTextOrNull(value: unknown): boolean {
 
 function isReferralOrAbsent(value: unknown): boolean {
   return value === undefined || value === null || (typeof value === "string" && REFERRAL.test(value));
+}
+
+function isWorldIdOrAbsent(value: unknown): boolean {
+  return value === undefined || value === null || (typeof value === "string" && WORLD_ID.test(value));
 }
 
 function isIntegerOrNull(value: unknown): boolean {

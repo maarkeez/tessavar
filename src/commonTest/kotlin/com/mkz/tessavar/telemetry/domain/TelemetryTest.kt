@@ -31,6 +31,7 @@ class TelemetryTest {
                 price = null,
                 unitId = null,
                 referral = null,
+                worldId = null,
             ),
         )
     }
@@ -42,7 +43,7 @@ class TelemetryTest {
         // When
         val (events, _) =
             telemetry
-                .startGame(gameId = "g1", occurredAt = 1.0)
+                .startGame(gameId = "g1", worldId = "tessavar", occurredAt = 1.0)
                 .memberRecruited(unitId = "herbalist", occurredAt = 2.0)
                 .pullEvents()
         // Then
@@ -85,7 +86,7 @@ class TelemetryTest {
     @Test
     fun `Telemetry should add product events with no referral when the session was opened without a link`() {
         // When
-        val (events, _) = consented().startGame(gameId = "g1", occurredAt = 1.0).pullEvents()
+        val (events, _) = consented().startGame(gameId = "g1", worldId = "tessavar", occurredAt = 1.0).pullEvents()
         // Then
         events
             .filterIsInstance<ProductEventRecorded>()
@@ -95,12 +96,56 @@ class TelemetryTest {
     }
 
     @Test
+    fun `Telemetry should stamp the world id on the game started when a game starts`() {
+        // When
+        val (events, _) = consented().startGame(gameId = "g1", worldId = "the-drowned-mill", occurredAt = 1.0).pullEvents()
+        // Then
+        events.filterIsInstance<ProductEventRecorded>().map { productEvent -> productEvent.name to productEvent.worldId }.shouldContainExactly(
+            Name.GAME_STARTED to "the-drowned-mill",
+        )
+    }
+
+    @Test
+    fun `Telemetry should stamp no world id on the other product events, which reach it through their game id`() {
+        // When
+        val (events, _) =
+            consented()
+                .startGame(gameId = "g1", worldId = "tessavar", occurredAt = 1.0)
+                .questStarted(questId = "bats-in-the-meadow", occurredAt = 2.0)
+                .gameSaved(slot = 1, occurredAt = 3.0)
+                .pullEvents()
+        // Then
+        events.filterIsInstance<ProductEventRecorded>().map { productEvent -> productEvent.gameId to productEvent.worldId }.shouldContainExactly(
+            "g1" to "tessavar",
+            "g1" to null,
+            "g1" to null,
+        )
+    }
+
+    @Test
+    fun `Telemetry should stamp no world id when it is not lowercase words of at most 64 characters`() {
+        // When
+        val worldIds =
+            listOf("The Drowned Mill", "", "a".repeat(65)).map { worldId ->
+                consented()
+                    .startGame(gameId = "g1", worldId = worldId, occurredAt = 1.0)
+                    .pullEvents()
+                    .first
+                    .filterIsInstance<ProductEventRecorded>()
+                    .single()
+                    .worldId
+            }
+        // Then
+        worldIds shouldBe listOf(null, null, null)
+    }
+
+    @Test
     fun `Telemetry should add every product event in the order they happened when consent is given`() {
         // When
         val (events, _) =
             consented()
                 .mainMenuOpened(occurredAt = 1.0)
-                .startGame(gameId = "g1", occurredAt = 2.0)
+                .startGame(gameId = "g1", worldId = "tessavar", occurredAt = 2.0)
                 .itemBought(lootableItemId = "health_potion", price = 10, occurredAt = 3.0)
                 .itemSold(lootableItemId = "dagger", sellPrice = 4, occurredAt = 4.0)
                 .gameSaved(slot = 1, occurredAt = 5.0)
@@ -229,7 +274,7 @@ class TelemetryTest {
     @Test
     fun `Telemetry should make the game id of a new game when consent is given`() {
         // When
-        val (events, telemetry) = consented().startGame(gameId = "g1", occurredAt = 1.0).pullEvents()
+        val (events, telemetry) = consented().startGame(gameId = "g1", worldId = "tessavar", occurredAt = 1.0).pullEvents()
         // Then
         events.filterIsInstance<ProductEventRecorded>().single().gameId shouldBe "g1"
         telemetry.toDto().gameId shouldBe "g1"
@@ -238,7 +283,7 @@ class TelemetryTest {
     @Test
     fun `Telemetry should make no game id when consent is not given`() {
         // When
-        val telemetry = Telemetry.notAsked().startSession("s1").startGame(gameId = "g1", occurredAt = 1.0)
+        val telemetry = Telemetry.notAsked().startSession("s1").startGame(gameId = "g1", worldId = "tessavar", occurredAt = 1.0)
         // Then
         telemetry.toDto().gameId.shouldBeNull()
     }
@@ -263,7 +308,7 @@ class TelemetryTest {
     @Test
     fun `Telemetry should forget the game id when the main menu is opened`() {
         // When
-        val (events, telemetry) = consented().startGame(gameId = "g1", occurredAt = 1.0).mainMenuOpened(occurredAt = 2.0).pullEvents()
+        val (events, telemetry) = consented().startGame(gameId = "g1", worldId = "tessavar", occurredAt = 1.0).mainMenuOpened(occurredAt = 2.0).pullEvents()
         // Then
         events
             .filterIsInstance<ProductEventRecorded>()

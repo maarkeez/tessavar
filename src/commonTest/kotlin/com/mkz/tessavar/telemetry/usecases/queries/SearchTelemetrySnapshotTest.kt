@@ -9,7 +9,7 @@ class SearchTelemetrySnapshotTest {
     @Test
     fun `SearchTelemetrySnapshot should find the game id of the game played`() {
         // Given
-        val telemetryRepository = FakeTelemetryRepository(FakeTelemetryRepository.consented().startGame(gameId = "g1", occurredAt = 1.0))
+        val telemetryRepository = FakeTelemetryRepository(FakeTelemetryRepository.consented().startGame(gameId = "g1", worldId = "tessavar", occurredAt = 1.0))
         // When
         val gameId = SearchTelemetrySnapshot(telemetryRepository)()
         // Then

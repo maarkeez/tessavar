@@ -13,6 +13,9 @@ and what it does in the [telemetry collector plan](../docs/plans/telemetry-colle
   or the country of the request.
 - A product event may carry the referral of its session, the name of the link the game was opened from, such as
   `bluesky`: a lowercase word of at most 32 letters, digits and hyphens. Any other referral gets a 400.
+- A game started carries the id of the world it is played in, such as `tessavar`, a community world such as
+  `the-drowned-mill`, or `playtest` from the world builder, kept in `world_id`: lowercase letters, digits and hyphens, at
+  most 64. Any other world id gets a 400. The other product events reach the world through their `game_id`.
 
 The shape of a batch is [the sample batch](../src/jvmTest/fixtures/telemetry/product-events.json), written by
 `ProductEventBatchFixtureTest` in the game and read by the tests here, so a change on one side breaks a test.
@@ -86,3 +89,15 @@ npx wrangler d1 execute rpg-telemetry --remote --command "
 
 Only players who accepted the privacy notice send product events, so these numbers are a floor, and a player who opens
 the game from two links counts once for each.
+
+How many players started a game in each world, the campaign and every community world, this month:
+
+```
+npx wrangler d1 execute rpg-telemetry --remote --command "
+  SELECT world_id, COUNT(DISTINCT install_id) AS players, COUNT(*) AS games
+  FROM product_events
+  WHERE name = 'GAME_STARTED'
+    AND received_at >= unixepoch('now', 'start of month') * 1000
+  GROUP BY world_id
+  ORDER BY players DESC"
+```

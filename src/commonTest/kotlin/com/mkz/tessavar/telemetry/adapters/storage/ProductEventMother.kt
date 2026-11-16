@@ -19,5 +19,6 @@ object ProductEventMother {
         price = null,
         unitId = null,
         referral = null,
+        worldId = null,
     )
 }

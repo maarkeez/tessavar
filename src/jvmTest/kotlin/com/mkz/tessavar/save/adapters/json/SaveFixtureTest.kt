@@ -32,6 +32,7 @@ import com.mkz.tessavar.telemetry.domain.TelemetryEvent
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanBeOccupied
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanNotBeOccupied
 import com.mkz.tessavar.unit.domain.UnitMother.unit
+import com.mkz.tessavar.world.domain.World
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -137,7 +138,7 @@ class SaveFixtureTest {
         }
 
         fun playAndSave(): String {
-            apis.eventBus.publish(TelemetryEvent.RequestStartGame)
+            apis.eventBus.publish(TelemetryEvent.RequestStartGame(World.CAMPAIGN_ID))
             apis.questApi.startMainQuest(battleUnitId = "knight-1", path = listOf(PositionDto(row = 0, column = 0)))
             apis.lootDropApi.snapshottable.load("""[{"unitId":"rat","droppedItems":[{"row":1,"column":1,"lootableItemIds":["health-potion"]}]}]""")
             apis.partyApi.stepParty(DirectionDto.EAST)

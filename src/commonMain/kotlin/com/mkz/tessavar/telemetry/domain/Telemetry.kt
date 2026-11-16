@@ -15,7 +15,7 @@ data class Telemetry private constructor(
     private val events: Set<TelemetryEvent>,
 ) {
     companion object {
-        const val PRIVACY_NOTICE_VERSION = 3
+        const val PRIVACY_NOTICE_VERSION = 4
 
         const val CONSENT_ASKED_AGAIN_AFTER_DAYS = 180
 
@@ -86,10 +86,11 @@ data class Telemetry private constructor(
 
     fun startGame(
         gameId: String,
+        worldId: String,
         occurredAt: Double,
     ): Telemetry {
         if (!isConsentGiven()) return this
-        return copy(gameId = GameId(gameId)).record(Name.GAME_STARTED, occurredAt)
+        return copy(gameId = GameId(gameId)).record(Name.GAME_STARTED, occurredAt, Details(worldId = WorldId.of(worldId)?.value))
     }
 
     fun gameLoaded(
@@ -169,6 +170,7 @@ data class Telemetry private constructor(
                         price = details.price,
                         unitId = details.unitId,
                         referral = referral?.value,
+                        worldId = details.worldId,
                     ),
         )
     }
@@ -203,12 +205,23 @@ data class Telemetry private constructor(
         }
     }
 
+    @JvmInline private value class WorldId private constructor(
+        val value: String,
+    ) {
+        companion object {
+            private val WORDS = Regex("[a-z0-9-]{1,64}")
+
+            fun of(text: String): WorldId? = text.takeIf(WORDS::matches)?.let(::WorldId)
+        }
+    }
+
     private data class Details(
         val questId: String? = null,
         val slot: Int? = null,
         val lootableItemId: String? = null,
         val price: Int? = null,
         val unitId: String? = null,
+        val worldId: String? = null,
     )
 
     data class Dto(

@@ -10,7 +10,7 @@ class OnRequestStartGame(
     eventBus: EventBus,
 ) {
     val subscription =
-        eventBus.subscribe<RequestStartGame> {
-            startGame()
+        eventBus.subscribe<RequestStartGame> { event ->
+            startGame(event.worldId)
         }
 }

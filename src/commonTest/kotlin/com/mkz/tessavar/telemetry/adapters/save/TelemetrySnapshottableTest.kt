@@ -14,7 +14,7 @@ class TelemetrySnapshottableTest {
     @Test
     fun `TelemetrySnapshottable should save the game id when consent is given`() {
         // Given
-        val telemetryRepository = FakeTelemetryRepository(FakeTelemetryRepository.consented().startGame(gameId = "g1", occurredAt = 1.0))
+        val telemetryRepository = FakeTelemetryRepository(FakeTelemetryRepository.consented().startGame(gameId = "g1", worldId = "tessavar", occurredAt = 1.0))
         // When
         val snapshot = snapshottable(telemetryRepository).snapshot()
         // Then
@@ -29,7 +29,7 @@ class TelemetrySnapshottableTest {
                 .notAsked()
                 .startSession("s1")
                 .declineConsent(decidedAt = 0.0)
-                .startGame(gameId = "g1", occurredAt = 1.0)
+                .startGame(gameId = "g1", worldId = "tessavar", occurredAt = 1.0)
         // When
         val snapshot = snapshottable(FakeTelemetryRepository(declined)).snapshot()
         // Then

@@ -5,7 +5,9 @@ import com.mkz.tessavar.shared.domain.DomainEvent
 sealed interface TelemetryEvent : DomainEvent {
     object RequestRecordMainMenuOpened : TelemetryEvent
 
-    object RequestStartGame : TelemetryEvent
+    data class RequestStartGame(
+        val worldId: String,
+    ) : TelemetryEvent
 
     data class RequestRecordGameSaved(
         val slot: Int,
@@ -27,6 +29,7 @@ sealed interface TelemetryEvent : DomainEvent {
         val price: Int?,
         val unitId: String?,
         val referral: String?,
+        val worldId: String?,
     ) : TelemetryEvent {
         enum class Name {
             MAIN_MENU_OPENED,

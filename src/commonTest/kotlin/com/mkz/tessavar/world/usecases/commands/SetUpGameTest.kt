@@ -17,6 +17,7 @@ import com.mkz.tessavar.shared.domain.shouldHavePublishedEvents
 import com.mkz.tessavar.telemetry.domain.TelemetryEvent
 import com.mkz.tessavar.terrain.domain.TerrainEvent
 import com.mkz.tessavar.unit.domain.UnitEvent
+import com.mkz.tessavar.world.domain.World
 import kotlin.test.Test
 
 class SetUpGameTest {
@@ -44,7 +45,7 @@ class SetUpGameTest {
             BattleUnitEvent.RequestInitialiseBattleUnits,
             NpcEvent.RequestPlaceNpcs,
             PartyEvent.RequestStartExploration,
-            TelemetryEvent.RequestStartGame,
+            TelemetryEvent.RequestStartGame(World.CAMPAIGN_ID),
         )
     }
 

@@ -336,9 +336,9 @@ class GameScene(
         addChild(questAnnouncementView)
 
         if (slot == null) {
-            worldApi.setUpGame()
+            worldApi.setUpGame(worldId)
         } else {
-            worldApi.setUpGame(isLoadingASave = true)
+            worldApi.setUpGame(worldId, isLoadingASave = true)
             eventBus.dispatch()
             try {
                 saveApi.loadGame(slot)

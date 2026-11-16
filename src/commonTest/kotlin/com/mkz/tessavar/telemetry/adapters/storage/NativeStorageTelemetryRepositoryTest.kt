@@ -31,7 +31,7 @@ class NativeStorageTelemetryRepositoryTest {
     @Test
     fun `NativeStorageTelemetryRepository should keep the session id and the game id in memory only`() {
         // Given
-        repository.save(consented.startGame(gameId = "g1", occurredAt = 1.0))
+        repository.save(consented.startGame(gameId = "g1", worldId = "tessavar", occurredAt = 1.0))
         // When
         val found = repository.search()
         // Then

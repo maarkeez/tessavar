@@ -6,7 +6,7 @@ class StartGame(
     private val recordProductEvent: RecordProductEvent,
     private val newGameId: () -> String,
 ) {
-    operator fun invoke() {
-        recordProductEvent { telemetry, occurredAt -> telemetry.startGame(newGameId(), occurredAt) }
+    operator fun invoke(worldId: String) {
+        recordProductEvent { telemetry, occurredAt -> telemetry.startGame(newGameId(), worldId, occurredAt) }
     }
 }

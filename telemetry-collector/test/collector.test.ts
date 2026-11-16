@@ -107,6 +107,28 @@ describe("the telemetry collector", () => {
     expect(await rows()).toHaveLength(0);
   });
 
+  it("the telemetry collector should keep the world id of a game started", async () => {
+    // When
+    const response = await send(sampleBatch);
+    // Then
+    expect(response.status).toBe(204);
+    const kept = await rows();
+    expect(kept.find((row) => row.name === "GAME_STARTED")).toMatchObject({ world_id: "tessavar" });
+    expect(kept.filter((row) => row.world_id !== null).map((row) => row.name)).toEqual(["GAME_STARTED"]);
+  });
+
+  it("the telemetry collector should reject a product event whose world id is not lowercase words", async () => {
+    // Given
+    const [first] = sampleBatch.productEvents;
+    // When
+    const responses = await Promise.all(
+      ["The Drowned Mill", "", "a".repeat(65), 7].map((worldId) => send({ productEvents: [{ ...first, worldId }] })),
+    );
+    // Then
+    expect(responses.map((response) => response.status)).toEqual([400, 400, 400, 400]);
+    expect(await rows()).toHaveLength(0);
+  });
+
   it("the telemetry collector should reject a batch of 101 product events", async () => {
     // Given
     const [first] = sampleBatch.productEvents;
@@ -144,6 +166,7 @@ describe("the telemetry collector", () => {
       "unit_id",
       "received_at",
       "referral",
+      "world_id",
     ]);
     expect(JSON.stringify(await rows())).not.toContain("203.0.113.7");
   });

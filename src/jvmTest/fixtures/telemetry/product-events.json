@@ -24,7 +24,8 @@
             "lootableItemId": null,
             "price": null,
             "unitId": null,
-            "referral": "bluesky"
+            "referral": "bluesky",
+            "worldId": "tessavar"
         },
         {
             "name": "GAME_SAVED",

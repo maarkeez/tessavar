@@ -17,6 +17,7 @@ class ProductEventBatchFixtureTest {
         const val GAME_ID = "00112233445566778899aabbccddeeff"
         const val STARTED_AT = 1_794_607_613_037.0
         const val REFERRAL = "bluesky"
+        const val WORLD_ID = "tessavar"
     }
 
     private val fixture = File("src/jvmTest/fixtures/telemetry/product-events.json")
@@ -33,7 +34,7 @@ class ProductEventBatchFixtureTest {
                 .startSession(SESSION_ID, REFERRAL)
                 .giveConsent(installId = INSTALL_ID, decidedAt = STARTED_AT)
                 .mainMenuOpened(occurredAt++)
-                .startGame(gameId = GAME_ID, occurredAt = occurredAt++)
+                .startGame(gameId = GAME_ID, worldId = WORLD_ID, occurredAt = occurredAt++)
                 .gameSaved(slot = 1, occurredAt = occurredAt++)
                 .gameLoaded(slot = 1, newGameId = GAME_ID, occurredAt = occurredAt++)
                 .questStarted(questId = "bats-in-the-meadow", occurredAt = occurredAt++)
