@@ -3,7 +3,7 @@ package com.mkz.tessavar.worldBuilder.domain
 import com.mkz.tessavar.shared.domain.DomainEvent
 
 sealed interface WorldBuilderEvent : DomainEvent {
-    data class WorldCreated(
+    data class WorldOpened(
         val rows: Int,
         val columns: Int,
     ) : WorldBuilderEvent

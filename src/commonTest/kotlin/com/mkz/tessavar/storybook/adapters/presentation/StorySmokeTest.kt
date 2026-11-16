@@ -360,8 +360,6 @@ class StorySmokeTest : ViewsForTesting() {
                     "screen-world-builder-resize--default",
                     "screen-world-builder-resize--smallest-world",
                     "screen-world-builder-resize--largest-world",
-                    "screen-world-builder-call-to-action",
-                    "screen-world-builder-call-to-action--leave-confirmation",
                     "screen-world-builder-menu",
                     "screen-world-builder-menu--closed",
                     "screen-world-builder-menu--open",

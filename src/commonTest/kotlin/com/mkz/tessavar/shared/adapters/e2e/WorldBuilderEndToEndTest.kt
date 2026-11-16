@@ -1,31 +1,28 @@
 package com.mkz.tessavar.shared.adapters.e2e
 
 import com.mkz.tessavar.screen.adapters.presentation.WorldBuilderHudView
-import com.mkz.tessavar.screen.adapters.presentation.actionLabels
 import com.mkz.tessavar.screen.adapters.presentation.battlefieldView
+import com.mkz.tessavar.screen.adapters.presentation.clickBuildWorld
 import com.mkz.tessavar.screen.adapters.presentation.clickMenuButton
 import com.mkz.tessavar.screen.adapters.presentation.clickMenuOption
 import com.mkz.tessavar.screen.adapters.presentation.clickPaletteTerrain
-import com.mkz.tessavar.screen.adapters.presentation.clickPrimaryAction
 import com.mkz.tessavar.screen.adapters.presentation.clickRowsStep
-import com.mkz.tessavar.screen.adapters.presentation.clickSecondaryAction
 import com.mkz.tessavar.screen.adapters.presentation.clickTile
 import com.mkz.tessavar.screen.adapters.presentation.clickTool
 import com.mkz.tessavar.screen.adapters.presentation.clickUndo
+import com.mkz.tessavar.screen.adapters.presentation.isBattlefieldDisplayed
 import com.mkz.tessavar.screen.adapters.presentation.menuView
+import com.mkz.tessavar.screen.adapters.presentation.paletteTerrainIds
 import com.mkz.tessavar.screen.adapters.presentation.subtitleText
 import com.mkz.tessavar.screen.adapters.presentation.terrainBitmapAt
 import com.mkz.tessavar.screen.adapters.presentation.tileCount
-import com.mkz.tessavar.screen.adapters.presentation.worldBuilderCallToActionView
 import com.mkz.tessavar.screen.adapters.presentation.worldBuilderHudView
 import com.mkz.tessavar.screen.adapters.presentation.worldBuilderInfoView
 import com.mkz.tessavar.screen.adapters.presentation.worldBuilderMenuView
 import com.mkz.tessavar.screen.adapters.presentation.worldBuilderResizeView
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
-import io.kotest.assertions.withClue
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import korlibs.korge.tests.ViewsForTesting
 import kotlin.test.Test
 
@@ -125,17 +122,14 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
         }
 
     @Test
-    fun `should go back to the menu when leaving is confirmed`() =
+    fun `should go back to the menu at once when back is selected`() =
         sharedViewsTest {
             // Given
             startWorldBuilder()
-            val callToActionView = worldBuilderCallToActionView()!!
             val builderMenuView = worldBuilderMenuView()!!
             clickMenuButton(builderMenuView)
-            clickMenuOption(builderMenuView, "Back")
-            withClue("Expected leaving to be confirmed first") { callToActionView.actionLabels() shouldBe ("Stay" to "Leave") }
             // When
-            clickPrimaryAction(callToActionView)
+            clickMenuOption(builderMenuView, "Back")
             // Then
             waitUntil { menuView() != null && worldBuilderHudView() == null }
             menuView().shouldNotBeNull()
@@ -143,20 +137,23 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
         }
 
     @Test
-    fun `should stay in the world builder when staying is selected`() =
+    fun `should keep the world painted when the world builder is opened again after going back`() =
         sharedViewsTest {
             // Given
             startWorldBuilder()
-            val callToActionView = worldBuilderCallToActionView()!!
+            val lavaBitmap = battlefieldView()!!.terrainTileBitmap("lava", terrainTransition = null)
+            clickPaletteTerrain(worldBuilderHudView()!!, "lava")
+            clickTile(battlefieldView()!!, row = 2, column = 2)
+            waitUntil { battlefieldView()!!.terrainBitmapAt(row = 2, column = 2) == lavaBitmap }
             val builderMenuView = worldBuilderMenuView()!!
             clickMenuButton(builderMenuView)
             clickMenuOption(builderMenuView, "Back")
+            waitUntil { menuView() != null && worldBuilderHudView() == null }
             // When
-            clickSecondaryAction(callToActionView)
+            clickBuildWorld(menuView()!!)
             // Then
-            callToActionView.actionLabels() shouldBe null
-            menuView() shouldBe null
-            battlefieldView() shouldNotBe null
+            waitUntil { battlefieldView()?.isBattlefieldDisplayed() == true && worldBuilderHudView()?.paletteTerrainIds()?.isNotEmpty() == true }
+            battlefieldView()!!.terrainBitmapAt(row = 2, column = 2) shouldBe battlefieldView()!!.terrainTileBitmap("lava", terrainTransition = null)
         }
 
     @Test

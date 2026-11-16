@@ -14,6 +14,7 @@ import com.mkz.tessavar.worldBuilder.adapters.presentation.WorldBuilderApi
 import korlibs.io.async.launchImmediately
 import korlibs.korge.scene.Scene
 import korlibs.korge.service.storage.IStorage
+import korlibs.korge.service.storage.storage
 import korlibs.korge.ui.uiSpacing
 import korlibs.korge.ui.uiVerticalStack
 import korlibs.korge.view.SContainer
@@ -38,7 +39,6 @@ class WorldBuilderScene(
     val infoView = WorldBuilderInfoView(messages)
     val hudView = WorldBuilderHudView(messages)
     val resizeView = WorldBuilderResizeView(messages)
-    val callToActionView = WorldBuilderCallToActionView(messages)
     val menuView = WorldBuilderMenuView()
 
     override suspend fun SContainer.sceneInit() {
@@ -53,7 +53,7 @@ class WorldBuilderScene(
 
         val terrainApi = TerrainApi(eventBus, ResourcesTerrainLoader())
         val battlefieldApi = BattlefieldApi(terrainApi, eventBus, ResourcesBattlefieldLoader(), TomlBattlefieldEncoder(), TomlBattlefieldDecoder())
-        val worldBuilderApi = WorldBuilderApi(terrainApi, battlefieldApi, eventBus)
+        val worldBuilderApi = WorldBuilderApi(terrainApi, battlefieldApi, eventBus, storage ?: views.storage)
         terrainApi.init()
         terrainApi.initialiseTerrains()
 
@@ -62,7 +62,6 @@ class WorldBuilderScene(
             infoView = infoView,
             hudView = hudView,
             resizeView = resizeView,
-            callToActionView = callToActionView,
             menuView = menuView,
             worldBuilderApi = worldBuilderApi,
             battlefieldApi = battlefieldApi,
@@ -85,8 +84,6 @@ class WorldBuilderScene(
                     addChild(hudView)
                     addChild(resizeView)
                 }
-                uiSpacing(Size(0, 5))
-                addChild(callToActionView)
             }
         }
 
@@ -94,6 +91,6 @@ class WorldBuilderScene(
         menuView.y = MENU_MARGIN
         addChild(menuView)
 
-        worldBuilderApi.createWorld()
+        worldBuilderApi.openWorld()
     }
 }

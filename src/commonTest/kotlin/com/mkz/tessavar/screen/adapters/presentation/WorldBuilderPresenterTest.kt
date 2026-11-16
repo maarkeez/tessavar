@@ -1,6 +1,5 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import com.mkz.tessavar.screen.adapters.presentation.FakeWorldBuilderCallToActionView.Actions
 import com.mkz.tessavar.shared.adapters.presentation.SubdomainApis
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanBeOccupied
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanNotBeOccupied
@@ -9,7 +8,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeInstanceOf
+import korlibs.korge.service.storage.InmemoryStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlin.test.Test
@@ -25,12 +24,12 @@ class WorldBuilderPresenterTest {
                 ),
         ).also(SubdomainApis::initialise)
     private val eventBus = apis.eventBus
-    private val worldBuilderApi = WorldBuilderApi(apis.terrainApi, apis.battlefieldApi, eventBus)
+    private val storage = InmemoryStorage()
+    private val worldBuilderApi = WorldBuilderApi(apis.terrainApi, apis.battlefieldApi, eventBus, storage)
     private val battlefieldView = FakeBattlefieldView()
     private val infoView = FakeWorldBuilderInfoView()
     private val hudView = FakeWorldBuilderHudView()
     private val resizeView = FakeWorldBuilderResizeView()
-    private val callToActionView = FakeWorldBuilderCallToActionView()
     private val menuView = FakeWorldBuilderMenuView()
     private val worldFileSaver = FakeWorldFileSaver()
     private val worldFilePicker = FakeWorldFilePicker()
@@ -42,7 +41,6 @@ class WorldBuilderPresenterTest {
             infoView = infoView,
             hudView = hudView,
             resizeView = resizeView,
-            callToActionView = callToActionView,
             menuView = menuView,
             worldBuilderApi = worldBuilderApi,
             battlefieldApi = apis.battlefieldApi,
@@ -57,7 +55,7 @@ class WorldBuilderPresenterTest {
     }
 
     private fun givenWorldCreated() {
-        worldBuilderApi.createWorld()
+        worldBuilderApi.openWorld()
         eventBus.dispatch()
     }
 
@@ -80,7 +78,7 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `WorldCreated should display the world on the battlefield as the battle would when the world is created`() {
+    fun `WorldOpened should display the world on the battlefield as the battle would when a new world is opened`() {
         // When
         givenWorldCreated()
         // Then
@@ -91,7 +89,7 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `WorldCreated should display every terrain with its tile image and sand selected when the world is created`() {
+    fun `WorldOpened should display every terrain with its tile image and sand selected when a new world is opened`() {
         // When
         givenWorldCreated()
         // Then
@@ -181,7 +179,7 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `WorldCreated should display nothing to undo or redo when the world is created`() {
+    fun `WorldOpened should display nothing to undo or redo when a new world is opened`() {
         // When
         givenWorldCreated()
         // Then
@@ -303,38 +301,31 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `Back should ask to confirm leaving and warn the world is lost when back is selected`() {
+    fun `Back should leave the world builder at once when back is selected`() {
         // Given
         givenWorldCreated()
         // When
         menuView.select("Back")
-        // Then
-        callToActionView.displayedActions.shouldBeInstanceOf<Actions.LeaveConfirmation>()
-        infoView.infos.shouldContainExactly("The world is lost when leaving")
-        leftCount shouldBe 0
-    }
-
-    @Test
-    fun `Stay should remove the leave confirmation when staying is selected`() {
-        // Given
-        givenWorldCreated()
-        menuView.select("Back")
-        // When
-        callToActionView.displayedActions.shouldBeInstanceOf<Actions.LeaveConfirmation>().onStayed()
-        // Then
-        callToActionView.displayedActions shouldBe null
-        leftCount shouldBe 0
-    }
-
-    @Test
-    fun `Leave should leave the world builder when leaving is confirmed`() {
-        // Given
-        givenWorldCreated()
-        menuView.select("Back")
-        // When
-        callToActionView.displayedActions.shouldBeInstanceOf<Actions.LeaveConfirmation>().onLeft()
         // Then
         leftCount shouldBe 1
+        infoView.infos.shouldBeEmpty()
+    }
+
+    @Test
+    fun `WorldOpened should display the world kept from the last time when the world builder is opened again`() {
+        // Given
+        givenWorldCreated()
+        selectTerrain("lava")
+        selectTile(row = 2, column = 3)
+        // When
+        WorldBuilderApi(apis.terrainApi, apis.battlefieldApi, eventBus, storage).openWorld()
+        eventBus.dispatch()
+        // Then
+        battlefieldView.displayedBattlefields
+            .last()
+            .tiles
+            .getValue(TilePosition(2, 3))
+            .terrainId shouldBe "lava"
     }
 
     @Test

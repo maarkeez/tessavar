@@ -7,12 +7,13 @@ import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.EditUndone
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TerrainSelected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePaintRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePainted
-import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldCreated
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImportRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImportRejected.Reason
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImported
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldOpened
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldResized
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.throwables.shouldThrowAny
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -29,7 +30,7 @@ class WorldBuilderTest {
         val (events, worldBuilder) = WorldBuilder.create().pullEvents()
         // Then
         worldBuilder.toDto() shouldBe WorldBuilder.Dto(rows = 16, columns = 16, tiles = List(16) { List(16) { "sand" } }, selectedTerrainId = "sand", canUndo = false, canRedo = false)
-        events.shouldContainExactly(WorldCreated(rows = 16, columns = 16))
+        events.shouldContainExactly(WorldOpened(rows = 16, columns = 16))
     }
 
     @Test
@@ -346,5 +347,36 @@ class WorldBuilderTest {
         val worldBuilder = newWorld().selectTerrain("lava")
         // Then
         worldBuilder.toDto().canUndo shouldBe false
+    }
+
+    @Test
+    fun `should hold the tiles kept with sand selected and nothing to undo when it is restored`() {
+        // When
+        val (events, restored) = WorldBuilder.restore(listOf(listOf("lava", "sand"))).pullEvents()
+        // Then
+        restored.toDto() shouldBe WorldBuilder.Dto(rows = 1, columns = 2, tiles = listOf(listOf("lava", "sand")), selectedTerrainId = "sand", canUndo = false, canRedo = false)
+        events.shouldBeEmpty()
+    }
+
+    @Test
+    fun `should fail when the tiles restored have no columns`() {
+        // When
+        val restore = { WorldBuilder.restore(listOf(emptyList())) }
+        // Then
+        shouldThrowAny { restore() }
+    }
+
+    @Test
+    fun `should announce its size when it is opened again`() {
+        // When
+        val (events, _) =
+            newWorld()
+                .resize(rows = 3, columns = 5)
+                .pullEvents()
+                .second
+                .reopen()
+                .pullEvents()
+        // Then
+        events.shouldContainExactly(WorldOpened(rows = 3, columns = 5))
     }
 }

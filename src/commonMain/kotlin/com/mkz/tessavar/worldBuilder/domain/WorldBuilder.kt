@@ -7,10 +7,10 @@ import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.EditUndone
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TerrainSelected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePaintRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePainted
-import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldCreated
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImportRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImportRejected.Reason
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImported
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldOpened
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldResized
 import kotlin.jvm.JvmInline
 
@@ -29,15 +29,27 @@ data class WorldBuilder private constructor(
         const val DEFAULT_TERRAIN_ID = "sand"
         const val UNDO_STEPS = 50
 
+        /** The world kept from an earlier visit to the world builder, with nothing to undo. */
+        fun restore(tiles: List<List<String>>): WorldBuilder {
+            require(tiles.isNotEmpty() && tiles.all { row -> row.size == tiles.first().size } && isValidSize(tiles.size) && isValidSize(tiles.first().size)) {
+                "The world kept is not 1 to 128 tiles wide and tall"
+            }
+            return WorldBuilder(tiles = Tiles(tiles.map { row -> row.map(::TerrainId) }), selectedTerrainId = TerrainId(DEFAULT_TERRAIN_ID), events = emptySet())
+        }
+
+        private fun isValidSize(size: Int): Boolean = size in MINIMUM_SIZE..MAXIMUM_SIZE
+
         fun create(): WorldBuilder {
             val tiles = Tiles.filled(rows = DEFAULT_SIZE, columns = DEFAULT_SIZE, terrainId = TerrainId(DEFAULT_TERRAIN_ID))
             return WorldBuilder(
                 tiles = tiles,
                 selectedTerrainId = TerrainId(DEFAULT_TERRAIN_ID),
-                events = setOf(WorldCreated(rows = tiles.rows, columns = tiles.columns)),
+                events = setOf(WorldOpened(rows = tiles.rows, columns = tiles.columns)),
             )
         }
     }
+
+    fun reopen(): WorldBuilder = copy(events = events + WorldOpened(rows = tiles.rows, columns = tiles.columns))
 
     fun pullEvents(): Pair<Set<WorldBuilderEvent>, WorldBuilder> = events to copy(events = emptySet())
 
@@ -171,8 +183,6 @@ data class WorldBuilder private constructor(
         }
         return null
     }
-
-    private fun isValidSize(size: Int): Boolean = size in MINIMUM_SIZE..MAXIMUM_SIZE
 
     @JvmInline
     private value class TerrainId(

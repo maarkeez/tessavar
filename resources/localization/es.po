@@ -477,15 +477,6 @@ msgctxt "ui.worldBuilderResize.done"
 msgid "Done"
 msgstr "Hecho"
 
-msgctxt "ui.worldBuilderCallToAction.stay"
-msgid "Stay"
-msgstr "Quedarse"
-
-#. Leaves the world builder, losing the world.
-msgctxt "ui.worldBuilderCallToAction.leave"
-msgid "Leave"
-msgstr "Salir"
-
 #. Opens the dialog that changes how many tiles tall and wide the world is.
 msgctxt "ui.worldBuilderMenu.resize"
 msgid "Resize"
@@ -509,10 +500,6 @@ msgstr "Volver"
 msgctxt "ui.worldBuilder.worldExported"
 msgid "World exported"
 msgstr "Mundo exportado"
-
-msgctxt "ui.worldBuilder.worldLostWhenLeaving"
-msgid "The world is lost when leaving"
-msgstr "El mundo se pierde al salir"
 
 msgctxt "ui.worldBuilder.worldImported"
 msgid "World imported"

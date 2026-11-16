@@ -18,7 +18,6 @@ class WorldBuilderPresenter(
     private val infoView: WorldBuilderInfoView,
     private val hudView: WorldBuilderHudView,
     private val resizeView: WorldBuilderResizeView,
-    private val callToActionView: WorldBuilderCallToActionView,
     private val menuView: WorldBuilderMenuView,
     private val worldBuilderApi: WorldBuilderApi,
     private val battlefieldApi: BattlefieldApi,
@@ -40,7 +39,7 @@ class WorldBuilderPresenter(
 
     private val subscriptions =
         listOf(
-            eventBus.subscribe<WorldBuilderEvent.WorldCreated> {
+            eventBus.subscribe<WorldBuilderEvent.WorldOpened> {
                 displayWorld()
                 displayTerrains()
             },
@@ -70,7 +69,7 @@ class WorldBuilderPresenter(
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_RESIZE]) { resizeView.open() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_IMPORT]) { importWorld() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_EXPORT]) { exportWorld() },
-                WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_BACK]) { askToLeave() },
+                WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_BACK]) { onLeft() },
             ),
         )
     }
@@ -153,11 +152,6 @@ class WorldBuilderPresenter(
         terrainId: String,
         adjacentTerrainId: String,
     ): String = messages[UiMessage.WORLD_BUILDER_FORBIDDEN_ADJACENT_TERRAINS, "terrain" to messages.terrainName(terrainId), "adjacentTerrain" to messages.terrainName(adjacentTerrainId)]
-
-    private fun askToLeave() {
-        infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_WORLD_LOST_WHEN_LEAVING])
-        callToActionView.displayLeaveConfirmation(onLeft = onLeft, onStayed = { callToActionView.clear() })
-    }
 
     override fun tileSelected(
         row: Int,
