@@ -32,7 +32,7 @@ class WorldBuilderPresenterTest {
     private val resizeView = FakeWorldBuilderResizeView()
     private val callToActionView = FakeWorldBuilderCallToActionView()
     private val menuView = FakeWorldBuilderMenuView()
-    private val clipboard = FakeClipboard()
+    private val worldFileSaver = FakeWorldFileSaver()
     private val worldFilePicker = FakeWorldFilePicker()
     private var leftCount = 0
 
@@ -48,7 +48,7 @@ class WorldBuilderPresenterTest {
             battlefieldApi = apis.battlefieldApi,
             terrainApi = apis.terrainApi,
             messages = MessagesMother.messages(),
-            clipboard = clipboard,
+            worldFileSaver = worldFileSaver,
             worldFilePicker = worldFilePicker,
             coroutineScope = CoroutineScope(Dispatchers.Unconfined),
             onLeft = { leftCount++ },
@@ -267,7 +267,7 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `Export should copy the world to the clipboard and tell it when the world is exported`() {
+    fun `Export should save the world in a world file and tell it when the world is exported`() {
         // Given
         givenWorldCreated()
         selectTerrain("lava")
@@ -275,8 +275,31 @@ class WorldBuilderPresenterTest {
         // When
         menuView.select("Export")
         // Then
-        clipboard.copiedTexts.shouldContainExactly(worldBuilderApi.exportWorld())
-        infoView.infos.shouldContainExactly("World copied to the clipboard")
+        worldFileSaver.savedFiles.shouldContainExactly("world.toml" to worldBuilderApi.exportWorld())
+        infoView.infos.shouldContainExactly("World exported")
+    }
+
+    @Test
+    fun `Export should tell nothing when saving the file is cancelled`() {
+        // Given
+        givenWorldCreated()
+        worldFileSaver.isCancelled = true
+        // When
+        menuView.select("Export")
+        // Then
+        infoView.infos.shouldBeEmpty()
+        infoView.errors.shouldBeEmpty()
+    }
+
+    @Test
+    fun `Export should display why when the file can not be saved`() {
+        // Given
+        givenWorldCreated()
+        worldFileSaver.failure = IllegalStateException("The disk is full")
+        // When
+        menuView.select("Export")
+        // Then
+        infoView.errors.shouldContainExactly("The file can not be saved")
     }
 
     @Test

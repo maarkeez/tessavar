@@ -68,7 +68,7 @@ class WorldBuilderScene(
             battlefieldApi = battlefieldApi,
             terrainApi = terrainApi,
             messages = messages,
-            clipboard = GameWindowClipboard(views.gameWindow),
+            worldFileSaver = GameWindowWorldFileSaver(views.gameWindow, messages),
             worldFilePicker = GameWindowWorldFilePicker(views.gameWindow, messages),
             coroutineScope = this@WorldBuilderScene,
             onLeft = { launchImmediately { sceneContainer.changeTo { MenuScene(localizationApi, telemetryApi, storage) } } },

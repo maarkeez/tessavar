@@ -71,7 +71,7 @@ object WorldBuilderInfoViewStories : StoryBinding {
                     ROWS to ValueDto.int(16),
                     COLUMNS to ValueDto.int(16),
                     MESSAGE_KIND to ValueDto.text(MessageKind.NONE.name),
-                    MESSAGE to ValueDto.text("World copied to the clipboard"),
+                    MESSAGE to ValueDto.text("World exported"),
                 ),
             stories = listOf(size, error, info, largeWorld, longMessage),
         )

@@ -68,9 +68,9 @@ class WorldBuilderInfoViewTest : ViewsForTesting() {
             val infoView = WorldBuilderInfoView(MessagesMother.messages())
             addChild(infoView)
             // When
-            infoView.displayInfo("World copied to the clipboard")
+            infoView.displayInfo("World exported")
             // Then
-            infoView.subtitleText() shouldBe "World copied to the clipboard"
+            infoView.subtitleText() shouldBe "World exported"
             infoView.subtitleColor() shouldBe WorldBuilderInfoView.INFO_COLOR
         }
 
@@ -101,9 +101,9 @@ class WorldBuilderInfoViewTest : ViewsForTesting() {
             infoView.displayError("Water can not be next to lava")
             repeat(150) { nextFrame() }
             // When
-            infoView.displayInfo("World copied to the clipboard")
+            infoView.displayInfo("World exported")
             repeat(100) { nextFrame() }
             // Then
-            infoView.subtitleText() shouldBe "World copied to the clipboard"
+            infoView.subtitleText() shouldBe "World exported"
         }
 }

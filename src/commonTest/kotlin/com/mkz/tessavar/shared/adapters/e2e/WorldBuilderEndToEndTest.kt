@@ -125,20 +125,6 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
         }
 
     @Test
-    fun `should tell the world was copied when the world is exported`() =
-        sharedViewsTest {
-            // Given
-            startWorldBuilder()
-            val builderMenuView = worldBuilderMenuView()!!
-            clickMenuButton(builderMenuView)
-            // When
-            clickMenuOption(builderMenuView, "Export")
-            // Then
-            waitUntil { worldBuilderInfoView()!!.subtitleText() == "World copied to the clipboard" }
-            worldBuilderInfoView()!!.subtitleText() shouldBe "World copied to the clipboard"
-        }
-
-    @Test
     fun `should go back to the menu when leaving is confirmed`() =
         sharedViewsTest {
             // Given

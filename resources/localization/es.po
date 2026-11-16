@@ -506,9 +506,9 @@ msgctxt "ui.worldBuilderMenu.back"
 msgid "Back"
 msgstr "Volver"
 
-msgctxt "ui.worldBuilder.worldCopied"
-msgid "World copied to the clipboard"
-msgstr "Mundo copiado al portapapeles"
+msgctxt "ui.worldBuilder.worldExported"
+msgid "World exported"
+msgstr "Mundo exportado"
 
 msgctxt "ui.worldBuilder.worldLostWhenLeaving"
 msgid "The world is lost when leaving"
@@ -521,6 +521,10 @@ msgstr "Mundo importado"
 msgctxt "ui.worldBuilder.fileNotRead"
 msgid "The file can not be read"
 msgstr "No se puede leer el archivo"
+
+msgctxt "ui.worldBuilder.fileNotSaved"
+msgid "The file can not be saved"
+msgstr "No se puede guardar el archivo"
 
 msgctxt "ui.worldBuilder.notAWorld"
 msgid "The file has no world"

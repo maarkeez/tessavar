@@ -24,7 +24,7 @@ class WorldBuilderPresenter(
     private val battlefieldApi: BattlefieldApi,
     private val terrainApi: TerrainApi,
     private val messages: Messages,
-    private val clipboard: Clipboard,
+    private val worldFileSaver: WorldFileSaver,
     private val worldFilePicker: WorldFilePicker,
     private val coroutineScope: CoroutineScope,
     private val onLeft: () -> Unit,
@@ -32,6 +32,10 @@ class WorldBuilderPresenter(
 ) : BattlefieldView.Delegate,
     WorldBuilderHudView.Delegate,
     WorldBuilderResizeView.Delegate {
+    companion object {
+        const val WORLD_FILE_NAME = "world.toml"
+    }
+
     private var tool = WorldBuilderHudView.Tool.PAINT
 
     private val subscriptions =
@@ -106,10 +110,18 @@ class WorldBuilderPresenter(
     }
 
     private fun exportWorld() {
-        val toml = worldBuilderApi.exportWorld()
+        val text = worldBuilderApi.exportWorld()
         coroutineScope.launchImmediately {
-            clipboard.copy(toml)
-            infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_WORLD_COPIED])
+            val saved =
+                try {
+                    worldFileSaver.saveWorld(WORLD_FILE_NAME, text)
+                } catch (exception: CancellationException) {
+                    throw exception
+                } catch (_: Exception) {
+                    infoView.displayError(messages[UiMessage.WORLD_BUILDER_FILE_NOT_SAVED])
+                    return@launchImmediately
+                }
+            if (saved) infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_WORLD_EXPORTED])
         }
     }
 

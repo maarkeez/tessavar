@@ -500,8 +500,8 @@ msgctxt "ui.worldBuilderMenu.back"
 msgid "Back"
 msgstr ""
 
-msgctxt "ui.worldBuilder.worldCopied"
-msgid "World copied to the clipboard"
+msgctxt "ui.worldBuilder.worldExported"
+msgid "World exported"
 msgstr ""
 
 msgctxt "ui.worldBuilder.worldLostWhenLeaving"
@@ -514,6 +514,10 @@ msgstr ""
 
 msgctxt "ui.worldBuilder.fileNotRead"
 msgid "The file can not be read"
+msgstr ""
+
+msgctxt "ui.worldBuilder.fileNotSaved"
+msgid "The file can not be saved"
 msgstr ""
 
 msgctxt "ui.worldBuilder.notAWorld"
