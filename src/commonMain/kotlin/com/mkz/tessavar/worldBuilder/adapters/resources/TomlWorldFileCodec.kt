@@ -12,10 +12,8 @@ class TomlWorldFileCodec(
     private val parseBattlefield: ParseBattlefield,
     private val exportBattlefield: ExportBattlefield,
 ) : WorldFileCodec {
-    private companion object {
-        const val BATTLEFIELD_TABLE = "[battlefield]"
-        val TABLE_HEADER = Regex("""^\[\[?\s*[A-Za-z0-9_.\-]+\s*]]?\s*(#.*)?$""")
-    }
+    private val battlefieldTable = "[battlefield]"
+    private val tableHeader = Regex("""^\[\[?\s*[A-Za-z0-9_.\-]+\s*\]\]?\s*(#.*)?$""")
 
     override fun decode(text: String): WorldBuilder.Dto.WorldFileDto? {
         val header =
@@ -43,10 +41,10 @@ class TomlWorldFileCodec(
     private fun keptSections(text: String): String {
         val tables = mutableListOf<MutableList<String>>()
         text.lines().forEach { line ->
-            if (TABLE_HEADER.matches(line.trim()) && !line.startsWith(" ")) tables += mutableListOf(line) else tables.lastOrNull()?.add(line)
+            if (tableHeader.matches(line.trim()) && !line.startsWith(" ")) tables += mutableListOf(line) else tables.lastOrNull()?.add(line)
         }
         return tables
-            .filterNot { table -> table.first().trim() == BATTLEFIELD_TABLE }
+            .filterNot { table -> table.first().trim() == battlefieldTable }
             .joinToString("\n") { table -> table.joinToString("\n").trimEnd() + "\n" }
             .trimEnd()
     }
