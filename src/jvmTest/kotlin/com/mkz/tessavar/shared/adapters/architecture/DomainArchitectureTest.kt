@@ -146,8 +146,8 @@ class DomainArchitectureTest {
     fun `should pull the events of its own subdomain when it is an aggregate root`() {
         val roots = aggregateRoots()
 
-        withClue("Expected the 23 aggregate roots of the game.") {
-            roots.shouldHaveSize(23)
+        withClue("Expected the 24 aggregate roots of the game.") {
+            roots.shouldHaveSize(24)
         }
 
         assertSoftly {

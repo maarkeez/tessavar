@@ -15,7 +15,6 @@ import com.mkz.tessavar.cpuBattleBrain.adapters.presentation.CpuBattleBrainApi
 import com.mkz.tessavar.cpuWanderBrain.adapters.presentation.CpuWanderBrainApi
 import com.mkz.tessavar.effect.adapters.presentation.EffectApi
 import com.mkz.tessavar.effect.adapters.resources.ResourcesEffectLoader
-import com.mkz.tessavar.gameSetup.adapters.presentation.GameSetupApi
 import com.mkz.tessavar.inventory.adapters.presentation.InventoryApi
 import com.mkz.tessavar.localization.adapters.presentation.LocalizationApi
 import com.mkz.tessavar.lootDrop.adapters.presentation.LootDropApi
@@ -40,6 +39,8 @@ import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.terrain.adapters.resources.ResourcesTerrainLoader
 import com.mkz.tessavar.unit.adapters.presentation.UnitApi
 import com.mkz.tessavar.unit.adapters.resources.ResourcesUnitLoader
+import com.mkz.tessavar.world.adapters.presentation.WorldApi
+import com.mkz.tessavar.world.adapters.resources.ResourcesWorldLoader
 import korlibs.io.async.launchImmediately
 import korlibs.korge.scene.Scene
 import korlibs.korge.service.storage.IStorage
@@ -124,7 +125,7 @@ class GameScene(
         val npcApi = NpcApi(battlefieldApi, lootableItemApi, partyApi, eventBus, ResourcesNpcLoader())
         val inventoryApi = InventoryApi(effectApi, lootableItemApi, unitApi, battleApi, partyApi, npcApi, eventBus)
         val questApi = QuestApi(battlefieldApi, partyApi, eventBus, ResourcesQuestLoader())
-        val gameSetupApi = GameSetupApi(eventBus)
+        val worldApi = WorldApi(eventBus, ResourcesWorldLoader())
         val saveApi =
             SaveApi(
                 storage = storage ?: views.storage,
@@ -306,9 +307,9 @@ class GameScene(
         addChild(questAnnouncementView)
 
         if (slot == null) {
-            gameSetupApi.setUpGame()
+            worldApi.setUpGame()
         } else {
-            gameSetupApi.setUpGame(isLoadingASave = true)
+            worldApi.setUpGame(isLoadingASave = true)
             eventBus.dispatch()
             try {
                 saveApi.loadGame(slot)

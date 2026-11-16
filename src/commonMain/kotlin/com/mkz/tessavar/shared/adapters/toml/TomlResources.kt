@@ -22,6 +22,24 @@ suspend inline fun <reified T> VfsFile.readTomlFile(): T {
     }
 }
 
+suspend inline fun <reified T> VfsFile.readTomlSections(): Map<String, T> {
+    if (!exists()) return emptyMap()
+    return listNames()
+        .filter { name -> name.endsWith(tomlExtension()) }
+        .sorted()
+        .associate { name -> name.removeSuffix(tomlExtension()) to this[name].readTomlSection<T>() }
+}
+
+suspend inline fun <reified T> VfsFile.readTomlSection(): T {
+    check(exists()) { "Resource '$path' not found" }
+    val toml = readString()
+    return try {
+        TomlService().deserializeSection<T>(toml)
+    } catch (exception: Exception) {
+        throw IllegalStateException("Resource '$path' is invalid: ${exception.message}", exception)
+    }
+}
+
 inline fun <T> fromResource(
     path: String,
     conversion: () -> T,

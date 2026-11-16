@@ -1,4 +1,4 @@
-package com.mkz.tessavar.gameSetup.usecases.commands
+package com.mkz.tessavar.world.usecases.commands
 
 import com.mkz.tessavar.ability.domain.AbilityEvent
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent

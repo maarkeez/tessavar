@@ -20,7 +20,6 @@ import com.mkz.tessavar.cpuWanderBrain.adapters.presentation.CpuWanderBrainApi
 import com.mkz.tessavar.effect.adapters.presentation.EffectApi
 import com.mkz.tessavar.effect.adapters.resources.ResourcesEffectLoader
 import com.mkz.tessavar.effect.domain.EffectMother
-import com.mkz.tessavar.gameSetup.adapters.presentation.GameSetupApi
 import com.mkz.tessavar.party.adapters.presentation.PartyApi
 import com.mkz.tessavar.player.adapters.presentation.PlayerApi
 import com.mkz.tessavar.player.adapters.resources.ResourcesPlayerLoader
@@ -35,6 +34,8 @@ import com.mkz.tessavar.unit.adapters.presentation.UnitApi
 import com.mkz.tessavar.unit.adapters.resources.ResourcesUnitLoader
 import com.mkz.tessavar.unit.domain.Unit
 import com.mkz.tessavar.unit.domain.UnitMother
+import com.mkz.tessavar.world.adapters.presentation.WorldApi
+import com.mkz.tessavar.world.adapters.resources.ResourcesWorldLoader
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -54,7 +55,7 @@ class SimpleBattleAcceptanceTest {
     private val cpuBattleBrainApi = CpuBattleBrainApi(unitApi, playerApi, battleUnitApi, battlefieldApi, terrainApi, effectApi, abilityApi, eventBus, FixedDoublesRandom.cpuBattleUnitsAlwaysResting())
     private val partyApi = PartyApi(playerApi, battleUnitApi, battlefieldApi, eventBus)
     private val cpuWanderBrainApi = CpuWanderBrainApi(playerApi, battleUnitApi, battlefieldApi, cpuBattleBrainApi, partyApi, eventBus)
-    private val gameSetupApi = GameSetupApi(eventBus)
+    private val worldApi = WorldApi(eventBus, ResourcesWorldLoader())
 
     private val humanPlayerId = PlayerMother.id()
     private val cpuPlayerId = PlayerMother.id()

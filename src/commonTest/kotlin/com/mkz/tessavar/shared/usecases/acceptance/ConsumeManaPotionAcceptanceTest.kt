@@ -12,7 +12,6 @@ import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldDecoder
 import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldEncoder
 import com.mkz.tessavar.effect.adapters.presentation.EffectApi
 import com.mkz.tessavar.effect.adapters.resources.ResourcesEffectLoader
-import com.mkz.tessavar.gameSetup.adapters.presentation.GameSetupApi
 import com.mkz.tessavar.inventory.adapters.presentation.InventoryApi
 import com.mkz.tessavar.lootDrop.adapters.presentation.LootDropApi
 import com.mkz.tessavar.lootDrop.adapters.resources.ResourcesLootDropLoader
@@ -30,6 +29,8 @@ import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.terrain.adapters.resources.ResourcesTerrainLoader
 import com.mkz.tessavar.unit.adapters.presentation.UnitApi
 import com.mkz.tessavar.unit.adapters.resources.ResourcesUnitLoader
+import com.mkz.tessavar.world.adapters.presentation.WorldApi
+import com.mkz.tessavar.world.adapters.resources.ResourcesWorldLoader
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import kotlin.random.Random
@@ -51,7 +52,7 @@ class ConsumeManaPotionAcceptanceTest {
     private val partyApi = PartyApi(playerApi, battleUnitApi, battlefieldApi, eventBus)
     private val npcApi = NpcApi(battlefieldApi, lootableItemApi, partyApi, eventBus, ResourcesNpcLoader())
     private val inventoryApi = InventoryApi(effectApi, lootableItemApi, unitApi, battleApi, partyApi, npcApi, eventBus)
-    private val gameSetupApi = GameSetupApi(eventBus)
+    private val worldApi = WorldApi(eventBus, ResourcesWorldLoader())
 
     private val playerOneId = "player-one"
     private val playerOneKnightBattleUnitId = "hero"
@@ -67,7 +68,7 @@ class ConsumeManaPotionAcceptanceTest {
         playerApi.init()
         battlefieldApi.init()
         battleUnitApi.init()
-        gameSetupApi.setUpGame()
+        worldApi.setUpGame()
         eventBus.dispatch()
         battleApi.startBattleWithEveryBattleUnit(battleUnitApi, "player-one", "player-two")
         eventBus.dispatch()

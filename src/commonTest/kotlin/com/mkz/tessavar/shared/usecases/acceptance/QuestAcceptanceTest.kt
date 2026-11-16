@@ -17,7 +17,6 @@ import com.mkz.tessavar.effect.domain.Effect.Dto.EffectApplicationDto.SourceDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.RecipientDto
 import com.mkz.tessavar.effect.domain.EffectMother.damageEffect
 import com.mkz.tessavar.effect.domain.EffectMother.healEffect
-import com.mkz.tessavar.gameSetup.adapters.presentation.GameSetupApi
 import com.mkz.tessavar.inventory.adapters.presentation.InventoryApi
 import com.mkz.tessavar.lootDrop.adapters.presentation.LootDropApi
 import com.mkz.tessavar.lootDrop.adapters.resources.ResourcesLootDropLoader
@@ -58,6 +57,8 @@ import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanBeOccupied
 import com.mkz.tessavar.unit.adapters.presentation.UnitApi
 import com.mkz.tessavar.unit.adapters.resources.ResourcesUnitLoader
 import com.mkz.tessavar.unit.domain.UnitMother.unit
+import com.mkz.tessavar.world.adapters.presentation.WorldApi
+import com.mkz.tessavar.world.adapters.resources.ResourcesWorldLoader
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import kotlin.random.Random
@@ -80,7 +81,7 @@ class QuestAcceptanceTest {
     private val npcApi = NpcApi(battlefieldApi, lootableItemApi, partyApi, eventBus, ResourcesNpcLoader())
     private val inventoryApi = InventoryApi(effectApi, lootableItemApi, unitApi, battleApi, partyApi, npcApi, eventBus)
     private val questApi = QuestApi(battlefieldApi, partyApi, eventBus, ResourcesQuestLoader())
-    private val gameSetupApi = GameSetupApi(eventBus)
+    private val worldApi = WorldApi(eventBus, ResourcesWorldLoader())
 
     private suspend fun setUp() {
         terrainApi.init()
@@ -95,7 +96,7 @@ class QuestAcceptanceTest {
         battleUnitApi.init()
         npcApi.init()
         questApi.init()
-        gameSetupApi.setUpGame()
+        worldApi.setUpGame()
         eventBus.dispatch()
     }
 

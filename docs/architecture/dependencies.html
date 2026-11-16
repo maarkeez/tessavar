@@ -215,7 +215,6 @@ const DATA = {
     {"name": "cpuBattleBrain", "files": 35, "fanIn": 2, "fanOut": 10, "instability": 0.83, "importsIn": 7, "importsOut": 107},
     {"name": "cpuWanderBrain", "files": 26, "fanIn": 1, "fanOut": 7, "instability": 0.88, "importsIn": 1, "importsOut": 56},
     {"name": "effect", "files": 13, "fanIn": 9, "fanOut": 1, "instability": 0.1, "importsIn": 68, "importsOut": 13},
-    {"name": "gameSetup", "files": 2, "fanIn": 1, "fanOut": 16, "instability": 0.94, "importsIn": 1, "importsOut": 17},
     {"name": "inventory", "files": 37, "fanIn": 3, "fanOut": 8, "instability": 0.73, "importsIn": 19, "importsOut": 62},
     {"name": "localization", "files": 14, "fanIn": 2, "fanOut": 1, "instability": 0.33, "importsIn": 7, "importsOut": 6},
     {"name": "lootDrop", "files": 23, "fanIn": 3, "fanOut": 4, "instability": 0.57, "importsIn": 8, "importsOut": 32},
@@ -226,12 +225,13 @@ const DATA = {
     {"name": "player", "files": 15, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 34, "importsOut": 12},
     {"name": "quest", "files": 28, "fanIn": 3, "fanOut": 5, "instability": 0.63, "importsIn": 22, "importsOut": 35},
     {"name": "save", "files": 11, "fanIn": 1, "fanOut": 1, "instability": 0.5, "importsIn": 12, "importsOut": 8},
-    {"name": "screen", "files": 112, "fanIn": 1, "fanOut": 24, "instability": 0.96, "importsIn": 118, "importsOut": 289},
-    {"name": "shared", "files": 14, "fanIn": 25, "fanOut": 0, "instability": 0.0, "importsIn": 539, "importsOut": 0},
+    {"name": "screen", "files": 112, "fanIn": 1, "fanOut": 24, "instability": 0.96, "importsIn": 118, "importsOut": 290},
+    {"name": "shared", "files": 14, "fanIn": 25, "fanOut": 0, "instability": 0.0, "importsIn": 542, "importsOut": 0},
     {"name": "storybook", "files": 108, "fanIn": 0, "fanOut": 3, "instability": 1.0, "importsIn": 0, "importsOut": 136},
     {"name": "telemetry", "files": 45, "fanIn": 2, "fanOut": 5, "instability": 0.71, "importsIn": 8, "importsOut": 41},
     {"name": "terrain", "files": 13, "fanIn": 5, "fanOut": 1, "instability": 0.17, "importsIn": 16, "importsOut": 7},
     {"name": "unit", "files": 14, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 17, "importsOut": 11},
+    {"name": "world", "files": 8, "fanIn": 1, "fanOut": 16, "instability": 0.94, "importsIn": 2, "importsOut": 20},
     {"name": "worldBuilder", "files": 17, "fanIn": 1, "fanOut": 3, "instability": 0.75, "importsIn": 5, "importsOut": 22}
   ],
   "edges": [
@@ -736,55 +736,6 @@ const DATA = {
       {"file": "com/mkz/tessavar/effect/usecases/commands/InitialiseEffects.kt", "layer": "usecases", "name": "shared.domain.EventBus"},
       {"file": "com/mkz/tessavar/effect/usecases/commands/RequestEffectCreation.kt", "layer": "usecases", "name": "shared.domain.EventBus"}
     ]},
-    {"from": "gameSetup", "to": "ability", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "ability.domain.AbilityEvent"}
-    ]},
-    {"from": "gameSetup", "to": "battleUnit", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "battleUnit.domain.BattleUnitEvent"}
-    ]},
-    {"from": "gameSetup", "to": "battlefield", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "battlefield.domain.BattlefieldEvent"}
-    ]},
-    {"from": "gameSetup", "to": "building", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "building.domain.BuildingEvent"}
-    ]},
-    {"from": "gameSetup", "to": "effect", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "effect.domain.EffectEvent"}
-    ]},
-    {"from": "gameSetup", "to": "lootDrop", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "lootDrop.domain.LootDropEvent"}
-    ]},
-    {"from": "gameSetup", "to": "lootTable", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "lootTable.domain.LootTableEvent"}
-    ]},
-    {"from": "gameSetup", "to": "lootableItem", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "lootableItem.domain.LootableItemEvent"}
-    ]},
-    {"from": "gameSetup", "to": "npc", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "npc.domain.NpcEvent"}
-    ]},
-    {"from": "gameSetup", "to": "party", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "party.domain.PartyEvent"}
-    ]},
-    {"from": "gameSetup", "to": "player", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "player.domain.PlayerEvent"}
-    ]},
-    {"from": "gameSetup", "to": "quest", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "quest.domain.QuestEvent"}
-    ]},
-    {"from": "gameSetup", "to": "shared", "weight": 2, "files": 2, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/adapters/presentation/GameSetupApi.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "shared.domain.EventBus"}
-    ]},
-    {"from": "gameSetup", "to": "telemetry", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "telemetry.domain.TelemetryEvent"}
-    ]},
-    {"from": "gameSetup", "to": "terrain", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "terrain.domain.TerrainEvent"}
-    ]},
-    {"from": "gameSetup", "to": "unit", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/gameSetup/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "unit.domain.UnitEvent"}
-    ]},
     {"from": "inventory", "to": "battle", "weight": 2, "files": 2, "imports": [
       {"file": "com/mkz/tessavar/inventory/adapters/presentation/InventoryApi.kt", "layer": "adapters", "name": "battle.adapters.presentation.BattleApi"},
       {"file": "com/mkz/tessavar/inventory/usecases/services/PlayerTurnRule.kt", "layer": "usecases", "name": "battle.usecases.queries.SearchBattle"}
@@ -1235,9 +1186,6 @@ const DATA = {
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "effect.adapters.presentation.EffectApi"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "effect.adapters.resources.ResourcesEffectLoader"}
     ]},
-    {"from": "screen", "to": "gameSetup", "weight": 1, "files": 1, "imports": [
-      {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "gameSetup.adapters.presentation.GameSetupApi"}
-    ]},
     {"from": "screen", "to": "inventory", "weight": 16, "files": 4, "imports": [
       {"file": "com/mkz/tessavar/screen/adapters/presentation/ExplorationPresenter.kt", "layer": "adapters", "name": "inventory.domain.InventoryEvent.InventoryFull"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "inventory.adapters.presentation.InventoryApi"},
@@ -1470,6 +1418,10 @@ const DATA = {
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "unit.adapters.presentation.UnitApi"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "unit.adapters.resources.ResourcesUnitLoader"}
     ]},
+    {"from": "screen", "to": "world", "weight": 2, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.adapters.presentation.WorldApi"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.adapters.resources.ResourcesWorldLoader"}
+    ]},
     {"from": "screen", "to": "worldBuilder", "weight": 5, "files": 2, "imports": [
       {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderPresenter.kt", "layer": "adapters", "name": "worldBuilder.adapters.presentation.WorldBuilderApi"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/WorldBuilderPresenter.kt", "layer": "adapters", "name": "worldBuilder.domain.WorldBuilder"},
@@ -1691,6 +1643,58 @@ const DATA = {
       {"file": "com/mkz/tessavar/unit/domain/UnitEvent.kt", "layer": "domain", "name": "shared.domain.DomainEvent"},
       {"file": "com/mkz/tessavar/unit/usecases/commands/InitialiseUnits.kt", "layer": "usecases", "name": "shared.domain.EventBus"},
       {"file": "com/mkz/tessavar/unit/usecases/commands/RequestUnitCreation.kt", "layer": "usecases", "name": "shared.domain.EventBus"}
+    ]},
+    {"from": "world", "to": "ability", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "ability.domain.AbilityEvent"}
+    ]},
+    {"from": "world", "to": "battleUnit", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "battleUnit.domain.BattleUnitEvent"}
+    ]},
+    {"from": "world", "to": "battlefield", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "battlefield.domain.BattlefieldEvent"}
+    ]},
+    {"from": "world", "to": "building", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "building.domain.BuildingEvent"}
+    ]},
+    {"from": "world", "to": "effect", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "effect.domain.EffectEvent"}
+    ]},
+    {"from": "world", "to": "lootDrop", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "lootDrop.domain.LootDropEvent"}
+    ]},
+    {"from": "world", "to": "lootTable", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "lootTable.domain.LootTableEvent"}
+    ]},
+    {"from": "world", "to": "lootableItem", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "lootableItem.domain.LootableItemEvent"}
+    ]},
+    {"from": "world", "to": "npc", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "npc.domain.NpcEvent"}
+    ]},
+    {"from": "world", "to": "party", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "party.domain.PartyEvent"}
+    ]},
+    {"from": "world", "to": "player", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "player.domain.PlayerEvent"}
+    ]},
+    {"from": "world", "to": "quest", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "quest.domain.QuestEvent"}
+    ]},
+    {"from": "world", "to": "shared", "weight": 5, "files": 4, "imports": [
+      {"file": "com/mkz/tessavar/world/adapters/presentation/WorldApi.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
+      {"file": "com/mkz/tessavar/world/adapters/resources/ResourcesWorldLoader.kt", "layer": "adapters", "name": "shared.adapters.resources.ResourcesBundle"},
+      {"file": "com/mkz/tessavar/world/adapters/resources/ResourcesWorldLoader.kt", "layer": "adapters", "name": "shared.adapters.toml.readTomlSections"},
+      {"file": "com/mkz/tessavar/world/domain/WorldEvent.kt", "layer": "domain", "name": "shared.domain.DomainEvent"},
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "shared.domain.EventBus"}
+    ]},
+    {"from": "world", "to": "telemetry", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "telemetry.domain.TelemetryEvent"}
+    ]},
+    {"from": "world", "to": "terrain", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "terrain.domain.TerrainEvent"}
+    ]},
+    {"from": "world", "to": "unit", "weight": 1, "files": 1, "imports": [
+      {"file": "com/mkz/tessavar/world/usecases/commands/SetUpGame.kt", "layer": "usecases", "name": "unit.domain.UnitEvent"}
     ]},
     {"from": "worldBuilder", "to": "battlefield", "weight": 7, "files": 4, "imports": [
       {"file": "com/mkz/tessavar/worldBuilder/adapters/presentation/WorldBuilderApi.kt", "layer": "adapters", "name": "battlefield.adapters.presentation.BattlefieldApi"},

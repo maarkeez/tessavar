@@ -14,7 +14,6 @@ import com.mkz.tessavar.cpuBattleBrain.adapters.presentation.CpuBattleBrainApi
 import com.mkz.tessavar.cpuWanderBrain.adapters.presentation.CpuWanderBrainApi
 import com.mkz.tessavar.effect.adapters.presentation.EffectApi
 import com.mkz.tessavar.effect.adapters.resources.ResourcesEffectLoader
-import com.mkz.tessavar.gameSetup.adapters.presentation.GameSetupApi
 import com.mkz.tessavar.lootDrop.adapters.presentation.LootDropApi
 import com.mkz.tessavar.lootDrop.adapters.resources.ResourcesLootDropLoader
 import com.mkz.tessavar.lootTable.adapters.presentation.LootTableApi
@@ -35,6 +34,8 @@ import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.terrain.adapters.resources.ResourcesTerrainLoader
 import com.mkz.tessavar.unit.adapters.presentation.UnitApi
 import com.mkz.tessavar.unit.adapters.resources.ResourcesUnitLoader
+import com.mkz.tessavar.world.adapters.presentation.WorldApi
+import com.mkz.tessavar.world.adapters.resources.ResourcesWorldLoader
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -59,7 +60,7 @@ class SetUpGameAcceptanceTest {
     private val cpuBattleBrainApi = CpuBattleBrainApi(unitApi, playerApi, battleUnitApi, battlefieldApi, terrainApi, effectApi, abilityApi, eventBus, FixedDoublesRandom.cpuBattleUnitsAlwaysResting())
     private val partyApi = PartyApi(playerApi, battleUnitApi, battlefieldApi, eventBus)
     private val cpuWanderBrainApi = CpuWanderBrainApi(playerApi, battleUnitApi, battlefieldApi, cpuBattleBrainApi, partyApi, eventBus)
-    private val gameSetupApi = GameSetupApi(eventBus)
+    private val worldApi = WorldApi(eventBus, ResourcesWorldLoader())
 
     private val playerOneId = "player-one"
     private val playerOneKnightBattleUnitId = "hero"
@@ -75,7 +76,7 @@ class SetUpGameAcceptanceTest {
         playerApi.init()
         battlefieldApi.init()
         battleUnitApi.init()
-        gameSetupApi.setUpGame()
+        worldApi.setUpGame()
         eventBus.dispatch()
         battleApi.startBattleWithEveryBattleUnit(battleUnitApi, "player-one", "player-two")
         eventBus.dispatch()
