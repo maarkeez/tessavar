@@ -14,6 +14,10 @@ fun MenuView.playNewGameLabel(): String = playNewGameButton.confirmButton.text
 
 fun MenuView.loadGameLabel(): String = loadGameButton.cancelButton.text
 
+fun MenuView.communityWorldsLabel(): String = communityWorldsButton.cancelButton.text
+
+suspend fun ViewsForTesting.clickCommunityWorlds(menuView: MenuView) = clickOn(menuView.communityWorldsButton.cancelButton)
+
 fun MenuView.buildWorldLabel(): String = buildWorldButton.cancelButton.text
 
 suspend fun ViewsForTesting.clickPlayNewGame(menuView: MenuView) = clickOn(menuView.playNewGameButton.confirmButton)

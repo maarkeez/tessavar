@@ -17,19 +17,21 @@ class MenuViewTest : ViewsForTesting() {
             messages,
             onNewGameSelected = { selections += "new game" },
             onLoadGameSelected = { selections += "load game" },
+            onCommunityWorldsSelected = { selections += "community worlds" },
             onWorldBuilderSelected = { selections += "world builder" },
             onPrivacySelected = { selections += "privacy" },
             onWishlistSelected = { selections += "wishlist" },
         )
 
     @Test
-    fun `MenuView should display playing a new game, building a world and the language when it is displayed`() =
+    fun `MenuView should display playing a new game, the community worlds, building a world and the language when it is displayed`() =
         sharedViewsTest {
             // When
             val menuView = newMenuView()
             // Then
             menuView.playNewGameLabel() shouldBe "Play new game"
             menuView.loadGameLabel() shouldBe "Load game"
+            menuView.communityWorldsLabel() shouldBe "Community worlds"
             menuView.buildWorldLabel() shouldBe "Build a world"
             menuView.languageLabel() shouldBe "Language"
             menuView.privacyLabel() shouldBe "Privacy"
@@ -101,6 +103,7 @@ class MenuViewTest : ViewsForTesting() {
             // Then
             menuView.playNewGameLabel() shouldBe "Jugar partida nueva"
             menuView.loadGameLabel() shouldBe "Cargar partida"
+            menuView.communityWorldsLabel() shouldBe "Mundos de la comunidad"
             menuView.buildWorldLabel() shouldBe "Construir un mundo"
             menuView.languageLabel() shouldBe "Idioma"
             menuView.privacyLabel() shouldBe "Privacidad"
@@ -161,6 +164,19 @@ class MenuViewTest : ViewsForTesting() {
             clickLoadGame(menuView)
             // Then
             selections.shouldContainExactly("load game")
+            menuView.areOptionsShown() shouldBe false
+        }
+
+    @Test
+    fun `CommunityWorlds should list the community worlds, hiding the options, when it is clicked`() =
+        sharedViewsTest {
+            // Given
+            val menuView = newMenuView()
+            addChild(menuView)
+            // When
+            clickCommunityWorlds(menuView)
+            // Then
+            selections.shouldContainExactly("community worlds")
             menuView.areOptionsShown() shouldBe false
         }
 

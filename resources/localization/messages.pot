@@ -22,6 +22,11 @@ msgctxt "ui.menu.loadGame"
 msgid "Load game"
 msgstr ""
 
+#. Lists the community worlds, built by players and shared with everyone, to start a new game in one.
+msgctxt "ui.menu.communityWorlds"
+msgid "Community worlds"
+msgstr ""
+
 msgctxt "ui.menu.buildWorld"
 msgid "Build a world"
 msgstr ""
@@ -402,6 +407,26 @@ msgstr ""
 
 #. Goes back from the save slots.
 msgctxt "ui.saveSlots.back"
+msgid "Back"
+msgstr ""
+
+#. The title of the list of community worlds.
+msgctxt "ui.communityWorlds.title"
+msgid "Community worlds"
+msgstr ""
+
+#. A community world in the list, starting a new game in it. {name}: the world's name, {author}: who built it.
+msgctxt "ui.communityWorlds.entry"
+msgid "{name}, by {author}"
+msgstr ""
+
+#. Shown in place of the list when no community world is shipped yet.
+msgctxt "ui.communityWorlds.empty"
+msgid "No community worlds yet. Build one in Build a world and share it."
+msgstr ""
+
+#. Goes back from the community worlds to the menu.
+msgctxt "ui.communityWorlds.back"
 msgid "Back"
 msgstr ""
 

@@ -10,7 +10,9 @@ object MenuViewStories : StoryBinding {
         StoryDto(
             id = "screen-menu--options",
             name = "Options",
-            description = "Tessavar in gold, over Play new game, Load game, Build world, Language, Privacy and Wishlist in gold. Language lists the languages, Privacy the consent, Wishlist the form.",
+            description =
+                "Tessavar in gold, over Play new game, Load game, Community worlds, Build world, Language, Privacy and Wishlist in gold. " +
+                    "Language lists the languages, Privacy the consent, Wishlist the form.",
             args = emptyMap(),
         )
 
@@ -19,7 +21,9 @@ object MenuViewStories : StoryBinding {
             id = "screen-menu",
             group = "Screen",
             title = "Menu",
-            description = "The first screen of the game: playing a new game, its primary action, loading a game, building a world, the language, the privacy choice, or joining the mailing list.",
+            description =
+                "The first screen of the game: playing a new game, its primary action, loading a game, playing a community world, building a world, " +
+                    "the language, the privacy choice, or joining the mailing list.",
             controls = emptyList(),
             args = emptyMap(),
             stories = listOf(options),
@@ -33,6 +37,7 @@ object MenuViewStories : StoryBinding {
             context.messages,
             onNewGameSelected = { context.action("onNewGameSelected") },
             onLoadGameSelected = { context.action("onLoadGameSelected") },
+            onCommunityWorldsSelected = { context.action("onCommunityWorldsSelected") },
             onWorldBuilderSelected = { context.action("onWorldBuilderSelected") },
             onPrivacySelected = { context.action("onPrivacySelected") },
             onWishlistSelected = { context.action("onWishlistSelected") },

@@ -58,16 +58,19 @@ class MenuScene(
             )
         lateinit var loadGamePresenter: LoadGamePresenter
         lateinit var consentPresenter: ConsentPresenter
+        lateinit var communityWorldsPresenter: CommunityWorldsPresenter
         val menuView =
             MenuView(
                 messages = messages,
                 onNewGameSelected = { launchImmediately { sceneContainer.changeTo { GameScene(localizationApi, telemetryApi, storage, random) } } },
                 onLoadGameSelected = { loadGamePresenter.open() },
+                onCommunityWorldsSelected = { communityWorldsPresenter.open() },
                 onWorldBuilderSelected = { launchImmediately { sceneContainer.changeTo { WorldBuilderScene(localizationApi, telemetryApi, storage) } } },
                 onPrivacySelected = { consentPresenter.open() },
                 onWishlistSelected = { launchImmediately { (browser ?: GameWindowBrowser(views.gameWindow)).open(SIGNUP_FORM_URL) } },
             )
         val saveSlotsView = SaveSlotsView(messages)
+        val communityWorldsView = CommunityWorldsView(messages)
         val confirmDialogView = ConfirmDialogView()
         menuView.x = (GAME_WINDOW_SIZE.width - menuView.width) / 2
         menuView.y = (GAME_WINDOW_SIZE.height - menuView.height) / 2
@@ -75,11 +78,15 @@ class MenuScene(
         callToActionView.y = ROW_Y
         val consentView = ConsentView(messages)
         val privacyNoticeView = PrivacyNoticeView(messages)
-        listOf(menuView, saveSlotsView, confirmDialogView, callToActionView, consentView, privacyNoticeView).forEach(::addChild)
-        listOf(saveSlotsView, confirmDialogView).forEach { view -> view.y = (GAME_WINDOW_SIZE.height - PANEL_HEIGHT) / 2 }
+        listOf(menuView, saveSlotsView, communityWorldsView, confirmDialogView, callToActionView, consentView, privacyNoticeView).forEach(::addChild)
+        listOf(saveSlotsView, communityWorldsView, confirmDialogView).forEach { view -> view.y = (GAME_WINDOW_SIZE.height - PANEL_HEIGHT) / 2 }
         loadGamePresenter =
             LoadGamePresenter(menuView, saveSlotsView, confirmDialogView, callToActionView, saveApi, messages, { id -> worldApi.searchWorld(id)?.name }, incompatibleSlot) { slot, worldId ->
                 launchImmediately { sceneContainer.changeTo { GameScene(localizationApi, telemetryApi, storage, random, slot, worldId) } }
+            }
+        communityWorldsPresenter =
+            CommunityWorldsPresenter(menuView, communityWorldsView, callToActionView, worldApi, messages) { worldId ->
+                launchImmediately { sceneContainer.changeTo { GameScene(localizationApi, telemetryApi, storage, random, worldId = worldId) } }
             }
         consentPresenter = ConsentPresenter(consentView, privacyNoticeView, telemetryApi)
         eventBus.publish(TelemetryEvent.RequestRecordMainMenuOpened)

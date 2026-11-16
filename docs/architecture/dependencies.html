@@ -225,13 +225,13 @@ const DATA = {
     {"name": "player", "files": 15, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 34, "importsOut": 12},
     {"name": "quest", "files": 28, "fanIn": 3, "fanOut": 5, "instability": 0.63, "importsIn": 23, "importsOut": 35},
     {"name": "save", "files": 11, "fanIn": 1, "fanOut": 1, "instability": 0.5, "importsIn": 12, "importsOut": 8},
-    {"name": "screen", "files": 117, "fanIn": 1, "fanOut": 24, "instability": 0.96, "importsIn": 124, "importsOut": 316},
-    {"name": "shared", "files": 14, "fanIn": 25, "fanOut": 0, "instability": 0.0, "importsIn": 564, "importsOut": 0},
-    {"name": "storybook", "files": 111, "fanIn": 0, "fanOut": 3, "instability": 1.0, "importsIn": 0, "importsOut": 142},
+    {"name": "screen", "files": 119, "fanIn": 1, "fanOut": 24, "instability": 0.96, "importsIn": 125, "importsOut": 319},
+    {"name": "shared", "files": 14, "fanIn": 25, "fanOut": 0, "instability": 0.0, "importsIn": 566, "importsOut": 0},
+    {"name": "storybook", "files": 112, "fanIn": 0, "fanOut": 3, "instability": 1.0, "importsIn": 0, "importsOut": 143},
     {"name": "telemetry", "files": 45, "fanIn": 2, "fanOut": 5, "instability": 0.71, "importsIn": 8, "importsOut": 41},
     {"name": "terrain", "files": 13, "fanIn": 5, "fanOut": 1, "instability": 0.17, "importsIn": 21, "importsOut": 7},
     {"name": "unit", "files": 14, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 17, "importsOut": 11},
-    {"name": "world", "files": 8, "fanIn": 2, "fanOut": 16, "instability": 0.89, "importsIn": 11, "importsOut": 20},
+    {"name": "world", "files": 9, "fanIn": 2, "fanOut": 16, "instability": 0.89, "importsIn": 12, "importsOut": 20},
     {"name": "worldBuilder", "files": 31, "fanIn": 1, "fanOut": 4, "instability": 0.8, "importsIn": 18, "importsOut": 39}
   ],
   "edges": [
@@ -1327,7 +1327,7 @@ const DATA = {
       {"file": "com/mkz/tessavar/screen/adapters/presentation/QuestPresenter.kt", "layer": "adapters", "name": "save.domain.SaveEvent.GameLoaded"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/SaveSlotsMapper.kt", "layer": "adapters", "name": "save.domain.Save"}
     ]},
-    {"from": "screen", "to": "shared", "weight": 78, "files": 46, "imports": [
+    {"from": "screen", "to": "shared", "weight": 80, "files": 47, "imports": [
       {"file": "com/mkz/tessavar/screen/adapters/presentation/BannerPresenter.kt", "layer": "adapters", "name": "shared.domain.EventBus"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/BannerPresenter.kt", "layer": "adapters", "name": "shared.domain.Subscription"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/BannerPresenter.kt", "layer": "adapters", "name": "shared.domain.subscribe"},
@@ -1338,6 +1338,8 @@ const DATA = {
       {"file": "com/mkz/tessavar/screen/adapters/presentation/BattlefieldPresenter.kt", "layer": "adapters", "name": "shared.domain.subscribe"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/ButtonRowView.kt", "layer": "adapters", "name": "shared.adapters.presentation.GameButton"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/ButtonRowView.kt", "layer": "adapters", "name": "shared.adapters.presentation.gameButton"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/CommunityWorldsView.kt", "layer": "adapters", "name": "shared.adapters.presentation.GameButton"},
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/CommunityWorldsView.kt", "layer": "adapters", "name": "shared.adapters.presentation.gameButton"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/ConsentView.kt", "layer": "adapters", "name": "shared.adapters.presentation.GameButton"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/ConsentView.kt", "layer": "adapters", "name": "shared.adapters.presentation.gameButton"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/EffectView.kt", "layer": "adapters", "name": "shared.adapters.presentation.blink"},
@@ -1429,7 +1431,8 @@ const DATA = {
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "unit.adapters.presentation.UnitApi"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "unit.adapters.resources.ResourcesUnitLoader"}
     ]},
-    {"from": "screen", "to": "world", "weight": 8, "files": 4, "imports": [
+    {"from": "screen", "to": "world", "weight": 9, "files": 5, "imports": [
+      {"file": "com/mkz/tessavar/screen/adapters/presentation/CommunityWorldsPresenter.kt", "layer": "adapters", "name": "world.adapters.presentation.WorldApi"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.adapters.presentation.WorldApi"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.adapters.resources.ResourcesWorldLoader"},
       {"file": "com/mkz/tessavar/screen/adapters/presentation/GameScene.kt", "layer": "adapters", "name": "world.domain.World"},
@@ -1463,7 +1466,7 @@ const DATA = {
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/StorybookScene.kt", "layer": "adapters", "name": "localization.adapters.presentation.LocalizationApi"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/ToolbarView.kt", "layer": "adapters", "name": "localization.domain.Localization.Dto.LanguageDto"}
     ]},
-    {"from": "storybook", "to": "screen", "weight": 124, "files": 69, "imports": [
+    {"from": "storybook", "to": "screen", "weight": 125, "files": 70, "imports": [
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/AbilityButtonViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.AbilityButtonView"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/AbilityInfoViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.AbilityInfoView"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/AbilityInfoViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.AbilityInfoView.AbilityInfo"},
@@ -1494,6 +1497,7 @@ const DATA = {
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/CancelButtonStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.CancelButton"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/CastPreviewViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.BattleUnitInfo"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/CastPreviewViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.CastPreviewView"},
+      {"file": "com/mkz/tessavar/storybook/adapters/presentation/CommunityWorldsViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.CommunityWorldsView"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/ConfirmButtonStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.ConfirmButton"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/ConfirmButtonStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.HudStyle"},
       {"file": "com/mkz/tessavar/storybook/adapters/presentation/ConfirmDialogViewStories.kt", "layer": "adapters", "name": "screen.adapters.presentation.ConfirmDialogView"},

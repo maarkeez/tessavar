@@ -6,6 +6,7 @@ enum class UiMessage(
 ) {
     MENU_PLAY_NEW_GAME("ui.menu.playNewGame"),
     MENU_LOAD_GAME("ui.menu.loadGame"),
+    MENU_COMMUNITY_WORLDS("ui.menu.communityWorlds"),
     MENU_BUILD_WORLD("ui.menu.buildWorld"),
     MENU_LANGUAGE("ui.menu.language"),
     MENU_PRIVACY("ui.menu.privacy"),
@@ -85,6 +86,10 @@ enum class UiMessage(
     SAVE_SLOTS_SUMMARY("ui.saveSlots.summary"),
     SAVE_SLOTS_DELETE("ui.saveSlots.delete"),
     SAVE_SLOTS_BACK("ui.saveSlots.back"),
+    COMMUNITY_WORLDS_TITLE("ui.communityWorlds.title"),
+    COMMUNITY_WORLDS_ENTRY("ui.communityWorlds.entry"),
+    COMMUNITY_WORLDS_EMPTY("ui.communityWorlds.empty"),
+    COMMUNITY_WORLDS_BACK("ui.communityWorlds.back"),
     SAVE_SLOTS_OVERWRITE("ui.saveSlots.overwrite"),
     SAVE_SLOTS_OVERWRITE_CONFIRMATION("ui.saveSlots.overwriteConfirmation"),
     SAVE_SLOTS_DELETE_CONFIRMATION("ui.saveSlots.deleteConfirmation"),

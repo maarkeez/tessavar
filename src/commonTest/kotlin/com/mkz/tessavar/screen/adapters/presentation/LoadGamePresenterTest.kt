@@ -29,7 +29,8 @@ class LoadGamePresenterTest {
             worldId = "tessavar",
             now = { DateTime.nowUnixMillis() },
         )
-    private val menuView = MenuView(texts, onNewGameSelected = {}, onLoadGameSelected = {}, onWorldBuilderSelected = {}, onPrivacySelected = {}, onWishlistSelected = {})
+    private val menuView =
+        MenuView(texts, onNewGameSelected = {}, onLoadGameSelected = {}, onCommunityWorldsSelected = {}, onWorldBuilderSelected = {}, onPrivacySelected = {}, onWishlistSelected = {})
     private val saveSlotsView = SaveSlotsView(texts)
     private val confirmDialogView = ConfirmDialogView()
     private val callToActionView = FakeCallToActionView()

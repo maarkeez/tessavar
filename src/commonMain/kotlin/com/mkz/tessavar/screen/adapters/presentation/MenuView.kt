@@ -10,10 +10,11 @@ class MenuView(
     private val messages: Messages,
     onNewGameSelected: () -> Unit,
     onLoadGameSelected: () -> Unit,
+    onCommunityWorldsSelected: () -> Unit,
     onWorldBuilderSelected: () -> Unit,
     onPrivacySelected: () -> Unit,
     onWishlistSelected: () -> Unit,
-) : UIContainer(Size(width = BUTTON_WIDTH, height = TITLE_HEIGHT + TITLE_GAP + 6 * BUTTON_HEIGHT + 5 * BUTTON_GAP)) {
+) : UIContainer(Size(width = BUTTON_WIDTH, height = TITLE_HEIGHT + TITLE_GAP + 7 * BUTTON_HEIGHT + 6 * BUTTON_GAP)) {
     companion object {
         const val BUTTON_WIDTH = 250.0
         const val BUTTON_HEIGHT = 32.0
@@ -31,6 +32,8 @@ class MenuView(
         ConfirmButton(label = messages[UiMessage.MENU_PLAY_NEW_GAME], buttonWidth = BUTTON_WIDTH, onConfirmed = { select(onNewGameSelected) })
     internal val loadGameButton =
         CancelButton(label = messages[UiMessage.MENU_LOAD_GAME], buttonWidth = BUTTON_WIDTH, onCancelled = { select(onLoadGameSelected) })
+    internal val communityWorldsButton =
+        CancelButton(label = messages[UiMessage.MENU_COMMUNITY_WORLDS], buttonWidth = BUTTON_WIDTH, onCancelled = { select(onCommunityWorldsSelected) })
     internal val buildWorldButton =
         CancelButton(label = messages[UiMessage.MENU_BUILD_WORLD], buttonWidth = BUTTON_WIDTH, onCancelled = { select(onWorldBuilderSelected) })
     internal val languageButton =
@@ -52,6 +55,7 @@ class MenuView(
             y = TITLE_HEIGHT + TITLE_GAP
             addChild(playNewGameButton)
             addChild(loadGameButton)
+            addChild(communityWorldsButton)
             addChild(buildWorldButton)
             addChild(languageButton)
             addChild(privacyButton)
@@ -86,6 +90,7 @@ class MenuView(
         messages.selectLanguage(languageCode)
         playNewGameButton.confirmButton.text = messages[UiMessage.MENU_PLAY_NEW_GAME]
         loadGameButton.cancelButton.text = messages[UiMessage.MENU_LOAD_GAME]
+        communityWorldsButton.cancelButton.text = messages[UiMessage.MENU_COMMUNITY_WORLDS]
         buildWorldButton.cancelButton.text = messages[UiMessage.MENU_BUILD_WORLD]
         languageButton.cancelButton.text = messages[UiMessage.MENU_LANGUAGE]
         privacyButton.cancelButton.text = messages[UiMessage.MENU_PRIVACY]
