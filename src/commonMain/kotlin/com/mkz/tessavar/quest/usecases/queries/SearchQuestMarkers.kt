@@ -14,9 +14,11 @@ class SearchQuestMarkers(
                 .map { quest -> quest.toDto() }
                 .flatMap { quest -> listOfNotNull(quest.questGiverNpcId) + quest.tasks.filter { task -> task.type == TaskDto.TypeDto.TALK }.mapNotNull { task -> task.talk?.npcId } }
                 .distinct()
-        return npcIds.mapNotNull { npcId ->
-            val markers = quests.mapNotNull { quest -> quest.markerFor(npcId) }
-            markers.firstOrNull { marker -> marker.sign == QuestMarkerDto.SignDto.TALK_TASK } ?: markers.firstOrNull()
-        }
+        val npcMarkers =
+            npcIds.mapNotNull { npcId ->
+                val markers = quests.mapNotNull { quest -> quest.markerFor(npcId) }
+                markers.firstOrNull { marker -> marker.sign == QuestMarkerDto.SignDto.TALK_TASK } ?: markers.firstOrNull()
+            }
+        return npcMarkers + quests.mapNotNull { quest -> quest.visitMarker() }
     }
 }

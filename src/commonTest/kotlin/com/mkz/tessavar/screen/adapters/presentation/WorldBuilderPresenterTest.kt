@@ -9,6 +9,7 @@ import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderMother
 import com.mkz.tessavar.worldBuilder.usecases.services.FakeCatalog
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -36,6 +37,7 @@ class WorldBuilderPresenterTest {
     private val resizeView = FakeWorldBuilderResizeView()
     private val detailsView = FakeWorldBuilderDetailsView()
     private val stockView = FakeWorldBuilderStockView()
+    private val formView = FakeWorldBuilderFormView()
     private val playtests = mutableListOf<String>()
     private val textPrompt = FakeTextPrompt(answer = "The Sunken Keep")
     private val menuView = FakeWorldBuilderMenuView()
@@ -51,6 +53,7 @@ class WorldBuilderPresenterTest {
             resizeView = resizeView,
             detailsView = detailsView,
             stockView = stockView,
+            formView = formView,
             menuView = menuView,
             worldBuilderApi = worldBuilderApi,
             battlefieldApi = apis.battlefieldApi,
@@ -277,7 +280,7 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `Export should save the world in a world file and tell it when the world is exported`() {
+    fun `Export should save the world in a world file and tell what it lacks to be playable when the world is exported`() {
         // Given
         givenWorldCreated()
         selectTerrain("lava")
@@ -286,7 +289,29 @@ class WorldBuilderPresenterTest {
         menuView.select("Export")
         // Then
         worldFileSaver.savedFiles.shouldContainExactly("world.toml" to worldBuilderApi.exportWorld())
-        infoView.infos.shouldContainExactly("World exported")
+        infoView.infos.shouldContainExactly("World exported. To be playable, place a battle unit of Human")
+    }
+
+    @Test
+    fun `Export should tell the world is exported when it is playable`() {
+        // Given
+        givenWorldCreated()
+        val world =
+            WorldBuilderMother.file(
+                tiles = List(4) { List(4) { "sand" } },
+                battleUnits =
+                    listOf(
+                        WorldBuilder.Dto.BattleUnitDto(id = "hero", unitId = "knight", playerId = "player-one", row = 1, column = 1),
+                        WorldBuilder.Dto.BattleUnitDto(id = "rat-1", unitId = "rat", playerId = "player-two", row = 2, column = 2),
+                    ),
+                quests = listOf(WorldBuilderMother.quest()),
+            )
+        worldBuilderApi.importWorld(WorldFileCodecMother.codec().encode(world))
+        eventBus.dispatch()
+        // When
+        menuView.select("Export")
+        // Then
+        infoView.infos.last() shouldBe "World exported"
     }
 
     @Test
@@ -360,9 +385,9 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `WorldBuilderMenuView should offer resizing, the details, playtesting, importing, exporting and going back when the world builder is displayed`() {
+    fun `WorldBuilderMenuView should offer resizing, the details, the quests, playtesting, importing, exporting and going back when the world builder is displayed`() {
         // Then
-        menuView.displayedOptions.map(WorldBuilderMenuView.Option::label).shouldContainExactly("Resize", "Details", "Playtest", "Import", "Export", "Back")
+        menuView.displayedOptions.map(WorldBuilderMenuView.Option::label).shouldContainExactly("Resize", "Details", "Quests", "Playtest", "Import", "Export", "Back")
     }
 
     @Test
@@ -629,7 +654,7 @@ class WorldBuilderPresenterTest {
             WorldBuilderMother.file(
                 tiles = List(4) { List(4) { "sand" } },
                 battleUnits = listOf(WorldBuilder.Dto.BattleUnitDto(id = "hero", unitId = "knight", playerId = "player-one", row = 1, column = 1)),
-                keptSections = "[[quests]]\nid = \"the-keep\"\ntype = \"MAIN\"",
+                quests = listOf(WorldBuilderMother.quest()),
             )
         worldBuilderApi.importWorld(WorldFileCodecMother.codec().encode(world))
         eventBus.dispatch()
@@ -647,7 +672,7 @@ class WorldBuilderPresenterTest {
         menuView.select("Playtest")
         // Then
         playtests.shouldBeEmpty()
-        infoView.errors.last() shouldBe "Place a battle unit of Human to playtest"
+        infoView.errors.last() shouldBe "To playtest, place a battle unit of Human"
     }
 
     @Test
@@ -660,6 +685,127 @@ class WorldBuilderPresenterTest {
         menuView.select("Playtest")
         // Then
         playtests.shouldBeEmpty()
-        infoView.errors.last() shouldBe "The world needs one main quest to playtest"
+        infoView.errors.last() shouldBe "To playtest, add one main quest"
+    }
+
+    private fun openQuests() {
+        givenWorldCreated()
+        menuView.select("Quests")
+    }
+
+    private fun form() = formView.delegate!!
+
+    @Test
+    fun `Quests should list the quests of the world, and offer adding the main quest and a side quest`() {
+        // When
+        openQuests()
+        // Then
+        formView.openedTitle shouldBe "Quests"
+        formView.labels().shouldContainExactly("Add the main quest", "Add a side quest")
+    }
+
+    @Test
+    fun `QuestAdded should open the quest added, with its type, name, start tiles, tasks and reward`() {
+        // Given
+        openQuests()
+        // When
+        form().actionSelected(WorldBuilderQuestForms.ADD_MAIN)
+        eventBus.dispatch()
+        // Then
+        formView.openedTitle shouldBe "quest-1"
+        formView.labels().take(5).shouldContainExactly("Type: Main quest", "Name: ", "Description: ", "Start tiles: 0 tiles: tap to pick", "Tasks")
+    }
+
+    @Test
+    fun `TextChanged should name the quest, and Done list the quests again`() {
+        // Given
+        openQuests()
+        form().actionSelected(WorldBuilderQuestForms.ADD_SIDE)
+        eventBus.dispatch()
+        // When
+        form().textChanged(WorldBuilderQuestForms.NAME, "Rats in the Fields")
+        eventBus.dispatch()
+        form().formClosed()
+        // Then
+        worldBuilderApi
+            .searchWorld()!!
+            .quests
+            .single()
+            .name shouldBe "Rats in the Fields"
+        formView.labels().first() shouldBe "Side quest: Rats in the Fields"
+    }
+
+    @Test
+    fun `TileSelected should pick the start tiles tapped, and highlight them, while they are being picked`() {
+        // Given
+        openQuests()
+        form().actionSelected(WorldBuilderQuestForms.ADD_MAIN)
+        eventBus.dispatch()
+        form().toggled(WorldBuilderQuestForms.START_TILES)
+        // When
+        selectTile(row = 2, column = 3)
+        selectTile(row = 4, column = 5)
+        selectTile(row = 2, column = 3)
+        // Then
+        worldBuilderApi
+            .searchWorld()!!
+            .quests
+            .single()
+            .startTiles
+            .shouldContainExactly(WorldBuilder.Dto.TileDto(row = 4, column = 5))
+        battlefieldView.tileSelections.last() shouldBe TilePosition(4, 5)
+        worldBuilderApi.searchWorld()!!.tiles[2][3] shouldBe "sand"
+    }
+
+    @Test
+    fun `ActionSelected should add a task to defeat a unit of the CPU player when Add a task is tapped`() {
+        // Given
+        givenWorldCreated()
+        selectTab(WorldBuilderHudView.Tab.UNITS)
+        hudView.delegate!!.unitSelected("player-two", "rat")
+        selectTile(row = 3, column = 4)
+        menuView.select("Quests")
+        form().actionSelected(WorldBuilderQuestForms.ADD_SIDE)
+        eventBus.dispatch()
+        // When
+        form().actionSelected(WorldBuilderQuestForms.ADD_TASK)
+        eventBus.dispatch()
+        // Then
+        val task =
+            worldBuilderApi
+                .searchWorld()!!
+                .quests
+                .single()
+                .tasks
+                .single()
+        (task.type to task.unitId) shouldBe (WorldBuilder.Dto.TaskTypeDto.DEFEAT to "rat")
+        formView.labels() shouldContain "Unit: Rat"
+    }
+
+    @Test
+    fun `ActionSelected should take the quest away and list the quests again when Remove the quest is tapped`() {
+        // Given
+        openQuests()
+        form().actionSelected(WorldBuilderQuestForms.ADD_SIDE)
+        eventBus.dispatch()
+        // When
+        form().actionSelected(WorldBuilderQuestForms.REMOVE)
+        eventBus.dispatch()
+        // Then
+        worldBuilderApi.searchWorld()!!.quests.shouldBeEmpty()
+        formView.openedTitle shouldBe "Quests"
+    }
+
+    @Test
+    fun `QuestRejected should display why when a second main quest is added`() {
+        // Given
+        openQuests()
+        form().actionSelected(WorldBuilderQuestForms.ADD_MAIN)
+        eventBus.dispatch()
+        // When
+        worldBuilderApi.addQuest(WorldBuilder.Dto.QuestTypeDto.MAIN)
+        eventBus.dispatch()
+        // Then
+        infoView.errors.last() shouldBe "The world already has a main quest"
     }
 }

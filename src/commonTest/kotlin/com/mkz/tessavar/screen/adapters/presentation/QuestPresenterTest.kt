@@ -19,6 +19,7 @@ import com.mkz.tessavar.quest.domain.QuestMother.defeat
 import com.mkz.tessavar.quest.domain.QuestMother.mainQuest
 import com.mkz.tessavar.quest.domain.QuestMother.sideQuest
 import com.mkz.tessavar.quest.domain.QuestMother.talk
+import com.mkz.tessavar.quest.domain.QuestMother.visit
 import com.mkz.tessavar.save.domain.SaveEvent.GameLoaded
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneTimelineMother.gameSceneTimeline
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneTimelineMother.playLongStep
@@ -788,6 +789,17 @@ class QuestPresenterTest {
         apis.resumeExploration()
         // Then
         battlefieldView.displayedQuestMarkers.shouldContainExactly(mapOf(farmerTile to QuestMarkerView.Sign.QUEST_TO_START))
+    }
+
+    @Test
+    fun `QuestPresenter should mark the tiles of the current task when it is to visit them`() {
+        // Given
+        val apis = apis(mainQuest(id = questId, tasks = listOf(visit(1 to 0, 1 to 1))), npcs = listOf(farmer))
+        apis.presenter()
+        // When
+        apis.startQuest()
+        // Then
+        battlefieldView.displayedQuestMarkers.shouldContainExactly(mapOf(TilePosition(1, 0) to QuestMarkerView.Sign.VISIT_TASK, TilePosition(1, 1) to QuestMarkerView.Sign.VISIT_TASK))
     }
 
     @Test

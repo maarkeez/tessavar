@@ -68,6 +68,7 @@ internal object QuestMapper {
         when (sign) {
             QuestMarkerDto.SignDto.QUEST_TO_START -> QuestMarkerView.Sign.QUEST_TO_START
             QuestMarkerDto.SignDto.TALK_TASK -> QuestMarkerView.Sign.TALK_TASK
+            QuestMarkerDto.SignDto.VISIT_TASK -> QuestMarkerView.Sign.VISIT_TASK
         }
 
     fun lineOf(

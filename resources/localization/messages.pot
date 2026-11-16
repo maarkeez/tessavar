@@ -631,14 +631,244 @@ msgctxt "ui.worldBuilder.misplacedOccupant"
 msgid "{occupant} does not stand on a free tile it can stand on"
 msgstr ""
 
-#. Displayed when Playtest is tapped in a world without a battle unit of the human player.
-msgctxt "ui.worldBuilder.noPlayerBattleUnit"
-msgid "Place a battle unit of {player} to playtest"
+#. Opens the quests of the world.
+msgctxt "ui.worldBuilderMenu.quests"
+msgid "Quests"
 msgstr ""
 
-#. Displayed when Playtest is tapped in a world without exactly one main quest.
-msgctxt "ui.worldBuilder.noMainQuest"
-msgid "The world needs one main quest to playtest"
+#. Closes the quests or the quest being edited.
+msgctxt "ui.worldBuilderForm.done"
+msgid "Done"
+msgstr ""
+
+#. The title of the list of the world's quests.
+msgctxt "ui.worldBuilderQuests.title"
+msgid "Quests"
+msgstr ""
+
+#. Adds the main quest to the world, which has at most one.
+msgctxt "ui.worldBuilderQuests.addMain"
+msgid "Add the main quest"
+msgstr ""
+
+#. Adds a side quest to the world.
+msgctxt "ui.worldBuilderQuests.addSide"
+msgid "Add a side quest"
+msgstr ""
+
+#. A quest in the list, e.g. "Side quest: Rats in the Fields".
+msgctxt "ui.worldBuilderQuests.entry"
+msgid "{type}: {name}"
+msgstr ""
+
+#. The type of the quest that ends the world.
+msgctxt "ui.worldBuilderQuest.main"
+msgid "Main quest"
+msgstr ""
+
+#. The type of a quest an npc gives.
+msgctxt "ui.worldBuilderQuest.side"
+msgid "Side quest"
+msgstr ""
+
+#. The label of whether the quest is the main quest or a side quest.
+msgctxt "ui.worldBuilderQuest.type"
+msgid "Type"
+msgstr ""
+
+#. The label of the quest's name.
+msgctxt "ui.worldBuilderQuest.name"
+msgid "Name"
+msgstr ""
+
+#. The label of the quest's description.
+msgctxt "ui.worldBuilderQuest.description"
+msgid "Description"
+msgstr ""
+
+#. The label of the npc who gives a side quest.
+msgctxt "ui.worldBuilderQuest.giver"
+msgid "Quest giver"
+msgstr ""
+
+#. No npc gives the side quest yet.
+msgctxt "ui.worldBuilderQuest.nobody"
+msgid "Nobody"
+msgstr ""
+
+#. The label of whether a side quest can be done again.
+msgctxt "ui.worldBuilderQuest.repeatable"
+msgid "Repeatable"
+msgstr ""
+
+#. A toggle that is on.
+msgctxt "ui.worldBuilderQuest.yes"
+msgid "Yes"
+msgstr ""
+
+#. A toggle that is off.
+msgctxt "ui.worldBuilderQuest.no"
+msgid "No"
+msgstr ""
+
+#. The label of the tiles where the main quest starts.
+msgctxt "ui.worldBuilderQuest.startTiles"
+msgid "Start tiles"
+msgstr ""
+
+#. Tapping it lets the tiles be picked on the world.
+msgctxt "ui.worldBuilderQuest.tiles"
+msgid "{count} tiles: tap to pick"
+msgstr ""
+
+#. The tiles are being picked: each tile tapped on the world is picked or unpicked.
+msgctxt "ui.worldBuilderQuest.picking"
+msgid "Tap the world, then here"
+msgstr ""
+
+#. The heading of the quest's tasks.
+msgctxt "ui.worldBuilderQuest.tasks"
+msgid "Tasks"
+msgstr ""
+
+#. The heading of a task, e.g. "Task 2".
+msgctxt "ui.worldBuilderQuest.task"
+msgid "Task {number}"
+msgstr ""
+
+#. The label of whether a task is to defeat, to talk or to visit.
+msgctxt "ui.worldBuilderQuest.kind"
+msgid "Kind"
+msgstr ""
+
+#. A task to defeat units.
+msgctxt "ui.worldBuilderQuest.defeat"
+msgid "Defeat"
+msgstr ""
+
+#. A task to talk to an npc.
+msgctxt "ui.worldBuilderQuest.talk"
+msgid "Talk"
+msgstr ""
+
+#. A task to reach some tiles.
+msgctxt "ui.worldBuilderQuest.visit"
+msgid "Visit"
+msgstr ""
+
+#. The label of the unit a task asks to defeat.
+msgctxt "ui.worldBuilderQuest.unit"
+msgid "Unit"
+msgstr ""
+
+#. The label of how many of the unit a task asks to defeat.
+msgctxt "ui.worldBuilderQuest.defeats"
+msgid "Defeats"
+msgstr ""
+
+#. The label of the npc a task asks to talk to.
+msgctxt "ui.worldBuilderQuest.npc"
+msgid "Npc"
+msgstr ""
+
+#. The label of the tiles a task asks to reach.
+msgctxt "ui.worldBuilderQuest.visitTiles"
+msgid "Tiles"
+msgstr ""
+
+#. The label of what the quest tracker says of the task.
+msgctxt "ui.worldBuilderQuest.taskText"
+msgid "Text"
+msgstr ""
+
+#. The label of what the npc says when the task is done.
+msgctxt "ui.worldBuilderQuest.taskLine"
+msgid "Line"
+msgstr ""
+
+#. Takes the task away from the quest.
+msgctxt "ui.worldBuilderQuest.removeTask"
+msgid "Remove task {number}"
+msgstr ""
+
+#. Adds a task at the end of the quest.
+msgctxt "ui.worldBuilderQuest.addTask"
+msgid "Add a task"
+msgstr ""
+
+#. The heading of what the quest gives when completed.
+msgctxt "ui.worldBuilderQuest.reward"
+msgid "Reward"
+msgstr ""
+
+#. The label of the gold the quest gives.
+msgctxt "ui.worldBuilderQuest.gold"
+msgid "Gold"
+msgstr ""
+
+#. The heading of what the quest giver says.
+msgctxt "ui.worldBuilderQuest.lines"
+msgid "Lines"
+msgstr ""
+
+#. The label of what the quest giver says when giving the quest.
+msgctxt "ui.worldBuilderQuest.lineStart"
+msgid "Start"
+msgstr ""
+
+#. The label of what the quest giver says while the quest is under way.
+msgctxt "ui.worldBuilderQuest.lineReminder"
+msgid "Reminder"
+msgstr ""
+
+#. The label of what the quest giver says once the quest is completed.
+msgctxt "ui.worldBuilderQuest.lineCompleted"
+msgid "Completed"
+msgstr ""
+
+#. The label of what the quest giver says when giving a repeatable quest again.
+msgctxt "ui.worldBuilderQuest.lineStartAgain"
+msgid "Start again"
+msgstr ""
+
+#. Takes the quest away from the world.
+msgctxt "ui.worldBuilderQuest.remove"
+msgid "Remove the quest"
+msgstr ""
+
+#. Displayed when a second main quest is added.
+msgctxt "ui.worldBuilder.mainQuestTaken"
+msgid "The world already has a main quest"
+msgstr ""
+
+#. Displayed when Playtest is tapped in a world the game can not play, e.g. "To playtest, add one main quest".
+msgctxt "ui.worldBuilder.toPlaytest"
+msgid "To playtest, {reason}"
+msgstr ""
+
+#. Displayed when a world that is not playable yet is exported.
+msgctxt "ui.worldBuilder.exportedNotPlayable"
+msgid "World exported. To be playable, {reason}"
+msgstr ""
+
+#. Ends "To playtest, ..." or "To be playable, ...".
+msgctxt "ui.worldBuilder.reasonBattleUnit"
+msgid "place a battle unit of {player}"
+msgstr ""
+
+#. Ends "To playtest, ..." or "To be playable, ...".
+msgctxt "ui.worldBuilder.reasonMainQuest"
+msgid "add one main quest"
+msgstr ""
+
+#. Ends "To be playable, ...".
+msgctxt "ui.worldBuilder.reasonStartTiles"
+msgid "pick the start tiles of the main quest"
+msgstr ""
+
+#. Ends "To playtest, ..." or "To be playable, ...".
+msgctxt "ui.worldBuilder.reasonTasks"
+msgid "give every quest a task"
 msgstr ""
 
 #. The kind of files the file dialog shows.

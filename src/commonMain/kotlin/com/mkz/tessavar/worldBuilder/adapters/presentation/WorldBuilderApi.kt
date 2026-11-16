@@ -6,6 +6,8 @@ import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.worldBuilder.adapters.resources.TomlWorldFileCodec
 import com.mkz.tessavar.worldBuilder.adapters.storage.NativeStorageWorldBuilderRepository
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderRepository
+import com.mkz.tessavar.worldBuilder.usecases.commands.AddQuest
+import com.mkz.tessavar.worldBuilder.usecases.commands.EditQuest
 import com.mkz.tessavar.worldBuilder.usecases.commands.EraseOccupant
 import com.mkz.tessavar.worldBuilder.usecases.commands.FillTile
 import com.mkz.tessavar.worldBuilder.usecases.commands.ImportWorld
@@ -15,6 +17,7 @@ import com.mkz.tessavar.worldBuilder.usecases.commands.PlaceBattleUnit
 import com.mkz.tessavar.worldBuilder.usecases.commands.PlaceBuilding
 import com.mkz.tessavar.worldBuilder.usecases.commands.PlaceNpc
 import com.mkz.tessavar.worldBuilder.usecases.commands.RedoEdit
+import com.mkz.tessavar.worldBuilder.usecases.commands.RemoveQuest
 import com.mkz.tessavar.worldBuilder.usecases.commands.RenameWorld
 import com.mkz.tessavar.worldBuilder.usecases.commands.ResizeWorld
 import com.mkz.tessavar.worldBuilder.usecases.commands.RestockNpc
@@ -48,6 +51,9 @@ class WorldBuilderApi(
     val placeNpc = PlaceNpc(worldBuilderRepository, terrainApi.searchTerrainById, eventBus)
     val eraseOccupant = EraseOccupant(worldBuilderRepository, eventBus)
     val restockNpc = RestockNpc(worldBuilderRepository, eventBus)
+    val addQuest = AddQuest(worldBuilderRepository, eventBus)
+    val removeQuest = RemoveQuest(worldBuilderRepository, eventBus)
+    val editQuest = EditQuest(worldBuilderRepository, eventBus)
     val importWorld = ImportWorld(worldBuilderRepository, worldFileCodec, catalog, terrainApi.searchTerrainById, terrainApi.hasTerrainTransition, eventBus)
     val renameWorld = RenameWorld(worldBuilderRepository, eventBus)
     val undoEdit = UndoEdit(worldBuilderRepository, eventBus)

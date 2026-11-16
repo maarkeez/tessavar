@@ -110,4 +110,24 @@ sealed interface WorldBuilderEvent : DomainEvent {
         val terrainId: String,
         val adjacentTerrainId: String,
     ) : WorldBuilderEvent
+
+    data class QuestAdded(
+        val questId: String,
+    ) : WorldBuilderEvent
+
+    data class QuestRemoved(
+        val questId: String,
+    ) : WorldBuilderEvent
+
+    data class QuestEdited(
+        val questId: String,
+    ) : WorldBuilderEvent
+
+    data class QuestRejected(
+        val reason: Reason,
+    ) : WorldBuilderEvent {
+        enum class Reason {
+            MAIN_QUEST_TAKEN,
+        }
+    }
 }

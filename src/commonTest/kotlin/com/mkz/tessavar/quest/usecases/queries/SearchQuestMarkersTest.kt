@@ -2,12 +2,14 @@ package com.mkz.tessavar.quest.usecases.queries
 
 import com.mkz.tessavar.quest.adapters.storage.InMemoryQuestRepository
 import com.mkz.tessavar.quest.domain.Quest
+import com.mkz.tessavar.quest.domain.Quest.Dto.PositionDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.QuestMarkerDto
 import com.mkz.tessavar.quest.domain.Quest.Dto.QuestMarkerDto.SignDto
 import com.mkz.tessavar.quest.domain.QuestMother.defeat
 import com.mkz.tessavar.quest.domain.QuestMother.mainQuest
 import com.mkz.tessavar.quest.domain.QuestMother.sideQuest
 import com.mkz.tessavar.quest.domain.QuestMother.talk
+import com.mkz.tessavar.quest.domain.QuestMother.visit
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import kotlin.test.Test
@@ -26,7 +28,7 @@ class SearchQuestMarkersTest {
         // When
         val result = searchQuestMarkers()
         // Then
-        result.shouldContainExactly(QuestMarkerDto(npcId = "elder", sign = SignDto.TALK_TASK))
+        result.shouldContainExactly(QuestMarkerDto(npcId = "elder", tiles = emptyList(), sign = SignDto.TALK_TASK))
     }
 
     @Test
@@ -37,7 +39,10 @@ class SearchQuestMarkersTest {
         // When
         val result = searchQuestMarkers()
         // Then
-        result.shouldContainExactly(QuestMarkerDto(npcId = "farmer", sign = SignDto.QUEST_TO_START), QuestMarkerDto(npcId = "elder", sign = SignDto.TALK_TASK))
+        result.shouldContainExactly(
+            QuestMarkerDto(npcId = "farmer", tiles = emptyList(), sign = SignDto.QUEST_TO_START),
+            QuestMarkerDto(npcId = "elder", tiles = emptyList(), sign = SignDto.TALK_TASK),
+        )
     }
 
     @Test
@@ -49,5 +54,16 @@ class SearchQuestMarkersTest {
         val result = searchQuestMarkers()
         // Then
         result.shouldBeEmpty()
+    }
+
+    @Test
+    fun `SearchQuestMarkers should mark the tiles of the current task when it is to visit them`() {
+        // Given
+        val tiles = listOf(PositionDto(row = 25, column = 3), PositionDto(row = 25, column = 4))
+        questRepository.save(mainQuest(id = "main", tasks = listOf(visit(25 to 3, 25 to 4))).started())
+        // When
+        val result = searchQuestMarkers()
+        // Then
+        result.shouldContainExactly(QuestMarkerDto(npcId = null, tiles = tiles, sign = SignDto.VISIT_TASK))
     }
 }

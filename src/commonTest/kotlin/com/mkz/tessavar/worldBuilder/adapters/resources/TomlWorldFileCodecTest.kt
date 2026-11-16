@@ -23,11 +23,11 @@ class TomlWorldFileCodecTest {
         }
 
     @Test
-    fun `TomlWorldFileCodec should read the header, tiles, buildings, battle units and npcs, and keep the other sections as they are written`() {
+    fun `TomlWorldFileCodec should read the header, tiles, buildings, battle units, npcs and quests, and keep the other sections as they are written`() {
         // Given
         val text =
             "version = 1\nname = \"The \\\"Sunken\\\" Keep\"\nauthor = \"maarkeez\"\n\n[[npcs]]\nid = \"elf\"\nrow = 0\ncolumn = 0\nstock = [\"hammer\"]\n\n" +
-                "[battlefield]\ntiles = [\n    [\"sand\"],\n]\n\n[[quests]]\nid = \"a\"\n\n[[buildings]]\nid = \"fortress\"\nrow = 1\ncolumn = 2\n\n" +
+                "[battlefield]\ntiles = [\n    [\"sand\"],\n]\n\n[[notes]]\ntext = \"a\"\n\n[[buildings]]\nid = \"fortress\"\nrow = 1\ncolumn = 2\n\n" +
                 "[[battleUnits]]\nid = \"rat-1\"\nunitId = \"rat\"\nplayerId = \"player-two\"\nrow = 3\ncolumn = 4\n"
         // When
         val file = codec.decode(text)
@@ -37,7 +37,7 @@ class TomlWorldFileCodecTest {
                 tiles = listOf(listOf("sand")),
                 name = "The \"Sunken\" Keep",
                 author = "maarkeez",
-                keptSections = "[[quests]]\nid = \"a\"",
+                keptSections = "[[notes]]\ntext = \"a\"",
                 buildings = listOf(WorldBuilder.Dto.BuildingDto(id = "fortress", row = 1, column = 2)),
                 battleUnits = listOf(WorldBuilder.Dto.BattleUnitDto(id = "rat-1", unitId = "rat", playerId = "player-two", row = 3, column = 4)),
                 npcs = listOf(WorldBuilder.Dto.NpcDto(id = "elf", row = 0, column = 0, stock = listOf("hammer"))),

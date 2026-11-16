@@ -33,7 +33,7 @@ object WorldBuilderMenuViewStories : StoryBinding {
         StoryDto(
             id = "screen-world-builder-menu--open",
             name = "Open",
-            description = "The options below the button, as the world builder lists them: Resize, Details, Playtest, Import, Export and Back.",
+            description = "The options below the button, as the world builder lists them: Resize, Details, Quests, Playtest, Import, Export and Back.",
             args =
                 mapOf(
                     OPEN to ValueDto.boolean(true),

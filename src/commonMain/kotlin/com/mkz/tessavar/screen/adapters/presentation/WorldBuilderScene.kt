@@ -42,6 +42,7 @@ class WorldBuilderScene(
     val resizeView = WorldBuilderResizeView(messages)
     val detailsView = WorldBuilderDetailsView(messages)
     val stockView = WorldBuilderStockView(messages)
+    val formView = WorldBuilderFormView(messages)
     val menuView = WorldBuilderMenuView()
 
     override suspend fun SContainer.sceneInit() {
@@ -68,6 +69,7 @@ class WorldBuilderScene(
             resizeView = resizeView,
             detailsView = detailsView,
             stockView = stockView,
+            formView = formView,
             menuView = menuView,
             worldBuilderApi = worldBuilderApi,
             battlefieldApi = battlefieldApi,
@@ -93,6 +95,7 @@ class WorldBuilderScene(
                     addChild(resizeView)
                     addChild(detailsView)
                     addChild(stockView)
+                    addChild(formView)
                 }
             }
         }

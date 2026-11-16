@@ -72,10 +72,16 @@ data class Quest private constructor(
 
     fun markerFor(npcId: String): QuestMarkerDto? =
         when {
-            progress.status == StatusDto.ACTIVE && (currentTask() as? Task.Talk)?.npcId == npcId -> QuestMarkerDto(npcId = npcId, sign = QuestMarkerDto.SignDto.TALK_TASK)
-            canBeStartedBy(npcId) -> QuestMarkerDto(npcId = npcId, sign = QuestMarkerDto.SignDto.QUEST_TO_START)
+            progress.status == StatusDto.ACTIVE && (currentTask() as? Task.Talk)?.npcId == npcId -> QuestMarkerDto(npcId = npcId, tiles = emptyList(), sign = QuestMarkerDto.SignDto.TALK_TASK)
+            canBeStartedBy(npcId) -> QuestMarkerDto(npcId = npcId, tiles = emptyList(), sign = QuestMarkerDto.SignDto.QUEST_TO_START)
             else -> null
         }
+
+    fun visitMarker(): QuestMarkerDto? {
+        val task = currentTask() as? Task.Visit ?: return null
+        if (progress.status != StatusDto.ACTIVE) return null
+        return QuestMarkerDto(npcId = null, tiles = task.tiles, sign = QuestMarkerDto.SignDto.VISIT_TASK)
+    }
 
     fun lineFor(npcId: String): QuestLineDto? =
         when {
@@ -264,12 +270,14 @@ data class Quest private constructor(
         }
 
         data class QuestMarkerDto(
-            val npcId: String,
+            val npcId: String?,
+            val tiles: List<PositionDto>,
             val sign: SignDto,
         ) {
             enum class SignDto {
                 QUEST_TO_START,
                 TALK_TASK,
+                VISIT_TASK,
             }
         }
 

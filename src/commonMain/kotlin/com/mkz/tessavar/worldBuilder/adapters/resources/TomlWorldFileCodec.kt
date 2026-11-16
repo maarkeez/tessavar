@@ -12,11 +12,7 @@ class TomlWorldFileCodec(
     private val parseBattlefield: ParseBattlefield,
     private val exportBattlefield: ExportBattlefield,
 ) : WorldFileCodec {
-    private companion object {
-        const val MAIN_QUEST = "MAIN"
-    }
-
-    private val editedTables = setOf("[battlefield]", "[[buildings]]", "[[battleUnits]]", "[[npcs]]")
+    private val editedTables = setOf("[battlefield]", "[[buildings]]", "[[battleUnits]]", "[[npcs]]", "[[quests]]", "[[quests.tasks]]", "[quests.reward]")
     private val tableHeader = Regex("""^\[\[?\s*[A-Za-z0-9_.\-]+\s*\]\]?\s*(#.*)?$""")
 
     override fun decode(text: String): WorldBuilder.Dto.WorldFileDto? {
@@ -39,6 +35,12 @@ class TomlWorldFileCodec(
             } catch (_: Exception) {
                 return null
             }
+        val quests =
+            try {
+                occupants.quests.map(QuestDefinition::toDto)
+            } catch (_: IllegalArgumentException) {
+                return null
+            }
         return WorldBuilder.Dto.WorldFileDto(
             version = version,
             name = header.name,
@@ -50,8 +52,8 @@ class TomlWorldFileCodec(
                     WorldBuilder.Dto.BattleUnitDto(id = battleUnit.id, unitId = battleUnit.unitId, playerId = battleUnit.playerId, row = battleUnit.row, column = battleUnit.column)
                 },
             npcs = occupants.npcs.map { npc -> WorldBuilder.Dto.NpcDto(id = npc.id, row = npc.row, column = npc.column, stock = npc.stock) },
+            quests = quests,
             keptSections = keptSections(text),
-            mainQuestCount = occupants.quests.count { quest -> quest.type == MAIN_QUEST },
         )
     }
 
@@ -70,12 +72,54 @@ class TomlWorldFileCodec(
                     )
                 } +
                 file.npcs.map { npc ->
-                    val stock = if (npc.stock.isEmpty()) emptyArray() else arrayOf("stock" to npc.stock.joinToString(", ", prefix = "[", postfix = "]", transform = ::quoted))
+                    val stock = if (npc.stock.isEmpty()) emptyArray() else arrayOf("stock" to list(npc.stock))
                     table("[[npcs]]", "id" to quoted(npc.id), "row" to "${npc.row}", "column" to "${npc.column}", *stock)
                 } +
+                file.quests.flatMap(::questTables) +
                 listOf(file.keptSections).filter(String::isNotBlank)
         return "$header\n${exportBattlefield(file.tiles)}" + tables.joinToString("") { table -> "\n$table\n" }
     }
+
+    private fun questTables(quest: WorldBuilder.Dto.QuestDto): List<String> {
+        val lines =
+            listOfNotNull(
+                quest.lines.start?.let { line -> "start = ${quoted(line)}" },
+                quest.lines.reminder?.let { line -> "reminder = ${quoted(line)}" },
+                quest.lines.completed?.let { line -> "completed = ${quoted(line)}" },
+                quest.lines.startAgain?.let { line -> "startAgain = ${quoted(line)}" },
+            )
+        val questTable =
+            table(
+                "[[quests]]",
+                *listOfNotNull(
+                    "id" to quoted(quest.id),
+                    "type" to quoted(quest.type.name),
+                    quest.questGiverNpcId?.let { npcId -> "questGiverNpcId" to quoted(npcId) },
+                    ("repeatable" to "true").takeIf { quest.repeatable },
+                    ("startTiles" to tiles(quest.startTiles)).takeIf { quest.startTiles.isNotEmpty() },
+                    "name" to quoted(quest.name),
+                    "description" to quoted(quest.description),
+                    ("lines" to lines.joinToString(", ", prefix = "{ ", postfix = " }")).takeIf { lines.isNotEmpty() },
+                ).toTypedArray(),
+            )
+        val taskTables =
+            quest.tasks.map { task ->
+                val target =
+                    when (task.type) {
+                        WorldBuilder.Dto.TaskTypeDto.DEFEAT -> listOf("unitId" to quoted(task.unitId.orEmpty()), "requiredDefeats" to "${task.requiredDefeats ?: 1}")
+                        WorldBuilder.Dto.TaskTypeDto.TALK -> listOf("npcId" to quoted(task.npcId.orEmpty()))
+                        WorldBuilder.Dto.TaskTypeDto.VISIT -> listOf("tiles" to tiles(task.tiles))
+                    }
+                val keys = listOf("type" to quoted(task.type.name)) + target + listOfNotNull("text" to quoted(task.text), task.line?.let { line -> "line" to quoted(line) })
+                table("[[quests.tasks]]", *keys.toTypedArray())
+            }
+        val rewardKeys = listOfNotNull("gold" to "${quest.reward.gold}", ("lootableItemIds" to list(quest.reward.lootableItemIds)).takeIf { quest.reward.lootableItemIds.isNotEmpty() })
+        return listOf(questTable) + taskTables + table("[quests.reward]", *rewardKeys.toTypedArray())
+    }
+
+    private fun tiles(tiles: List<WorldBuilder.Dto.TileDto>): String = tiles.joinToString(", ", prefix = "[", postfix = "]") { tile -> "[${tile.row}, ${tile.column}]" }
+
+    private fun list(values: List<String>): String = values.joinToString(", ", prefix = "[", postfix = "]", transform = ::quoted)
 
     private fun table(
         header: String,
@@ -100,12 +144,71 @@ class TomlWorldFileCodec(
         val buildings: List<BuildingPlacement> = emptyList(),
         val battleUnits: List<BattleUnitPlacement> = emptyList(),
         val npcs: List<NpcPlacement> = emptyList(),
-        val quests: List<QuestType> = emptyList(),
+        val quests: List<QuestDefinition> = emptyList(),
     )
 
     @Serializable
-    data class QuestType(
-        val type: String = "",
+    data class QuestDefinition(
+        val id: String,
+        val type: String,
+        val questGiverNpcId: String? = null,
+        val startTiles: List<List<Int>> = emptyList(),
+        val repeatable: Boolean = false,
+        val name: String = "",
+        val description: String = "",
+        val lines: LinesDefinition = LinesDefinition(),
+        val tasks: List<TaskDefinition> = emptyList(),
+        val reward: RewardDefinition = RewardDefinition(),
+    ) {
+        fun toDto() =
+            WorldBuilder.Dto.QuestDto(
+                id = id,
+                type = WorldBuilder.Dto.QuestTypeDto.valueOf(type),
+                questGiverNpcId = questGiverNpcId,
+                repeatable = repeatable,
+                startTiles = startTiles.map(::tileOf),
+                name = name,
+                description = description,
+                lines = WorldBuilder.Dto.LinesDto(start = lines.start, reminder = lines.reminder, completed = lines.completed, startAgain = lines.startAgain),
+                tasks = tasks.map(TaskDefinition::toDto),
+                reward = WorldBuilder.Dto.RewardDto(gold = reward.gold, lootableItemIds = reward.lootableItemIds),
+            )
+    }
+
+    @Serializable
+    data class LinesDefinition(
+        val start: String? = null,
+        val reminder: String? = null,
+        val completed: String? = null,
+        val startAgain: String? = null,
+    )
+
+    @Serializable
+    data class TaskDefinition(
+        val type: String,
+        val unitId: String? = null,
+        val requiredDefeats: Int? = null,
+        val npcId: String? = null,
+        val tiles: List<List<Int>> = emptyList(),
+        val text: String = "",
+        val line: String? = null,
+    ) {
+        fun toDto() =
+            WorldBuilder.Dto.TaskDto(
+                type = WorldBuilder.Dto.TaskTypeDto.valueOf(type),
+                unitId = unitId,
+                requiredDefeats = requiredDefeats,
+                npcId = npcId,
+                tiles = tiles.map(::tileOf),
+                text = text,
+                line = line,
+            )
+    }
+
+    @Serializable
+    data class RewardDefinition(
+        val gold: Int = 0,
+        val lootableItemIds: List<String> = emptyList(),
     )
 
     @Serializable
@@ -138,4 +241,9 @@ class TomlWorldFileCodec(
         val name: String = "",
         val author: String = "",
     )
+}
+
+private fun tileOf(tile: List<Int>): WorldBuilder.Dto.TileDto {
+    require(tile.size == 2) { "A tile is [row, column], but was $tile" }
+    return WorldBuilder.Dto.TileDto(row = tile[0], column = tile[1])
 }

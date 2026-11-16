@@ -8,6 +8,14 @@ import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.world.domain.World
 import com.mkz.tessavar.worldBuilder.adapters.presentation.WorldBuilderApi
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilder.Dto.BattleUnitDto
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilder.Dto.NpcDto
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilder.Dto.QuestDto
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilder.Dto.QuestTypeDto
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilder.Dto.TaskDto
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilder.Dto.TaskTypeDto
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilder.Dto.TileDto
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilder.Dto.UnplayableReasonDto
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImportRejected.Reason
 import korlibs.io.async.launchImmediately
@@ -21,6 +29,7 @@ class WorldBuilderPresenter(
     private val resizeView: WorldBuilderResizeView,
     private val detailsView: WorldBuilderDetailsView,
     private val stockView: WorldBuilderStockView,
+    private val formView: WorldBuilderFormView,
     private val menuView: WorldBuilderMenuView,
     private val worldBuilderApi: WorldBuilderApi,
     private val battlefieldApi: BattlefieldApi,
@@ -37,11 +46,14 @@ class WorldBuilderPresenter(
     WorldBuilderHudView.Delegate,
     WorldBuilderResizeView.Delegate,
     WorldBuilderDetailsView.Delegate,
-    WorldBuilderStockView.Delegate {
+    WorldBuilderStockView.Delegate,
+    WorldBuilderFormView.Delegate {
     companion object {
         const val WORLD_FILE_NAME = "world"
         const val WORLD_FILE_EXTENSION = ".toml"
-        const val HUMAN_PLAYER_ID = "player-one"
+        const val QUESTS_FORM = "quests"
+        const val GOLD_STEP = 5
+        val PLAYTEST_BLOCKERS = setOf(UnplayableReasonDto.NO_HUMAN_BATTLE_UNIT, UnplayableReasonDto.NO_MAIN_QUEST, UnplayableReasonDto.QUEST_WITHOUT_TASKS)
     }
 
     private var tool = WorldBuilderHudView.Tool.PAINT
@@ -49,6 +61,8 @@ class WorldBuilderPresenter(
     private var selectedBuildingId: String? = null
     private var selectedUnit: Pair<String, String>? = null
     private var selectedNpcId: String? = null
+    private var openedQuestId: String? = null
+    private var pickingKey: String? = null
 
     private val subscriptions =
         listOf(
@@ -61,8 +75,18 @@ class WorldBuilderPresenter(
             eventBus.subscribe<WorldBuilderEvent.TerrainSelected> { event -> hudView.selectTerrain(event.terrainId) },
             eventBus.subscribe<WorldBuilderEvent.TilePainted> { event -> displayPaintedTile(event.row, event.column) },
             eventBus.subscribe<WorldBuilderEvent.AreaFilled> { displayWorld() },
-            eventBus.subscribe<WorldBuilderEvent.EditUndone> { displayWorld() },
-            eventBus.subscribe<WorldBuilderEvent.EditRedone> { displayWorld() },
+            eventBus.subscribe<WorldBuilderEvent.EditUndone> {
+                displayWorld()
+                displayForm()
+            },
+            eventBus.subscribe<WorldBuilderEvent.EditRedone> {
+                displayWorld()
+                displayForm()
+            },
+            eventBus.subscribe<WorldBuilderEvent.QuestAdded> { event -> openQuest(event.questId) },
+            eventBus.subscribe<WorldBuilderEvent.QuestRemoved> { openQuests() },
+            eventBus.subscribe<WorldBuilderEvent.QuestEdited> { displayForm() },
+            eventBus.subscribe<WorldBuilderEvent.QuestRejected> { infoView.displayError(messages[UiMessage.WORLD_BUILDER_MAIN_QUEST_TAKEN]) },
             eventBus.subscribe<WorldBuilderEvent.TilePaintRejected> { event ->
                 infoView.displayError(forbiddenAdjacentTerrainsMessage(event.terrainId, event.adjacentTerrainId))
             },
@@ -86,11 +110,13 @@ class WorldBuilderPresenter(
         resizeView.setDelegate(this)
         detailsView.setDelegate(this)
         stockView.setDelegate(this)
+        formView.setDelegate(this)
         hudView.selectTool(tool)
         menuView.displayOptions(
             listOf(
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_RESIZE]) { resizeView.open() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_DETAILS]) { openDetails() },
+                WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_QUESTS]) { openQuests() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_PLAYTEST]) { playtest() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_IMPORT]) { importWorld() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_EXPORT]) { exportWorld() },
@@ -116,6 +142,7 @@ class WorldBuilderPresenter(
             battlefieldView.displayNpc(row = npc.row, column = npc.column, npcId = npc.id, unitId = catalogNpcs.firstOrNull { catalogNpc -> catalogNpc.id == npc.id }?.unitId)
         }
         displayStock()
+        displayPickedTiles()
     }
 
     private fun displayOccupants() {
@@ -159,15 +186,233 @@ class WorldBuilderPresenter(
 
     private fun playtest() {
         val world = worldBuilderApi.searchWorld() ?: return
-        if (world.battleUnits.none { battleUnit -> battleUnit.playerId == HUMAN_PLAYER_ID }) {
-            infoView.displayError(messages[UiMessage.WORLD_BUILDER_NO_PLAYER_BATTLE_UNIT, "player" to messages.playerName(HUMAN_PLAYER_ID)])
-            return
-        }
-        if (world.mainQuestCount != 1) {
-            infoView.displayError(messages[UiMessage.WORLD_BUILDER_NO_MAIN_QUEST])
+        world.unplayableReasons.firstOrNull { reason -> reason in PLAYTEST_BLOCKERS }?.let { reason ->
+            infoView.displayError(messages[UiMessage.WORLD_BUILDER_TO_PLAYTEST, "reason" to reasonText(reason)])
             return
         }
         onPlaytest(worldBuilderApi.exportWorld())
+    }
+
+    private fun reasonText(reason: UnplayableReasonDto): String =
+        when (reason) {
+            UnplayableReasonDto.NO_HUMAN_BATTLE_UNIT -> messages[UiMessage.WORLD_BUILDER_REASON_BATTLE_UNIT, "player" to messages.playerName(WorldBuilder.HUMAN_PLAYER_ID)]
+            UnplayableReasonDto.NO_CPU_BATTLE_UNIT -> messages[UiMessage.WORLD_BUILDER_REASON_BATTLE_UNIT, "player" to messages.playerName(WorldBuilder.CPU_PLAYER_ID)]
+            UnplayableReasonDto.NO_MAIN_QUEST -> messages[UiMessage.WORLD_BUILDER_REASON_MAIN_QUEST]
+            UnplayableReasonDto.NO_START_TILES -> messages[UiMessage.WORLD_BUILDER_REASON_START_TILES]
+            UnplayableReasonDto.QUEST_WITHOUT_TASKS -> messages[UiMessage.WORLD_BUILDER_REASON_TASKS]
+        }
+
+    private fun openQuests() {
+        openedQuestId = null
+        stopPicking()
+        val world = worldBuilderApi.searchWorld() ?: return
+        formView.open(formId = QUESTS_FORM, title = messages[UiMessage.WORLD_BUILDER_QUESTS_TITLE], rows = WorldBuilderQuestForms.questsRows(world.quests, messages))
+    }
+
+    private fun openQuest(questId: String) {
+        openedQuestId = questId
+        stopPicking()
+        displayForm()
+    }
+
+    private fun displayForm() {
+        if (!formView.isOpen) return
+        val world = worldBuilderApi.searchWorld() ?: return
+        val questId = openedQuestId ?: return openQuests()
+        val quest = world.quests.firstOrNull { quest -> quest.id == questId } ?: return openQuests()
+        val rows = WorldBuilderQuestForms.questRows(quest, worldBuilderApi.searchCatalog().lootableItemIds, pickingKey, messages)
+        formView.open(formId = WorldBuilderQuestForms.QUEST + quest.id, title = WorldBuilderQuestForms.title(quest), rows = rows)
+        displayPickedTiles()
+    }
+
+    private fun stopPicking() {
+        pickingKey = null
+        battlefieldView.resetTiles()
+    }
+
+    private fun openedQuest(): QuestDto? = worldBuilderApi.searchWorld()?.quests?.firstOrNull { quest -> quest.id == openedQuestId }
+
+    private fun pickedTiles(): List<TileDto> {
+        val key = pickingKey ?: return emptyList()
+        val quest = openedQuest() ?: return emptyList()
+        return if (key == WorldBuilderQuestForms.START_TILES) {
+            quest.startTiles
+        } else {
+            quest.tasks
+                .getOrNull(taskIndex(key))
+                ?.tiles
+                .orEmpty()
+        }
+    }
+
+    private fun displayPickedTiles() {
+        if (pickingKey == null) return
+        battlefieldView.resetTiles()
+        pickedTiles().forEach { tile -> battlefieldView.displayTileSelection(tile.row, tile.column) }
+    }
+
+    private fun pickTile(
+        row: Int,
+        column: Int,
+    ) {
+        val key = pickingKey ?: return
+        val tile = TileDto(row = row, column = column)
+
+        fun toggled(tiles: List<TileDto>) = if (tile in tiles) tiles - tile else tiles + tile
+        editQuest { quest ->
+            if (key == WorldBuilderQuestForms.START_TILES) {
+                quest.copy(startTiles = toggled(quest.startTiles))
+            } else {
+                editTask(quest, taskIndex(key)) { task -> task.copy(tiles = toggled(task.tiles)) }
+            }
+        }
+    }
+
+    private fun taskIndex(key: String): Int = key.removePrefix(WorldBuilderQuestForms.TASK).substringBefore(".").toInt()
+
+    private fun editTask(
+        quest: QuestDto,
+        index: Int,
+        edit: (TaskDto) -> TaskDto,
+    ): QuestDto = quest.copy(tasks = quest.tasks.mapIndexed { taskIndex, task -> if (taskIndex == index) edit(task) else task })
+
+    private fun editQuest(edit: (QuestDto) -> QuestDto) {
+        val quest = openedQuest() ?: return
+        worldBuilderApi.editQuest(edit(quest))
+    }
+
+    private fun defeatCandidates(): List<String> {
+        val world = worldBuilderApi.searchWorld() ?: return emptyList()
+        val cpuUnitIds =
+            world.battleUnits
+                .filter { battleUnit -> battleUnit.playerId == WorldBuilder.CPU_PLAYER_ID }
+                .map(BattleUnitDto::unitId)
+                .distinct()
+        return cpuUnitIds.ifEmpty { worldBuilderApi.searchCatalog().unitIds }
+    }
+
+    private fun npcCandidates(): List<String> =
+        worldBuilderApi
+            .searchWorld()
+            ?.npcs
+            ?.map(NpcDto::id)
+            .orEmpty()
+
+    private fun <T> List<T>.stepFrom(
+        current: T,
+        step: Int,
+    ): T? {
+        if (isEmpty()) return null
+        val index = indexOf(current)
+        return this[((index + step) % size + size) % size]
+    }
+
+    private fun newTask(type: TaskTypeDto): TaskDto =
+        TaskDto(
+            type = type,
+            unitId = defeatCandidates().firstOrNull().takeIf { type == TaskTypeDto.DEFEAT },
+            requiredDefeats = 1.takeIf { type == TaskTypeDto.DEFEAT },
+            npcId = npcCandidates().firstOrNull().takeIf { type == TaskTypeDto.TALK },
+            tiles = emptyList(),
+            text = "",
+            line = null,
+        )
+
+    override fun formClosed() {
+        if (openedQuestId != null) openQuests() else formView.close()
+    }
+
+    override fun textTapped(key: String) {
+        val prompt = textPrompt ?: return
+        val label = formView.rows.filterIsInstance<WorldBuilderFormView.Row.Text>().firstOrNull { row -> row.key == key } ?: return
+        coroutineScope.launchImmediately {
+            prompt.prompt(label.label, label.value)?.let { text ->
+                formView.displayText(key, text)
+                textChanged(key, text)
+            }
+        }
+    }
+
+    override fun textChanged(
+        key: String,
+        text: String,
+    ) = editQuest { quest ->
+        val optional = text.takeIf(String::isNotBlank)
+        when {
+            key == WorldBuilderQuestForms.NAME -> quest.copy(name = text)
+            key == WorldBuilderQuestForms.DESCRIPTION -> quest.copy(description = text)
+            key == WorldBuilderQuestForms.LINE_START -> quest.copy(lines = quest.lines.copy(start = optional))
+            key == WorldBuilderQuestForms.LINE_REMINDER -> quest.copy(lines = quest.lines.copy(reminder = optional))
+            key == WorldBuilderQuestForms.LINE_COMPLETED -> quest.copy(lines = quest.lines.copy(completed = optional))
+            key == WorldBuilderQuestForms.LINE_START_AGAIN -> quest.copy(lines = quest.lines.copy(startAgain = optional))
+            key.endsWith(WorldBuilderQuestForms.TASK_TEXT) -> editTask(quest, taskIndex(key)) { task -> task.copy(text = text) }
+            key.endsWith(WorldBuilderQuestForms.TASK_LINE) -> editTask(quest, taskIndex(key)) { task -> task.copy(line = optional) }
+            else -> quest
+        }
+    }
+
+    override fun choiceStepped(
+        key: String,
+        step: Int,
+    ) = editQuest { quest ->
+        when {
+            key == WorldBuilderQuestForms.TYPE -> {
+                val type = if (quest.type == QuestTypeDto.MAIN) QuestTypeDto.SIDE else QuestTypeDto.MAIN
+                quest.copy(type = type, questGiverNpcId = quest.questGiverNpcId.takeIf { type == QuestTypeDto.SIDE }, repeatable = quest.repeatable && type == QuestTypeDto.SIDE)
+            }
+            key == WorldBuilderQuestForms.GIVER -> quest.copy(questGiverNpcId = (listOf(null) + npcCandidates()).stepFrom(quest.questGiverNpcId, step))
+            key.endsWith(WorldBuilderQuestForms.TASK_TYPE) ->
+                editTask(quest, taskIndex(key)) { task ->
+                    val type = TaskTypeDto.entries.stepFrom(task.type, step) ?: task.type
+                    newTask(type).copy(text = task.text, line = task.line)
+                }
+            key.endsWith(WorldBuilderQuestForms.TASK_UNIT) -> editTask(quest, taskIndex(key)) { task -> task.copy(unitId = defeatCandidates().stepFrom(task.unitId.orEmpty(), step) ?: task.unitId) }
+            key.endsWith(WorldBuilderQuestForms.TASK_NPC) -> editTask(quest, taskIndex(key)) { task -> task.copy(npcId = npcCandidates().stepFrom(task.npcId.orEmpty(), step) ?: task.npcId) }
+            else -> quest
+        }
+    }
+
+    override fun toggled(key: String) {
+        when {
+            key == WorldBuilderQuestForms.START_TILES || key.endsWith(WorldBuilderQuestForms.TASK_TILES) -> {
+                if (pickingKey == key) stopPicking() else pickingKey = key
+                displayForm()
+            }
+            key == WorldBuilderQuestForms.REPEATABLE -> editQuest { quest -> quest.copy(repeatable = !quest.repeatable) }
+            key.startsWith(WorldBuilderQuestForms.ITEM) -> {
+                val lootableItemId = key.removePrefix(WorldBuilderQuestForms.ITEM)
+                editQuest { quest ->
+                    val items = quest.reward.lootableItemIds
+                    quest.copy(reward = quest.reward.copy(lootableItemIds = if (lootableItemId in items) items - lootableItemId else items + lootableItemId))
+                }
+            }
+        }
+    }
+
+    override fun stepped(
+        key: String,
+        step: Int,
+    ) = editQuest { quest ->
+        when {
+            key == WorldBuilderQuestForms.GOLD -> quest.copy(reward = quest.reward.copy(gold = maxOf(0, quest.reward.gold + step * GOLD_STEP)))
+            key.endsWith(WorldBuilderQuestForms.TASK_DEFEATS) -> editTask(quest, taskIndex(key)) { task -> task.copy(requiredDefeats = maxOf(1, (task.requiredDefeats ?: 1) + step)) }
+            else -> quest
+        }
+    }
+
+    override fun actionSelected(key: String) {
+        when {
+            key.startsWith(WorldBuilderQuestForms.QUEST) -> openQuest(key.removePrefix(WorldBuilderQuestForms.QUEST))
+            key == WorldBuilderQuestForms.ADD_MAIN -> worldBuilderApi.addQuest(QuestTypeDto.MAIN)
+            key == WorldBuilderQuestForms.ADD_SIDE -> worldBuilderApi.addQuest(QuestTypeDto.SIDE)
+            key == WorldBuilderQuestForms.ADD_TASK -> editQuest { quest -> quest.copy(tasks = quest.tasks + newTask(TaskTypeDto.DEFEAT)) }
+            key.endsWith(WorldBuilderQuestForms.TASK_REMOVE) -> {
+                stopPicking()
+                val index = taskIndex(key)
+                editQuest { quest -> quest.copy(tasks = quest.tasks.filterIndexed { taskIndex, _ -> taskIndex != index }) }
+            }
+            key == WorldBuilderQuestForms.REMOVE -> openedQuestId?.let(worldBuilderApi.removeQuest::invoke)
+        }
     }
 
     private fun placeRejectedMessage(event: WorldBuilderEvent.OccupantPlaceRejected): String =
@@ -212,7 +457,13 @@ class WorldBuilderPresenter(
                     infoView.displayError(messages[UiMessage.WORLD_BUILDER_FILE_NOT_SAVED])
                     return@launchImmediately
                 }
-            if (saved) infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_WORLD_EXPORTED])
+            if (!saved) return@launchImmediately
+            val reason = worldBuilderApi.searchWorld()?.unplayableReasons?.firstOrNull()
+            if (reason == null) {
+                infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_WORLD_EXPORTED])
+            } else {
+                infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_EXPORTED_NOT_PLAYABLE, "reason" to reasonText(reason)])
+            }
         }
     }
 
@@ -278,6 +529,7 @@ class WorldBuilderPresenter(
         row: Int,
         column: Int,
     ) {
+        if (formView.isOpen) return pickTile(row, column)
         when (tool) {
             WorldBuilderHudView.Tool.ERASE -> worldBuilderApi.eraseOccupant(row = row, column = column)
             WorldBuilderHudView.Tool.FILL -> if (tab == WorldBuilderHudView.Tab.TERRAIN) worldBuilderApi.fillTile(row = row, column = column)

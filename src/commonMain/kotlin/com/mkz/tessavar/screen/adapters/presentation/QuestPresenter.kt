@@ -289,7 +289,13 @@ class QuestPresenter(
     private fun displayMarkers() {
         if (isInBattle) return
         moveMarkersTo(
-            questApi.searchQuestMarkers().mapNotNull { marker -> npcApi.searchNpcById(marker.npcId)?.let { npc -> TilePosition(npc.row, npc.column) to QuestMapper.signOf(marker.sign) } }.toMap(),
+            questApi
+                .searchQuestMarkers()
+                .flatMap { marker ->
+                    val sign = QuestMapper.signOf(marker.sign)
+                    val npcPosition = marker.npcId?.let(npcApi.searchNpcById::invoke)?.let { npc -> TilePosition(npc.row, npc.column) }
+                    (listOfNotNull(npcPosition) + marker.tiles.map { tile -> TilePosition(tile.row, tile.column) }).map { position -> position to sign }
+                }.toMap(),
         )
     }
 

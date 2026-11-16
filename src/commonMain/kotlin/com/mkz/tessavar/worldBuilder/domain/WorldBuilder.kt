@@ -9,6 +9,10 @@ import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.OccupantErased
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.OccupantPlaceRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.OccupantPlaced
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.OccupiedTilePaintRejected
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.QuestAdded
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.QuestEdited
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.QuestRejected
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.QuestRemoved
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TerrainSelected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePaintRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePainted
@@ -36,6 +40,8 @@ data class WorldBuilder private constructor(
         const val DEFAULT_SIZE = 16
         const val DEFAULT_TERRAIN_ID = "sand"
         const val UNDO_STEPS = 50
+        const val HUMAN_PLAYER_ID = "player-one"
+        const val CPU_PLAYER_ID = "player-two"
 
         fun restore(
             file: Dto.WorldFileDto,
@@ -60,7 +66,7 @@ data class WorldBuilder private constructor(
             val tiles = Tiles.filled(rows = DEFAULT_SIZE, columns = DEFAULT_SIZE, terrainId = TerrainId(DEFAULT_TERRAIN_ID))
             return WorldBuilder(
                 tiles = tiles,
-                details = Details(name = "", author = "", keptSections = "", mainQuestCount = 0),
+                details = Details(name = "", author = "", keptSections = "", quests = emptyList()),
                 occupants = Occupants(buildings = emptyList(), battleUnits = emptyList(), npcs = emptyList()),
                 selectedTerrainId = TerrainId(DEFAULT_TERRAIN_ID),
                 events = setOf(WorldOpened(rows = tiles.rows, columns = tiles.columns)),
@@ -85,7 +91,8 @@ data class WorldBuilder private constructor(
             buildings = occupants.buildings.map(PlacedBuilding::toDto),
             battleUnits = occupants.battleUnits.map(PlacedBattleUnit::toDto),
             npcs = occupants.npcs.map(PlacedNpc::toDto),
-            mainQuestCount = details.mainQuestCount,
+            quests = details.quests,
+            unplayableReasons = unplayableReasons(),
         )
 
     fun toWorldFile(currentVersion: Int) =
@@ -97,8 +104,8 @@ data class WorldBuilder private constructor(
             buildings = occupants.buildings.map(PlacedBuilding::toDto),
             battleUnits = occupants.battleUnits.map(PlacedBattleUnit::toDto),
             npcs = occupants.npcs.map(PlacedNpc::toDto),
+            quests = details.quests,
             keptSections = details.keptSections,
-            mainQuestCount = details.mainQuestCount,
         )
 
     fun resize(
@@ -111,6 +118,16 @@ data class WorldBuilder private constructor(
             WorldResized(rows = rows, columns = columns),
             editedTiles = tiles.resize(rows = rows, columns = columns, fillTerrainId = TerrainId(DEFAULT_TERRAIN_ID)),
             editedOccupants = occupants.within(rows = rows, columns = columns),
+            editedDetails =
+                details.copy(
+                    quests =
+                        details.quests.map { quest ->
+                            quest.copy(
+                                startTiles = quest.startTiles.filter { tile -> tile.row < rows && tile.column < columns },
+                                tasks = quest.tasks.map { task -> task.copy(tiles = task.tiles.filter { tile -> tile.row < rows && tile.column < columns }) },
+                            )
+                        },
+                ),
         )
     }
 
@@ -249,7 +266,75 @@ data class WorldBuilder private constructor(
         column: Int,
     ): WorldBuilder {
         val (occupantId, remaining) = occupants.erase(row, column) ?: return this
-        return edit(OccupantErased(occupantId = occupantId, row = row, column = column), editedOccupants = remaining)
+        val erasedNpcId = occupants.npcs.firstOrNull { npc -> npc.id == occupantId }?.id
+        val erasedUnitId =
+            occupants.battleUnits
+                .firstOrNull { battleUnit -> battleUnit.id == occupantId }
+                ?.unitId
+                ?.takeIf { unitId -> remaining.battleUnits.none { battleUnit -> battleUnit.unitId == unitId } }
+        val quests =
+            details.quests
+                .filterNot { quest -> erasedNpcId != null && quest.type == Dto.QuestTypeDto.SIDE && quest.questGiverNpcId == erasedNpcId }
+                .map { quest ->
+                    quest.copy(
+                        tasks =
+                            quest.tasks.filterNot { task ->
+                                (erasedNpcId != null && task.type == Dto.TaskTypeDto.TALK && task.npcId == erasedNpcId) ||
+                                    (erasedUnitId != null && task.type == Dto.TaskTypeDto.DEFEAT && task.unitId == erasedUnitId)
+                            },
+                    )
+                }
+        return edit(OccupantErased(occupantId = occupantId, row = row, column = column), editedOccupants = remaining, editedDetails = details.copy(quests = quests))
+    }
+
+    fun addQuest(type: Dto.QuestTypeDto): WorldBuilder {
+        if (type == Dto.QuestTypeDto.MAIN && details.quests.any { quest -> quest.type == Dto.QuestTypeDto.MAIN }) {
+            return copy(events = events + QuestRejected(reason = QuestRejected.Reason.MAIN_QUEST_TAKEN))
+        }
+        val takenIds = details.quests.map(Dto.QuestDto::id).toSet()
+        val questId = generateSequence(1) { number -> number + 1 }.map { number -> "quest-$number" }.first { id -> id !in takenIds }
+        val quest =
+            Dto.QuestDto(
+                id = questId,
+                type = type,
+                questGiverNpcId = null,
+                repeatable = false,
+                startTiles = emptyList(),
+                name = "",
+                description = "",
+                lines = Dto.LinesDto(start = null, reminder = null, completed = null, startAgain = null),
+                tasks = emptyList(),
+                reward = Dto.RewardDto(gold = 0, lootableItemIds = emptyList()),
+            )
+        return edit(QuestAdded(questId = questId), editedDetails = details.copy(quests = details.quests + quest))
+    }
+
+    fun removeQuest(questId: String): WorldBuilder {
+        if (details.quests.none { quest -> quest.id == questId }) return this
+        return edit(QuestRemoved(questId = questId), editedDetails = details.copy(quests = details.quests.filterNot { quest -> quest.id == questId }))
+    }
+
+    fun editQuest(edited: Dto.QuestDto): WorldBuilder {
+        val quest = details.quests.firstOrNull { quest -> quest.id == edited.id } ?: return this
+        if (quest == edited) return this
+        if (edited.type == Dto.QuestTypeDto.MAIN && details.quests.any { other -> other.id != edited.id && other.type == Dto.QuestTypeDto.MAIN }) {
+            return copy(events = events + QuestRejected(reason = QuestRejected.Reason.MAIN_QUEST_TAKEN))
+        }
+        val inWorld = edited.copy(startTiles = edited.startTiles.filter(::isInWorld), tasks = edited.tasks.map { task -> task.copy(tiles = task.tiles.filter(::isInWorld)) })
+        return edit(QuestEdited(questId = edited.id), editedDetails = details.copy(quests = details.quests.map { other -> if (other.id == edited.id) inWorld else other }))
+    }
+
+    private fun isInWorld(tile: Dto.TileDto): Boolean = tiles.terrainId(tile.row, tile.column) != null
+
+    private fun unplayableReasons(): List<Dto.UnplayableReasonDto> {
+        val mainQuests = details.quests.filter { quest -> quest.type == Dto.QuestTypeDto.MAIN }
+        return listOfNotNull(
+            Dto.UnplayableReasonDto.NO_HUMAN_BATTLE_UNIT.takeIf { occupants.battleUnits.none { battleUnit -> battleUnit.playerId == HUMAN_PLAYER_ID } },
+            Dto.UnplayableReasonDto.NO_CPU_BATTLE_UNIT.takeIf { occupants.battleUnits.none { battleUnit -> battleUnit.playerId == CPU_PLAYER_ID } },
+            Dto.UnplayableReasonDto.NO_MAIN_QUEST.takeIf { mainQuests.size != 1 },
+            Dto.UnplayableReasonDto.NO_START_TILES.takeIf { mainQuests.any { quest -> quest.startTiles.isEmpty() } },
+            Dto.UnplayableReasonDto.QUEST_WITHOUT_TASKS.takeIf { details.quests.any { quest -> quest.tasks.isEmpty() } },
+        )
     }
 
     fun restock(
@@ -373,10 +458,10 @@ data class WorldBuilder private constructor(
         val name: String,
         val author: String,
         val keptSections: String,
-        val mainQuestCount: Int,
+        val quests: List<Dto.QuestDto>,
     ) {
         companion object {
-            fun of(file: Dto.WorldFileDto) = Details(name = file.name, author = file.author, keptSections = file.keptSections, mainQuestCount = file.mainQuestCount)
+            fun of(file: Dto.WorldFileDto) = Details(name = file.name, author = file.author, keptSections = file.keptSections, quests = file.quests)
         }
     }
 
@@ -577,7 +662,8 @@ data class WorldBuilder private constructor(
         val buildings: List<BuildingDto>,
         val battleUnits: List<BattleUnitDto>,
         val npcs: List<NpcDto>,
-        val mainQuestCount: Int,
+        val quests: List<QuestDto>,
+        val unplayableReasons: List<UnplayableReasonDto>,
     ) {
         data class WorldFileDto(
             val version: Int,
@@ -587,9 +673,61 @@ data class WorldBuilder private constructor(
             val buildings: List<BuildingDto>,
             val battleUnits: List<BattleUnitDto>,
             val npcs: List<NpcDto>,
+            val quests: List<QuestDto>,
             val keptSections: String,
-            val mainQuestCount: Int,
         )
+
+        data class QuestDto(
+            val id: String,
+            val type: QuestTypeDto,
+            val questGiverNpcId: String?,
+            val repeatable: Boolean,
+            val startTiles: List<TileDto>,
+            val name: String,
+            val description: String,
+            val lines: LinesDto,
+            val tasks: List<TaskDto>,
+            val reward: RewardDto,
+        )
+
+        enum class QuestTypeDto { MAIN, SIDE }
+
+        data class TileDto(
+            val row: Int,
+            val column: Int,
+        )
+
+        data class LinesDto(
+            val start: String?,
+            val reminder: String?,
+            val completed: String?,
+            val startAgain: String?,
+        )
+
+        data class TaskDto(
+            val type: TaskTypeDto,
+            val unitId: String?,
+            val requiredDefeats: Int?,
+            val npcId: String?,
+            val tiles: List<TileDto>,
+            val text: String,
+            val line: String?,
+        )
+
+        enum class TaskTypeDto { DEFEAT, TALK, VISIT }
+
+        data class RewardDto(
+            val gold: Int,
+            val lootableItemIds: List<String>,
+        )
+
+        enum class UnplayableReasonDto {
+            NO_HUMAN_BATTLE_UNIT,
+            NO_CPU_BATTLE_UNIT,
+            NO_MAIN_QUEST,
+            NO_START_TILES,
+            QUEST_WITHOUT_TASKS,
+        }
 
         data class BuildingDto(
             val id: String,

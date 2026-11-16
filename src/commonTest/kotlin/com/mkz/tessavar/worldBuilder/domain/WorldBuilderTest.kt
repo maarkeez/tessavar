@@ -9,6 +9,10 @@ import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.OccupantErased
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.OccupantPlaceRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.OccupantPlaced
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.OccupiedTilePaintRejected
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.QuestAdded
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.QuestEdited
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.QuestRejected
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.QuestRemoved
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TerrainSelected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePaintRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePainted
@@ -28,6 +32,8 @@ class WorldBuilderTest {
     private val canBeAdjacent = { terrainId: String, adjacentTerrainId: String -> "sand" in setOf(terrainId, adjacentTerrainId) }
     private val isOccupiable = { terrainId: String -> terrainId != "void" }
     private val catalog = WorldBuilderMother.catalog()
+    private val newWorldReasons =
+        listOf(WorldBuilder.Dto.UnplayableReasonDto.NO_HUMAN_BATTLE_UNIT, WorldBuilder.Dto.UnplayableReasonDto.NO_CPU_BATTLE_UNIT, WorldBuilder.Dto.UnplayableReasonDto.NO_MAIN_QUEST)
 
     private fun newWorld(): WorldBuilder = WorldBuilder.create().pullEvents().second
 
@@ -52,7 +58,8 @@ class WorldBuilderTest {
                 buildings = emptyList(),
                 battleUnits = emptyList(),
                 npcs = emptyList(),
-                mainQuestCount = 0,
+                quests = emptyList(),
+                unplayableReasons = newWorldReasons,
             )
         events.shouldContainExactly(WorldOpened(rows = 16, columns = 16))
     }
@@ -250,7 +257,8 @@ class WorldBuilderTest {
                 buildings = emptyList(),
                 battleUnits = emptyList(),
                 npcs = emptyList(),
-                mainQuestCount = 0,
+                quests = emptyList(),
+                unplayableReasons = newWorldReasons,
             )
         events.shouldContainExactly(WorldImported(rows = 2, columns = 3))
     }
@@ -415,7 +423,8 @@ class WorldBuilderTest {
                 buildings = emptyList(),
                 battleUnits = emptyList(),
                 npcs = emptyList(),
-                mainQuestCount = 0,
+                quests = emptyList(),
+                unplayableReasons = newWorldReasons,
             )
         events.shouldBeEmpty()
     }
@@ -666,5 +675,174 @@ class WorldBuilderTest {
         val (events, _) = newWorld().import(file, currentVersion = 1, catalog, isKnownTerrain = { true }, canBeAdjacent, isOccupiable).pullEvents()
         // Then
         events.shouldContainExactly(WorldImportRejected(reason = Reason.DUPLICATE_OCCUPANT, occupantId = "hero"))
+    }
+
+    @Test
+    fun `WorldBuilder should add a quest named after its number, with nothing in it yet, when a quest is added`() {
+        // When
+        val (events, added) = newWorld().addQuest(WorldBuilder.Dto.QuestTypeDto.SIDE).pullEvents()
+        // Then
+        val quest = added.toDto().quests.single()
+        (quest.id to quest.type) shouldBe ("quest-1" to WorldBuilder.Dto.QuestTypeDto.SIDE)
+        quest.tasks.shouldBeEmpty()
+        events.shouldContainExactly(QuestAdded(questId = "quest-1"))
+    }
+
+    @Test
+    fun `WorldBuilder should reject a second main quest when one is added or edited into one`() {
+        // Given
+        val worldBuilder =
+            newWorld()
+                .addQuest(WorldBuilder.Dto.QuestTypeDto.MAIN)
+                .addQuest(WorldBuilder.Dto.QuestTypeDto.SIDE)
+                .pullEvents()
+                .second
+        val sideQuest = worldBuilder.toDto().quests.last()
+        // When
+        val (addEvents, _) = worldBuilder.addQuest(WorldBuilder.Dto.QuestTypeDto.MAIN).pullEvents()
+        val (editEvents, edited) = worldBuilder.editQuest(sideQuest.copy(type = WorldBuilder.Dto.QuestTypeDto.MAIN)).pullEvents()
+        // Then
+        addEvents.shouldContainExactly(QuestRejected(reason = QuestRejected.Reason.MAIN_QUEST_TAKEN))
+        editEvents.shouldContainExactly(QuestRejected(reason = QuestRejected.Reason.MAIN_QUEST_TAKEN))
+        edited
+            .toDto()
+            .quests
+            .last()
+            .type shouldBe WorldBuilder.Dto.QuestTypeDto.SIDE
+    }
+
+    @Test
+    fun `WorldBuilder should replace the quest, keeping only its tiles in the world, when it is edited`() {
+        // Given
+        val worldBuilder = newWorld().addQuest(WorldBuilder.Dto.QuestTypeDto.MAIN).pullEvents().second
+        val quest = worldBuilder.toDto().quests.single()
+        val tiles = listOf(WorldBuilder.Dto.TileDto(row = 2, column = 3), WorldBuilder.Dto.TileDto(row = 20, column = 3))
+        // When
+        val (events, edited) = worldBuilder.editQuest(quest.copy(name = "The Keep", startTiles = tiles)).pullEvents()
+        // Then
+        edited
+            .toDto()
+            .quests
+            .single()
+            .name shouldBe "The Keep"
+        edited
+            .toDto()
+            .quests
+            .single()
+            .startTiles
+            .shouldContainExactly(WorldBuilder.Dto.TileDto(row = 2, column = 3))
+        events.shouldContainExactly(QuestEdited(questId = quest.id))
+    }
+
+    @Test
+    fun `WorldBuilder should take the quest away, and undo bring it back, when it is removed`() {
+        // Given
+        val worldBuilder = newWorld().addQuest(WorldBuilder.Dto.QuestTypeDto.SIDE).pullEvents().second
+        // When
+        val (events, removed) = worldBuilder.removeQuest("quest-1").pullEvents()
+        // Then
+        removed.toDto().quests.shouldBeEmpty()
+        events.shouldContainExactly(QuestRemoved(questId = "quest-1"))
+        removed
+            .undo()
+            .toDto()
+            .quests
+            .map(WorldBuilder.Dto.QuestDto::id)
+            .shouldContainExactly("quest-1")
+    }
+
+    @Test
+    fun `WorldBuilder should remove the tasks naming a battle unit when it is erased, the last of its unit`() {
+        // Given
+        val worldBuilder =
+            newWorld()
+                .placeBattleUnit(unitId = "rat", playerId = "player-two", row = 1, column = 1, isOccupiable)
+                .placeBattleUnit(unitId = "rat", playerId = "player-two", row = 2, column = 2, isOccupiable)
+                .addQuest(WorldBuilder.Dto.QuestTypeDto.MAIN)
+                .pullEvents()
+                .second
+        val quest = worldBuilder.toDto().quests.single()
+        val withTasks = worldBuilder.editQuest(quest.copy(tasks = listOf(WorldBuilderMother.defeatTask("rat"), WorldBuilderMother.talkTask())))
+        // When
+        val oneErased = withTasks.erase(row = 1, column = 1)
+        val bothErased = oneErased.erase(row = 2, column = 2)
+        // Then
+        oneErased
+            .toDto()
+            .quests
+            .single()
+            .tasks.size shouldBe 2
+        bothErased
+            .toDto()
+            .quests
+            .single()
+            .tasks
+            .shouldContainExactly(WorldBuilderMother.talkTask())
+        bothErased
+            .undo()
+            .toDto()
+            .quests
+            .single()
+            .tasks.size shouldBe 2
+    }
+
+    @Test
+    fun `WorldBuilder should remove the talk tasks and the side quests of an npc when it is erased`() {
+        // Given
+        val worldBuilder =
+            newWorld()
+                .placeNpc(npcId = "alchemist", row = 1, column = 1, isOccupiable)
+                .addQuest(WorldBuilder.Dto.QuestTypeDto.MAIN)
+                .addQuest(WorldBuilder.Dto.QuestTypeDto.SIDE)
+                .pullEvents()
+                .second
+        val (mainQuest, sideQuest) = worldBuilder.toDto().quests
+        val withQuests =
+            worldBuilder
+                .editQuest(mainQuest.copy(tasks = listOf(WorldBuilderMother.talkTask("alchemist"), WorldBuilderMother.defeatTask())))
+                .editQuest(sideQuest.copy(questGiverNpcId = "alchemist"))
+        // When
+        val erased = withQuests.erase(row = 1, column = 1).toDto()
+        // Then
+        erased.quests.map(WorldBuilder.Dto.QuestDto::id).shouldContainExactly(mainQuest.id)
+        erased.quests
+            .single()
+            .tasks
+            .shouldContainExactly(WorldBuilderMother.defeatTask())
+    }
+
+    @Test
+    fun `WorldBuilder should be playable when it has a battle unit of each player and a main quest with start tiles`() {
+        // Given
+        val file =
+            WorldBuilderMother.file(
+                tiles = List(4) { List(4) { "sand" } },
+                battleUnits =
+                    listOf(
+                        WorldBuilder.Dto.BattleUnitDto(id = "hero", unitId = "knight", playerId = "player-one", row = 0, column = 0),
+                        WorldBuilder.Dto.BattleUnitDto(id = "rat-1", unitId = "rat", playerId = "player-two", row = 3, column = 3),
+                    ),
+                quests = listOf(WorldBuilderMother.quest()),
+            )
+        // When
+        val imported = newWorld().import(file, currentVersion = 1, catalog, isKnownTerrain = { true }, canBeAdjacent, isOccupiable)
+        // Then
+        imported.toDto().unplayableReasons.shouldBeEmpty()
+        imported.toDto().quests shouldBe file.quests
+    }
+
+    @Test
+    fun `WorldBuilder should not be playable when its main quest has no start tiles and a quest has no tasks`() {
+        // Given
+        val file = WorldBuilderMother.file(tiles = List(4) { List(4) { "sand" } }, quests = listOf(WorldBuilderMother.quest(startTiles = emptyList(), tasks = emptyList())))
+        // When
+        val imported = newWorld().import(file, currentVersion = 1, catalog, isKnownTerrain = { true }, canBeAdjacent, isOccupiable)
+        // Then
+        imported.toDto().unplayableReasons.shouldContainExactly(
+            WorldBuilder.Dto.UnplayableReasonDto.NO_HUMAN_BATTLE_UNIT,
+            WorldBuilder.Dto.UnplayableReasonDto.NO_CPU_BATTLE_UNIT,
+            WorldBuilder.Dto.UnplayableReasonDto.NO_START_TILES,
+            WorldBuilder.Dto.UnplayableReasonDto.QUEST_WITHOUT_TASKS,
+        )
     }
 }

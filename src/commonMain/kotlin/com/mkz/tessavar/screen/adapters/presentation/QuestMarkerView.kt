@@ -14,7 +14,7 @@ import korlibs.math.geom.degrees
 class QuestMarkerView(
     sign: Sign,
 ) : Container() {
-    enum class Sign { QUEST_TO_START, TALK_TASK }
+    enum class Sign { QUEST_TO_START, TALK_TASK, VISIT_TASK }
 
     private companion object {
         const val DISC_X = 20.0
@@ -39,6 +39,7 @@ class QuestMarkerView(
         when (sign) {
             Sign.QUEST_TO_START -> exclamationGlyph(DISC_X + SIGN_INSET, DISC_Y + SIGN_INSET, SIGN_SIZE, Colors.BLACK)
             Sign.TALK_TASK -> taskGlyph(QuestInfo.Kind.TALK, DISC_X + SIGN_INSET, DISC_Y + SIGN_INSET, SIGN_SIZE, Colors.BLACK)
+            Sign.VISIT_TASK -> taskGlyph(QuestInfo.Kind.VISIT, DISC_X + SIGN_INSET, DISC_Y + SIGN_INSET, SIGN_SIZE, Colors.BLACK)
         }
     }
 }
