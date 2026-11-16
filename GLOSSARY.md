@@ -525,16 +525,6 @@ The timing of an effect whose outcome lasts while the item that applied it is eq
 **Duration**:
 How many player turns an effect timed on player turn started triggers for.
 
-### Game setup
-
-**Game**:
-One whole play, from when it is started new until its game over, which can be saved and loaded again.
-_Avoid_: Playthrough, run
-
-**Game setup**:
-Getting a game ready to play, new or loaded.
-_Avoid_: Battle setup
-
 ### Inventory
 
 **Inventory**:
@@ -1007,7 +997,7 @@ _Avoid_: Saved game, savegame
 One of the 3 places a save is kept, empty or holding one save.
 
 **Summary**:
-What a save slot shows of its save: when it was saved, its leader and the party size.
+What a save slot shows of its save: its world, when it was saved, its leader and the party size.
 _Avoid_: Header, metadata
 
 **Snapshot**:
@@ -1043,7 +1033,7 @@ and the call to action.
 _Avoid_: Battle scene
 
 **Main menu**:
-Where the player plays a new game, loads a save, builds a world, selects a language or joins the mailing list.
+Where the player plays a new game or a community world, loads a save, builds a world, selects a language or joins the mailing list.
 
 **Mailing list**:
 The players who left their email to be told of a new version of the game, a new demo or a new release. They join it
@@ -1343,11 +1333,44 @@ _Avoid_: Unit ability, abilities
 **Starting gold**:
 The gold each battle unit of a unit carries once deployed.
 
-### World builder
+### World
 
 **World**:
-What the world builder builds for a game to be played in: for now, a battlefield.
-_Avoid_: Map, game, scenario, level
+Everything a game is played in: a battlefield, its buildings, battle units, npcs and quests.
+_Avoid_: Map, game, scenario, level, mod
+
+**Campaign**:
+The world the main menu's New game plays, named by a setting.
+_Avoid_: Story mode, main world, default world
+
+**Community world**:
+A world shipped with the game other than the campaign, contributed by its author.
+_Avoid_: Custom world, user world, mod
+
+**Author**:
+Whoever is credited for building a world.
+_Avoid_: Creator, contributor, maker
+
+**Playable**:
+Said of a world with a battle unit of each player, and a main quest with start tiles.
+
+**World file**:
+A world written as text in one file, the way it is exported, imported and shipped with the game.
+_Avoid_: Map file, level, TOML
+
+**World version**:
+The version of the shape of the world files the game reads; a world file of another one is refused.
+_Avoid_: Format version, schema version
+
+**Game**:
+One whole play, from when it is started new until its game over, which can be saved and loaded again.
+_Avoid_: Playthrough, run
+
+**Game setup**:
+Getting a game ready to play, new or loaded.
+_Avoid_: Battle setup
+
+### World builder
 
 **World builder**:
 Where the player builds one world at a time, to export it.
@@ -1360,6 +1383,10 @@ _Avoid_: Dimensions
 **Resize**:
 Changing the size of a world, keeping the tiles that still fit.
 
+**Playtest**:
+Playing the world being built in a game, started from the world builder, which goes back to it when the game ends.
+_Avoid_: Test play, preview, try
+
 #### Painting
 
 **Selected terrain**:
@@ -1370,14 +1397,28 @@ _Avoid_: Brush, current terrain
 Giving a tile of the world the selected terrain.
 _Avoid_: Draw, set
 
+**Fill**:
+Painting the whole connected area of one terrain.
+_Avoid_: Bucket, flood
+
+#### Placing
+
+**Place**:
+Putting a building, battle unit or npc on the world.
+_Avoid_: Put, add, drop
+
+**Erase**:
+Taking a building, battle unit or npc off the world.
+_Avoid_: Delete, remove
+
 #### Files
 
 **Export**:
-Writing the world as text, in the format a battlefield is loaded from.
+Writing the world into a world file.
 
 **Import**:
-Replacing the world with one read from a file.
+Replacing the world with one read from a world file.
 _Avoid_: Load, parse
 
 **Rejected**:
-Said of a paint or an import that leaves the world as it was, as its result would not be a world a game can be played in.
+Said of a paint or an import that leaves the world as it was, as it breaks the rules of the battlefield.
