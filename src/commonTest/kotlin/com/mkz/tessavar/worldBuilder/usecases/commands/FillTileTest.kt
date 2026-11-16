@@ -11,6 +11,7 @@ import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderError.WorldNotCreated
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.AreaFilled
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePaintRejected
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderMother
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
@@ -33,7 +34,7 @@ class FillTileTest {
     ) = worldBuilderRepository.save(
         WorldBuilder
             .create()
-            .import(tiles, isKnownTerrain = { true }, canBeAdjacent = { _, _ -> true })
+            .import(WorldBuilderMother.file(tiles), currentVersion = 1, isKnownTerrain = { true }, canBeAdjacent = { _, _ -> true })
             .selectTerrain(selectedTerrainId)
             .pullEvents()
             .second,

@@ -52,6 +52,7 @@ sealed interface WorldBuilderEvent : DomainEvent {
     ) : WorldBuilderEvent {
         enum class Reason {
             NOT_A_WORLD,
+            OTHER_WORLD_VERSION,
             SIZE_OUT_OF_RANGE,
             UNKNOWN_TERRAIN,
             FORBIDDEN_ADJACENT_TERRAINS,

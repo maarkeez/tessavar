@@ -5,6 +5,7 @@ import com.mkz.tessavar.shared.domain.EventBus
 import com.mkz.tessavar.shared.domain.Subscription
 import com.mkz.tessavar.shared.domain.subscribe
 import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
+import com.mkz.tessavar.world.domain.World
 import com.mkz.tessavar.worldBuilder.adapters.presentation.WorldBuilderApi
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent
@@ -142,6 +143,7 @@ class WorldBuilderPresenter(
     private fun importRejectedMessage(event: WorldBuilderEvent.WorldImportRejected): String =
         when (event.reason) {
             Reason.NOT_A_WORLD -> messages[UiMessage.WORLD_BUILDER_NOT_A_WORLD]
+            Reason.OTHER_WORLD_VERSION -> messages[UiMessage.WORLD_BUILDER_OTHER_WORLD_VERSION, "version" to World.CURRENT_VERSION]
             Reason.SIZE_OUT_OF_RANGE ->
                 messages[UiMessage.WORLD_BUILDER_SIZE_OUT_OF_RANGE, "minimum" to WorldBuilder.MINIMUM_SIZE, "maximum" to WorldBuilder.MAXIMUM_SIZE]
             Reason.UNKNOWN_TERRAIN -> messages[UiMessage.WORLD_BUILDER_UNKNOWN_TERRAIN, "terrain" to event.terrainId.orEmpty()]

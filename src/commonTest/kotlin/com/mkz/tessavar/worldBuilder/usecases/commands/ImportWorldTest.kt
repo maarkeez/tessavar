@@ -1,8 +1,6 @@
 package com.mkz.tessavar.worldBuilder.usecases.commands
 
-import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldDecoder
-import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldEncoder
-import com.mkz.tessavar.battlefield.usecases.queries.ParseBattlefield
+import com.mkz.tessavar.shared.adapters.resources.ResourcesBundle
 import com.mkz.tessavar.shared.domain.FakeEventBus
 import com.mkz.tessavar.shared.domain.shouldHavePublishedEvents
 import com.mkz.tessavar.terrain.adapters.storage.InMemoryTerrainRepository
@@ -10,14 +8,18 @@ import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanBeOccupied
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanNotBeOccupied
 import com.mkz.tessavar.terrain.usecases.queries.HasTerrainTransition
 import com.mkz.tessavar.terrain.usecases.queries.SearchTerrainById
+import com.mkz.tessavar.worldBuilder.adapters.resources.WorldFileCodecMother
 import com.mkz.tessavar.worldBuilder.adapters.storage.InMemoryWorldBuilderRepository
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderError.WorldNotCreated
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImportRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImportRejected.Reason
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImported
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderMother
+import com.mkz.tessavar.worldBuilder.usecases.queries.ExportWorld
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
 class ImportWorldTest {
@@ -30,10 +32,11 @@ class ImportWorldTest {
             create(terrainThatCanNotBeOccupied(id = "lava", transitionsTo = setOf("lava")))
             create(terrainThatCanBeOccupied(id = "water", transitionsTo = setOf("water")))
         }
+    private val codec = WorldFileCodecMother.codec()
     private val importWorld =
         ImportWorld(
             worldBuilderRepository,
-            ParseBattlefield(TomlBattlefieldDecoder()),
+            codec,
             SearchTerrainById(terrainRepository),
             HasTerrainTransition(terrainRepository),
             eventBus,
@@ -41,7 +44,10 @@ class ImportWorldTest {
 
     private fun givenWorldCreated() = worldBuilderRepository.save(WorldBuilder.create().pullEvents().second)
 
-    private fun exported(tiles: List<List<String>>) = TomlBattlefieldEncoder().encode(tiles)
+    private fun exported(
+        tiles: List<List<String>>,
+        version: Int = 1,
+    ) = codec.encode(WorldBuilderMother.file(tiles, version = version))
 
     @Test
     fun `should replace the world and announce it when an exported world is imported`() {
@@ -85,6 +91,36 @@ class ImportWorldTest {
         // Then
         eventBus.shouldHavePublishedEvents(WorldImportRejected(reason = Reason.FORBIDDEN_ADJACENT_TERRAINS, terrainId = "water", adjacentTerrainId = "lava"))
     }
+
+    @Test
+    fun `ImportWorld should reject a world file when its world version is not 1`() {
+        // Given
+        givenWorldCreated()
+        // When
+        importWorld(exported(listOf(listOf("sand")), version = 2))
+        // Then
+        eventBus.shouldHavePublishedEvents(WorldImportRejected(reason = Reason.OTHER_WORLD_VERSION))
+    }
+
+    @Test
+    fun `ImportWorld should keep every section when the world is imported and exported again`() =
+        runTest {
+            // Given
+            givenWorldCreated()
+            val campaign = ResourcesBundle.root[ResourcesBundle.CAMPAIGN_WORLD_FILE].readString()
+            val terrainIds =
+                codec
+                    .decode(campaign)!!
+                    .tiles
+                    .flatten()
+                    .toSet()
+            val everyTerrain = InMemoryTerrainRepository().apply { terrainIds.forEach { terrainId -> create(terrainThatCanBeOccupied(id = terrainId, transitionsTo = terrainIds)) } }
+            val lenientImport = ImportWorld(worldBuilderRepository, codec, SearchTerrainById(everyTerrain), HasTerrainTransition(everyTerrain), eventBus)
+            // When
+            lenientImport(campaign)
+            // Then
+            ExportWorld(worldBuilderRepository, codec)() shouldBe campaign
+        }
 
     @Test
     fun `should fail when the world has not been created`() {

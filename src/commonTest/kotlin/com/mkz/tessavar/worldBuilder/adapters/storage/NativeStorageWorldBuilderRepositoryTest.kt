@@ -1,9 +1,6 @@
 package com.mkz.tessavar.worldBuilder.adapters.storage
 
-import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldDecoder
-import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldEncoder
-import com.mkz.tessavar.battlefield.usecases.queries.ExportBattlefield
-import com.mkz.tessavar.battlefield.usecases.queries.ParseBattlefield
+import com.mkz.tessavar.worldBuilder.adapters.resources.WorldFileCodecMother
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -12,9 +9,9 @@ import kotlin.test.Test
 
 class NativeStorageWorldBuilderRepositoryTest {
     private val storage = InmemoryStorage()
-    private val exportBattlefield = ExportBattlefield(TomlBattlefieldEncoder())
+    private val codec = WorldFileCodecMother.codec()
 
-    private fun newRepository() = NativeStorageWorldBuilderRepository(storage, exportBattlefield, ParseBattlefield(TomlBattlefieldDecoder()))
+    private fun newRepository() = NativeStorageWorldBuilderRepository(storage, codec)
 
     private val worldBuilder =
         WorldBuilder
@@ -41,7 +38,7 @@ class NativeStorageWorldBuilderRepositoryTest {
         // When
         newRepository().save(worldBuilder)
         // Then
-        storage.getOrNull(NativeStorageWorldBuilderRepository.KEY) shouldBe exportBattlefield(worldBuilder.toDto().tiles)
+        storage.getOrNull(NativeStorageWorldBuilderRepository.KEY) shouldBe codec.encode(worldBuilder.toWorldFile(currentVersion = 1))
     }
 
     @Test

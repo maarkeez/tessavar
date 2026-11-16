@@ -108,6 +108,7 @@ enum class UiMessage(
     WORLD_BUILDER_FILE_NOT_READ("ui.worldBuilder.fileNotRead"),
     WORLD_BUILDER_FILE_NOT_SAVED("ui.worldBuilder.fileNotSaved"),
     WORLD_BUILDER_NOT_A_WORLD("ui.worldBuilder.notAWorld"),
+    WORLD_BUILDER_OTHER_WORLD_VERSION("ui.worldBuilder.otherWorldVersion"),
     WORLD_BUILDER_SIZE_OUT_OF_RANGE("ui.worldBuilder.sizeOutOfRange"),
     WORLD_BUILDER_UNKNOWN_TERRAIN("ui.worldBuilder.unknownTerrain"),
     WORLD_BUILDER_FORBIDDEN_ADJACENT_TERRAINS("ui.worldBuilder.forbiddenAdjacentTerrains"),

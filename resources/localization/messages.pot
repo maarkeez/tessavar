@@ -511,6 +511,11 @@ msgctxt "ui.worldBuilder.notAWorld"
 msgid "The file has no world"
 msgstr ""
 
+#. {version}: the world version the game reads.
+msgctxt "ui.worldBuilder.otherWorldVersion"
+msgid "The world in the file is not of world version {version}"
+msgstr ""
+
 #. {minimum} and {maximum}: the smallest and the largest size of a world.
 msgctxt "ui.worldBuilder.sizeOutOfRange"
 msgid "The world must be {minimum} to {maximum} tiles wide and tall"

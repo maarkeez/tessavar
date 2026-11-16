@@ -29,7 +29,8 @@ class WorldBuilderTest {
         // When
         val (events, worldBuilder) = WorldBuilder.create().pullEvents()
         // Then
-        worldBuilder.toDto() shouldBe WorldBuilder.Dto(rows = 16, columns = 16, tiles = List(16) { List(16) { "sand" } }, selectedTerrainId = "sand", canUndo = false, canRedo = false)
+        worldBuilder.toDto() shouldBe
+            WorldBuilder.Dto(rows = 16, columns = 16, tiles = List(16) { List(16) { "sand" } }, selectedTerrainId = "sand", canUndo = false, canRedo = false, name = "", author = "")
         events.shouldContainExactly(WorldOpened(rows = 16, columns = 16))
     }
 
@@ -136,7 +137,7 @@ class WorldBuilderTest {
 
     private fun worldOf(vararg rows: String): WorldBuilder =
         newWorld()
-            .import(rows.map { row -> row.split(" ") }, isKnownTerrain = { true }, canBeAdjacent = { _, _ -> true })
+            .import(WorldBuilderMother.file(rows.map { row -> row.split(" ") }), currentVersion = 1, isKnownTerrain = { true }, canBeAdjacent = { _, _ -> true })
             .pullEvents()
             .second
 
@@ -201,9 +202,9 @@ class WorldBuilderTest {
         val worldBuilder = newWorld().selectTerrain("lava").pullEvents().second
         val tiles = listOf(listOf("sand", "lava", "lava"), listOf("water", "sand", "sand"))
         // When
-        val (events, imported) = worldBuilder.import(tiles, isKnownTerrain, canBeAdjacent).pullEvents()
+        val (events, imported) = worldBuilder.import(WorldBuilderMother.file(tiles), currentVersion = 1, isKnownTerrain, canBeAdjacent).pullEvents()
         // Then
-        imported.toDto() shouldBe WorldBuilder.Dto(rows = 2, columns = 3, tiles = tiles, selectedTerrainId = "lava", canUndo = true, canRedo = false)
+        imported.toDto() shouldBe WorldBuilder.Dto(rows = 2, columns = 3, tiles = tiles, selectedTerrainId = "lava", canUndo = true, canRedo = false, name = "", author = "")
         events.shouldContainExactly(WorldImported(rows = 2, columns = 3))
     }
 
@@ -212,7 +213,7 @@ class WorldBuilderTest {
         // Given
         val worldBuilder = newWorld()
         // When
-        val (events, rejected) = worldBuilder.import(tiles = null, isKnownTerrain, canBeAdjacent).pullEvents()
+        val (events, rejected) = worldBuilder.import(null, currentVersion = 1, isKnownTerrain, canBeAdjacent).pullEvents()
         // Then
         rejected shouldBe worldBuilder
         events.shouldContainExactly(WorldImportRejected(reason = Reason.NOT_A_WORLD))
@@ -221,7 +222,7 @@ class WorldBuilderTest {
     @Test
     fun `should reject the import when the imported world is larger than 128 rows or columns`() {
         // When
-        val (events, _) = newWorld().import(List(129) { List(4) { "sand" } }, isKnownTerrain, canBeAdjacent).pullEvents()
+        val (events, _) = newWorld().import(WorldBuilderMother.file(List(129) { List(4) { "sand" } }), currentVersion = 1, isKnownTerrain, canBeAdjacent).pullEvents()
         // Then
         events.shouldContainExactly(WorldImportRejected(reason = Reason.SIZE_OUT_OF_RANGE))
     }
@@ -229,7 +230,7 @@ class WorldBuilderTest {
     @Test
     fun `should reject the import when the imported world has no columns`() {
         // When
-        val (events, _) = newWorld().import(listOf(emptyList()), isKnownTerrain, canBeAdjacent).pullEvents()
+        val (events, _) = newWorld().import(WorldBuilderMother.file(listOf(emptyList())), currentVersion = 1, isKnownTerrain, canBeAdjacent).pullEvents()
         // Then
         events.shouldContainExactly(WorldImportRejected(reason = Reason.SIZE_OUT_OF_RANGE))
     }
@@ -237,7 +238,7 @@ class WorldBuilderTest {
     @Test
     fun `should reject the import with the terrain when the imported world has an unknown terrain`() {
         // When
-        val (events, _) = newWorld().import(listOf(listOf("sand", "forest")), isKnownTerrain, canBeAdjacent).pullEvents()
+        val (events, _) = newWorld().import(WorldBuilderMother.file(listOf(listOf("sand", "forest"))), currentVersion = 1, isKnownTerrain, canBeAdjacent).pullEvents()
         // Then
         events.shouldContainExactly(WorldImportRejected(reason = Reason.UNKNOWN_TERRAIN, terrainId = "forest"))
     }
@@ -247,7 +248,7 @@ class WorldBuilderTest {
         // Given
         val tiles = listOf(listOf("lava", "sand"), listOf("water", "sand"))
         // When
-        val (events, rejected) = newWorld().import(tiles, isKnownTerrain, canBeAdjacent).pullEvents()
+        val (events, rejected) = newWorld().import(WorldBuilderMother.file(tiles), currentVersion = 1, isKnownTerrain, canBeAdjacent).pullEvents()
         // Then
         events.shouldContainExactly(WorldImportRejected(reason = Reason.FORBIDDEN_ADJACENT_TERRAINS, terrainId = "lava", adjacentTerrainId = "water"))
         rejected.toDto().rows shouldBe 16
@@ -352,16 +353,17 @@ class WorldBuilderTest {
     @Test
     fun `should hold the tiles kept with sand selected and nothing to undo when it is restored`() {
         // When
-        val (events, restored) = WorldBuilder.restore(listOf(listOf("lava", "sand"))).pullEvents()
+        val (events, restored) = WorldBuilder.restore(WorldBuilderMother.file(listOf(listOf("lava", "sand")), name = "The Keep", author = "maarkeez")).pullEvents()
         // Then
-        restored.toDto() shouldBe WorldBuilder.Dto(rows = 1, columns = 2, tiles = listOf(listOf("lava", "sand")), selectedTerrainId = "sand", canUndo = false, canRedo = false)
+        restored.toDto() shouldBe
+            WorldBuilder.Dto(rows = 1, columns = 2, tiles = listOf(listOf("lava", "sand")), selectedTerrainId = "sand", canUndo = false, canRedo = false, name = "The Keep", author = "maarkeez")
         events.shouldBeEmpty()
     }
 
     @Test
     fun `should fail when the tiles restored have no columns`() {
         // When
-        val restore = { WorldBuilder.restore(listOf(emptyList())) }
+        val restore = { WorldBuilder.restore(WorldBuilderMother.file(listOf(emptyList()))) }
         // Then
         shouldThrowAny { restore() }
     }

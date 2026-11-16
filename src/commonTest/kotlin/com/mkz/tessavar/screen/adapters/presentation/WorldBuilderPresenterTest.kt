@@ -4,6 +4,8 @@ import com.mkz.tessavar.shared.adapters.presentation.SubdomainApis
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanBeOccupied
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanNotBeOccupied
 import com.mkz.tessavar.worldBuilder.adapters.presentation.WorldBuilderApi
+import com.mkz.tessavar.worldBuilder.adapters.resources.WorldFileCodecMother
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderMother
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
@@ -339,6 +341,8 @@ class WorldBuilderPresenterTest {
         infoView.errors.shouldBeEmpty()
     }
 
+    private fun worldFile(tiles: List<List<String>>) = WorldFileCodecMother.codec().encode(WorldBuilderMother.file(tiles))
+
     private fun importFile(text: String?) {
         worldFilePicker.pickedText = text
         menuView.select("Import")
@@ -357,7 +361,7 @@ class WorldBuilderPresenterTest {
         givenWorldCreated()
         val tiles = listOf(listOf("sand", "lava", "sand"), listOf("sand", "sand", "water"))
         // When
-        importFile(apis.battlefieldApi.exportBattlefield(tiles))
+        importFile(worldFile(tiles))
         // Then
         battlefieldView.displayedBattlefields.last() shouldBe BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(tiles))
         infoView.displayedSize shouldBe (2 to 3)
@@ -414,7 +418,7 @@ class WorldBuilderPresenterTest {
         // Given
         givenWorldCreated()
         // When
-        importFile(apis.battlefieldApi.exportBattlefield(List(129) { List(2) { "sand" } }))
+        importFile(worldFile(List(129) { List(2) { "sand" } }))
         // Then
         infoView.errors.shouldContainExactly("The world must be 1 to 128 tiles wide and tall")
     }
@@ -424,7 +428,7 @@ class WorldBuilderPresenterTest {
         // Given
         givenWorldCreated()
         // When
-        importFile(apis.battlefieldApi.exportBattlefield(listOf(listOf("sand", "forest"))))
+        importFile(worldFile(listOf(listOf("sand", "forest"))))
         // Then
         infoView.errors.shouldContainExactly("Unknown terrain: forest")
     }
@@ -434,8 +438,18 @@ class WorldBuilderPresenterTest {
         // Given
         givenWorldCreated()
         // When
-        importFile(apis.battlefieldApi.exportBattlefield(listOf(listOf("water", "lava"))))
+        importFile(worldFile(listOf(listOf("water", "lava"))))
         // Then
         infoView.errors.shouldContainExactly("Water can not be next to Lava")
+    }
+
+    @Test
+    fun `Import should display why when the world in the file is of another world version`() {
+        // Given
+        givenWorldCreated()
+        // When
+        importFile(WorldFileCodecMother.codec().encode(WorldBuilderMother.file(listOf(listOf("sand")), version = 2)))
+        // Then
+        infoView.errors.shouldContainExactly("The world in the file is not of world version 1")
     }
 }

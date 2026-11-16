@@ -17,10 +17,11 @@ import kotlin.jvm.JvmInline
 @ConsistentCopyVisibility
 data class WorldBuilder private constructor(
     private val tiles: Tiles,
+    private val details: Details,
     private val selectedTerrainId: TerrainId,
     private val events: Set<WorldBuilderEvent>,
-    private val undoneTiles: List<Tiles> = emptyList(),
-    private val redoneTiles: List<Tiles> = emptyList(),
+    private val undone: List<Snapshot> = emptyList(),
+    private val redone: List<Snapshot> = emptyList(),
 ) {
     companion object {
         const val MINIMUM_SIZE = 1
@@ -29,11 +30,17 @@ data class WorldBuilder private constructor(
         const val DEFAULT_TERRAIN_ID = "sand"
         const val UNDO_STEPS = 50
 
-        fun restore(tiles: List<List<String>>): WorldBuilder {
+        fun restore(file: Dto.WorldFileDto): WorldBuilder {
+            val tiles = file.tiles
             require(tiles.isNotEmpty() && tiles.all { row -> row.size == tiles.first().size } && isValidSize(tiles.size) && isValidSize(tiles.first().size)) {
                 "The world kept is not 1 to 128 tiles wide and tall"
             }
-            return WorldBuilder(tiles = Tiles(tiles.map { row -> row.map(::TerrainId) }), selectedTerrainId = TerrainId(DEFAULT_TERRAIN_ID), events = emptySet())
+            return WorldBuilder(
+                tiles = Tiles(tiles.map { row -> row.map(::TerrainId) }),
+                details = Details.of(file),
+                selectedTerrainId = TerrainId(DEFAULT_TERRAIN_ID),
+                events = emptySet(),
+            )
         }
 
         private fun isValidSize(size: Int): Boolean = size in MINIMUM_SIZE..MAXIMUM_SIZE
@@ -42,6 +49,7 @@ data class WorldBuilder private constructor(
             val tiles = Tiles.filled(rows = DEFAULT_SIZE, columns = DEFAULT_SIZE, terrainId = TerrainId(DEFAULT_TERRAIN_ID))
             return WorldBuilder(
                 tiles = tiles,
+                details = Details(name = "", author = "", keptSections = ""),
                 selectedTerrainId = TerrainId(DEFAULT_TERRAIN_ID),
                 events = setOf(WorldOpened(rows = tiles.rows, columns = tiles.columns)),
             )
@@ -58,8 +66,19 @@ data class WorldBuilder private constructor(
             columns = tiles.columns,
             tiles = tiles.toDto(),
             selectedTerrainId = selectedTerrainId.value,
-            canUndo = undoneTiles.isNotEmpty(),
-            canRedo = redoneTiles.isNotEmpty(),
+            canUndo = undone.isNotEmpty(),
+            canRedo = redone.isNotEmpty(),
+            name = details.name,
+            author = details.author,
+        )
+
+    fun toWorldFile(currentVersion: Int) =
+        Dto.WorldFileDto(
+            version = currentVersion,
+            name = details.name,
+            author = details.author,
+            tiles = tiles.toDto(),
+            keptSections = details.keptSections,
         )
 
     fun resize(
@@ -115,11 +134,15 @@ data class WorldBuilder private constructor(
     }
 
     fun import(
-        tiles: List<List<String>>?,
+        file: Dto.WorldFileDto?,
+        currentVersion: Int,
         isKnownTerrain: (terrainId: String) -> Boolean,
         canBeAdjacent: (terrainId: String, adjacentTerrainId: String) -> Boolean,
     ): WorldBuilder {
-        if (tiles == null) return rejectImport(Reason.NOT_A_WORLD)
+        if (file == null) return rejectImport(Reason.NOT_A_WORLD)
+        if (file.version != currentVersion) return rejectImport(Reason.OTHER_WORLD_VERSION)
+        val tiles = file.tiles
+        if (tiles.isEmpty() || tiles.any { row -> row.size != tiles.first().size }) return rejectImport(Reason.NOT_A_WORLD)
         if (!isValidSize(tiles.size) || !isValidSize(tiles.first().size)) return rejectImport(Reason.SIZE_OUT_OF_RANGE)
         tiles.flatten().firstOrNull { terrainId -> !isKnownTerrain(terrainId) }?.let { terrainId ->
             return rejectImport(Reason.UNKNOWN_TERRAIN, terrainId = terrainId)
@@ -128,37 +151,41 @@ data class WorldBuilder private constructor(
             return rejectImport(Reason.FORBIDDEN_ADJACENT_TERRAINS, terrainId = terrainId, adjacentTerrainId = adjacentTerrainId)
         }
         val importedTiles = Tiles(tiles.map { row -> row.map(::TerrainId) })
-        return edit(importedTiles, WorldImported(rows = importedTiles.rows, columns = importedTiles.columns))
+        return edit(importedTiles, WorldImported(rows = importedTiles.rows, columns = importedTiles.columns), Details.of(file))
     }
 
     fun undo(): WorldBuilder {
-        val earlierTiles = undoneTiles.lastOrNull() ?: return this
+        val earlier = undone.lastOrNull() ?: return this
         return copy(
-            tiles = earlierTiles,
-            undoneTiles = undoneTiles.dropLast(1),
-            redoneTiles = redoneTiles + tiles,
-            events = events + EditUndone(rows = earlierTiles.rows, columns = earlierTiles.columns),
+            tiles = earlier.tiles,
+            details = earlier.details,
+            undone = undone.dropLast(1),
+            redone = redone + Snapshot(tiles, details),
+            events = events + EditUndone(rows = earlier.tiles.rows, columns = earlier.tiles.columns),
         )
     }
 
     fun redo(): WorldBuilder {
-        val laterTiles = redoneTiles.lastOrNull() ?: return this
+        val later = redone.lastOrNull() ?: return this
         return copy(
-            tiles = laterTiles,
-            undoneTiles = undoneTiles + tiles,
-            redoneTiles = redoneTiles.dropLast(1),
-            events = events + EditRedone(rows = laterTiles.rows, columns = laterTiles.columns),
+            tiles = later.tiles,
+            details = later.details,
+            undone = undone + Snapshot(tiles, details),
+            redone = redone.dropLast(1),
+            events = events + EditRedone(rows = later.tiles.rows, columns = later.tiles.columns),
         )
     }
 
     private fun edit(
         editedTiles: Tiles,
         event: WorldBuilderEvent,
+        editedDetails: Details = details,
     ): WorldBuilder =
         copy(
             tiles = editedTiles,
-            undoneTiles = (undoneTiles + tiles).takeLast(UNDO_STEPS),
-            redoneTiles = emptyList(),
+            details = editedDetails,
+            undone = (undone + Snapshot(tiles, details)).takeLast(UNDO_STEPS),
+            redone = emptyList(),
             events = events + event,
         )
 
@@ -182,6 +209,21 @@ data class WorldBuilder private constructor(
         }
         return null
     }
+
+    private data class Details(
+        val name: String,
+        val author: String,
+        val keptSections: String,
+    ) {
+        companion object {
+            fun of(file: Dto.WorldFileDto) = Details(name = file.name, author = file.author, keptSections = file.keptSections)
+        }
+    }
+
+    private data class Snapshot(
+        val tiles: Tiles,
+        val details: Details,
+    )
 
     @JvmInline
     private value class TerrainId(
@@ -265,5 +307,15 @@ data class WorldBuilder private constructor(
         val selectedTerrainId: String,
         val canUndo: Boolean,
         val canRedo: Boolean,
-    )
+        val name: String,
+        val author: String,
+    ) {
+        data class WorldFileDto(
+            val version: Int,
+            val name: String,
+            val author: String,
+            val tiles: List<List<String>>,
+            val keptSections: String,
+        )
+    }
 }

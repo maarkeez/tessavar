@@ -1,16 +1,14 @@
 package com.mkz.tessavar.worldBuilder.adapters.storage
 
-import com.mkz.tessavar.battlefield.domain.BattlefieldError.InvalidBattlefieldFormat
-import com.mkz.tessavar.battlefield.usecases.queries.ExportBattlefield
-import com.mkz.tessavar.battlefield.usecases.queries.ParseBattlefield
+import com.mkz.tessavar.world.domain.World
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderRepository
+import com.mkz.tessavar.worldBuilder.usecases.services.WorldFileCodec
 import korlibs.korge.service.storage.IStorage
 
 class NativeStorageWorldBuilderRepository(
     private val storage: IStorage,
-    private val exportBattlefield: ExportBattlefield,
-    private val parseBattlefield: ParseBattlefield,
+    private val worldFileCodec: WorldFileCodec,
 ) : WorldBuilderRepository {
     companion object {
         const val KEY = "worldBuilder.world"
@@ -20,7 +18,7 @@ class NativeStorageWorldBuilderRepository(
 
     override fun save(worldBuilder: WorldBuilder) {
         this.worldBuilder = worldBuilder
-        storage[KEY] = exportBattlefield(worldBuilder.toDto().tiles)
+        storage[KEY] = worldFileCodec.encode(worldBuilder.toWorldFile(World.CURRENT_VERSION))
     }
 
     override fun search(): WorldBuilder? = worldBuilder ?: read()?.also { read -> worldBuilder = read }
@@ -28,9 +26,7 @@ class NativeStorageWorldBuilderRepository(
     private fun read(): WorldBuilder? {
         val worldFile = storage.getOrNull(KEY) ?: return null
         return try {
-            WorldBuilder.restore(parseBattlefield(worldFile))
-        } catch (_: InvalidBattlefieldFormat) {
-            null
+            worldFileCodec.decode(worldFile)?.let(WorldBuilder::restore)
         } catch (_: IllegalArgumentException) {
             null
         }
