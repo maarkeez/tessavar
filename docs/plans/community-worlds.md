@@ -1,6 +1,6 @@
 # Plan: anyone builds a world in the world builder and shares it by pull request, played by everyone as a community world
 
-> **Status:** in progress: M1 built on `main`, its screenshots still to be approved.
+> **Status:** in progress: M1 and M2 built on `main`, their screenshots still to be approved.
 >
 > **Summary:** Today the world builder only paints terrain. E.g.: a player paints a lake of water on a 24 × 32 world,
 > taps Export, and gets the TOML of `resources/battlefield/battlefield.toml` on their clipboard, which nobody else can
@@ -69,7 +69,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 | #  | Milestone            | Done when                                                                                                                                                                                         | Status | Done in |
 |----|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
 | M1 | Builder UX           | The world builder has the hamburger menu with Resize, Import, Export and Back; Paint and Fill; undo and redo; Export saves a file; the world survives a reload. Screenshots approved.              | ✅      | 8d617625 |
-| M2 | One world format     | The campaign is played from `resources/world/tessavar.toml` as before; saves record their world; the world builder imports and exports it unchanged and edits its name and author in Details.  | ⬜      |         |
+| M2 | One world format     | The campaign is played from `resources/world/tessavar.toml` as before; saves record their world; the world builder imports and exports it unchanged and edits its name and author in Details.  | ✅      | fae1b7f6 |
 | M3 | Placing and playtest | The world builder places and erases buildings, battle units and npcs with their stock, and playtests the world. Screenshots approved.                                                             | ⬜      |         |
 | M4 | Quest editor         | The world builder configures main and side quests, and the tiles of the current visit task are marked on the battlefield, in the campaign too. Screenshots approved.                              | ⬜      |         |
 | M5 | Community worlds     | The main menu lists 2 community worlds by maarkeez; `GAME_STARTED` carries the world id under the privacy notice version 4; CI checks every world file; the contributing docs and templates are on `main`. | ⬜      |         |
@@ -329,4 +329,28 @@ What stays in the catalog: `resources/building/fortress.toml` keeps `rows` and `
   **› Largest world** stories moved to **Screen / World builder resize**, and **Screen / World builder call to action**
   is deleted with its view.
 - **No New world option**: starting again from an empty world takes Import, Resize or Fill, now that the world is kept.
+
+### M2
+
+- **Loaders keep a `VfsFile`**, not `worldFile: String`: each `Resources…Loader` takes the world file as a file, defaulting
+  to the campaign's (`ResourcesBundle.CAMPAIGN_WORLD_FILE`), so the 30 acceptance tests stay as they are and a playtest
+  can pass an in-memory file. `GameScene` takes the `worldId` and gives every loader that world's file.
+- **No `Parse…` and `Export…` queries per subdomain yet.** The world builder edits the header and the tiles, and keeps
+  the buildings, battle units, npcs and quests as they are written, through `WorldFileCodec`, so the campaign still comes
+  out of it byte for byte (`TomlWorldFileCodecTest`, `ImportWorldTest`). M3 and M4 replace the kept text with what they
+  edit. The battlefield's codec now reads and writes the `[battlefield]` table of a world file.
+- **`World` is an aggregate root**, with `WorldEvent` and `pullEvents`, as every domain package must have one, and
+  `WorldApi` reads the worlds through `ResourcesWorldLoader`. `World.CURRENT_VERSION` stands in for `WorldVersion`.
+  `SetUpGame` takes no world yet: the loaders already hold it. M5 gives it the world id for telemetry.
+- **Quest texts**: `Quest.Dto.TextsDto` holds the name, description, task texts and lines; `Messages` takes the world id,
+  and `Localization.translate` a fallback. `LocalizationResourcesTest` checks that every `world.<world id>.quest…` entry
+  of `messages.pot` holds the English of its world file, and that every world file holds the lines its quests need.
+- **The npc catalog** keeps a file per npc under `resources/npc/`, holding its `unitId` when recruitable, or a comment.
+- **Saves**: `SaveSummaryFile.worldId` is nullable, so a save of version 10 still reads as incompatible rather than
+  failing to decode. A save is listed as incompatible when its world is no longer shipped. The slot shows
+  "Tessavar · date · leader · party of 3", which wraps onto two lines in the load panel.
+- **Commits 2 to 4 went in as one**, since the loaders could not read the world file before it existed nor the old files
+  after they were deleted.
+- **Details** reports a tap through the text input's focus, and on iOS asks with the browser's `prompt()` through
+  `TextPrompt`, chosen by `needsTextPrompt()`.
 
