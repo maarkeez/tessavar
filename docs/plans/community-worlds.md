@@ -1,6 +1,6 @@
 # Plan: anyone builds a world in the world builder and shares it by pull request, played by everyone as a community world
 
-> **Status:** in progress: M1 and M2 built on `main`, their screenshots still to be approved.
+> **Status:** in progress: M1 to M3 built on `main`, their screenshots still to be approved.
 >
 > **Summary:** Today the world builder only paints terrain. E.g.: a player paints a lake of water on a 24 × 32 world,
 > taps Export, and gets the TOML of `resources/battlefield/battlefield.toml` on their clipboard, which nobody else can
@@ -70,7 +70,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 |----|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
 | M1 | Builder UX           | The world builder has the hamburger menu with Resize, Import, Export and Back; Paint and Fill; undo and redo; Export saves a file; the world survives a reload. Screenshots approved.              | ✅      | 8d617625 |
 | M2 | One world format     | The campaign is played from `resources/world/tessavar.toml` as before; saves record their world; the world builder imports and exports it unchanged and edits its name and author in Details.  | ✅      | fae1b7f6 |
-| M3 | Placing and playtest | The world builder places and erases buildings, battle units and npcs with their stock, and playtests the world. Screenshots approved.                                                             | ⬜      |         |
+| M3 | Placing and playtest | The world builder places and erases buildings, battle units and npcs with their stock, and playtests the world. Screenshots approved.                                                             | ✅      | dd21f702 |
 | M4 | Quest editor         | The world builder configures main and side quests, and the tiles of the current visit task are marked on the battlefield, in the campaign too. Screenshots approved.                              | ⬜      |         |
 | M5 | Community worlds     | The main menu lists 2 community worlds by maarkeez; `GAME_STARTED` carries the world id under the privacy notice version 4; CI checks every world file; the contributing docs and templates are on `main`. | ⬜      |         |
 
@@ -354,3 +354,30 @@ What stays in the catalog: `resources/building/fortress.toml` keeps `rows` and `
 - **Details** reports a tap through the text input's focus, and on iOS asks with the browser's `prompt()` through
   `TextPrompt`, chosen by `needsTextPrompt()`.
 
+### M3
+
+- **One commit**, not five: the domain, the presenter and the views changed together, and the presenter holds both
+  placing and Playtest, so no split compiled on its own.
+- **A `Catalog` port in `worldBuilder`**, read by `ResourcesCatalog` from `resources/building`, `unit`, `npc`, `player`
+  and `lootableItem`, rather than `Parse…` and `Export…` queries in each subdomain: it gives the domain a
+  `WorldBuilder.Dto.CatalogDto` (building sizes, unit, npc, player and item ids) to check placements and imports with, and
+  the palette what to list. `TomlWorldFileCodec` now reads and writes the `[[buildings]]`, `[[battleUnits]]` and
+  `[[npcs]]` tables itself, and keeps only the quests as written; the campaign still comes out byte for byte.
+- **Three place commands**, `PlaceBuilding`, `PlaceBattleUnit` and `PlaceNpc`, instead of one `PlaceOccupant`, plus
+  `EraseOccupant` and `RestockNpc`. A battle unit is named after its unit, e.g. `rat-1`, `rat-2`. Placing a building or
+  an npc already in the world moves it, as it stands at most once; an npc keeps what it sells when moved.
+- **Rules the plan left open**: placing is rejected out of the world, on a terrain nothing can stand on, or on a tile
+  something stands on, each with its message. Painting or filling a terrain nothing can stand on under a building, a
+  battle unit or an npc is rejected too. Resizing takes away what no longer fits, and one undo brings it back. Importing
+  rejects a world naming a building, unit, npc, player or item the game does not have, one placing the same id twice, and
+  one where something stands out of the world, on void or on something else.
+- **The palette's first tool reads Place** on the Buildings, Units and Npcs tabs, and Fill is disabled there. The Npcs
+  tab has a Stock button, enabled when the npc selected stands in the world, which opens `WorldBuilderStockView`.
+- **Playtest needs a main quest**: the game requires exactly one (`CreateQuests`), so Playtest refuses a world without a
+  battle unit of the human player or without one main quest, saying why. Until the quest editor of M4, the main quest
+  comes from an imported world such as the campaign; the codec counts the main quests of the quests it keeps.
+- **Playtest** passes the world file's text to `GameScene` as `playtestWorldFile`, played from an in-memory file with the
+  world id `playtest`; `PausePresenter` takes `isSaveOffered` and `PauseView.hideSave` takes Save away. Coming back
+  reopens the world kept in the storage, so the edits to undo are lost.
+- **`PlaytestEndToEndTest`**, not `PlaytestAcceptanceTest`, as it goes from one scene to another; it playtests the campaign
+  kept in the storage.
