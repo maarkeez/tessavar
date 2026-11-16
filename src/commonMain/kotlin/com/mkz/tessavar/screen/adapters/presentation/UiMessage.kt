@@ -93,6 +93,8 @@ enum class UiMessage(
     WORLD_BUILDER_HUD_TERRAIN("ui.worldBuilderHud.terrain"),
     WORLD_BUILDER_HUD_PAINT("ui.worldBuilderHud.paint"),
     WORLD_BUILDER_HUD_FILL("ui.worldBuilderHud.fill"),
+    WORLD_BUILDER_HUD_UNDO("ui.worldBuilderHud.undo"),
+    WORLD_BUILDER_HUD_REDO("ui.worldBuilderHud.redo"),
     WORLD_BUILDER_RESIZE_TITLE("ui.worldBuilderResize.title"),
     WORLD_BUILDER_RESIZE_ROWS("ui.worldBuilderResize.rows"),
     WORLD_BUILDER_RESIZE_COLUMNS("ui.worldBuilderResize.columns"),

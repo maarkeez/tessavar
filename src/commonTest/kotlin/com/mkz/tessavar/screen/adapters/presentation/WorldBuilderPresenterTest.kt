@@ -181,6 +181,55 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
+    fun `WorldCreated should display nothing to undo or redo when the world is created`() {
+        // When
+        givenWorldCreated()
+        // Then
+        hudView.displayedHistory shouldBe (false to false)
+    }
+
+    @Test
+    fun `TilePainted should display an edit to undo when a tile is painted`() {
+        // Given
+        givenWorldCreated()
+        selectTerrain("lava")
+        // When
+        selectTile(row = 2, column = 3)
+        // Then
+        hudView.displayedHistory shouldBe (true to false)
+    }
+
+    @Test
+    fun `EditUndone should display the world before the last edit and an edit to redo when undo is selected`() {
+        // Given
+        givenWorldCreated()
+        selectTerrain("lava")
+        selectTile(row = 2, column = 3)
+        // When
+        hudView.delegate!!.undoSelected()
+        eventBus.dispatch()
+        // Then
+        battlefieldView.displayedBattlefields.last() shouldBe BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(List(16) { List(16) { "sand" } }))
+        hudView.displayedHistory shouldBe (false to true)
+    }
+
+    @Test
+    fun `EditRedone should display the world after the edit undone when redo is selected`() {
+        // Given
+        givenWorldCreated()
+        resizeView.delegate!!.sizeChanged(rows = 4, columns = 2)
+        hudView.delegate!!.undoSelected()
+        eventBus.dispatch()
+        // When
+        hudView.delegate!!.redoSelected()
+        eventBus.dispatch()
+        // Then
+        battlefieldView.displayedBattlefields.last() shouldBe BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(List(4) { List(2) { "sand" } }))
+        resizeView.displayedSize shouldBe (4 to 2)
+        hudView.displayedHistory shouldBe (true to false)
+    }
+
+    @Test
     fun `TilePaintRejected should display why and keep the tile when the terrain can not be next to an adjacent tile`() {
         // Given
         givenWorldCreated()

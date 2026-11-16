@@ -2,6 +2,8 @@ package com.mkz.tessavar.worldBuilder.domain
 
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderError.TileNotFound
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.AreaFilled
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.EditRedone
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.EditUndone
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TerrainSelected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePaintRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePainted
@@ -26,7 +28,7 @@ class WorldBuilderTest {
         // When
         val (events, worldBuilder) = WorldBuilder.create().pullEvents()
         // Then
-        worldBuilder.toDto() shouldBe WorldBuilder.Dto(rows = 16, columns = 16, tiles = List(16) { List(16) { "sand" } }, selectedTerrainId = "sand")
+        worldBuilder.toDto() shouldBe WorldBuilder.Dto(rows = 16, columns = 16, tiles = List(16) { List(16) { "sand" } }, selectedTerrainId = "sand", canUndo = false, canRedo = false)
         events.shouldContainExactly(WorldCreated(rows = 16, columns = 16))
     }
 
@@ -200,7 +202,7 @@ class WorldBuilderTest {
         // When
         val (events, imported) = worldBuilder.import(tiles, isKnownTerrain, canBeAdjacent).pullEvents()
         // Then
-        imported.toDto() shouldBe WorldBuilder.Dto(rows = 2, columns = 3, tiles = tiles, selectedTerrainId = "lava")
+        imported.toDto() shouldBe WorldBuilder.Dto(rows = 2, columns = 3, tiles = tiles, selectedTerrainId = "lava", canUndo = true, canRedo = false)
         events.shouldContainExactly(WorldImported(rows = 2, columns = 3))
     }
 
@@ -248,5 +250,101 @@ class WorldBuilderTest {
         // Then
         events.shouldContainExactly(WorldImportRejected(reason = Reason.FORBIDDEN_ADJACENT_TERRAINS, terrainId = "lava", adjacentTerrainId = "water"))
         rejected.toDto().rows shouldBe 16
+    }
+
+    private fun WorldBuilder.paintLava(vararg positions: Pair<Int, Int>): WorldBuilder =
+        positions.fold(selectTerrain("lava")) { worldBuilder, (row, column) -> worldBuilder.paint(row, column, canBeAdjacent) }.pullEvents().second
+
+    @Test
+    fun `should undo the last edit when undoing`() {
+        // Given
+        val worldBuilder = newWorld().paintLava(0 to 0, 0 to 1)
+        // When
+        val (events, undone) = worldBuilder.undo().pullEvents()
+        // Then
+        undone.toDto().tiles[0].take(2) shouldBe listOf("lava", "sand")
+        undone.toDto().canRedo shouldBe true
+        events.shouldContainExactly(EditUndone(rows = 16, columns = 16))
+    }
+
+    @Test
+    fun `should undo the resize when undoing after a resize`() {
+        // Given
+        val worldBuilder =
+            newWorld()
+                .paintLava(15 to 15)
+                .resize(rows = 8, columns = 4)
+                .pullEvents()
+                .second
+        // When
+        val (events, undone) = worldBuilder.undo().pullEvents()
+        // Then
+        undone.toDto().tiles[15][15] shouldBe "lava"
+        events.shouldContainExactly(EditUndone(rows = 16, columns = 16))
+    }
+
+    @Test
+    fun `should redo the undone edit when redoing`() {
+        // Given
+        val worldBuilder =
+            newWorld()
+                .paintLava(0 to 0)
+                .undo()
+                .pullEvents()
+                .second
+        // When
+        val (events, redone) = worldBuilder.redo().pullEvents()
+        // Then
+        redone.toDto().tiles[0][0] shouldBe "lava"
+        redone.toDto().canRedo shouldBe false
+        events.shouldContainExactly(EditRedone(rows = 16, columns = 16))
+    }
+
+    @Test
+    fun `should forget the undone edits when an edit is made after undoing`() {
+        // Given
+        val worldBuilder =
+            newWorld()
+                .paintLava(0 to 0)
+                .undo()
+                .pullEvents()
+                .second
+        // When
+        val edited = worldBuilder.paintLava(1 to 1)
+        // Then
+        edited.toDto().canRedo shouldBe false
+    }
+
+    @Test
+    fun `should forget the oldest edit when more than 50 edits are made`() {
+        // Given
+        val positions = (0 until 51).map { index -> index / 16 to index % 16 }
+        val worldBuilder = newWorld().paintLava(*positions.toTypedArray())
+        // When
+        val undone = (1..50).fold(worldBuilder) { undoing, _ -> undoing.undo() }.pullEvents().second
+        // Then
+        undone.toDto().canUndo shouldBe false
+        undone.toDto().tiles[0][0] shouldBe "lava"
+        undone.toDto().tiles[0][1] shouldBe "sand"
+    }
+
+    @Test
+    fun `should announce nothing when there is nothing to undo or redo`() {
+        // When
+        val (events, _) =
+            newWorld()
+                .undo()
+                .redo()
+                .pullEvents()
+        // Then
+        events.shouldBeEmpty()
+    }
+
+    @Test
+    fun `should not count selecting a terrain as an edit when a terrain is selected`() {
+        // When
+        val worldBuilder = newWorld().selectTerrain("lava")
+        // Then
+        worldBuilder.toDto().canUndo shouldBe false
     }
 }

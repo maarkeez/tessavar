@@ -449,6 +449,16 @@ msgctxt "ui.worldBuilderHud.fill"
 msgid "Fill"
 msgstr "Rellenar"
 
+#. Takes back the last change to the world.
+msgctxt "ui.worldBuilderHud.undo"
+msgid "Undo"
+msgstr "Deshacer"
+
+#. Makes again the last change to the world that was undone.
+msgctxt "ui.worldBuilderHud.redo"
+msgid "Redo"
+msgstr "Rehacer"
+
 #. The title of the dialog that changes how many tiles tall and wide the world is.
 msgctxt "ui.worldBuilderResize.title"
 msgid "Resize the world"

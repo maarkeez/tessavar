@@ -44,6 +44,8 @@ class WorldBuilderPresenter(
             eventBus.subscribe<WorldBuilderEvent.TerrainSelected> { event -> hudView.selectTerrain(event.terrainId) },
             eventBus.subscribe<WorldBuilderEvent.TilePainted> { event -> displayPaintedTile(event.row, event.column) },
             eventBus.subscribe<WorldBuilderEvent.AreaFilled> { displayWorld() },
+            eventBus.subscribe<WorldBuilderEvent.EditUndone> { displayWorld() },
+            eventBus.subscribe<WorldBuilderEvent.EditRedone> { displayWorld() },
             eventBus.subscribe<WorldBuilderEvent.TilePaintRejected> { event ->
                 infoView.displayError(forbiddenAdjacentTerrainsMessage(event.terrainId, event.adjacentTerrainId))
             },
@@ -78,6 +80,7 @@ class WorldBuilderPresenter(
         battlefieldView.displayBattlefield(BattlefieldMapper.terrain(battlefieldApi.previewBattlefield(world.tiles)))
         infoView.displaySize(rows = world.rows, columns = world.columns)
         resizeView.displaySize(rows = world.rows, columns = world.columns, allowedSizes = WorldBuilder.MINIMUM_SIZE..WorldBuilder.MAXIMUM_SIZE)
+        hudView.displayHistory(canUndo = world.canUndo, canRedo = world.canRedo)
     }
 
     private fun displayTerrains() {
@@ -99,6 +102,7 @@ class WorldBuilderPresenter(
                 .filter { (tileRow, tileColumn) -> tileRow in 0 until world.rows && tileColumn in 0 until world.columns }
                 .map { (tileRow, tileColumn) -> TilePosition(tileRow, tileColumn) }
         battlefieldView.updateTerrain(BattlefieldMapper.terrain(battlefieldApi.previewBattlefield(world.tiles)), positions)
+        hudView.displayHistory(canUndo = world.canUndo, canRedo = world.canRedo)
     }
 
     private fun exportWorld() {
@@ -162,4 +166,8 @@ class WorldBuilderPresenter(
     ) = worldBuilderApi.resizeWorld(rows = rows, columns = columns)
 
     override fun terrainSelected(terrainId: String) = worldBuilderApi.selectTerrain(terrainId)
+
+    override fun undoSelected() = worldBuilderApi.undoEdit()
+
+    override fun redoSelected() = worldBuilderApi.redoEdit()
 }

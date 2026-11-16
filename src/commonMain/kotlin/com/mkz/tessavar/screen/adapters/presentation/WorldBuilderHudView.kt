@@ -12,6 +12,7 @@ import korlibs.korge.ui.UIButton
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.uiButton
 import korlibs.korge.ui.uiHorizontalStack
+import korlibs.korge.ui.uiSpacing
 import korlibs.korge.ui.uiText
 import korlibs.korge.ui.uiVerticalStack
 import korlibs.korge.view.Container
@@ -26,7 +27,8 @@ open class WorldBuilderHudView(
 ) : UIContainer(Size(width = 390, height = 300)) {
     companion object {
         const val LABEL_WIDTH = 80.0
-        const val TOOL_BUTTON_WIDTH = 80.0
+        const val TOOL_BUTTON_WIDTH = 70.0
+        const val HISTORY_GAP = 30.0
         const val TOOL_BUTTON_HEIGHT = 36.0
         val SELECTED_TOOL_COLOR = RGBA(0x00, 0x6A, 0xCC)
         val SELECTED_TOOL_OVER_COLOR = RGBA(0x00, 0x84, 0xFF)
@@ -47,6 +49,10 @@ open class WorldBuilderHudView(
     interface Delegate {
         fun toolSelected(tool: Tool)
 
+        fun undoSelected()
+
+        fun redoSelected()
+
         fun terrainSelected(terrainId: String)
     }
 
@@ -55,6 +61,8 @@ open class WorldBuilderHudView(
     internal val toolButtons = mutableMapOf<Tool, GameButton>()
     internal var selectedTool: Tool? = null
         private set
+    internal lateinit var undoButton: GameButton
+    internal lateinit var redoButton: GameButton
     internal lateinit var terrainPalette: Container
     internal val terrainButtons = mutableMapOf<String, UIButton>()
     internal var selectionBorder: SolidRect? = null
@@ -64,6 +72,17 @@ open class WorldBuilderHudView(
             uiHorizontalStack(padding = 10.0) {
                 toolButtons[Tool.PAINT] = toolButton(messages[UiMessage.WORLD_BUILDER_HUD_PAINT], Tool.PAINT)
                 toolButtons[Tool.FILL] = toolButton(messages[UiMessage.WORLD_BUILDER_HUD_FILL], Tool.FILL)
+                uiSpacing(Size(HISTORY_GAP, 0))
+                undoButton =
+                    gameButton(label = messages[UiMessage.WORLD_BUILDER_HUD_UNDO], size = Size(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)) {
+                        enabled = false
+                        onClick { if (enabled) delegate?.undoSelected() }
+                    }
+                redoButton =
+                    gameButton(label = messages[UiMessage.WORLD_BUILDER_HUD_REDO], size = Size(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)) {
+                        enabled = false
+                        onClick { if (enabled) delegate?.redoSelected() }
+                    }
             }
             uiText(text = messages[UiMessage.WORLD_BUILDER_HUD_TERRAIN], size = Size(width = LABEL_WIDTH, height = 20)) { styles.textSize = 15.0 }
             terrainPalette = container()
@@ -72,6 +91,14 @@ open class WorldBuilderHudView(
 
     open fun setDelegate(delegate: Delegate) {
         this.delegate = delegate
+    }
+
+    open fun displayHistory(
+        canUndo: Boolean,
+        canRedo: Boolean,
+    ) {
+        undoButton.enabled = canUndo
+        redoButton.enabled = canRedo
     }
 
     open fun selectTool(tool: Tool) {

@@ -11,6 +11,7 @@ import com.mkz.tessavar.screen.adapters.presentation.clickRowsStep
 import com.mkz.tessavar.screen.adapters.presentation.clickSecondaryAction
 import com.mkz.tessavar.screen.adapters.presentation.clickTile
 import com.mkz.tessavar.screen.adapters.presentation.clickTool
+import com.mkz.tessavar.screen.adapters.presentation.clickUndo
 import com.mkz.tessavar.screen.adapters.presentation.menuView
 import com.mkz.tessavar.screen.adapters.presentation.subtitleText
 import com.mkz.tessavar.screen.adapters.presentation.terrainBitmapAt
@@ -69,6 +70,24 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
             // Then
             waitUntil { battlefieldView()!!.terrainBitmapAt(row = 15, column = 15) == lavaBitmap }
             battlefieldView()!!.terrainBitmapAt(row = 0, column = 0) shouldBe lavaBitmap
+        }
+
+    @Test
+    fun `should bring the tile back when the paint is undone`() =
+        sharedViewsTest {
+            // Given
+            startWorldBuilder()
+            val battlefieldView = battlefieldView()!!
+            val hudView = worldBuilderHudView()!!
+            val sandBitmap = battlefieldView.terrainBitmapAt(row = 2, column = 2)
+            clickPaletteTerrain(hudView, "lava")
+            clickTile(battlefieldView, row = 2, column = 2)
+            waitUntil { hudView.undoButton.enabled }
+            // When
+            clickUndo(hudView)
+            // Then
+            waitUntil { battlefieldView()!!.terrainBitmapAt(row = 2, column = 2) == sandBitmap }
+            battlefieldView()!!.terrainBitmapAt(row = 2, column = 2) shouldBe sandBitmap
         }
 
     @Test

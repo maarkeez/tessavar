@@ -9,8 +9,10 @@ import com.mkz.tessavar.worldBuilder.usecases.commands.CreateWorld
 import com.mkz.tessavar.worldBuilder.usecases.commands.FillTile
 import com.mkz.tessavar.worldBuilder.usecases.commands.ImportWorld
 import com.mkz.tessavar.worldBuilder.usecases.commands.PaintTile
+import com.mkz.tessavar.worldBuilder.usecases.commands.RedoEdit
 import com.mkz.tessavar.worldBuilder.usecases.commands.ResizeWorld
 import com.mkz.tessavar.worldBuilder.usecases.commands.SelectTerrain
+import com.mkz.tessavar.worldBuilder.usecases.commands.UndoEdit
 import com.mkz.tessavar.worldBuilder.usecases.queries.ExportWorld
 import com.mkz.tessavar.worldBuilder.usecases.queries.SearchWorld
 
@@ -27,6 +29,8 @@ class WorldBuilderApi(
     val paintTile = PaintTile(worldBuilderRepository, terrainApi.hasTerrainTransition, eventBus)
     val fillTile = FillTile(worldBuilderRepository, terrainApi.hasTerrainTransition, eventBus)
     val importWorld = ImportWorld(worldBuilderRepository, battlefieldApi.parseBattlefield, terrainApi.searchTerrainById, terrainApi.hasTerrainTransition, eventBus)
+    val undoEdit = UndoEdit(worldBuilderRepository, eventBus)
+    val redoEdit = RedoEdit(worldBuilderRepository, eventBus)
 
     val searchWorld = SearchWorld(worldBuilderRepository)
     val exportWorld = ExportWorld(worldBuilderRepository, battlefieldApi.exportBattlefield)

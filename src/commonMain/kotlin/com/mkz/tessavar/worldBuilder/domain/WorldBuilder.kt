@@ -2,6 +2,8 @@ package com.mkz.tessavar.worldBuilder.domain
 
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderError.TileNotFound
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.AreaFilled
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.EditRedone
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.EditUndone
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TerrainSelected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePaintRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePainted
@@ -17,12 +19,15 @@ data class WorldBuilder private constructor(
     private val tiles: Tiles,
     private val selectedTerrainId: TerrainId,
     private val events: Set<WorldBuilderEvent>,
+    private val undoneTiles: List<Tiles> = emptyList(),
+    private val redoneTiles: List<Tiles> = emptyList(),
 ) {
     companion object {
         const val MINIMUM_SIZE = 1
         const val MAXIMUM_SIZE = 128
         const val DEFAULT_SIZE = 16
         const val DEFAULT_TERRAIN_ID = "sand"
+        const val UNDO_STEPS = 50
 
         fun create(): WorldBuilder {
             val tiles = Tiles.filled(rows = DEFAULT_SIZE, columns = DEFAULT_SIZE, terrainId = TerrainId(DEFAULT_TERRAIN_ID))
@@ -42,6 +47,8 @@ data class WorldBuilder private constructor(
             columns = tiles.columns,
             tiles = tiles.toDto(),
             selectedTerrainId = selectedTerrainId.value,
+            canUndo = undoneTiles.isNotEmpty(),
+            canRedo = redoneTiles.isNotEmpty(),
         )
 
     fun resize(
@@ -50,10 +57,7 @@ data class WorldBuilder private constructor(
     ): WorldBuilder {
         if (!isValidSize(rows) || !isValidSize(columns)) return this
         if (rows == tiles.rows && columns == tiles.columns) return this
-        return copy(
-            tiles = tiles.resize(rows = rows, columns = columns, fillTerrainId = TerrainId(DEFAULT_TERRAIN_ID)),
-            events = events + WorldResized(rows = rows, columns = columns),
-        )
+        return edit(tiles.resize(rows = rows, columns = columns, fillTerrainId = TerrainId(DEFAULT_TERRAIN_ID)), WorldResized(rows = rows, columns = columns))
     }
 
     fun selectTerrain(terrainId: String): WorldBuilder = copy(selectedTerrainId = TerrainId(terrainId), events = events + TerrainSelected(terrainId = terrainId))
@@ -74,10 +78,7 @@ data class WorldBuilder private constructor(
         if (forbiddenAdjacentTerrainId != null) {
             return copy(events = events + TilePaintRejected(row = row, column = column, terrainId = terrainId, adjacentTerrainId = forbiddenAdjacentTerrainId))
         }
-        return copy(
-            tiles = tiles.paint(row, column, selectedTerrainId),
-            events = events + TilePainted(row = row, column = column, terrainId = terrainId),
-        )
+        return edit(tiles.paint(row, column, selectedTerrainId), TilePainted(row = row, column = column, terrainId = terrainId))
     }
 
     fun fill(
@@ -99,10 +100,7 @@ data class WorldBuilder private constructor(
         if (forbiddenAdjacentTerrainId != null) {
             return copy(events = events + TilePaintRejected(row = row, column = column, terrainId = terrainId, adjacentTerrainId = forbiddenAdjacentTerrainId))
         }
-        return copy(
-            tiles = tiles.paint(area, selectedTerrainId),
-            events = events + AreaFilled(row = row, column = column, terrainId = terrainId, tileCount = area.size),
-        )
+        return edit(tiles.paint(area, selectedTerrainId), AreaFilled(row = row, column = column, terrainId = terrainId, tileCount = area.size))
     }
 
     fun import(
@@ -119,8 +117,39 @@ data class WorldBuilder private constructor(
             return rejectImport(Reason.FORBIDDEN_ADJACENT_TERRAINS, terrainId = terrainId, adjacentTerrainId = adjacentTerrainId)
         }
         val importedTiles = Tiles(tiles.map { row -> row.map(::TerrainId) })
-        return copy(tiles = importedTiles, events = events + WorldImported(rows = importedTiles.rows, columns = importedTiles.columns))
+        return edit(importedTiles, WorldImported(rows = importedTiles.rows, columns = importedTiles.columns))
     }
+
+    fun undo(): WorldBuilder {
+        val earlierTiles = undoneTiles.lastOrNull() ?: return this
+        return copy(
+            tiles = earlierTiles,
+            undoneTiles = undoneTiles.dropLast(1),
+            redoneTiles = redoneTiles + tiles,
+            events = events + EditUndone(rows = earlierTiles.rows, columns = earlierTiles.columns),
+        )
+    }
+
+    fun redo(): WorldBuilder {
+        val laterTiles = redoneTiles.lastOrNull() ?: return this
+        return copy(
+            tiles = laterTiles,
+            undoneTiles = undoneTiles + tiles,
+            redoneTiles = redoneTiles.dropLast(1),
+            events = events + EditRedone(rows = laterTiles.rows, columns = laterTiles.columns),
+        )
+    }
+
+    private fun edit(
+        editedTiles: Tiles,
+        event: WorldBuilderEvent,
+    ): WorldBuilder =
+        copy(
+            tiles = editedTiles,
+            undoneTiles = (undoneTiles + tiles).takeLast(UNDO_STEPS),
+            redoneTiles = emptyList(),
+            events = events + event,
+        )
 
     private fun rejectImport(
         reason: Reason,
@@ -225,5 +254,7 @@ data class WorldBuilder private constructor(
         val columns: Int,
         val tiles: List<List<String>>,
         val selectedTerrainId: String,
+        val canUndo: Boolean,
+        val canRedo: Boolean,
     )
 }

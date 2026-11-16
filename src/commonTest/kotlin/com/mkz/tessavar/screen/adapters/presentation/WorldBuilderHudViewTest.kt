@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.isFaded
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -11,10 +12,19 @@ import kotlin.test.Test
 class WorldBuilderHudViewTest : ViewsForTesting() {
     private val selectedTerrains = mutableListOf<String>()
     private val selectedTools = mutableListOf<WorldBuilderHudView.Tool>()
+    private val historySelections = mutableListOf<String>()
     private val delegate =
         object : WorldBuilderHudView.Delegate {
             override fun toolSelected(tool: WorldBuilderHudView.Tool) {
                 selectedTools += tool
+            }
+
+            override fun undoSelected() {
+                historySelections += "undo"
+            }
+
+            override fun redoSelected() {
+                historySelections += "redo"
             }
 
             override fun terrainSelected(terrainId: String) {
@@ -97,5 +107,54 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
             clickTool(hudView, WorldBuilderHudView.Tool.FILL)
             // Then
             selectedTools.shouldContainExactly(WorldBuilderHudView.Tool.FILL)
+        }
+
+    @Test
+    fun `WorldBuilderHudView should disable undo and redo when it is created`() =
+        sharedViewsTest {
+            // When
+            val hudView = newHudView()
+            // Then
+            hudView.undoButton.enabled shouldBe false
+            hudView.redoButton.enabled shouldBe false
+        }
+
+    @Test
+    fun `DisplayHistory should enable undo and disable redo when there is only an edit to undo`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            // When
+            hudView.displayHistory(canUndo = true, canRedo = false)
+            // Then
+            hudView.undoButton.enabled shouldBe true
+            hudView.redoButton.isFaded() shouldBe true
+        }
+
+    @Test
+    fun `Undo and Redo should ask to undo and redo when they are clicked`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            hudView.displayHistory(canUndo = true, canRedo = true)
+            addChild(hudView)
+            // When
+            clickUndo(hudView)
+            clickRedo(hudView)
+            // Then
+            historySelections.shouldContainExactly("undo", "redo")
+        }
+
+    @Test
+    fun `Undo should ask nothing when there is nothing to undo`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            hudView.displayHistory(canUndo = false, canRedo = false)
+            addChild(hudView)
+            // When
+            clickUndo(hudView)
+            // Then
+            historySelections.shouldContainExactly()
         }
 }

@@ -13,8 +13,10 @@ object WorldBuilderHudViewStories : StoryBinding {
 
     private const val SELECTED_TERRAIN = "selectedTerrain"
     private const val TOOL = "tool"
+    private const val CAN_UNDO = "canUndo"
+    private const val CAN_REDO = "canRedo"
 
-    private val default = StoryDto(id = "screen-world-builder-hud--default", name = "Default", description = "A new world, with Paint and the grass selected.", args = emptyMap())
+    private val default = StoryDto(id = "screen-world-builder-hud--default", name = "Default", description = "Paint and the grass selected, with edits to undo and to redo.", args = emptyMap())
     private val otherTerrain =
         StoryDto(
             id = "screen-world-builder-hud--other-terrain",
@@ -31,19 +33,37 @@ object WorldBuilderHudViewStories : StoryBinding {
             args = mapOf(TOOL to ValueDto.text(WorldBuilderHudView.Tool.FILL.name)),
         )
 
+    private val nothingToUndo =
+        StoryDto(
+            id = "screen-world-builder-hud--nothing-to-undo",
+            name = "Nothing to undo",
+            description = "A new world: Undo and Redo are disabled until the world is edited.",
+            args = mapOf(CAN_UNDO to ValueDto.boolean(false), CAN_REDO to ValueDto.boolean(false)),
+        )
+
     override fun component(context: StoryContext) =
         ComponentDto(
             id = "screen-world-builder-hud",
             group = "Screen",
             title = "World builder HUD",
-            description = "Under the world in the world builder: the tools a tapped tile is painted with, Paint or Fill, and the terrains it is painted with.",
+            description =
+                "Under the world in the world builder: the tools a tapped tile is painted with, Paint or Fill, Undo and Redo, and the terrains it is painted with. " +
+                    "canUndo and canRedo: whether there is an edit to undo or to redo.",
             controls =
                 listOf(
                     ControlDto.enum(TOOL, WorldBuilderHudView.Tool.entries.map { tool -> tool.name }),
                     ControlDto.pick(SELECTED_TERRAIN, context.terrainIds()),
+                    ControlDto.boolean(CAN_UNDO),
+                    ControlDto.boolean(CAN_REDO),
                 ),
-            args = mapOf(TOOL to ValueDto.text(WorldBuilderHudView.Tool.PAINT.name), SELECTED_TERRAIN to ValueDto.text(DEFAULT_TERRAIN)),
-            stories = listOf(default, otherTerrain, fillTool),
+            args =
+                mapOf(
+                    TOOL to ValueDto.text(WorldBuilderHudView.Tool.PAINT.name),
+                    SELECTED_TERRAIN to ValueDto.text(DEFAULT_TERRAIN),
+                    CAN_UNDO to ValueDto.boolean(true),
+                    CAN_REDO to ValueDto.boolean(true),
+                ),
+            stories = listOf(default, otherTerrain, fillTool, nothingToUndo),
         )
 
     override fun render(
@@ -60,10 +80,15 @@ object WorldBuilderHudViewStories : StoryBinding {
                 object : WorldBuilderHudView.Delegate {
                     override fun toolSelected(tool: WorldBuilderHudView.Tool) = context.action("toolSelected", tool.name, setArg = TOOL to ValueDto.text(tool.name))
 
+                    override fun undoSelected() = context.action("undoSelected")
+
+                    override fun redoSelected() = context.action("redoSelected")
+
                     override fun terrainSelected(terrainId: String) = context.action("terrainSelected", terrainId, setArg = SELECTED_TERRAIN to ValueDto.text(terrainId))
                 },
             )
             selectTool(WorldBuilderHudView.Tool.valueOf(args.text(TOOL)))
+            displayHistory(canUndo = args.boolean(CAN_UNDO), canRedo = args.boolean(CAN_REDO))
             displayTerrains(terrains, selectedTerrainId = args.text(SELECTED_TERRAIN))
         }
     }

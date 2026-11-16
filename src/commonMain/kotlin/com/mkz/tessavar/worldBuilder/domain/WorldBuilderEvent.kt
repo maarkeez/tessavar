@@ -30,6 +30,16 @@ sealed interface WorldBuilderEvent : DomainEvent {
         val tileCount: Int,
     ) : WorldBuilderEvent
 
+    data class EditUndone(
+        val rows: Int,
+        val columns: Int,
+    ) : WorldBuilderEvent
+
+    data class EditRedone(
+        val rows: Int,
+        val columns: Int,
+    ) : WorldBuilderEvent
+
     data class WorldImported(
         val rows: Int,
         val columns: Int,

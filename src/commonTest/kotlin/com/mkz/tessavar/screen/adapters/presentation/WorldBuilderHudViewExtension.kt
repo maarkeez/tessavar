@@ -31,3 +31,7 @@ suspend fun ViewsForTesting.clickTool(
     hudView: WorldBuilderHudView,
     tool: WorldBuilderHudView.Tool,
 ) = clickOn(hudView.toolButtons.getValue(tool))
+
+suspend fun ViewsForTesting.clickUndo(hudView: WorldBuilderHudView) = clickOn(hudView.undoButton)
+
+suspend fun ViewsForTesting.clickRedo(hudView: WorldBuilderHudView) = clickOn(hudView.redoButton)
