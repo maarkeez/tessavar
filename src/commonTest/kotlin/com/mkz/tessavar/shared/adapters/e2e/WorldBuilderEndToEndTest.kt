@@ -1,5 +1,6 @@
 package com.mkz.tessavar.shared.adapters.e2e
 
+import com.mkz.tessavar.screen.adapters.presentation.WorldBuilderHudView
 import com.mkz.tessavar.screen.adapters.presentation.actionLabels
 import com.mkz.tessavar.screen.adapters.presentation.battlefieldView
 import com.mkz.tessavar.screen.adapters.presentation.clickMenuButton
@@ -9,6 +10,7 @@ import com.mkz.tessavar.screen.adapters.presentation.clickPrimaryAction
 import com.mkz.tessavar.screen.adapters.presentation.clickRowsStep
 import com.mkz.tessavar.screen.adapters.presentation.clickSecondaryAction
 import com.mkz.tessavar.screen.adapters.presentation.clickTile
+import com.mkz.tessavar.screen.adapters.presentation.clickTool
 import com.mkz.tessavar.screen.adapters.presentation.menuView
 import com.mkz.tessavar.screen.adapters.presentation.subtitleText
 import com.mkz.tessavar.screen.adapters.presentation.terrainBitmapAt
@@ -50,6 +52,23 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
             // Then
             waitUntil { battlefieldView.terrainBitmapAt(row = 2, column = 2) != sandBitmap }
             battlefieldView.terrainBitmapAt(row = 2, column = 2) shouldBe battlefieldView.terrainTileBitmap("lava", terrainTransition = null)
+        }
+
+    @Test
+    fun `should paint every tile of the area with the selected terrain when a tile is tapped with the fill tool`() =
+        sharedViewsTest {
+            // Given
+            startWorldBuilder()
+            val battlefieldView = battlefieldView()!!
+            val hudView = worldBuilderHudView()!!
+            val lavaBitmap = battlefieldView.terrainTileBitmap("lava", terrainTransition = null)
+            clickTool(hudView, WorldBuilderHudView.Tool.FILL)
+            clickPaletteTerrain(hudView, "lava")
+            // When
+            clickTile(battlefieldView, row = 2, column = 2)
+            // Then
+            waitUntil { battlefieldView()!!.terrainBitmapAt(row = 15, column = 15) == lavaBitmap }
+            battlefieldView()!!.terrainBitmapAt(row = 0, column = 0) shouldBe lavaBitmap
         }
 
     @Test

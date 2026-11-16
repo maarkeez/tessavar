@@ -12,8 +12,9 @@ object WorldBuilderHudViewStories : StoryBinding {
     private const val DEFAULT_TERRAIN = "grass"
 
     private const val SELECTED_TERRAIN = "selectedTerrain"
+    private const val TOOL = "tool"
 
-    private val default = StoryDto(id = "screen-world-builder-hud--default", name = "Default", description = "A new world, with the grass selected.", args = emptyMap())
+    private val default = StoryDto(id = "screen-world-builder-hud--default", name = "Default", description = "A new world, with Paint and the grass selected.", args = emptyMap())
     private val otherTerrain =
         StoryDto(
             id = "screen-world-builder-hud--other-terrain",
@@ -22,15 +23,27 @@ object WorldBuilderHudViewStories : StoryBinding {
             args = mapOf(SELECTED_TERRAIN to ValueDto.text("water")),
         )
 
+    private val fillTool =
+        StoryDto(
+            id = "screen-world-builder-hud--fill-tool",
+            name = "Fill tool",
+            description = "Fill selected, in blue: tapping a tile paints every tile of its terrain connected to it.",
+            args = mapOf(TOOL to ValueDto.text(WorldBuilderHudView.Tool.FILL.name)),
+        )
+
     override fun component(context: StoryContext) =
         ComponentDto(
             id = "screen-world-builder-hud",
             group = "Screen",
             title = "World builder HUD",
-            description = "Under the world in the world builder: the terrains the tiles are painted with.",
-            controls = listOf(ControlDto.pick(SELECTED_TERRAIN, context.terrainIds())),
-            args = mapOf(SELECTED_TERRAIN to ValueDto.text(DEFAULT_TERRAIN)),
-            stories = listOf(default, otherTerrain),
+            description = "Under the world in the world builder: the tools a tapped tile is painted with, Paint or Fill, and the terrains it is painted with.",
+            controls =
+                listOf(
+                    ControlDto.enum(TOOL, WorldBuilderHudView.Tool.entries.map { tool -> tool.name }),
+                    ControlDto.pick(SELECTED_TERRAIN, context.terrainIds()),
+                ),
+            args = mapOf(TOOL to ValueDto.text(WorldBuilderHudView.Tool.PAINT.name), SELECTED_TERRAIN to ValueDto.text(DEFAULT_TERRAIN)),
+            stories = listOf(default, otherTerrain, fillTool),
         )
 
     override fun render(
@@ -45,9 +58,12 @@ object WorldBuilderHudViewStories : StoryBinding {
         return WorldBuilderHudView(context.messages).apply {
             setDelegate(
                 object : WorldBuilderHudView.Delegate {
+                    override fun toolSelected(tool: WorldBuilderHudView.Tool) = context.action("toolSelected", tool.name, setArg = TOOL to ValueDto.text(tool.name))
+
                     override fun terrainSelected(terrainId: String) = context.action("terrainSelected", terrainId, setArg = SELECTED_TERRAIN to ValueDto.text(terrainId))
                 },
             )
+            selectTool(WorldBuilderHudView.Tool.valueOf(args.text(TOOL)))
             displayTerrains(terrains, selectedTerrainId = args.text(SELECTED_TERRAIN))
         }
     }

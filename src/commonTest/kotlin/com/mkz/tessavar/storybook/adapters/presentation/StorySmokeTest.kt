@@ -354,6 +354,7 @@ class StorySmokeTest : ViewsForTesting() {
                     "screen-world-builder-hud",
                     "screen-world-builder-hud--default",
                     "screen-world-builder-hud--other-terrain",
+                    "screen-world-builder-hud--fill-tool",
                     "screen-world-builder-resize",
                     "screen-world-builder-resize--default",
                     "screen-world-builder-resize--smallest-world",

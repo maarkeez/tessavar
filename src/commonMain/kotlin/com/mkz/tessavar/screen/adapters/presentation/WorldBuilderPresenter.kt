@@ -32,6 +32,8 @@ class WorldBuilderPresenter(
 ) : BattlefieldView.Delegate,
     WorldBuilderHudView.Delegate,
     WorldBuilderResizeView.Delegate {
+    private var tool = WorldBuilderHudView.Tool.PAINT
+
     private val subscriptions =
         listOf(
             eventBus.subscribe<WorldBuilderEvent.WorldCreated> {
@@ -41,6 +43,7 @@ class WorldBuilderPresenter(
             eventBus.subscribe<WorldBuilderEvent.WorldResized> { displayWorld() },
             eventBus.subscribe<WorldBuilderEvent.TerrainSelected> { event -> hudView.selectTerrain(event.terrainId) },
             eventBus.subscribe<WorldBuilderEvent.TilePainted> { event -> displayPaintedTile(event.row, event.column) },
+            eventBus.subscribe<WorldBuilderEvent.AreaFilled> { displayWorld() },
             eventBus.subscribe<WorldBuilderEvent.TilePaintRejected> { event ->
                 infoView.displayError(forbiddenAdjacentTerrainsMessage(event.terrainId, event.adjacentTerrainId))
             },
@@ -55,6 +58,7 @@ class WorldBuilderPresenter(
         battlefieldView.setDelegate(this)
         hudView.setDelegate(this)
         resizeView.setDelegate(this)
+        hudView.selectTool(tool)
         menuView.displayOptions(
             listOf(
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_RESIZE]) { resizeView.open() },
@@ -142,7 +146,15 @@ class WorldBuilderPresenter(
     override fun tileSelected(
         row: Int,
         column: Int,
-    ) = worldBuilderApi.paintTile(row = row, column = column)
+    ) = when (tool) {
+        WorldBuilderHudView.Tool.PAINT -> worldBuilderApi.paintTile(row = row, column = column)
+        WorldBuilderHudView.Tool.FILL -> worldBuilderApi.fillTile(row = row, column = column)
+    }
+
+    override fun toolSelected(tool: WorldBuilderHudView.Tool) {
+        this.tool = tool
+        hudView.selectTool(tool)
+    }
 
     override fun sizeChanged(
         rows: Int,

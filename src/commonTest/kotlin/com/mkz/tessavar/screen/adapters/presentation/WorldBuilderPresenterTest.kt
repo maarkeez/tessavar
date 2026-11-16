@@ -69,6 +69,11 @@ class WorldBuilderPresenterTest {
         eventBus.dispatch()
     }
 
+    private fun selectTool(tool: WorldBuilderHudView.Tool) {
+        hudView.delegate!!.toolSelected(tool)
+        eventBus.dispatch()
+    }
+
     private fun selectTerrain(terrainId: String) {
         hudView.delegate!!.terrainSelected(terrainId)
         eventBus.dispatch()
@@ -129,6 +134,50 @@ class WorldBuilderPresenterTest {
         selectTile(row = 0, column = 0)
         // Then
         battlefieldView.updatedTerrains.single().positions shouldBe setOf(TilePosition(0, 0), TilePosition(0, 1), TilePosition(1, 0))
+    }
+
+    @Test
+    fun `WorldBuilderPresenter should select the paint tool when the world builder is displayed`() {
+        // Then
+        hudView.displayedTool shouldBe WorldBuilderHudView.Tool.PAINT
+    }
+
+    @Test
+    fun `ToolSelected should highlight the tool when a tool is selected`() {
+        // Given
+        givenWorldCreated()
+        // When
+        selectTool(WorldBuilderHudView.Tool.FILL)
+        // Then
+        hudView.displayedTool shouldBe WorldBuilderHudView.Tool.FILL
+    }
+
+    @Test
+    fun `AreaFilled should display the filled world when a tile is selected with the fill tool`() {
+        // Given
+        givenWorldCreated()
+        selectTerrain("water")
+        selectTool(WorldBuilderHudView.Tool.FILL)
+        // When
+        selectTile(row = 4, column = 5)
+        // Then
+        battlefieldView.displayedBattlefields.last() shouldBe BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(List(16) { List(16) { "water" } }))
+        battlefieldView.updatedTerrains.shouldBeEmpty()
+    }
+
+    @Test
+    fun `TilePaintRejected should display why and keep the area when the fill would put a terrain next to one it can not be`() {
+        // Given
+        givenWorldCreated()
+        selectTerrain("lava")
+        selectTile(row = 2, column = 3)
+        selectTerrain("water")
+        selectTool(WorldBuilderHudView.Tool.FILL)
+        // When
+        selectTile(row = 0, column = 0)
+        // Then
+        infoView.errors.shouldContainExactly("Water can not be next to Lava")
+        battlefieldView.displayedBattlefields.shouldHaveSize(1)
     }
 
     @Test

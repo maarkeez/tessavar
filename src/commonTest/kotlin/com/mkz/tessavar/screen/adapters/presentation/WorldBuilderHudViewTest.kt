@@ -10,8 +10,13 @@ import kotlin.test.Test
 
 class WorldBuilderHudViewTest : ViewsForTesting() {
     private val selectedTerrains = mutableListOf<String>()
+    private val selectedTools = mutableListOf<WorldBuilderHudView.Tool>()
     private val delegate =
         object : WorldBuilderHudView.Delegate {
+            override fun toolSelected(tool: WorldBuilderHudView.Tool) {
+                selectedTools += tool
+            }
+
             override fun terrainSelected(terrainId: String) {
                 selectedTerrains += terrainId
             }
@@ -59,5 +64,38 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
             clickPaletteTerrain(hudView, "lava")
             // Then
             selectedTerrains.shouldContainExactly("lava")
+        }
+
+    @Test
+    fun `WorldBuilderHudView should display the paint and fill tools when it is created`() =
+        sharedViewsTest {
+            // When
+            val hudView = newHudView()
+            // Then
+            hudView.toolLabels().shouldContainExactly("Paint", "Fill")
+        }
+
+    @Test
+    fun `SelectTool should highlight only the selected tool when a tool is selected`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            hudView.selectTool(WorldBuilderHudView.Tool.PAINT)
+            // When
+            hudView.selectTool(WorldBuilderHudView.Tool.FILL)
+            // Then
+            hudView.highlightedTools().shouldContainExactly(WorldBuilderHudView.Tool.FILL)
+        }
+
+    @Test
+    fun `Tool should ask to select the tool when it is clicked`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            addChild(hudView)
+            // When
+            clickTool(hudView, WorldBuilderHudView.Tool.FILL)
+            // Then
+            selectedTools.shouldContainExactly(WorldBuilderHudView.Tool.FILL)
         }
 }

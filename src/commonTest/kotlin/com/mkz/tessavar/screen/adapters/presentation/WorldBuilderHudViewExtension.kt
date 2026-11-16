@@ -22,3 +22,12 @@ suspend fun ViewsForTesting.clickPaletteTerrain(
     hudView: WorldBuilderHudView,
     terrainId: String,
 ) = clickOn(hudView.terrainButtons.getValue(terrainId))
+
+fun WorldBuilderHudView.toolLabels(): List<String> = toolButtons.values.map { button -> button.text }
+
+fun WorldBuilderHudView.highlightedTools(): List<WorldBuilderHudView.Tool> = toolButtons.filterValues { button -> button.bgColorOut == WorldBuilderHudView.SELECTED_TOOL_COLOR }.keys.toList()
+
+suspend fun ViewsForTesting.clickTool(
+    hudView: WorldBuilderHudView,
+    tool: WorldBuilderHudView.Tool,
+) = clickOn(hudView.toolButtons.getValue(tool))

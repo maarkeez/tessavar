@@ -1,6 +1,7 @@
 package com.mkz.tessavar.worldBuilder.domain
 
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderError.TileNotFound
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.AreaFilled
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TerrainSelected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePaintRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePainted
@@ -79,6 +80,31 @@ data class WorldBuilder private constructor(
         )
     }
 
+    fun fill(
+        row: Int,
+        column: Int,
+        canBeAdjacent: (terrainId: String, adjacentTerrainId: String) -> Boolean,
+    ): WorldBuilder {
+        val areaTerrainId = tiles.terrainId(row, column) ?: throw TileNotFound()
+        if (areaTerrainId == selectedTerrainId) return this
+        val terrainId = selectedTerrainId.value
+        val area = tiles.connectedArea(row, column)
+        val forbiddenAdjacentTerrainId =
+            area
+                .asSequence()
+                .flatMap { (areaRow, areaColumn) -> tiles.adjacentPositions(areaRow, areaColumn) }
+                .filter { position -> position !in area }
+                .mapNotNull { (adjacentRow, adjacentColumn) -> tiles.terrainId(adjacentRow, adjacentColumn)?.value }
+                .firstOrNull { adjacentTerrainId -> adjacentTerrainId != terrainId && !canBeAdjacent(terrainId, adjacentTerrainId) }
+        if (forbiddenAdjacentTerrainId != null) {
+            return copy(events = events + TilePaintRejected(row = row, column = column, terrainId = terrainId, adjacentTerrainId = forbiddenAdjacentTerrainId))
+        }
+        return copy(
+            tiles = tiles.paint(area, selectedTerrainId),
+            events = events + AreaFilled(row = row, column = column, terrainId = terrainId, tileCount = area.size),
+        )
+    }
+
     fun import(
         tiles: List<List<String>>?,
         isKnownTerrain: (terrainId: String) -> Boolean,
@@ -148,13 +174,36 @@ data class WorldBuilder private constructor(
         fun adjacentTerrainIds(
             row: Int,
             column: Int,
-        ): List<TerrainId> =
-            listOfNotNull(
-                terrainId(row - 1, column),
-                terrainId(row, column + 1),
-                terrainId(row + 1, column),
-                terrainId(row, column - 1),
-            )
+        ): List<TerrainId> = adjacentPositions(row, column).mapNotNull { (adjacentRow, adjacentColumn) -> terrainId(adjacentRow, adjacentColumn) }
+
+        fun adjacentPositions(
+            row: Int,
+            column: Int,
+        ): List<Pair<Int, Int>> =
+            listOf(row - 1 to column, row to column + 1, row + 1 to column, row to column - 1)
+                .filter { (adjacentRow, adjacentColumn) -> terrainId(adjacentRow, adjacentColumn) != null }
+
+        fun connectedArea(
+            row: Int,
+            column: Int,
+        ): Set<Pair<Int, Int>> {
+            val areaTerrainId = terrainId(row, column) ?: return emptySet()
+            val area = mutableSetOf(row to column)
+            val pending = ArrayDeque(listOf(row to column))
+            while (pending.isNotEmpty()) {
+                val (pendingRow, pendingColumn) = pending.removeFirst()
+                adjacentPositions(pendingRow, pendingColumn)
+                    .filter { (adjacentRow, adjacentColumn) -> terrainId(adjacentRow, adjacentColumn) == areaTerrainId }
+                    .filter { position -> area.add(position) }
+                    .forEach(pending::addLast)
+            }
+            return area
+        }
+
+        fun paint(
+            positions: Set<Pair<Int, Int>>,
+            terrainId: TerrainId,
+        ) = Tiles(value.mapIndexed { rowIndex, terrainIds -> terrainIds.mapIndexed { columnIndex, current -> if ((rowIndex to columnIndex) in positions) terrainId else current } })
 
         fun paint(
             row: Int,

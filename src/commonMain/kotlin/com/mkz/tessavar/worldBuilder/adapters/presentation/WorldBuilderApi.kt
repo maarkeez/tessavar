@@ -6,6 +6,7 @@ import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.worldBuilder.adapters.storage.InMemoryWorldBuilderRepository
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderRepository
 import com.mkz.tessavar.worldBuilder.usecases.commands.CreateWorld
+import com.mkz.tessavar.worldBuilder.usecases.commands.FillTile
 import com.mkz.tessavar.worldBuilder.usecases.commands.ImportWorld
 import com.mkz.tessavar.worldBuilder.usecases.commands.PaintTile
 import com.mkz.tessavar.worldBuilder.usecases.commands.ResizeWorld
@@ -24,6 +25,7 @@ class WorldBuilderApi(
     val resizeWorld = ResizeWorld(worldBuilderRepository, eventBus)
     val selectTerrain = SelectTerrain(worldBuilderRepository, eventBus)
     val paintTile = PaintTile(worldBuilderRepository, terrainApi.hasTerrainTransition, eventBus)
+    val fillTile = FillTile(worldBuilderRepository, terrainApi.hasTerrainTransition, eventBus)
     val importWorld = ImportWorld(worldBuilderRepository, battlefieldApi.parseBattlefield, terrainApi.searchTerrainById, terrainApi.hasTerrainTransition, eventBus)
 
     val searchWorld = SearchWorld(worldBuilderRepository)

@@ -7,6 +7,8 @@ class FakeWorldBuilderHudView : WorldBuilderHudView(MessagesMother.messages()) {
         private set
     var selectedTerrainId: String? = null
         private set
+    var displayedTool: Tool? = null
+        private set
 
     override fun setDelegate(delegate: Delegate) {
         this.delegate = delegate
@@ -18,6 +20,10 @@ class FakeWorldBuilderHudView : WorldBuilderHudView(MessagesMother.messages()) {
     ) {
         displayedTerrains = terrains
         this.selectedTerrainId = selectedTerrainId
+    }
+
+    override fun selectTool(tool: Tool) {
+        displayedTool = tool
     }
 
     override fun selectTerrain(terrainId: String) {

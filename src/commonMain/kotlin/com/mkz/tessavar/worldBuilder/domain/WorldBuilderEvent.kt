@@ -23,6 +23,13 @@ sealed interface WorldBuilderEvent : DomainEvent {
         val terrainId: String,
     ) : WorldBuilderEvent
 
+    data class AreaFilled(
+        val row: Int,
+        val column: Int,
+        val terrainId: String,
+        val tileCount: Int,
+    ) : WorldBuilderEvent
+
     data class WorldImported(
         val rows: Int,
         val columns: Int,

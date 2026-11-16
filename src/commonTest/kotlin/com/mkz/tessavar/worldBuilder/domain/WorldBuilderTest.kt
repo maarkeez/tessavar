@@ -1,6 +1,7 @@
 package com.mkz.tessavar.worldBuilder.domain
 
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderError.TileNotFound
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.AreaFilled
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TerrainSelected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePaintRejected
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.TilePainted
@@ -128,6 +129,65 @@ class WorldBuilderTest {
         val paint = { newWorld().paint(row = 16, column = 0, canBeAdjacent) }
         // Then
         shouldThrow<TileNotFound> { paint() }
+    }
+
+    private fun worldOf(vararg rows: String): WorldBuilder =
+        newWorld()
+            .import(rows.map { row -> row.split(" ") }, isKnownTerrain = { true }, canBeAdjacent = { _, _ -> true })
+            .pullEvents()
+            .second
+
+    @Test
+    fun `should fill the connected area of one terrain when no tile would be adjacent to a forbidden terrain`() {
+        // Given
+        val worldBuilder =
+            worldOf(
+                "sand sand lava",
+                "sand lava sand",
+                "lava sand sand",
+            ).selectTerrain("lava").pullEvents().second
+        // When
+        val (events, filled) = worldBuilder.fill(row = 0, column = 0, canBeAdjacent).pullEvents()
+        // Then
+        filled.toDto().tiles shouldBe
+            listOf(
+                listOf("lava", "lava", "lava"),
+                listOf("lava", "lava", "sand"),
+                listOf("lava", "sand", "sand"),
+            )
+        events.shouldContainExactly(AreaFilled(row = 0, column = 0, terrainId = "lava", tileCount = 3))
+    }
+
+    @Test
+    fun `should reject the fill and keep every tile when one tile would be adjacent to a forbidden terrain`() {
+        // Given
+        val worldBuilder =
+            worldOf(
+                "sand sand sand",
+                "sand sand sand",
+                "sand sand lava",
+            ).selectTerrain("water").pullEvents().second
+        // When
+        val (events, rejected) = worldBuilder.fill(row = 0, column = 0, canBeAdjacent).pullEvents()
+        // Then
+        rejected.toDto().tiles shouldBe worldBuilder.toDto().tiles
+        events.shouldContainExactly(TilePaintRejected(row = 0, column = 0, terrainId = "water", adjacentTerrainId = "lava"))
+    }
+
+    @Test
+    fun `should announce nothing when the filled area already has the selected terrain`() {
+        // When
+        val (events, _) = newWorld().fill(row = 0, column = 0, canBeAdjacent).pullEvents()
+        // Then
+        events.shouldBeEmpty()
+    }
+
+    @Test
+    fun `should fail when the filled tile is out of the world`() {
+        // When
+        val fill = { newWorld().fill(row = 0, column = 16, canBeAdjacent) }
+        // Then
+        shouldThrow<TileNotFound> { fill() }
     }
 
     private val isKnownTerrain = { terrainId: String -> terrainId in setOf("sand", "lava", "water") }
