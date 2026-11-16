@@ -48,7 +48,19 @@ class PausePresenterTest {
     private val callToActionView = FakeCallToActionView()
     private var quits = 0
     private val presenter =
-        PausePresenter(pauseView, saveSlotsView, confirmDialogView, callToActionView, apis.partyApi, saveApi, MessagesMother.messages(), { "Tessavar" }, gameSceneTimeline(), apis.eventBus) { quits++ }
+        PausePresenter(
+            pauseView,
+            saveSlotsView,
+            confirmDialogView,
+            callToActionView,
+            apis.partyApi,
+            saveApi,
+            MessagesMother.messages(),
+            { "Tessavar" },
+            true,
+            gameSceneTimeline(),
+            apis.eventBus,
+        ) { quits++ }
 
     private fun openPause() {
         apis.partyApi.openPause()
@@ -204,7 +216,7 @@ class PausePresenterTest {
         // Given
         val timeline = gameSceneTimeline()
         val presenter =
-            PausePresenter(pauseView, saveSlotsView, confirmDialogView, callToActionView, apis.partyApi, saveApi, MessagesMother.messages(), { "Tessavar" }, timeline, apis.eventBus) { quits++ }
+            PausePresenter(pauseView, saveSlotsView, confirmDialogView, callToActionView, apis.partyApi, saveApi, MessagesMother.messages(), { "Tessavar" }, true, timeline, apis.eventBus) { quits++ }
         apis.partyApi.openPause()
         apis.eventBus.dispatch()
         presenter.open()

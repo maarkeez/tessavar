@@ -5,7 +5,9 @@ import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanBeOccupied
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanNotBeOccupied
 import com.mkz.tessavar.worldBuilder.adapters.presentation.WorldBuilderApi
 import com.mkz.tessavar.worldBuilder.adapters.resources.WorldFileCodecMother
+import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderMother
+import com.mkz.tessavar.worldBuilder.usecases.services.FakeCatalog
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
@@ -27,12 +29,14 @@ class WorldBuilderPresenterTest {
         ).also(SubdomainApis::initialise)
     private val eventBus = apis.eventBus
     private val storage = InmemoryStorage()
-    private val worldBuilderApi = WorldBuilderApi(apis.terrainApi, apis.battlefieldApi, eventBus, storage)
+    private val worldBuilderApi = WorldBuilderApi(apis.terrainApi, apis.battlefieldApi, eventBus, storage, FakeCatalog())
     private val battlefieldView = FakeBattlefieldView()
     private val infoView = FakeWorldBuilderInfoView()
     private val hudView = FakeWorldBuilderHudView()
     private val resizeView = FakeWorldBuilderResizeView()
     private val detailsView = FakeWorldBuilderDetailsView()
+    private val stockView = FakeWorldBuilderStockView()
+    private val playtests = mutableListOf<String>()
     private val textPrompt = FakeTextPrompt(answer = "The Sunken Keep")
     private val menuView = FakeWorldBuilderMenuView()
     private val worldFileSaver = FakeWorldFileSaver()
@@ -46,6 +50,7 @@ class WorldBuilderPresenterTest {
             hudView = hudView,
             resizeView = resizeView,
             detailsView = detailsView,
+            stockView = stockView,
             menuView = menuView,
             worldBuilderApi = worldBuilderApi,
             battlefieldApi = apis.battlefieldApi,
@@ -56,6 +61,7 @@ class WorldBuilderPresenterTest {
             textPrompt = textPrompt,
             coroutineScope = CoroutineScope(Dispatchers.Unconfined),
             onLeft = { leftCount++ },
+            onPlaytest = { worldFile -> playtests += worldFile },
             eventBus = eventBus,
         )
     }
@@ -324,7 +330,7 @@ class WorldBuilderPresenterTest {
         selectTerrain("lava")
         selectTile(row = 2, column = 3)
         // When
-        WorldBuilderApi(apis.terrainApi, apis.battlefieldApi, eventBus, storage).openWorld()
+        WorldBuilderApi(apis.terrainApi, apis.battlefieldApi, eventBus, storage, FakeCatalog()).openWorld()
         eventBus.dispatch()
         // Then
         battlefieldView.displayedBattlefields
@@ -354,9 +360,9 @@ class WorldBuilderPresenterTest {
     }
 
     @Test
-    fun `WorldBuilderMenuView should offer resizing, the details, importing, exporting and going back when the world builder is displayed`() {
+    fun `WorldBuilderMenuView should offer resizing, the details, playtesting, importing, exporting and going back when the world builder is displayed`() {
         // Then
-        menuView.displayedOptions.map(WorldBuilderMenuView.Option::label).shouldContainExactly("Resize", "Details", "Import", "Export", "Back")
+        menuView.displayedOptions.map(WorldBuilderMenuView.Option::label).shouldContainExactly("Resize", "Details", "Playtest", "Import", "Export", "Back")
     }
 
     @Test
@@ -489,5 +495,171 @@ class WorldBuilderPresenterTest {
         // Then
         textPrompt.prompts.shouldContainExactly("Name" to "")
         detailsView.displayedFields.shouldContainExactly(WorldBuilderDetailsView.Field.NAME to "The Sunken Keep")
+    }
+
+    private fun selectTab(tab: WorldBuilderHudView.Tab) {
+        hudView.delegate!!.tabSelected(tab)
+        eventBus.dispatch()
+    }
+
+    @Test
+    fun `WorldOpened should display the buildings, the units in a row for each player and the npcs of the catalog, the first of each selected`() {
+        // When
+        givenWorldCreated()
+        // Then
+        hudView.displayedBuildings.map(WorldBuilderHudView.PaletteOption::id).shouldContainExactly("fortress")
+        hudView.displayedUnitRows.map { row -> row.title to row.units.map(WorldBuilderHudView.PaletteOption::id) } shouldBe
+            listOf("Human" to listOf("knight", "rat"), "CPU" to listOf("knight", "rat"))
+        hudView.displayedNpcs.map(WorldBuilderHudView.PaletteOption::id).shouldContainExactly("alchemist", "viking")
+        hudView.selectedBuildingId shouldBe "fortress"
+        hudView.selectedUnit shouldBe ("player-one" to "knight")
+        hudView.selectedNpcId shouldBe "alchemist"
+        hudView.isStockEnabled shouldBe false
+    }
+
+    @Test
+    fun `TabSelected should display the tab and take Paint back from Fill when a tab other than Terrain is selected`() {
+        // Given
+        givenWorldCreated()
+        selectTool(WorldBuilderHudView.Tool.FILL)
+        // When
+        selectTab(WorldBuilderHudView.Tab.UNITS)
+        // Then
+        hudView.displayedTabs.last() shouldBe WorldBuilderHudView.Tab.UNITS
+        hudView.displayedTool shouldBe WorldBuilderHudView.Tool.PAINT
+    }
+
+    @Test
+    fun `TileSelected should place a battle unit of the player selected on the tile when the Units tab is displayed`() {
+        // Given
+        givenWorldCreated()
+        selectTab(WorldBuilderHudView.Tab.UNITS)
+        hudView.delegate!!.unitSelected("player-two", "rat")
+        // When
+        selectTile(row = 3, column = 4)
+        // Then
+        battlefieldView.displayedBattleUnits.last() shouldBe FakeBattlefieldView.BattleUnitAt(row = 3, column = 4, unitId = "rat")
+        worldBuilderApi
+            .searchWorld()!!
+            .battleUnits
+            .single()
+            .playerId shouldBe "player-two"
+    }
+
+    @Test
+    fun `TileSelected should place the building selected on the tile when the Buildings tab is displayed`() {
+        // Given
+        givenWorldCreated()
+        selectTab(WorldBuilderHudView.Tab.BUILDINGS)
+        // When
+        selectTile(row = 3, column = 4)
+        // Then
+        battlefieldView.displayedBuildings.last() shouldBe FakeBattlefieldView.BuildingAt(row = 3, column = 4, buildingId = "fortress")
+    }
+
+    @Test
+    fun `OccupantPlaceRejected should display why when something already stands on the tile`() {
+        // Given
+        givenWorldCreated()
+        selectTab(WorldBuilderHudView.Tab.NPCS)
+        selectTile(row = 3, column = 4)
+        hudView.delegate!!.npcSelected("viking")
+        // When
+        selectTile(row = 3, column = 4)
+        // Then
+        infoView.errors.last() shouldBe "Something already stands there"
+    }
+
+    @Test
+    fun `TileSelected should erase what stands on the tile when Erase is selected, on any tab`() {
+        // Given
+        givenWorldCreated()
+        selectTab(WorldBuilderHudView.Tab.NPCS)
+        selectTile(row = 3, column = 4)
+        selectTab(WorldBuilderHudView.Tab.TERRAIN)
+        selectTool(WorldBuilderHudView.Tool.ERASE)
+        battlefieldView.displayedNpcs.clear()
+        // When
+        selectTile(row = 3, column = 4)
+        // Then
+        worldBuilderApi.searchWorld()!!.npcs.shouldBeEmpty()
+        battlefieldView.displayedNpcs.shouldBeEmpty()
+    }
+
+    @Test
+    fun `OccupiedTilePaintRejected should display why when a terrain nothing can stand on is painted under a battle unit`() {
+        // Given
+        givenWorldCreated()
+        selectTab(WorldBuilderHudView.Tab.UNITS)
+        selectTile(row = 3, column = 4)
+        selectTab(WorldBuilderHudView.Tab.TERRAIN)
+        selectTerrain("lava")
+        // When
+        selectTile(row = 3, column = 4)
+        // Then
+        infoView.errors.last() shouldBe "Nothing can stand on Lava"
+    }
+
+    @Test
+    fun `StockSelected should open what the npc selected sells, and Done keep the items chosen, when the npc stands in the world`() {
+        // Given
+        givenWorldCreated()
+        selectTab(WorldBuilderHudView.Tab.NPCS)
+        selectTile(row = 3, column = 4)
+        // When
+        hudView.delegate!!.stockSelected()
+        stockView.delegate!!.stockChanged("alchemist", listOf("mana-potion"))
+        eventBus.dispatch()
+        // Then
+        hudView.isStockEnabled shouldBe true
+        stockView.openedStock shouldBe emptyList()
+        stockView.openedItems.map(WorldBuilderStockView.StockItem::lootableItemId).shouldContainExactly("health-potion", "mana-potion")
+        worldBuilderApi
+            .searchWorld()!!
+            .npcs
+            .single()
+            .stock shouldBe listOf("mana-potion")
+    }
+
+    @Test
+    fun `Playtest should play the world exported when it has a battle unit of the human player and a main quest`() {
+        // Given
+        givenWorldCreated()
+        val world =
+            WorldBuilderMother.file(
+                tiles = List(4) { List(4) { "sand" } },
+                battleUnits = listOf(WorldBuilder.Dto.BattleUnitDto(id = "hero", unitId = "knight", playerId = "player-one", row = 1, column = 1)),
+                keptSections = "[[quests]]\nid = \"the-keep\"\ntype = \"MAIN\"",
+            )
+        worldBuilderApi.importWorld(WorldFileCodecMother.codec().encode(world))
+        eventBus.dispatch()
+        // When
+        menuView.select("Playtest")
+        // Then
+        playtests.shouldContainExactly(worldBuilderApi.exportWorld())
+    }
+
+    @Test
+    fun `Playtest should display why and play nothing when the world has no battle unit of the human player`() {
+        // Given
+        givenWorldCreated()
+        // When
+        menuView.select("Playtest")
+        // Then
+        playtests.shouldBeEmpty()
+        infoView.errors.last() shouldBe "Place a battle unit of Human to playtest"
+    }
+
+    @Test
+    fun `Playtest should display why and play nothing when the world has no main quest`() {
+        // Given
+        givenWorldCreated()
+        selectTab(WorldBuilderHudView.Tab.UNITS)
+        selectTile(row = 3, column = 4)
+        // When
+        menuView.select("Playtest")
+        // Then
+        playtests.shouldBeEmpty()
+        infoView.errors.last() shouldBe "The world needs one main quest to playtest"
     }
 }

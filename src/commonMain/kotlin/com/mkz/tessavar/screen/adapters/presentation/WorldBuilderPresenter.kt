@@ -20,6 +20,7 @@ class WorldBuilderPresenter(
     private val hudView: WorldBuilderHudView,
     private val resizeView: WorldBuilderResizeView,
     private val detailsView: WorldBuilderDetailsView,
+    private val stockView: WorldBuilderStockView,
     private val menuView: WorldBuilderMenuView,
     private val worldBuilderApi: WorldBuilderApi,
     private val battlefieldApi: BattlefieldApi,
@@ -30,23 +31,31 @@ class WorldBuilderPresenter(
     private val textPrompt: TextPrompt?,
     private val coroutineScope: CoroutineScope,
     private val onLeft: () -> Unit,
+    private val onPlaytest: (worldFile: String) -> Unit,
     eventBus: EventBus,
 ) : BattlefieldView.Delegate,
     WorldBuilderHudView.Delegate,
     WorldBuilderResizeView.Delegate,
-    WorldBuilderDetailsView.Delegate {
+    WorldBuilderDetailsView.Delegate,
+    WorldBuilderStockView.Delegate {
     companion object {
         const val WORLD_FILE_NAME = "world"
         const val WORLD_FILE_EXTENSION = ".toml"
+        const val HUMAN_PLAYER_ID = "player-one"
     }
 
     private var tool = WorldBuilderHudView.Tool.PAINT
+    private var tab = WorldBuilderHudView.Tab.TERRAIN
+    private var selectedBuildingId: String? = null
+    private var selectedUnit: Pair<String, String>? = null
+    private var selectedNpcId: String? = null
 
     private val subscriptions =
         listOf(
             eventBus.subscribe<WorldBuilderEvent.WorldOpened> {
                 displayWorld()
                 displayTerrains()
+                displayOccupants()
             },
             eventBus.subscribe<WorldBuilderEvent.WorldResized> { displayWorld() },
             eventBus.subscribe<WorldBuilderEvent.TerrainSelected> { event -> hudView.selectTerrain(event.terrainId) },
@@ -62,6 +71,13 @@ class WorldBuilderPresenter(
                 infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_WORLD_IMPORTED])
             },
             eventBus.subscribe<WorldBuilderEvent.WorldImportRejected> { event -> infoView.displayError(importRejectedMessage(event)) },
+            eventBus.subscribe<WorldBuilderEvent.OccupantPlaced> { displayWorld() },
+            eventBus.subscribe<WorldBuilderEvent.OccupantErased> { displayWorld() },
+            eventBus.subscribe<WorldBuilderEvent.NpcRestocked> { displayWorld() },
+            eventBus.subscribe<WorldBuilderEvent.OccupantPlaceRejected> { event -> infoView.displayError(placeRejectedMessage(event)) },
+            eventBus.subscribe<WorldBuilderEvent.OccupiedTilePaintRejected> { event ->
+                infoView.displayError(messages[UiMessage.WORLD_BUILDER_NOT_OCCUPIABLE, "terrain" to messages.terrainName(event.terrainId)])
+            },
         )
 
     init {
@@ -69,11 +85,13 @@ class WorldBuilderPresenter(
         hudView.setDelegate(this)
         resizeView.setDelegate(this)
         detailsView.setDelegate(this)
+        stockView.setDelegate(this)
         hudView.selectTool(tool)
         menuView.displayOptions(
             listOf(
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_RESIZE]) { resizeView.open() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_DETAILS]) { openDetails() },
+                WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_PLAYTEST]) { playtest() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_IMPORT]) { importWorld() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_EXPORT]) { exportWorld() },
                 WorldBuilderMenuView.Option(label = messages[UiMessage.WORLD_BUILDER_BACK]) { onLeft() },
@@ -91,7 +109,74 @@ class WorldBuilderPresenter(
         infoView.displaySize(rows = world.rows, columns = world.columns)
         resizeView.displaySize(rows = world.rows, columns = world.columns, allowedSizes = WorldBuilder.MINIMUM_SIZE..WorldBuilder.MAXIMUM_SIZE)
         hudView.displayHistory(canUndo = world.canUndo, canRedo = world.canRedo)
+        world.buildings.forEach { building -> battlefieldView.displayBuilding(row = building.row, column = building.column, buildingId = building.id) }
+        world.battleUnits.forEach { battleUnit -> battlefieldView.displayBattleUnit(row = battleUnit.row, column = battleUnit.column, unitId = battleUnit.unitId) }
+        val catalogNpcs = worldBuilderApi.searchCatalog().npcs
+        world.npcs.forEach { npc ->
+            battlefieldView.displayNpc(row = npc.row, column = npc.column, npcId = npc.id, unitId = catalogNpcs.firstOrNull { catalogNpc -> catalogNpc.id == npc.id }?.unitId)
+        }
+        displayStock()
     }
+
+    private fun displayOccupants() {
+        val catalog = worldBuilderApi.searchCatalog()
+        hudView.displayBuildings(
+            catalog.buildings.mapNotNull { building -> paletteOption(building.id, "building/${building.id}.png") },
+        )
+        hudView.displayUnits(
+            catalog.playerIds.map { playerId ->
+                WorldBuilderHudView.UnitRow(
+                    playerId = playerId,
+                    title = messages.playerName(playerId),
+                    units = catalog.unitIds.mapNotNull { unitId -> paletteOption(unitId, "unit/$unitId.png") },
+                )
+            },
+        )
+        hudView.displayNpcs(catalog.npcs.mapNotNull { npc -> paletteOption(npc.id, npcBitmapPath(npc.id, npc.unitId)) })
+        selectedBuildingId = selectedBuildingId ?: catalog.buildings.firstOrNull()?.id
+        selectedUnit = selectedUnit ?: catalog.playerIds.firstOrNull()?.let { playerId -> catalog.unitIds.firstOrNull()?.let { unitId -> playerId to unitId } }
+        selectedNpcId = selectedNpcId ?: catalog.npcs.firstOrNull()?.id
+        selectedBuildingId?.let(hudView::selectBuilding)
+        selectedUnit?.let { (playerId, unitId) -> hudView.selectUnit(playerId, unitId) }
+        selectedNpcId?.let(hudView::selectNpc)
+        displayStock()
+    }
+
+    private fun paletteOption(
+        id: String,
+        path: String,
+    ): WorldBuilderHudView.PaletteOption? = battlefieldView.occupantBitmap(path)?.let { bitmap -> WorldBuilderHudView.PaletteOption(id = id, bitmap = bitmap) }
+
+    private fun npcBitmapPath(
+        npcId: String,
+        unitId: String?,
+    ): String = unitId?.let { "unit/$it.png" } ?: "npc/$npcId.png"
+
+    private fun displayStock() {
+        val world = worldBuilderApi.searchWorld() ?: return
+        hudView.displayStock(isEnabled = world.npcs.any { npc -> npc.id == selectedNpcId })
+    }
+
+    private fun playtest() {
+        val world = worldBuilderApi.searchWorld() ?: return
+        if (world.battleUnits.none { battleUnit -> battleUnit.playerId == HUMAN_PLAYER_ID }) {
+            infoView.displayError(messages[UiMessage.WORLD_BUILDER_NO_PLAYER_BATTLE_UNIT, "player" to messages.playerName(HUMAN_PLAYER_ID)])
+            return
+        }
+        if (world.mainQuestCount != 1) {
+            infoView.displayError(messages[UiMessage.WORLD_BUILDER_NO_MAIN_QUEST])
+            return
+        }
+        onPlaytest(worldBuilderApi.exportWorld())
+    }
+
+    private fun placeRejectedMessage(event: WorldBuilderEvent.OccupantPlaceRejected): String =
+        when (event.reason) {
+            WorldBuilderEvent.OccupantPlaceRejected.Reason.OUT_OF_WORLD -> messages[UiMessage.WORLD_BUILDER_OUT_OF_WORLD]
+            WorldBuilderEvent.OccupantPlaceRejected.Reason.NOT_OCCUPIABLE ->
+                messages[UiMessage.WORLD_BUILDER_NOT_OCCUPIABLE, "terrain" to messages.terrainName(event.terrainId.orEmpty())]
+            WorldBuilderEvent.OccupantPlaceRejected.Reason.NOT_VACANT -> messages[UiMessage.WORLD_BUILDER_NOT_VACANT]
+        }
 
     private fun displayTerrains() {
         val world = worldBuilderApi.searchWorld() ?: return
@@ -179,6 +264,9 @@ class WorldBuilderPresenter(
                 messages[UiMessage.WORLD_BUILDER_SIZE_OUT_OF_RANGE, "minimum" to WorldBuilder.MINIMUM_SIZE, "maximum" to WorldBuilder.MAXIMUM_SIZE]
             Reason.UNKNOWN_TERRAIN -> messages[UiMessage.WORLD_BUILDER_UNKNOWN_TERRAIN, "terrain" to event.terrainId.orEmpty()]
             Reason.FORBIDDEN_ADJACENT_TERRAINS -> forbiddenAdjacentTerrainsMessage(event.terrainId!!, event.adjacentTerrainId!!)
+            Reason.UNKNOWN_OCCUPANT -> messages[UiMessage.WORLD_BUILDER_UNKNOWN_OCCUPANT, "occupant" to event.occupantId.orEmpty()]
+            Reason.DUPLICATE_OCCUPANT -> messages[UiMessage.WORLD_BUILDER_DUPLICATE_OCCUPANT, "occupant" to event.occupantId.orEmpty()]
+            Reason.MISPLACED_OCCUPANT -> messages[UiMessage.WORLD_BUILDER_MISPLACED_OCCUPANT, "occupant" to event.occupantId.orEmpty()]
         }
 
     private fun forbiddenAdjacentTerrainsMessage(
@@ -189,15 +277,73 @@ class WorldBuilderPresenter(
     override fun tileSelected(
         row: Int,
         column: Int,
-    ) = when (tool) {
-        WorldBuilderHudView.Tool.PAINT -> worldBuilderApi.paintTile(row = row, column = column)
-        WorldBuilderHudView.Tool.FILL -> worldBuilderApi.fillTile(row = row, column = column)
+    ) {
+        when (tool) {
+            WorldBuilderHudView.Tool.ERASE -> worldBuilderApi.eraseOccupant(row = row, column = column)
+            WorldBuilderHudView.Tool.FILL -> if (tab == WorldBuilderHudView.Tab.TERRAIN) worldBuilderApi.fillTile(row = row, column = column)
+            WorldBuilderHudView.Tool.PAINT -> place(row, column)
+        }
+    }
+
+    private fun place(
+        row: Int,
+        column: Int,
+    ) {
+        when (tab) {
+            WorldBuilderHudView.Tab.TERRAIN -> worldBuilderApi.paintTile(row = row, column = column)
+            WorldBuilderHudView.Tab.BUILDINGS -> selectedBuildingId?.let { buildingId -> worldBuilderApi.placeBuilding(buildingId = buildingId, row = row, column = column) }
+            WorldBuilderHudView.Tab.UNITS ->
+                selectedUnit?.let { (playerId, unitId) -> worldBuilderApi.placeBattleUnit(unitId = unitId, playerId = playerId, row = row, column = column) }
+            WorldBuilderHudView.Tab.NPCS -> selectedNpcId?.let { npcId -> worldBuilderApi.placeNpc(npcId = npcId, row = row, column = column) }
+        }
     }
 
     override fun toolSelected(tool: WorldBuilderHudView.Tool) {
         this.tool = tool
         hudView.selectTool(tool)
     }
+
+    override fun tabSelected(tab: WorldBuilderHudView.Tab) {
+        this.tab = tab
+        hudView.displayTab(tab)
+        if (tab != WorldBuilderHudView.Tab.TERRAIN && tool == WorldBuilderHudView.Tool.FILL) toolSelected(WorldBuilderHudView.Tool.PAINT)
+    }
+
+    override fun buildingSelected(buildingId: String) {
+        selectedBuildingId = buildingId
+        hudView.selectBuilding(buildingId)
+    }
+
+    override fun unitSelected(
+        playerId: String,
+        unitId: String,
+    ) {
+        selectedUnit = playerId to unitId
+        hudView.selectUnit(playerId, unitId)
+    }
+
+    override fun npcSelected(npcId: String) {
+        selectedNpcId = npcId
+        hudView.selectNpc(npcId)
+        displayStock()
+    }
+
+    override fun stockSelected() {
+        val npcId = selectedNpcId ?: return
+        val npc = worldBuilderApi.searchWorld()?.npcs?.firstOrNull { placedNpc -> placedNpc.id == npcId } ?: return
+        val items =
+            worldBuilderApi.searchCatalog().lootableItemIds.mapNotNull { lootableItemId ->
+                battlefieldView.occupantBitmap("lootableItem/$lootableItemId.png")?.let { bitmap ->
+                    WorldBuilderStockView.StockItem(lootableItemId = lootableItemId, name = messages.lootableItemName(lootableItemId), bitmap = bitmap)
+                }
+            }
+        stockView.open(npcId = npcId, npcName = messages.npcName(npcId), items = items, stock = npc.stock)
+    }
+
+    override fun stockChanged(
+        npcId: String,
+        stock: List<String>,
+    ) = worldBuilderApi.restockNpc(npcId = npcId, stock = stock)
 
     override fun sizeChanged(
         rows: Int,

@@ -43,6 +43,7 @@ import com.mkz.tessavar.world.adapters.presentation.WorldApi
 import com.mkz.tessavar.world.adapters.resources.ResourcesWorldLoader
 import com.mkz.tessavar.world.domain.World
 import korlibs.io.async.launchImmediately
+import korlibs.io.file.std.MemoryVfsMix
 import korlibs.korge.scene.Scene
 import korlibs.korge.service.storage.IStorage
 import korlibs.korge.service.storage.storage
@@ -62,11 +63,15 @@ class GameScene(
     private val storage: IStorage? = null,
     private val random: Random = Random.Default,
     private val slot: Int? = null,
-    private val worldId: String = World.CAMPAIGN_ID,
+    worldId: String = World.CAMPAIGN_ID,
+    private val playtestWorldFile: String? = null,
 ) : Scene() {
     private companion object {
         const val QUEST_DETAIL_X = 6.0
+        const val PLAYTEST_WORLD_FILE = "playtest.toml"
     }
+
+    private val worldId = if (playtestWorldFile != null) World.PLAYTEST_ID else worldId
 
     override val coroutineContext by lazy { super.coroutineContext + views.gameWindow.coroutineDispatcher }
 
@@ -110,7 +115,7 @@ class GameScene(
         telemetryApi.listen(eventBus)
 
         val worldLoader = ResourcesWorldLoader()
-        val worldFile = worldLoader.worldFile(worldId)
+        val worldFile = playtestWorldFile?.let { text -> MemoryVfsMix(PLAYTEST_WORLD_FILE to text)[PLAYTEST_WORLD_FILE] } ?: worldLoader.worldFile(worldId)
         val terrainApi = TerrainApi(eventBus, ResourcesTerrainLoader())
         val unitApi = UnitApi(eventBus, ResourcesUnitLoader())
         val playerApi = PlayerApi(eventBus, ResourcesPlayerLoader())
@@ -286,8 +291,26 @@ class GameScene(
                     )
                 val formationPresenter = FormationPresenter(formationView, battlefieldView, callToActionView, partyApi, battleUnitApi, battlefieldApi, messages, timeline)
                 val pausePresenter =
-                    PausePresenter(pauseView, saveSlotsView, confirmDialogView, callToActionView, partyApi, saveApi, messages, { id -> worldApi.searchWorld(id)?.name }, timeline, eventBus) {
-                        launchImmediately { sceneContainer.changeTo { MenuScene(localizationApi, telemetryApi, storage, random) } }
+                    PausePresenter(
+                        pauseView,
+                        saveSlotsView,
+                        confirmDialogView,
+                        callToActionView,
+                        partyApi,
+                        saveApi,
+                        messages,
+                        { id -> worldApi.searchWorld(id)?.name },
+                        playtestWorldFile == null,
+                        timeline,
+                        eventBus,
+                    ) {
+                        launchImmediately {
+                            if (playtestWorldFile == null) {
+                                sceneContainer.changeTo { MenuScene(localizationApi, telemetryApi, storage, random) }
+                            } else {
+                                sceneContainer.changeTo { WorldBuilderScene(localizationApi, telemetryApi, storage) }
+                            }
+                        }
                     }
                 val explorationPresenter =
                     ExplorationPresenter(

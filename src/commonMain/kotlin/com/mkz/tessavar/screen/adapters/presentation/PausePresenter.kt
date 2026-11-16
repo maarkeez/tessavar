@@ -15,6 +15,7 @@ class PausePresenter(
     private val saveApi: SaveApi,
     private val messages: Messages,
     private val worldName: (worldId: String) -> String?,
+    private val isSaveOffered: Boolean,
     private val timeline: GameSceneTimeline,
     private val eventBus: EventBus,
     private val onQuit: () -> Unit,
@@ -29,6 +30,7 @@ class PausePresenter(
         confirmDialogView.visible = false
         pauseView.setDelegate(this)
         saveSlotsView.setDelegate(this)
+        if (!isSaveOffered) pauseView.hideSave()
     }
 
     fun open() {
@@ -47,7 +49,7 @@ class PausePresenter(
 
     override fun pauseResumeSelected() = whenIdle { partyApi.closePause() }
 
-    override fun pauseSaveSelected() = whenIdle { displaySaveSlots() }
+    override fun pauseSaveSelected() = whenIdle { if (isSaveOffered) displaySaveSlots() }
 
     fun quit() = onQuit()
 

@@ -18,3 +18,5 @@ suspend fun ViewsForTesting.clickResume(pauseView: PauseView) = clickOn(pauseVie
 suspend fun ViewsForTesting.clickSave(pauseView: PauseView) = clickOn(pauseView.saveButton.cancelButton)
 
 suspend fun ViewsForTesting.clickQuit(pauseView: PauseView) = clickOn(pauseView.quitButton.cancelButton)
+
+fun PauseView.isSaveOffered(): Boolean = saveButton.parent != null

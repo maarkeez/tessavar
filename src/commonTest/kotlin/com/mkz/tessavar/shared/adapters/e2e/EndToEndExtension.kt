@@ -95,8 +95,8 @@ private suspend fun ViewsForTesting.walkLeader(step: RouteStep) {
     require(battlefieldView.hasBattleUnitAt(step.row, step.column)) { "The leader did not walk to (${step.row},${step.column})" }
 }
 
-suspend fun ViewsForTesting.startWorldBuilder() {
-    stage.startApp(storage = InmemoryStorage())
+suspend fun ViewsForTesting.startWorldBuilder(storage: IStorage = InmemoryStorage()) {
+    stage.startApp(storage = storage)
     clickBuildWorld(openMenu())
     waitUntil { stage.battlefieldView()?.isBattlefieldDisplayed() == true && stage.worldBuilderHudView()?.paletteTerrainIds()?.isNotEmpty() == true }
 }

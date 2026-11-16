@@ -459,6 +459,36 @@ msgctxt "ui.worldBuilderHud.redo"
 msgid "Redo"
 msgstr "Rehacer"
 
+#. A tool: tapping a tile places the building, battle unit or npc selected in the palette.
+msgctxt "ui.worldBuilderHud.place"
+msgid "Place"
+msgstr "Colocar"
+
+#. A tool: tapping a tile takes away the building, battle unit or npc standing on it.
+msgctxt "ui.worldBuilderHud.erase"
+msgid "Erase"
+msgstr "Borrar"
+
+#. The tab of the palette listing the buildings to place.
+msgctxt "ui.worldBuilderHud.buildings"
+msgid "Buildings"
+msgstr "Edificios"
+
+#. The tab of the palette listing the units to place, in a row for each player.
+msgctxt "ui.worldBuilderHud.units"
+msgid "Units"
+msgstr "Unidades"
+
+#. The tab of the palette listing the npcs to place.
+msgctxt "ui.worldBuilderHud.npcs"
+msgid "Npcs"
+msgstr "Personajes"
+
+#. Opens what the npc selected in the palette sells.
+msgctxt "ui.worldBuilderHud.stock"
+msgid "Stock"
+msgstr "Género"
+
 #. The title of the dialog that changes how many tiles tall and wide the world is.
 msgctxt "ui.worldBuilderResize.title"
 msgid "Resize the world"
@@ -497,6 +527,16 @@ msgctxt "ui.worldBuilderDetails.done"
 msgid "Done"
 msgstr "Hecho"
 
+#. The title of the dialog where the items an npc sells are chosen.
+msgctxt "ui.worldBuilderStock.title"
+msgid "{npc} sells"
+msgstr "{npc} vende"
+
+#. Closes the dialog of what an npc sells.
+msgctxt "ui.worldBuilderStock.done"
+msgid "Done"
+msgstr "Hecho"
+
 #. Opens the dialog that changes how many tiles tall and wide the world is.
 msgctxt "ui.worldBuilderMenu.resize"
 msgid "Resize"
@@ -506,6 +546,11 @@ msgstr "Cambiar tamaño"
 msgctxt "ui.worldBuilderMenu.details"
 msgid "Details"
 msgstr "Detalles"
+
+#. Plays the world being built, coming back to the world builder when quitting.
+msgctxt "ui.worldBuilderMenu.playtest"
+msgid "Playtest"
+msgstr "Probar"
 
 #. Imports a world from a file.
 msgctxt "ui.worldBuilderMenu.import"
@@ -561,6 +606,46 @@ msgstr "Terreno desconocido: {terrain}"
 msgctxt "ui.worldBuilder.forbiddenAdjacentTerrains"
 msgid "{terrain} can not be next to {adjacentTerrain}"
 msgstr "{terrain} no puede estar junto a {adjacentTerrain}"
+
+#. Displayed when placing on, or painting under, something standing on a terrain nothing can stand on.
+msgctxt "ui.worldBuilder.notOccupiable"
+msgid "Nothing can stand on {terrain}"
+msgstr "Nada puede estar sobre {terrain}"
+
+#. Displayed when placing on a tile where a building, a battle unit or an npc stands.
+msgctxt "ui.worldBuilder.notVacant"
+msgid "Something already stands there"
+msgstr "Ya hay algo ahí"
+
+#. Displayed when a building placed would stand partly out of the world.
+msgctxt "ui.worldBuilder.outOfWorld"
+msgid "It does not fit in the world"
+msgstr "No cabe en el mundo"
+
+#. Displayed when an imported world names a building, unit, npc, player or item the game does not have.
+msgctxt "ui.worldBuilder.unknownOccupant"
+msgid "The world names {occupant}, which is not in the game"
+msgstr "El mundo nombra {occupant}, que no está en el juego"
+
+#. Displayed when an imported world places the same building, battle unit or npc twice.
+msgctxt "ui.worldBuilder.duplicateOccupant"
+msgid "The world places {occupant} twice"
+msgstr "El mundo coloca {occupant} dos veces"
+
+#. Displayed when something in an imported world stands out of it, on a terrain nothing can stand on, or on something else.
+msgctxt "ui.worldBuilder.misplacedOccupant"
+msgid "{occupant} does not stand on a free tile it can stand on"
+msgstr "{occupant} no está sobre una casilla libre donde pueda estar"
+
+#. Displayed when Playtest is tapped in a world without a battle unit of the human player.
+msgctxt "ui.worldBuilder.noPlayerBattleUnit"
+msgid "Place a battle unit of {player} to playtest"
+msgstr "Coloca una unidad de {player} para probar"
+
+#. Displayed when Playtest is tapped in a world without exactly one main quest.
+msgctxt "ui.worldBuilder.noMainQuest"
+msgid "The world needs one main quest to playtest"
+msgstr "El mundo necesita una misión principal para probarlo"
 
 #. The kind of files the file dialog shows.
 msgctxt "ui.worldFilePicker.worlds"

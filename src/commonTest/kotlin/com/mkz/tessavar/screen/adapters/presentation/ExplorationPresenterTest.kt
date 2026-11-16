@@ -109,6 +109,7 @@ class ExplorationPresenterTest {
             }, { null }, { 0 }, "tessavar", { DateTime.nowUnixMillis() }),
             MessagesMother.messages(),
             { "Tessavar" },
+            true,
             timeline,
             eventBus,
         ) { quits++ }
@@ -407,6 +408,7 @@ class ExplorationPresenterTest {
                 }, { null }, { 0 }, "tessavar", { DateTime.nowUnixMillis() }),
                 MessagesMother.messages(),
                 { "Tessavar" },
+                true,
                 timeline,
                 apis.eventBus,
             ) {}

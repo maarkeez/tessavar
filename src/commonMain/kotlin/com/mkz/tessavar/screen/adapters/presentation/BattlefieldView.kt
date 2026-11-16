@@ -290,6 +290,8 @@ open class BattlefieldView(
         }
     }
 
+    open fun occupantBitmap(path: String): Bitmap? = resourcesLoader.bitmapOrNull(path)
+
     open fun terrainTileBitmap(
         terrainId: String,
         terrainTransition: TerrainTransition?,

@@ -6,11 +6,13 @@ import com.mkz.tessavar.terrain.usecases.queries.SearchTerrainById
 import com.mkz.tessavar.world.domain.World
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderError.WorldNotCreated
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderRepository
+import com.mkz.tessavar.worldBuilder.usecases.services.Catalog
 import com.mkz.tessavar.worldBuilder.usecases.services.WorldFileCodec
 
 class ImportWorld(
     private val worldBuilderRepository: WorldBuilderRepository,
     private val worldFileCodec: WorldFileCodec,
+    private val catalog: Catalog,
     private val searchTerrainById: SearchTerrainById,
     private val hasTerrainTransition: HasTerrainTransition,
     private val eventBus: EventBus,
@@ -23,10 +25,12 @@ class ImportWorld(
                 .import(
                     file = file,
                     currentVersion = World.CURRENT_VERSION,
+                    catalog = catalog.loadCatalog(),
                     isKnownTerrain = { terrainId -> searchTerrainById(terrainId) != null },
                     canBeAdjacent = { terrainId, adjacentTerrainId ->
                         hasTerrainTransition(terrainId, adjacentTerrainId) || hasTerrainTransition(adjacentTerrainId, terrainId)
                     },
+                    isOccupiable = { terrainId -> searchTerrainById(terrainId)?.canBeOccupied == true },
                 ).pullEvents()
         worldBuilderRepository.save(importedWorldBuilder)
         eventBus.publish(events)

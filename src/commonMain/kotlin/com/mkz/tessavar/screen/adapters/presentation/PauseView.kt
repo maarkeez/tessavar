@@ -70,6 +70,10 @@ open class PauseView(
         this.delegate = delegate
     }
 
+    open fun hideSave() {
+        saveButton.removeFromParent()
+    }
+
     open fun displaySaved(isDisplayed: Boolean) {
         savedText.visible = isDisplayed
         savedElapsed = if (isDisplayed) Duration.ZERO else null

@@ -8,6 +8,7 @@ import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanBeOccupied
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanNotBeOccupied
 import com.mkz.tessavar.terrain.usecases.queries.HasTerrainTransition
 import com.mkz.tessavar.terrain.usecases.queries.SearchTerrainById
+import com.mkz.tessavar.worldBuilder.adapters.resources.ResourcesCatalog
 import com.mkz.tessavar.worldBuilder.adapters.resources.WorldFileCodecMother
 import com.mkz.tessavar.worldBuilder.adapters.storage.InMemoryWorldBuilderRepository
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
@@ -17,6 +18,7 @@ import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImportRejecte
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderEvent.WorldImported
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderMother
 import com.mkz.tessavar.worldBuilder.usecases.queries.ExportWorld
+import com.mkz.tessavar.worldBuilder.usecases.services.FakeCatalog
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
@@ -37,6 +39,7 @@ class ImportWorldTest {
         ImportWorld(
             worldBuilderRepository,
             codec,
+            FakeCatalog(),
             SearchTerrainById(terrainRepository),
             HasTerrainTransition(terrainRepository),
             eventBus,
@@ -115,7 +118,7 @@ class ImportWorldTest {
                     .flatten()
                     .toSet()
             val everyTerrain = InMemoryTerrainRepository().apply { terrainIds.forEach { terrainId -> create(terrainThatCanBeOccupied(id = terrainId, transitionsTo = terrainIds)) } }
-            val lenientImport = ImportWorld(worldBuilderRepository, codec, SearchTerrainById(everyTerrain), HasTerrainTransition(everyTerrain), eventBus)
+            val lenientImport = ImportWorld(worldBuilderRepository, codec, ResourcesCatalog().apply { initResources() }, SearchTerrainById(everyTerrain), HasTerrainTransition(everyTerrain), eventBus)
             // When
             lenientImport(campaign)
             // Then

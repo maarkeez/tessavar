@@ -2,6 +2,7 @@ package com.mkz.tessavar.worldBuilder.adapters.storage
 
 import com.mkz.tessavar.worldBuilder.adapters.resources.WorldFileCodecMother
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
+import com.mkz.tessavar.worldBuilder.usecases.services.FakeCatalog
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import korlibs.korge.service.storage.InmemoryStorage
@@ -11,13 +12,13 @@ class NativeStorageWorldBuilderRepositoryTest {
     private val storage = InmemoryStorage()
     private val codec = WorldFileCodecMother.codec()
 
-    private fun newRepository() = NativeStorageWorldBuilderRepository(storage, codec)
+    private fun newRepository() = NativeStorageWorldBuilderRepository(storage, codec, FakeCatalog())
 
     private val worldBuilder =
         WorldBuilder
             .create()
             .selectTerrain("lava")
-            .paint(row = 0, column = 1) { _, _ -> true }
+            .paint(row = 0, column = 1, canBeAdjacent = { _, _ -> true }, isOccupiable = { true })
             .resize(rows = 2, columns = 3)
             .pullEvents()
             .second

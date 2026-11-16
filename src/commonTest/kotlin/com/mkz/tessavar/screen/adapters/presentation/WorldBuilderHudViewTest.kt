@@ -13,8 +13,32 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
     private val selectedTerrains = mutableListOf<String>()
     private val selectedTools = mutableListOf<WorldBuilderHudView.Tool>()
     private val historySelections = mutableListOf<String>()
+    private val paletteSelections = mutableListOf<String>()
     private val delegate =
         object : WorldBuilderHudView.Delegate {
+            override fun tabSelected(tab: WorldBuilderHudView.Tab) {
+                paletteSelections += "tab ${tab.name}"
+            }
+
+            override fun buildingSelected(buildingId: String) {
+                paletteSelections += "building $buildingId"
+            }
+
+            override fun unitSelected(
+                playerId: String,
+                unitId: String,
+            ) {
+                paletteSelections += "unit $playerId $unitId"
+            }
+
+            override fun npcSelected(npcId: String) {
+                paletteSelections += "npc $npcId"
+            }
+
+            override fun stockSelected() {
+                paletteSelections += "stock"
+            }
+
             override fun toolSelected(tool: WorldBuilderHudView.Tool) {
                 selectedTools += tool
             }
@@ -77,12 +101,12 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
         }
 
     @Test
-    fun `WorldBuilderHudView should display the paint and fill tools when it is created`() =
+    fun `WorldBuilderHudView should display the paint, fill and erase tools when it is created`() =
         sharedViewsTest {
             // When
             val hudView = newHudView()
             // Then
-            hudView.toolLabels().shouldContainExactly("Paint", "Fill")
+            hudView.toolLabels().shouldContainExactly("Paint", "Fill", "Erase")
         }
 
     @Test
@@ -156,5 +180,81 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
             clickUndo(hudView)
             // Then
             historySelections.shouldContainExactly()
+        }
+
+    private val fortressBitmap = Bitmap32(64, 64, Colors.DARKGRAY)
+    private val knightBitmap = Bitmap32(16, 16, Colors.BLUE)
+
+    @Test
+    fun `DisplayTab should display only its palette, read Place for Paint and disable Fill when a tab other than Terrain is displayed`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            // When
+            hudView.displayTab(WorldBuilderHudView.Tab.BUILDINGS)
+            // Then
+            hudView.highlightedTab() shouldBe WorldBuilderHudView.Tab.BUILDINGS
+            hudView.palettes
+                .filterValues { palette -> palette.visible }
+                .keys
+                .shouldContainExactly(WorldBuilderHudView.Tab.BUILDINGS)
+            hudView.toolLabels().shouldContainExactly("Place", "Fill", "Erase")
+            hudView.toolButtons.getValue(WorldBuilderHudView.Tool.FILL).enabled shouldBe false
+        }
+
+    @Test
+    fun `Tab should ask to display the tab when it is clicked`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            addChild(hudView)
+            // When
+            clickTab(hudView, WorldBuilderHudView.Tab.NPCS)
+            // Then
+            paletteSelections.shouldContainExactly("tab NPCS")
+        }
+
+    @Test
+    fun `DisplayUnits should display a row of units for each player, titled with its name, and a click ask to select the unit of that player`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            val units = listOf(WorldBuilderHudView.PaletteOption("knight", knightBitmap))
+            hudView.displayUnits(listOf(WorldBuilderHudView.UnitRow("player-one", "Human", units), WorldBuilderHudView.UnitRow("player-two", "CPU", units)))
+            hudView.displayTab(WorldBuilderHudView.Tab.UNITS)
+            addChild(hudView)
+            // When
+            clickPaletteUnit(hudView, "player-two", "knight")
+            // Then
+            hudView.paletteKeys(WorldBuilderHudView.Tab.UNITS).shouldContainExactly("player-one/knight", "player-two/knight")
+            paletteSelections.shouldContainExactly("unit player-two knight")
+        }
+
+    @Test
+    fun `SelectBuilding should frame the building selected when the buildings are displayed`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            hudView.displayBuildings(listOf(WorldBuilderHudView.PaletteOption("fortress", fortressBitmap)))
+            // When
+            hudView.selectBuilding("fortress")
+            // Then
+            hudView.selectionBorders.keys.shouldContainExactly(WorldBuilderHudView.Tab.BUILDINGS)
+        }
+
+    @Test
+    fun `Stock should ask to open what the npc sells only when it is enabled`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            hudView.displayNpcs(listOf(WorldBuilderHudView.PaletteOption("alchemist", knightBitmap)))
+            hudView.displayTab(WorldBuilderHudView.Tab.NPCS)
+            addChild(hudView)
+            clickStock(hudView)
+            hudView.displayStock(isEnabled = true)
+            // When
+            clickStock(hudView)
+            // Then
+            paletteSelections.shouldContainExactly("stock")
         }
 }

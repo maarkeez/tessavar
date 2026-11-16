@@ -6,6 +6,7 @@ import com.mkz.tessavar.terrain.adapters.storage.InMemoryTerrainRepository
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanBeOccupied
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanNotBeOccupied
 import com.mkz.tessavar.terrain.usecases.queries.HasTerrainTransition
+import com.mkz.tessavar.terrain.usecases.queries.SearchTerrainById
 import com.mkz.tessavar.worldBuilder.adapters.storage.InMemoryWorldBuilderRepository
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderError.WorldNotCreated
@@ -26,7 +27,7 @@ class FillTileTest {
             create(terrainThatCanNotBeOccupied(id = "lava", transitionsTo = setOf("lava")))
             create(terrainThatCanBeOccupied(id = "water", transitionsTo = setOf("water")))
         }
-    private val fillTile = FillTile(worldBuilderRepository, HasTerrainTransition(terrainRepository), eventBus)
+    private val fillTile = FillTile(worldBuilderRepository, HasTerrainTransition(terrainRepository), SearchTerrainById(terrainRepository), eventBus)
 
     private fun givenWorld(
         tiles: List<List<String>>,
@@ -34,7 +35,7 @@ class FillTileTest {
     ) = worldBuilderRepository.save(
         WorldBuilder
             .create()
-            .import(WorldBuilderMother.file(tiles), currentVersion = 1, isKnownTerrain = { true }, canBeAdjacent = { _, _ -> true })
+            .import(WorldBuilderMother.file(tiles), currentVersion = 1, catalog = WorldBuilderMother.catalog(), isKnownTerrain = { true }, canBeAdjacent = { _, _ -> true }, isOccupiable = { true })
             .selectTerrain(selectedTerrainId)
             .pullEvents()
             .second,

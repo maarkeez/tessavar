@@ -11,6 +11,7 @@ import com.mkz.tessavar.telemetry.adapters.presentation.TelemetryApi
 import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.terrain.adapters.resources.ResourcesTerrainLoader
 import com.mkz.tessavar.worldBuilder.adapters.presentation.WorldBuilderApi
+import com.mkz.tessavar.worldBuilder.adapters.resources.ResourcesCatalog
 import korlibs.io.async.launchImmediately
 import korlibs.korge.scene.Scene
 import korlibs.korge.service.storage.IStorage
@@ -40,6 +41,7 @@ class WorldBuilderScene(
     val hudView = WorldBuilderHudView(messages)
     val resizeView = WorldBuilderResizeView(messages)
     val detailsView = WorldBuilderDetailsView(messages)
+    val stockView = WorldBuilderStockView(messages)
     val menuView = WorldBuilderMenuView()
 
     override suspend fun SContainer.sceneInit() {
@@ -54,9 +56,10 @@ class WorldBuilderScene(
 
         val terrainApi = TerrainApi(eventBus, ResourcesTerrainLoader())
         val battlefieldApi = BattlefieldApi(terrainApi, eventBus, ResourcesBattlefieldLoader(), TomlBattlefieldEncoder(), TomlBattlefieldDecoder())
-        val worldBuilderApi = WorldBuilderApi(terrainApi, battlefieldApi, eventBus, storage ?: views.storage)
+        val worldBuilderApi = WorldBuilderApi(terrainApi, battlefieldApi, eventBus, storage ?: views.storage, ResourcesCatalog())
         terrainApi.init()
         terrainApi.initialiseTerrains()
+        worldBuilderApi.init()
 
         WorldBuilderPresenter(
             battlefieldView = battlefieldView,
@@ -64,6 +67,7 @@ class WorldBuilderScene(
             hudView = hudView,
             resizeView = resizeView,
             detailsView = detailsView,
+            stockView = stockView,
             menuView = menuView,
             worldBuilderApi = worldBuilderApi,
             battlefieldApi = battlefieldApi,
@@ -74,6 +78,7 @@ class WorldBuilderScene(
             textPrompt = if (needsTextPrompt()) GameWindowTextPrompt(views.gameWindow) else null,
             coroutineScope = this@WorldBuilderScene,
             onLeft = { launchImmediately { sceneContainer.changeTo { MenuScene(localizationApi, telemetryApi, storage) } } },
+            onPlaytest = { worldFile -> launchImmediately { sceneContainer.changeTo { GameScene(localizationApi, telemetryApi, storage, playtestWorldFile = worldFile) } } },
             eventBus = eventBus,
         )
 
@@ -87,6 +92,7 @@ class WorldBuilderScene(
                     addChild(hudView)
                     addChild(resizeView)
                     addChild(detailsView)
+                    addChild(stockView)
                 }
             }
         }

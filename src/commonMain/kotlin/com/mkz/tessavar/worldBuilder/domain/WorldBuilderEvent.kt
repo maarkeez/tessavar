@@ -54,6 +54,7 @@ sealed interface WorldBuilderEvent : DomainEvent {
         val reason: Reason,
         val terrainId: String? = null,
         val adjacentTerrainId: String? = null,
+        val occupantId: String? = null,
     ) : WorldBuilderEvent {
         enum class Reason {
             NOT_A_WORLD,
@@ -61,8 +62,47 @@ sealed interface WorldBuilderEvent : DomainEvent {
             SIZE_OUT_OF_RANGE,
             UNKNOWN_TERRAIN,
             FORBIDDEN_ADJACENT_TERRAINS,
+            UNKNOWN_OCCUPANT,
+            DUPLICATE_OCCUPANT,
+            MISPLACED_OCCUPANT,
         }
     }
+
+    data class OccupantPlaced(
+        val occupantId: String,
+        val row: Int,
+        val column: Int,
+    ) : WorldBuilderEvent
+
+    data class OccupantPlaceRejected(
+        val row: Int,
+        val column: Int,
+        val reason: Reason,
+        val terrainId: String? = null,
+    ) : WorldBuilderEvent {
+        enum class Reason {
+            OUT_OF_WORLD,
+            NOT_OCCUPIABLE,
+            NOT_VACANT,
+        }
+    }
+
+    data class OccupantErased(
+        val occupantId: String,
+        val row: Int,
+        val column: Int,
+    ) : WorldBuilderEvent
+
+    data class NpcRestocked(
+        val npcId: String,
+        val stock: List<String>,
+    ) : WorldBuilderEvent
+
+    data class OccupiedTilePaintRejected(
+        val row: Int,
+        val column: Int,
+        val terrainId: String,
+    ) : WorldBuilderEvent
 
     data class TilePaintRejected(
         val row: Int,

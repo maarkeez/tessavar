@@ -6,6 +6,7 @@ import com.mkz.tessavar.terrain.adapters.storage.InMemoryTerrainRepository
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanBeOccupied
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanNotBeOccupied
 import com.mkz.tessavar.terrain.usecases.queries.HasTerrainTransition
+import com.mkz.tessavar.terrain.usecases.queries.SearchTerrainById
 import com.mkz.tessavar.worldBuilder.adapters.storage.InMemoryWorldBuilderRepository
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilder
 import com.mkz.tessavar.worldBuilder.domain.WorldBuilderError.WorldNotCreated
@@ -25,11 +26,11 @@ class PaintTileTest {
             create(terrainThatCanNotBeOccupied(id = "lava", transitionsTo = setOf("lava")))
             create(terrainThatCanBeOccupied(id = "water", transitionsTo = setOf("water")))
         }
-    private val paintTile = PaintTile(worldBuilderRepository, HasTerrainTransition(terrainRepository), eventBus)
+    private val paintTile = PaintTile(worldBuilderRepository, HasTerrainTransition(terrainRepository), SearchTerrainById(terrainRepository), eventBus)
 
     private fun givenWorld(vararg paintedTiles: Triple<Int, Int, String>) {
         var worldBuilder = WorldBuilder.create()
-        paintedTiles.forEach { (row, column, terrainId) -> worldBuilder = worldBuilder.selectTerrain(terrainId).paint(row, column) { _, _ -> true } }
+        paintedTiles.forEach { (row, column, terrainId) -> worldBuilder = worldBuilder.selectTerrain(terrainId).paint(row, column, canBeAdjacent = { _, _ -> true }, isOccupiable = { true }) }
         worldBuilderRepository.save(worldBuilder.pullEvents().second)
     }
 

@@ -35,3 +35,20 @@ suspend fun ViewsForTesting.clickTool(
 suspend fun ViewsForTesting.clickUndo(hudView: WorldBuilderHudView) = clickOn(hudView.undoButton)
 
 suspend fun ViewsForTesting.clickRedo(hudView: WorldBuilderHudView) = clickOn(hudView.redoButton)
+
+fun WorldBuilderHudView.paletteKeys(tab: WorldBuilderHudView.Tab): List<String> = paletteButtons.getValue(tab).keys.toList()
+
+fun WorldBuilderHudView.highlightedTab(): WorldBuilderHudView.Tab? = tabButtons.entries.firstOrNull { (_, button) -> button.bgColorOut == WorldBuilderHudView.SELECTED_TOOL_COLOR }?.key
+
+suspend fun ViewsForTesting.clickTab(
+    hudView: WorldBuilderHudView,
+    tab: WorldBuilderHudView.Tab,
+) = clickOn(hudView.tabButtons.getValue(tab))
+
+suspend fun ViewsForTesting.clickPaletteUnit(
+    hudView: WorldBuilderHudView,
+    playerId: String,
+    unitId: String,
+) = clickOn(hudView.paletteButtons.getValue(WorldBuilderHudView.Tab.UNITS).getValue("$playerId/$unitId"))
+
+suspend fun ViewsForTesting.clickStock(hudView: WorldBuilderHudView) = clickOn(hudView.stockButton)

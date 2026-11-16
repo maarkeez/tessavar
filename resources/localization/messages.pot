@@ -453,6 +453,36 @@ msgctxt "ui.worldBuilderHud.redo"
 msgid "Redo"
 msgstr ""
 
+#. A tool: tapping a tile places the building, battle unit or npc selected in the palette.
+msgctxt "ui.worldBuilderHud.place"
+msgid "Place"
+msgstr ""
+
+#. A tool: tapping a tile takes away the building, battle unit or npc standing on it.
+msgctxt "ui.worldBuilderHud.erase"
+msgid "Erase"
+msgstr ""
+
+#. The tab of the palette listing the buildings to place.
+msgctxt "ui.worldBuilderHud.buildings"
+msgid "Buildings"
+msgstr ""
+
+#. The tab of the palette listing the units to place, in a row for each player.
+msgctxt "ui.worldBuilderHud.units"
+msgid "Units"
+msgstr ""
+
+#. The tab of the palette listing the npcs to place.
+msgctxt "ui.worldBuilderHud.npcs"
+msgid "Npcs"
+msgstr ""
+
+#. Opens what the npc selected in the palette sells.
+msgctxt "ui.worldBuilderHud.stock"
+msgid "Stock"
+msgstr ""
+
 #. The title of the dialog that changes how many tiles tall and wide the world is.
 msgctxt "ui.worldBuilderResize.title"
 msgid "Resize the world"
@@ -491,6 +521,16 @@ msgctxt "ui.worldBuilderDetails.done"
 msgid "Done"
 msgstr ""
 
+#. The title of the dialog where the items an npc sells are chosen.
+msgctxt "ui.worldBuilderStock.title"
+msgid "{npc} sells"
+msgstr ""
+
+#. Closes the dialog of what an npc sells.
+msgctxt "ui.worldBuilderStock.done"
+msgid "Done"
+msgstr ""
+
 #. Opens the dialog that changes how many tiles tall and wide the world is.
 msgctxt "ui.worldBuilderMenu.resize"
 msgid "Resize"
@@ -499,6 +539,11 @@ msgstr ""
 #. Opens the dialog where the name of the world and its author are typed.
 msgctxt "ui.worldBuilderMenu.details"
 msgid "Details"
+msgstr ""
+
+#. Plays the world being built, coming back to the world builder when quitting.
+msgctxt "ui.worldBuilderMenu.playtest"
+msgid "Playtest"
 msgstr ""
 
 #. Imports a world from a file.
@@ -554,6 +599,46 @@ msgstr ""
 #. {terrain} and {adjacentTerrain}: the names of two terrains, e.g.: Lava and Water.
 msgctxt "ui.worldBuilder.forbiddenAdjacentTerrains"
 msgid "{terrain} can not be next to {adjacentTerrain}"
+msgstr ""
+
+#. Displayed when placing on, or painting under, something standing on a terrain nothing can stand on.
+msgctxt "ui.worldBuilder.notOccupiable"
+msgid "Nothing can stand on {terrain}"
+msgstr ""
+
+#. Displayed when placing on a tile where a building, a battle unit or an npc stands.
+msgctxt "ui.worldBuilder.notVacant"
+msgid "Something already stands there"
+msgstr ""
+
+#. Displayed when a building placed would stand partly out of the world.
+msgctxt "ui.worldBuilder.outOfWorld"
+msgid "It does not fit in the world"
+msgstr ""
+
+#. Displayed when an imported world names a building, unit, npc, player or item the game does not have.
+msgctxt "ui.worldBuilder.unknownOccupant"
+msgid "The world names {occupant}, which is not in the game"
+msgstr ""
+
+#. Displayed when an imported world places the same building, battle unit or npc twice.
+msgctxt "ui.worldBuilder.duplicateOccupant"
+msgid "The world places {occupant} twice"
+msgstr ""
+
+#. Displayed when something in an imported world stands out of it, on a terrain nothing can stand on, or on something else.
+msgctxt "ui.worldBuilder.misplacedOccupant"
+msgid "{occupant} does not stand on a free tile it can stand on"
+msgstr ""
+
+#. Displayed when Playtest is tapped in a world without a battle unit of the human player.
+msgctxt "ui.worldBuilder.noPlayerBattleUnit"
+msgid "Place a battle unit of {player} to playtest"
+msgstr ""
+
+#. Displayed when Playtest is tapped in a world without exactly one main quest.
+msgctxt "ui.worldBuilder.noMainQuest"
+msgid "The world needs one main quest to playtest"
 msgstr ""
 
 #. The kind of files the file dialog shows.

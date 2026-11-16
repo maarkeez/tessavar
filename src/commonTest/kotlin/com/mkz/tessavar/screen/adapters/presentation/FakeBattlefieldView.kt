@@ -91,6 +91,7 @@ class FakeBattlefieldView : BattlefieldView(GameSceneResourcesLoader()) {
     val updatedTerrains = mutableListOf<UpdatedTerrain>()
 
     val terrainBitmaps = mutableMapOf<String, Bitmap>()
+    val occupantBitmaps = mutableMapOf<String, Bitmap>()
 
     override fun setDelegate(delegate: Delegate) {
         this.delegate = delegate
@@ -251,6 +252,8 @@ class FakeBattlefieldView : BattlefieldView(GameSceneResourcesLoader()) {
     ) {
         updatedTerrains += UpdatedTerrain(battlefield, positions.toSet())
     }
+
+    override fun occupantBitmap(path: String): Bitmap = occupantBitmaps.getOrPut(path) { Bitmap32(1, 1) }
 
     override fun terrainTileBitmap(
         terrainId: String,

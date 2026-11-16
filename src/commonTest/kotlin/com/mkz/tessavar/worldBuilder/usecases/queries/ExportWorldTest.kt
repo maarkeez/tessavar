@@ -21,7 +21,7 @@ class ExportWorldTest {
                 .create()
                 .resize(rows = 1, columns = 2)
                 .selectTerrain("lava")
-                .paint(row = 0, column = 1) { _, _ -> true }
+                .paint(row = 0, column = 1, canBeAdjacent = { _, _ -> true }, isOccupiable = { true })
         worldBuilderRepository.save(worldBuilder)
         // When
         val exported = exportWorld()

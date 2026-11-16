@@ -6,10 +6,13 @@ import com.mkz.tessavar.screen.adapters.presentation.clickBuildWorld
 import com.mkz.tessavar.screen.adapters.presentation.clickMenuButton
 import com.mkz.tessavar.screen.adapters.presentation.clickMenuOption
 import com.mkz.tessavar.screen.adapters.presentation.clickPaletteTerrain
+import com.mkz.tessavar.screen.adapters.presentation.clickPaletteUnit
 import com.mkz.tessavar.screen.adapters.presentation.clickRowsStep
+import com.mkz.tessavar.screen.adapters.presentation.clickTab
 import com.mkz.tessavar.screen.adapters.presentation.clickTile
 import com.mkz.tessavar.screen.adapters.presentation.clickTool
 import com.mkz.tessavar.screen.adapters.presentation.clickUndo
+import com.mkz.tessavar.screen.adapters.presentation.hasBattleUnitAt
 import com.mkz.tessavar.screen.adapters.presentation.isBattlefieldDisplayed
 import com.mkz.tessavar.screen.adapters.presentation.menuView
 import com.mkz.tessavar.screen.adapters.presentation.paletteTerrainIds
@@ -169,5 +172,20 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
             waitUntil { worldBuilderInfoView()!!.subtitleText() == "The file can not be read" }
             worldBuilderInfoView()!!.subtitleText() shouldBe "The file can not be read"
             battlefieldView()!!.tileCount() shouldBe 256
+        }
+
+    @Test
+    fun `should place a battle unit of the player selected on the tapped tile when the Units tab is displayed`() =
+        sharedViewsTest {
+            // Given
+            startWorldBuilder()
+            val hudView = worldBuilderHudView()!!
+            clickTab(hudView, WorldBuilderHudView.Tab.UNITS)
+            clickPaletteUnit(hudView, "player-two", "rat")
+            // When
+            clickTile(battlefieldView()!!, row = 3, column = 4)
+            // Then
+            waitUntil { battlefieldView()!!.hasBattleUnitAt(3, 4) }
+            battlefieldView()!!.hasBattleUnitAt(3, 4) shouldBe true
         }
 }
