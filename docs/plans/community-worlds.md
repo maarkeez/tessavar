@@ -1,6 +1,6 @@
 # Plan: anyone builds a world in the world builder and shares it by pull request, played by everyone as a community world
 
-> **Status:** in progress: M1 to M4 built on `main`, their screenshots still to be approved.
+> **Status:** built on `main`, the screenshots of M1 to M5 still to be approved.
 >
 > **Summary:** Today the world builder only paints terrain. E.g.: a player paints a lake of water on a 24 × 32 world,
 > taps Export, and gets the TOML of `resources/battlefield/battlefield.toml` on their clipboard, which nobody else can
@@ -72,7 +72,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 | M2 | One world format     | The campaign is played from `resources/world/tessavar.toml` as before; saves record their world; the world builder imports and exports it unchanged and edits its name and author in Details.  | ✅      | fae1b7f6 |
 | M3 | Placing and playtest | The world builder places and erases buildings, battle units and npcs with their stock, and playtests the world. Screenshots approved.                                                             | ✅      | dd21f702 |
 | M4 | Quest editor         | The world builder configures main and side quests, and the tiles of the current visit task are marked on the battlefield, in the campaign too. Screenshots approved.                              | ✅      | 08110784 |
-| M5 | Community worlds     | The main menu lists 2 community worlds by maarkeez; `GAME_STARTED` carries the world id under the privacy notice version 4; CI checks every world file; the contributing docs and templates are on `main`. | ⬜      |         |
+| M5 | Community worlds     | The main menu lists 2 community worlds by maarkeez; `GAME_STARTED` carries the world id under the privacy notice version 4; CI checks every world file; the contributing docs and templates are on `main`. | ✅      | 90398319 |
 
 ### M1 commits
 
@@ -403,3 +403,32 @@ What stays in the catalog: `resources/building/fortress.toml` keeps `rows` and `
   saves any world and tells the first thing it lacks. This replaces the main quest count of M3.
 - **Visit markers**: `QuestMarkerDto` gains `tiles` and the sign `VISIT_TASK`, and its `npcId` may be null; the quest
   marker is drawn over every tile of the current visit task.
+
+### M5
+
+- **`CommunityWorldsPresenter`** opens `CommunityWorldsView` from the menu, like `LoadGamePresenter` the save slots: Back
+  is in the row of the call to action, and a tap starts `GameScene` with the world id. A third story, **Screen /
+  Community worlds › Many worlds**, shows the list scrolled by dragging.
+- **`WorldResourcesTest`** imports every world file into the world builder, which covers the occupants standing on
+  vacant and occupiable tiles, and also sets up a game in each, so a world file the world builder accepts always plays.
+  It checks a world file is named after its world's name, as Export names it, and has a name and an author. A world id
+  already taken can't be told from the files: GitHub's upload says it replaces a file, and the maintainer sees it.
+- **CI runs on pull requests**: `gradle.yml` only ran on pushes, so a world uploaded from a fork would not have been
+  checked. Its concurrency group is now per branch.
+- **Telemetry**: `RequestStartGame` carries the world id, given by `SetUpGame(worldId)`. The game drops a world id that
+  isn't `[a-z0-9-]{1,64}`, as the collector would refuse it. The collector's README gains a query of the games started
+  per world.
+- **How to share** is added to the world builder's menu in M5, with the docs it opens: `CONTRIBUTING.md#share-a-world`.
+  **Screen / World builder menu › Open** lists Quests too, which M4 left out.
+- **The docs** follow the structure of the `diataxis-how-to-writer` and `diataxis-reference-writer` skills, written from
+  the code rather than from their interviews. `CONTRIBUTING.md` already existed and gains a Share a world section.
+- **A tile in a corner of void isn't occupiable**, as the game's `Battlefield` says (a terrain nothing can stand on both
+  above or below a tile and to its side), so the game could not deploy a battle unit the world builder had placed
+  there. The world builder now refuses placing there, with `OccupantPlaceRejected.Reason.CORNERED`, and painting or
+  filling that would corner something standing next to it, and an import with such an occupant. The rule is written
+  again in `WorldBuilder`, rather than queried from `battlefield`, and the game set up in `WorldResourcesTest` catches
+  the two drifting apart.
+- **The seed worlds** are Ashen Pass and The Drowned Mill, generated with a script that checks the terrain transitions
+  and the corners, with the CPU's battle units out of sight of the start. `CommunityWorldsEndToEndTest` starts one from
+  the menu and its main quest.
+- **Not built**: the Buffer post for every merged community world, which is done by hand.
