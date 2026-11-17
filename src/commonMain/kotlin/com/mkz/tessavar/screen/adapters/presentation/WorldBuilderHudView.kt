@@ -21,6 +21,7 @@ import korlibs.korge.view.View
 import korlibs.korge.view.container
 import korlibs.korge.view.image
 import korlibs.korge.view.solidRect
+import korlibs.korge.view.xy
 import korlibs.math.geom.Point
 import korlibs.math.geom.Size
 
@@ -34,6 +35,8 @@ open class WorldBuilderHudView(
         const val HISTORY_GAP = 20.0
         const val TOOL_BUTTON_HEIGHT = 36.0
         const val STOCK_BUTTON_WIDTH = 90.0
+        const val ICON_BOX = 32.0
+        const val DISABLED_ICON_ALPHA = 0.35
         val SELECTED_TOOL_COLOR = RGBA(0x00, 0x6A, 0xCC)
         val SELECTED_TOOL_OVER_COLOR = RGBA(0x00, 0x84, 0xFF)
 
@@ -51,6 +54,8 @@ open class WorldBuilderHudView(
     enum class Tool { PAINT, FILL, ERASE }
 
     enum class Tab { TERRAIN, BUILDINGS, UNITS, NPCS }
+
+    enum class ToolIcon { PAINT, FILL, ERASE, UNDO, REDO }
 
     data class TerrainOption(
         val terrainId: String,
@@ -105,6 +110,7 @@ open class WorldBuilderHudView(
     internal val paletteButtons = Tab.entries.associateWith { mutableMapOf<String, UIButton>() }
     internal val selectionBorders = mutableMapOf<Tab, SolidRect>()
     internal lateinit var stockButton: GameButton
+    internal val iconViews = mutableMapOf<ToolIcon, View>()
 
     internal val terrainPalette: Container get() = palettes.getValue(Tab.TERRAIN)
     internal val terrainButtons: Map<String, UIButton> get() = paletteButtons.getValue(Tab.TERRAIN)
@@ -151,8 +157,38 @@ open class WorldBuilderHudView(
         displayedTab = tab
         tabButtons.forEach { (buttonTab, button) -> button.highlight(buttonTab == tab) }
         palettes.forEach { (paletteTab, palette) -> palette.visible = paletteTab == tab }
-        toolButtons.getValue(Tool.PAINT).text = toolLabel(Tool.PAINT)
+        if (iconViews.isEmpty()) toolButtons.getValue(Tool.PAINT).text = toolLabel(Tool.PAINT)
         toolButtons.getValue(Tool.FILL).enabled = tab == Tab.TERRAIN
+        dimDisabledIcons()
+    }
+
+    /** Draws an icon on each tool button instead of its label, in a box of [ICON_BOX] at its middle. */
+    open fun displayToolIcons(drawIcon: Container.(ToolIcon) -> Unit) {
+        iconButtons().forEach { (icon, button) ->
+            button.text = ""
+            button.textView.visible = false
+            iconViews.remove(icon)?.removeFromParent()
+            iconViews[icon] =
+                button.container {
+                    xy((button.width - ICON_BOX) / 2, (button.height - ICON_BOX) / 2)
+                    drawIcon(icon)
+                }
+        }
+        dimDisabledIcons()
+    }
+
+    private fun iconButtons(): Map<ToolIcon, GameButton> =
+        mapOf(
+            ToolIcon.PAINT to toolButtons.getValue(Tool.PAINT),
+            ToolIcon.FILL to toolButtons.getValue(Tool.FILL),
+            ToolIcon.ERASE to toolButtons.getValue(Tool.ERASE),
+            ToolIcon.UNDO to undoButton,
+            ToolIcon.REDO to redoButton,
+        )
+
+    private fun dimDisabledIcons() {
+        if (iconViews.isEmpty()) return
+        iconButtons().forEach { (icon, button) -> iconViews[icon]?.alpha = if (button.enabled) 1.0 else DISABLED_ICON_ALPHA }
     }
 
     open fun displayHistory(
@@ -161,6 +197,7 @@ open class WorldBuilderHudView(
     ) {
         undoButton.enabled = canUndo
         redoButton.enabled = canRedo
+        dimDisabledIcons()
     }
 
     open fun selectTool(tool: Tool) {

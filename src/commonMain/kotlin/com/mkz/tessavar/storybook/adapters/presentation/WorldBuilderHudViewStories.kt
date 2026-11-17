@@ -1,12 +1,16 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.BattlefieldView
+import com.mkz.tessavar.screen.adapters.presentation.ToolGlyphs.toolGlyph
 import com.mkz.tessavar.screen.adapters.presentation.WorldBuilderHudView
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ComponentDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ControlDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.StoryDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ValueDto
+import korlibs.korge.view.Container
 import korlibs.korge.view.View
+import korlibs.korge.view.image
+import korlibs.korge.view.xy
 
 object WorldBuilderHudViewStories : StoryBinding {
     private const val DEFAULT_TERRAIN = "grass"
@@ -18,6 +22,10 @@ object WorldBuilderHudViewStories : StoryBinding {
     private const val TOOL = "tool"
     private const val CAN_UNDO = "canUndo"
     private const val CAN_REDO = "canRedo"
+    private const val ICONS = "icons"
+
+    /** PROTOTYPE: how the tool buttons show what they do, to compare the options. */
+    enum class Icons { LABELS, PIXEL_ART, FREE_SET, SHAPES }
 
     private val default = StoryDto(id = "screen-world-builder-hud--default", name = "Default", description = "Paint and the grass selected, with edits to undo and to redo.", args = emptyMap())
     private val otherTerrain =
@@ -68,6 +76,29 @@ object WorldBuilderHudViewStories : StoryBinding {
             args = mapOf(TAB to ValueDto.text(WorldBuilderHudView.Tab.NPCS.name), CAN_RESTOCK to ValueDto.boolean(true)),
         )
 
+    private fun iconStory(
+        icons: Icons,
+        name: String,
+        description: String,
+        tab: WorldBuilderHudView.Tab = WorldBuilderHudView.Tab.TERRAIN,
+        canRedo: Boolean = true,
+    ) = StoryDto(
+        id = "screen-world-builder-hud--icons-${icons.name.lowercase().replace('_', '-')}" + if (tab != WorldBuilderHudView.Tab.TERRAIN) "-${tab.name.lowercase()}" else "",
+        name = name,
+        description = description,
+        args = mapOf(ICONS to ValueDto.text(icons.name), TAB to ValueDto.text(tab.name), CAN_REDO to ValueDto.boolean(canRedo)),
+    )
+
+    private val iconStories =
+        listOf(
+            iconStory(Icons.PIXEL_ART, "Icons: pixel art", "PROTOTYPE: our own 16x16 FamiCube icons, drawn with the pixel tool, at 2x. Redo disabled.", canRedo = false),
+            iconStory(Icons.FREE_SET, "Icons: free set", "PROTOTYPE: Lucide icons (ISC), rasterized white. Redo disabled.", canRedo = false),
+            iconStory(Icons.SHAPES, "Icons: shapes", "PROTOTYPE: flat white glyphs drawn as vector shapes in code. Redo disabled.", canRedo = false),
+            iconStory(Icons.PIXEL_ART, "Icons: pixel art, buildings", "PROTOTYPE: pixel art icons on the Buildings tab, Fill disabled.", WorldBuilderHudView.Tab.BUILDINGS),
+            iconStory(Icons.FREE_SET, "Icons: free set, buildings", "PROTOTYPE: free set icons on the Buildings tab, Fill disabled.", WorldBuilderHudView.Tab.BUILDINGS),
+            iconStory(Icons.SHAPES, "Icons: shapes, buildings", "PROTOTYPE: shape icons on the Buildings tab, Fill disabled.", WorldBuilderHudView.Tab.BUILDINGS),
+        )
+
     override fun component(context: StoryContext) =
         ComponentDto(
             id = "screen-world-builder-hud",
@@ -85,6 +116,7 @@ object WorldBuilderHudViewStories : StoryBinding {
                     ControlDto.boolean(CAN_UNDO),
                     ControlDto.boolean(CAN_REDO),
                     ControlDto.boolean(CAN_RESTOCK),
+                    ControlDto.enum(ICONS, Icons.entries.map { icons -> icons.name }),
                 ),
             args =
                 mapOf(
@@ -94,8 +126,9 @@ object WorldBuilderHudViewStories : StoryBinding {
                     SELECTED_TERRAIN to ValueDto.text(DEFAULT_TERRAIN),
                     CAN_UNDO to ValueDto.boolean(true),
                     CAN_REDO to ValueDto.boolean(true),
+                    ICONS to ValueDto.text(Icons.LABELS.name),
                 ),
-            stories = listOf(default, otherTerrain, fillTool, nothingToUndo, buildingsTab, unitsTab, npcsTab),
+            stories = listOf(default, otherTerrain, fillTool, nothingToUndo, buildingsTab, unitsTab, npcsTab) + iconStories,
         )
 
     private const val FORTRESS = "fortress"
@@ -154,6 +187,26 @@ object WorldBuilderHudViewStories : StoryBinding {
             displayNpcs(npcs)
             npcs.firstOrNull()?.let { npc -> selectNpc(npc.id) }
             displayStock(isEnabled = args.boolean(CAN_RESTOCK))
+            when (Icons.valueOf(args.text(ICONS))) {
+                Icons.LABELS -> Unit
+                Icons.PIXEL_ART -> displayToolIcons { icon -> bitmapIcon(context, "ui/tool-${icon.name.lowercase()}.png", scale = 2.0, smooth = false) }
+                Icons.FREE_SET -> displayToolIcons { icon -> bitmapIcon(context, "ui/lucide/tool-${icon.name.lowercase()}.png", scale = 28.0 / 96.0, smooth = true) }
+                Icons.SHAPES -> displayToolIcons { icon -> toolGlyph(icon) }
+            }
+        }
+    }
+
+    private fun Container.bitmapIcon(
+        context: StoryContext,
+        path: String,
+        scale: Double,
+        smooth: Boolean,
+    ) {
+        val bitmap = context.resourcesLoader.bitmapOrNull(path) ?: return
+        image(bitmap) {
+            this.scale = scale
+            smoothing = smooth
+            xy((WorldBuilderHudView.ICON_BOX - bitmap.width * scale) / 2, (WorldBuilderHudView.ICON_BOX - bitmap.height * scale) / 2)
         }
     }
 }
