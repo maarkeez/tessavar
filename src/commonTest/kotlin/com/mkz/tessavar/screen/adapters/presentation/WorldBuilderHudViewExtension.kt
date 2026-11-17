@@ -23,7 +23,13 @@ suspend fun ViewsForTesting.clickPaletteTerrain(
     terrainId: String,
 ) = clickOn(hudView.terrainButtons.getValue(terrainId))
 
-fun WorldBuilderHudView.toolLabels(): List<String> = toolButtons.values.map { button -> button.text }
+fun WorldBuilderHudView.toolIcons(): List<WorldBuilderHudView.ToolIcon> = toolButtons.values.map { button -> displayedIcons.getValue(button) }
+
+fun WorldBuilderHudView.historyIcons(): List<WorldBuilderHudView.ToolIcon> = listOf(undoButton, redoButton).map { button -> displayedIcons.getValue(button) }
+
+fun WorldBuilderHudView.toolIconImage(tool: WorldBuilderHudView.Tool): Image = toolButtons.getValue(tool).findViewByName(WorldBuilderHudView.TOOL_ICON) as Image
+
+fun WorldBuilderHudView.redoIconImage(): Image = redoButton.findViewByName(WorldBuilderHudView.TOOL_ICON) as Image
 
 fun WorldBuilderHudView.highlightedTools(): List<WorldBuilderHudView.Tool> = toolButtons.filterValues { button -> button.bgColorOut == WorldBuilderHudView.SELECTED_TOOL_COLOR }.keys.toList()
 
@@ -52,3 +58,5 @@ suspend fun ViewsForTesting.clickPaletteUnit(
 ) = clickOn(hudView.paletteButtons.getValue(WorldBuilderHudView.Tab.UNITS).getValue("$playerId/$unitId"))
 
 suspend fun ViewsForTesting.clickStock(hudView: WorldBuilderHudView) = clickOn(hudView.stockButton)
+
+fun Image.isDimmed(): Boolean = alpha < 1.0

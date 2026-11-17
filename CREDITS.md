@@ -2,8 +2,8 @@
 
 ## Art
 
-- **maarkeez**: the Mage (the hero), the Viking warrior, the Herbalist and the Elf, with their portraits, and the
-  terrain.
+- **maarkeez**: the Mage (the hero), the Viking warrior, the Herbalist and the Elf, with their portraits, the
+  terrain, and the world builder's tool icons.
 - **[Kenney](https://kenney.nl)**: placeholder enemies and npcs from
   [Tiny Battle](https://kenney.nl/assets/tiny-battle), released under
   [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). They will be replaced by art drawn for Tessavar.

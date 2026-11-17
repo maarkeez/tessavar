@@ -3,6 +3,8 @@ package com.mkz.tessavar.screen.adapters.presentation
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.bitmap.Bitmap
+import korlibs.image.bitmap.Bitmaps
+import korlibs.image.bitmap.slice
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.input.onClick
@@ -16,11 +18,13 @@ import korlibs.korge.ui.uiSpacing
 import korlibs.korge.ui.uiText
 import korlibs.korge.ui.uiVerticalStack
 import korlibs.korge.view.Container
+import korlibs.korge.view.Image
 import korlibs.korge.view.SolidRect
 import korlibs.korge.view.View
 import korlibs.korge.view.container
 import korlibs.korge.view.image
 import korlibs.korge.view.solidRect
+import korlibs.korge.view.xy
 import korlibs.math.geom.Point
 import korlibs.math.geom.Size
 
@@ -34,6 +38,15 @@ open class WorldBuilderHudView(
         const val HISTORY_GAP = 20.0
         const val TOOL_BUTTON_HEIGHT = 36.0
         const val STOCK_BUTTON_WIDTH = 90.0
+        const val ICON_SCALE = 2.0
+        const val DISABLED_ICON_ALPHA = 0.35
+        const val TOOL_ICON = "TOOL_ICON"
+
+        fun toolIcons(resourcesLoader: GameSceneResourcesLoader): Map<ToolIcon, Bitmap> =
+            ToolIcon.entries
+                .mapNotNull { icon -> resourcesLoader.bitmapOrNull("ui/tool-${icon.name.lowercase()}.png")?.let { bitmap -> icon to bitmap } }
+                .toMap()
+
         val SELECTED_TOOL_COLOR = RGBA(0x00, 0x6A, 0xCC)
         val SELECTED_TOOL_OVER_COLOR = RGBA(0x00, 0x84, 0xFF)
 
@@ -51,6 +64,8 @@ open class WorldBuilderHudView(
     enum class Tool { PAINT, FILL, ERASE }
 
     enum class Tab { TERRAIN, BUILDINGS, UNITS, NPCS }
+
+    enum class ToolIcon { PAINT, PLACE, FILL, ERASE, UNDO, REDO }
 
     data class TerrainOption(
         val terrainId: String,
@@ -105,6 +120,8 @@ open class WorldBuilderHudView(
     internal val paletteButtons = Tab.entries.associateWith { mutableMapOf<String, UIButton>() }
     internal val selectionBorders = mutableMapOf<Tab, SolidRect>()
     internal lateinit var stockButton: GameButton
+    private var toolIcons: Map<ToolIcon, Bitmap> = emptyMap()
+    internal val displayedIcons = mutableMapOf<GameButton, ToolIcon>()
 
     internal val terrainPalette: Container get() = palettes.getValue(Tab.TERRAIN)
     internal val terrainButtons: Map<String, UIButton> get() = paletteButtons.getValue(Tab.TERRAIN)
@@ -121,15 +138,15 @@ open class WorldBuilderHudView(
                 }
             }
             uiHorizontalStack(padding = 10.0) {
-                Tool.entries.forEach { tool -> toolButtons[tool] = toolButton(toolLabel(tool), tool) }
+                Tool.entries.forEach { tool -> toolButtons[tool] = toolButton(tool) }
                 uiSpacing(Size(HISTORY_GAP, 0))
                 undoButton =
-                    gameButton(label = messages[UiMessage.WORLD_BUILDER_HUD_UNDO], size = Size(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)) {
+                    iconButton(ToolIcon.UNDO) {
                         enabled = false
                         onClick { if (enabled) delegate?.undoSelected() }
                     }
                 redoButton =
-                    gameButton(label = messages[UiMessage.WORLD_BUILDER_HUD_REDO], size = Size(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)) {
+                    iconButton(ToolIcon.REDO) {
                         enabled = false
                         onClick { if (enabled) delegate?.redoSelected() }
                     }
@@ -151,8 +168,14 @@ open class WorldBuilderHudView(
         displayedTab = tab
         tabButtons.forEach { (buttonTab, button) -> button.highlight(buttonTab == tab) }
         palettes.forEach { (paletteTab, palette) -> palette.visible = paletteTab == tab }
-        toolButtons.getValue(Tool.PAINT).text = toolLabel(Tool.PAINT)
+        toolButtons.getValue(Tool.PAINT).showIcon(if (tab == Tab.TERRAIN) ToolIcon.PAINT else ToolIcon.PLACE)
         toolButtons.getValue(Tool.FILL).enabled = tab == Tab.TERRAIN
+        dimDisabledIcons()
+    }
+
+    open fun displayToolIcons(icons: Map<ToolIcon, Bitmap>) {
+        toolIcons = icons
+        displayedIcons.forEach { (button, icon) -> button.showIcon(icon) }
     }
 
     open fun displayHistory(
@@ -161,6 +184,7 @@ open class WorldBuilderHudView(
     ) {
         undoButton.enabled = canUndo
         redoButton.enabled = canRedo
+        dimDisabledIcons()
     }
 
     open fun selectTool(tool: Tool) {
@@ -245,13 +269,6 @@ open class WorldBuilderHudView(
             Tab.NPCS -> messages[UiMessage.WORLD_BUILDER_HUD_NPCS]
         }
 
-    private fun toolLabel(tool: Tool): String =
-        when (tool) {
-            Tool.PAINT -> if (displayedTab == Tab.TERRAIN) messages[UiMessage.WORLD_BUILDER_HUD_PAINT] else messages[UiMessage.WORLD_BUILDER_HUD_PLACE]
-            Tool.FILL -> messages[UiMessage.WORLD_BUILDER_HUD_FILL]
-            Tool.ERASE -> messages[UiMessage.WORLD_BUILDER_HUD_ERASE]
-        }
-
     private fun unitKey(
         playerId: String,
         unitId: String,
@@ -321,11 +338,40 @@ open class WorldBuilderHudView(
         bgColorOver = if (isSelected) SELECTED_TOOL_OVER_COLOR else GameButton.GREY_OVER
     }
 
-    private fun Container.toolButton(
-        label: String,
-        tool: Tool,
-    ): GameButton =
-        gameButton(label = label, size = Size(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)) {
+    private fun Container.toolButton(tool: Tool): GameButton =
+        iconButton(
+            when (tool) {
+                Tool.PAINT -> ToolIcon.PAINT
+                Tool.FILL -> ToolIcon.FILL
+                Tool.ERASE -> ToolIcon.ERASE
+            },
+        ) {
             onClick { if (enabled) delegate?.toolSelected(tool) }
         }
+
+    private fun Container.iconButton(
+        icon: ToolIcon,
+        block: GameButton.() -> Unit,
+    ): GameButton =
+        gameButton(label = "", size = Size(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)) {
+            image(Bitmaps.transparent) {
+                name = TOOL_ICON
+                scale = ICON_SCALE
+                smoothing = false
+            }
+            showIcon(icon)
+            block()
+        }
+
+    private fun GameButton.showIcon(icon: ToolIcon) {
+        displayedIcons[this] = icon
+        val image = findViewByName(TOOL_ICON) as? Image ?: return
+        val bitmap = toolIcons[icon]?.slice() ?: Bitmaps.transparent
+        image.bitmap = bitmap
+        image.xy((width - bitmap.width * ICON_SCALE) / 2, (height - bitmap.height * ICON_SCALE) / 2)
+    }
+
+    private fun dimDisabledIcons() {
+        displayedIcons.keys.forEach { button -> (button.findViewByName(TOOL_ICON) as? Image)?.alpha = if (button.enabled) 1.0 else DISABLED_ICON_ALPHA }
+    }
 }

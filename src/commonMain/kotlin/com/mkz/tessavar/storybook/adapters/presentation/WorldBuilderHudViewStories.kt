@@ -40,7 +40,7 @@ object WorldBuilderHudViewStories : StoryBinding {
         StoryDto(
             id = "screen-world-builder-hud--nothing-to-undo",
             name = "Nothing to undo",
-            description = "A new world: Undo and Redo are disabled until the world is edited.",
+            description = "A new world: Undo and Redo are disabled, their icons dimmed, until the world is edited.",
             args = mapOf(CAN_UNDO to ValueDto.boolean(false), CAN_REDO to ValueDto.boolean(false)),
         )
 
@@ -48,7 +48,7 @@ object WorldBuilderHudViewStories : StoryBinding {
         StoryDto(
             id = "screen-world-builder-hud--buildings-tab",
             name = "Buildings tab",
-            description = "The buildings to place, the first selected: Paint reads Place, and Fill is disabled.",
+            description = "The buildings to place, the first selected: Paint shows the Place icon, a pin, and Fill is disabled and dimmed.",
             args = mapOf(TAB to ValueDto.text(WorldBuilderHudView.Tab.BUILDINGS.name)),
         )
 
@@ -116,6 +116,7 @@ object WorldBuilderHudViewStories : StoryBinding {
                 WorldBuilderHudView.TerrainOption(terrainId = terrainId, bitmap = battlefieldView.terrainTileBitmap(terrainId, terrainTransition = null))
             }
         return WorldBuilderHudView(context.messages).apply {
+            displayToolIcons(WorldBuilderHudView.toolIcons(context.resourcesLoader))
             setDelegate(
                 object : WorldBuilderHudView.Delegate {
                     override fun toolSelected(tool: WorldBuilderHudView.Tool) = context.action("toolSelected", tool.name, setArg = TOOL to ValueDto.text(tool.name))

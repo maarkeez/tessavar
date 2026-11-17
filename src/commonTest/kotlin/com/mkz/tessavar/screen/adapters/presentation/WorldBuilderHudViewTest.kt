@@ -60,6 +60,19 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
     private val lavaBitmap = Bitmap32(16, 16, Colors.RED)
     private val terrains = listOf(WorldBuilderHudView.TerrainOption("lava", lavaBitmap), WorldBuilderHudView.TerrainOption("sand", sandBitmap))
 
+    private val paintIcon = Bitmap32(16, 16, Colors.ORANGE)
+    private val placeIcon = Bitmap32(16, 16, Colors.RED)
+    private val fillIcon = Bitmap32(16, 16, Colors.BLUE)
+    private val toolIcons =
+        WorldBuilderHudView.ToolIcon.entries.associateWith { icon ->
+            when (icon) {
+                WorldBuilderHudView.ToolIcon.PAINT -> paintIcon
+                WorldBuilderHudView.ToolIcon.PLACE -> placeIcon
+                WorldBuilderHudView.ToolIcon.FILL -> fillIcon
+                else -> Bitmap32(16, 16, Colors.WHITE)
+            }
+        }
+
     private fun newHudView() = WorldBuilderHudView(MessagesMother.messages()).also { hudView -> hudView.setDelegate(delegate) }
 
     @Test
@@ -101,12 +114,45 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
         }
 
     @Test
-    fun `WorldBuilderHudView should display the paint, fill and erase tools when it is created`() =
+    fun `WorldBuilderHudView should display the paint, fill and erase tools, then undo and redo, as icons without a label when it is created`() =
         sharedViewsTest {
             // When
             val hudView = newHudView()
             // Then
-            hudView.toolLabels().shouldContainExactly("Paint", "Fill", "Erase")
+            hudView.toolIcons().shouldContainExactly(WorldBuilderHudView.ToolIcon.PAINT, WorldBuilderHudView.ToolIcon.FILL, WorldBuilderHudView.ToolIcon.ERASE)
+            hudView.historyIcons().shouldContainExactly(WorldBuilderHudView.ToolIcon.UNDO, WorldBuilderHudView.ToolIcon.REDO)
+            hudView.toolButtons.values
+                .map { button -> button.text }
+                .shouldContainExactly("", "", "")
+        }
+
+    @Test
+    fun `DisplayToolIcons should draw each tool's icon at twice its size and dim the icons of the disabled tools when the icons are displayed`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            hudView.displayHistory(canUndo = true, canRedo = false)
+            // When
+            hudView.displayToolIcons(toolIcons)
+            // Then
+            hudView.toolIconImage(WorldBuilderHudView.Tool.FILL).bitmap.base shouldBe fillIcon
+            hudView.toolIconImage(WorldBuilderHudView.Tool.FILL).scale shouldBe WorldBuilderHudView.ICON_SCALE
+            hudView.toolIconImage(WorldBuilderHudView.Tool.FILL).isDimmed() shouldBe false
+            hudView.redoIconImage().isDimmed() shouldBe true
+        }
+
+    @Test
+    fun `DisplayTab should show the place icon on Paint when a tab other than Terrain is displayed, and the paint icon again back on Terrain`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            hudView.displayToolIcons(toolIcons)
+            hudView.displayTab(WorldBuilderHudView.Tab.UNITS)
+            hudView.toolIconImage(WorldBuilderHudView.Tool.PAINT).bitmap.base shouldBe placeIcon
+            // When
+            hudView.displayTab(WorldBuilderHudView.Tab.TERRAIN)
+            // Then
+            hudView.toolIconImage(WorldBuilderHudView.Tool.PAINT).bitmap.base shouldBe paintIcon
         }
 
     @Test
@@ -186,7 +232,7 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
     private val knightBitmap = Bitmap32(16, 16, Colors.BLUE)
 
     @Test
-    fun `DisplayTab should display only its palette, read Place for Paint and disable Fill when a tab other than Terrain is displayed`() =
+    fun `DisplayTab should display only its palette, show the place icon on Paint and disable Fill when a tab other than Terrain is displayed`() =
         sharedViewsTest {
             // Given
             val hudView = newHudView()
@@ -198,7 +244,8 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
                 .filterValues { palette -> palette.visible }
                 .keys
                 .shouldContainExactly(WorldBuilderHudView.Tab.BUILDINGS)
-            hudView.toolLabels().shouldContainExactly("Place", "Fill", "Erase")
+            hudView.toolIcons().shouldContainExactly(WorldBuilderHudView.ToolIcon.PLACE, WorldBuilderHudView.ToolIcon.FILL, WorldBuilderHudView.ToolIcon.ERASE)
+            hudView.toolIconImage(WorldBuilderHudView.Tool.FILL).isDimmed() shouldBe true
             hudView.toolButtons.getValue(WorldBuilderHudView.Tool.FILL).enabled shouldBe false
         }
 

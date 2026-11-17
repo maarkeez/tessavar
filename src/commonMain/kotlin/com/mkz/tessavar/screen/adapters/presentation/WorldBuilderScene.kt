@@ -47,6 +47,7 @@ class WorldBuilderScene(
 
     override suspend fun SContainer.sceneInit() {
         resourcesLoader.load()
+        hudView.displayToolIcons(WorldBuilderHudView.toolIcons(resourcesLoader))
     }
 
     override suspend fun SContainer.sceneMain() {

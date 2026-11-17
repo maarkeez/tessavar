@@ -458,36 +458,6 @@ msgctxt "ui.worldBuilderHud.terrain"
 msgid "Terrain"
 msgstr ""
 
-#. A tool: tapping a tile paints it with the selected terrain.
-msgctxt "ui.worldBuilderHud.paint"
-msgid "Paint"
-msgstr ""
-
-#. A tool: tapping a tile paints every tile of the same terrain connected to it.
-msgctxt "ui.worldBuilderHud.fill"
-msgid "Fill"
-msgstr ""
-
-#. Takes back the last change to the world.
-msgctxt "ui.worldBuilderHud.undo"
-msgid "Undo"
-msgstr ""
-
-#. Makes again the last change to the world that was undone.
-msgctxt "ui.worldBuilderHud.redo"
-msgid "Redo"
-msgstr ""
-
-#. A tool: tapping a tile places the building, battle unit or npc selected in the palette.
-msgctxt "ui.worldBuilderHud.place"
-msgid "Place"
-msgstr ""
-
-#. A tool: tapping a tile takes away the building, battle unit or npc standing on it.
-msgctxt "ui.worldBuilderHud.erase"
-msgid "Erase"
-msgstr ""
-
 #. The tab of the palette listing the buildings to place.
 msgctxt "ui.worldBuilderHud.buildings"
 msgid "Buildings"
