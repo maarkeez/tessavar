@@ -1422,3 +1422,15 @@ _Avoid_: Load, parse
 
 **Rejected**:
 Said of a paint or an import that leaves the world as it was, as it breaks the rules of the battlefield.
+
+#### History
+
+**Edit**:
+A change the player makes to the world, which can be undone.
+_Avoid_: Action, change, step
+
+**Undo**:
+Reverting the last edit.
+
+**Redo**:
+Making again the last edit undone.
