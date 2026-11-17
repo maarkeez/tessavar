@@ -2,8 +2,7 @@
 
 The telemetry collector receives the product events of the game deployed to GitHub Pages and keeps them in a D1
 database in the EU for 3 months. It is a Cloudflare Worker, `telemetry-collector`, on the free plan, at
-`https://telemetry-collector.tessavar.workers.dev`. Why it is built this way is in [ADR 0018](../docs/adr/0018-product-events-kept-by-our-own-telemetry-collector-on-cloudflare.md),
-and what it does in the [telemetry collector plan](../docs/plans/telemetry-collector.md).
+`https://telemetry-collector.tessavar.workers.dev`. Why it is built this way is in [ADR 0018](../docs/adr/0018-product-events-kept-by-our-own-telemetry-collector-on-cloudflare.md).
 
 - `POST /product-events` with `{"productEvents": [...]}`, 1 to 100 product events and at most 64 KB, from
   `https://maarkeez.github.io` only. It answers 204 when the batch is kept, 400 when it is malformed, 403 for another

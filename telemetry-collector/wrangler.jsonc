@@ -1,5 +1,5 @@
 // The telemetry collector: receives the product events of the game deployed to GitHub Pages and keeps them in D1, in the
-// EU, for 3 months. See docs/plans/telemetry-collector.md and docs/adr/0018.
+// EU, for 3 months. See README.md and docs/adr/0018.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "telemetry-collector",

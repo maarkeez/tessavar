@@ -11,11 +11,11 @@
 > campaign is the world file `tessavar.toml`. The world builder edits every part of a world, playtests it and saves it
 > as a world file, and an author opens a pull request that adds it. Once merged, it is listed under Community worlds on
 > the main menu for every player. It builds on the glossary's **World**, **Campaign**, **Community world**, **World
-> file**, **World version**, **Author**, **Playable**, **Playtest**, **Fill**, **Place** and **Erase**, and on
-> [the campaign is a world like any other](../adr/0020-the-campaign-is-a-world-like-any-other.md),
+> file**, **World version**, **Author**, **Playable**, **Playtest**, **Fill**, **Place**, **Erase** and **Referral**,
+> and on [the campaign is a world like any other](../adr/0020-the-campaign-is-a-world-like-any-other.md),
 > [community worlds arrive by pull request](../adr/0021-community-worlds-arrive-by-pull-request.md),
 > [a world file holds its English text](../adr/0022-a-world-file-holds-its-english-text.md),
-> [saves are not migrated](../adr/0011-no-save-migrations.md) and the [referral plan](referral.md).
+> and [saves are not migrated](../adr/0011-no-save-migrations.md).
 
 ## Decisions
 

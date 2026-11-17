@@ -172,7 +172,7 @@ extensions.getByType<KotlinMultiplatformExtension>().sourceSets.named("commonTes
 
 // The address of the telemetry collector the game sends its product events to. Only the deploy to GitHub Pages passes
 // it, e.g.: ./gradlew browserReleaseWebpack -Ptessavar.telemetryCollectorUrl=https://telemetry-collector.tessavar.workers.dev,
-// so playing locally, on the JVM, in the tests or in the Storybook sends nothing. See docs/plans/telemetry-collector.md.
+// so playing locally, on the JVM, in the tests or in the Storybook sends nothing. See telemetry-collector/README.md.
 val telemetryCollectorUrl =
     tasks.register<TelemetryCollectorUrlTask>("telemetryCollectorUrl") {
         group = "build"
