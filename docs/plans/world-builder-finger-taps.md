@@ -1,6 +1,6 @@
 # Plan: undo and redo in the world builder with a two- and a three-finger tap
 
-> **Status:** built on `main` in 330ebfaa, the screenshots still to be approved.
+> **Status:** done, built on `main` in 330ebfaa and approved on screenshots.
 >
 > **Summary:** In the world builder, Undo and Redo are two icon buttons in the HUD, after Paint, Fill and Erase. On a
 > phone, undoing the lava tile just painted means reaching down to a small button under the world, and the two buttons
