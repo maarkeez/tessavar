@@ -1,6 +1,6 @@
 # Plan: undo and redo in the world builder with a two- and a three-finger tap
 
-> **Status:** to do.
+> **Status:** built on `main` in 330ebfaa, the screenshots still to be approved.
 >
 > **Summary:** In the world builder, Undo and Redo are two icon buttons in the HUD, after Paint, Fill and Erase. On a
 > phone, undoing the lava tile just painted means reaching down to a small button under the world, and the two buttons
@@ -159,3 +159,23 @@ A new class in `screen.adapters.presentation`, used by `BattlefieldView` and `Wo
   once on main, a three-finger tap is tried there. If Safari swallows it or shows its own undo bar, another redo gesture
   is picked in a new plan.
 - On desktop, undoing several edits takes opening the menu, then one click each; there is no keyboard shortcut.
+
+## Changes while building
+
+- `FingerTap(view, onTapped)` reads KorGE's `TouchEvent`s itself instead of `view.touch { }`. When the browser cancels
+  a touch, KorGE reports it as removed in the next `START`, and `TouchEvents` starts a finger for it that never lifts.
+  Reading the fingers still down in each event drops a stuck finger at the next touch.
+- A finger counts when the view under it, by hit test, is inside `view` or a view named `FingerTap.PASS_THROUGH`, instead
+  of when it falls inside an `area()` rectangle. So a finger on the open menu, which hangs over the world, never counts,
+  while the menu's outside tap catcher, named `PASS_THROUGH`, lets a finger tap on the world through. Every finger is
+  checked as it touches, not only the first.
+- `isHoldingBack` lasts until 100 ms (`HOLD_BACK_AFTER_LIFT`) after the last finger lifts, instead of until the next
+  frame. KorGE's drag reads the emulated mouse up in the frame updates after it, in an order the view doesn't control.
+- The menu has its own `WorldBuilderMenuView.HistoryIcon` (`UNDO`, `REDO`), loaded from the same `ui/tool-undo.png` and
+  `ui/tool-redo.png`, rather than sharing the HUD's `ToolIcon`.
+- The tests differ slightly from the list: `FingerTapTest` also checks one finger, a finger touching out of the view
+  and the pass-through, and its hold back test is `FingerTap should hold back the mouse from the second finger touching
+  until 100 ms after the last one lifts`. `BattlefieldViewTest` checks the stray tile tap with the two-finger tap, and
+  checks that a two-finger tap whose finger slides doesn't move the world. `WorldBuilderMenuViewTest` also checks that a
+  one-finger tap out of the menu still closes it. `WorldBuilderPresenterTest` also checks that four fingers do nothing.
+- The tip in `share-a-world.md` calls Undo and Redo the arrows at the top of the menu, as the row shows icons only.
