@@ -19,7 +19,7 @@ These are enforced by the architecture tests (see [ADR 0005](../../../docs/adr/0
 - Only the 64 FamiCube colours, fully opaque, or fully transparent. The tool can not write anything else.
 - Battle units, npcs, their portraits, lootable items, buildings and the chest are outlined with `W` (`#151515`): the
   dark pixels of the silhouette, diagonals included, must be `W`. Light or saturated trims on the silhouette are fine.
-- Sizes: units and npcs are 16x16 or 32x32; items, abilities, effects and the chest are 16x16; portraits are 32x32
+- Sizes: units and npcs are 16x16 or 32x32; items, abilities and effects are 16x16; portraits and the chest are 32x32
   (`<id>_portrait`); the world builder's tool icons under `art/ui/` (`tool-<name>`) are 16x16, on a transparent background; buildings are 16 pixels per tile; terrain transition strips are 512x32, 16 tiles of 32x32.
 
 ## Colours

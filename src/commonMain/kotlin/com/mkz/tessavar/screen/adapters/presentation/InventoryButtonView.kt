@@ -37,7 +37,6 @@ class InventoryButtonView(
                 inventoryButton.image(chestBitmap) {
                     name = CHEST
                     smoothing = false
-                    scale = 2.0
                     centerOn(inventoryButton)
                 }
             }

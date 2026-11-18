@@ -397,8 +397,9 @@ open class BattlefieldView(
                 1 -> resourcesLoader.bitmapOrNull("lootableItem/${lootableItemIds.single()}.png") ?: return
                 else -> resourcesLoader.bitmap(CHEST_PATH)
             }
+        val lootScale = if (lootableItemIds.size == 1) DROPPED_ITEM_SCALE else tileFillingScale(lootBitmap)
         val terrainIndex = tileButton.children.indexOfFirst { child -> child.name == TERRAIN }
-        tileButton.addImage(lootBitmap, DROPPED_ITEMS, scale = DROPPED_ITEM_SCALE)
+        tileButton.addImage(lootBitmap, DROPPED_ITEMS, scale = lootScale)
         val lootView = tileButton.findViewByName(DROPPED_ITEMS)!!
         lootView.removeFromParent()
         tileButton.addChildAt(lootView, terrainIndex + 1)
