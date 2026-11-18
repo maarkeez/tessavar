@@ -35,7 +35,6 @@ open class WorldBuilderHudView(
         const val TAB_BUTTON_WIDTH = 90.0
         const val TAB_BUTTON_HEIGHT = 30.0
         const val TOOL_BUTTON_WIDTH = 64.0
-        const val HISTORY_GAP = 20.0
         const val TOOL_BUTTON_HEIGHT = 36.0
         const val STOCK_BUTTON_WIDTH = 90.0
         const val ICON_SCALE = 2.0
@@ -65,7 +64,7 @@ open class WorldBuilderHudView(
 
     enum class Tab { TERRAIN, BUILDINGS, UNITS, NPCS }
 
-    enum class ToolIcon { PAINT, PLACE, FILL, ERASE, UNDO, REDO }
+    enum class ToolIcon { PAINT, PLACE, FILL, ERASE }
 
     data class TerrainOption(
         val terrainId: String,
@@ -87,10 +86,6 @@ open class WorldBuilderHudView(
         fun tabSelected(tab: Tab)
 
         fun toolSelected(tool: Tool)
-
-        fun undoSelected()
-
-        fun redoSelected()
 
         fun terrainSelected(terrainId: String)
 
@@ -114,8 +109,6 @@ open class WorldBuilderHudView(
     internal val toolButtons = mutableMapOf<Tool, GameButton>()
     internal var selectedTool: Tool? = null
         private set
-    internal lateinit var undoButton: GameButton
-    internal lateinit var redoButton: GameButton
     internal val palettes = mutableMapOf<Tab, Container>()
     internal val paletteButtons = Tab.entries.associateWith { mutableMapOf<String, UIButton>() }
     internal val selectionBorders = mutableMapOf<Tab, SolidRect>()
@@ -139,17 +132,6 @@ open class WorldBuilderHudView(
             }
             uiHorizontalStack(padding = 10.0) {
                 Tool.entries.forEach { tool -> toolButtons[tool] = toolButton(tool) }
-                uiSpacing(Size(HISTORY_GAP, 0))
-                undoButton =
-                    iconButton(ToolIcon.UNDO) {
-                        enabled = false
-                        onClick { if (enabled) delegate?.undoSelected() }
-                    }
-                redoButton =
-                    iconButton(ToolIcon.REDO) {
-                        enabled = false
-                        onClick { if (enabled) delegate?.redoSelected() }
-                    }
             }
             container {
                 Tab.entries.forEach { tab -> palettes[tab] = container { visible = tab == Tab.TERRAIN } }
@@ -176,15 +158,6 @@ open class WorldBuilderHudView(
     open fun displayToolIcons(icons: Map<ToolIcon, Bitmap>) {
         toolIcons = icons
         displayedIcons.forEach { (button, icon) -> button.showIcon(icon) }
-    }
-
-    open fun displayHistory(
-        canUndo: Boolean,
-        canRedo: Boolean,
-    ) {
-        undoButton.enabled = canUndo
-        redoButton.enabled = canRedo
-        dimDisabledIcons()
     }
 
     open fun selectTool(tool: Tool) {

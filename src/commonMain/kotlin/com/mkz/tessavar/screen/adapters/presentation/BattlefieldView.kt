@@ -161,6 +161,8 @@ open class BattlefieldView(
 
     private var windowScroll: Pair<Double, Double>? = null
 
+    private val fingerTap = FingerTap(viewport) { fingers -> delegate?.fingersTapped(fingers) }
+
     init {
         addChild(viewport)
         var dragStartX = 0.0
@@ -172,6 +174,7 @@ open class BattlefieldView(
                 dragStartX = battlefieldGrid.x
                 dragStartY = battlefieldGrid.y
             }
+            if (fingerTap.isHoldingBack) return@onMouseDrag scrollTo(x = dragStartX, y = dragStartY)
             val drag = event.localDXY(battlefieldGrid)
             scrollTo(x = dragStartX + drag.x, y = dragStartY + drag.y)
         }
@@ -273,6 +276,7 @@ open class BattlefieldView(
         )
         if (undimmedTiles?.contains(position) == false) tileButton.dim()
         tileButton.onClick {
+            if (fingerTap.isHoldingBack) return@onClick
             delegate?.tileSelected(position.row, position.column)
         }
         return tileButton
@@ -442,6 +446,8 @@ open class BattlefieldView(
             row: Int,
             column: Int,
         )
+
+        fun fingersTapped(fingers: Int) {}
     }
 
     open fun displayPotentialMovement(

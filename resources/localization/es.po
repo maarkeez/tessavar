@@ -575,6 +575,22 @@ msgctxt "ui.worldBuilder.worldImported"
 msgid "World imported"
 msgstr "Mundo importado"
 
+msgctxt "ui.worldBuilder.undone"
+msgid "Undo"
+msgstr "Deshacer"
+
+msgctxt "ui.worldBuilder.redone"
+msgid "Redo"
+msgstr "Rehacer"
+
+msgctxt "ui.worldBuilder.nothingToUndo"
+msgid "Nothing to undo"
+msgstr "Nada que deshacer"
+
+msgctxt "ui.worldBuilder.nothingToRedo"
+msgid "Nothing to redo"
+msgstr "Nada que rehacer"
+
 msgctxt "ui.worldBuilder.fileNotRead"
 msgid "The file can not be read"
 msgstr "No se puede leer el archivo"

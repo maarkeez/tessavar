@@ -25,11 +25,7 @@ suspend fun ViewsForTesting.clickPaletteTerrain(
 
 fun WorldBuilderHudView.toolIcons(): List<WorldBuilderHudView.ToolIcon> = toolButtons.values.map { button -> displayedIcons.getValue(button) }
 
-fun WorldBuilderHudView.historyIcons(): List<WorldBuilderHudView.ToolIcon> = listOf(undoButton, redoButton).map { button -> displayedIcons.getValue(button) }
-
 fun WorldBuilderHudView.toolIconImage(tool: WorldBuilderHudView.Tool): Image = toolButtons.getValue(tool).findViewByName(WorldBuilderHudView.TOOL_ICON) as Image
-
-fun WorldBuilderHudView.redoIconImage(): Image = redoButton.findViewByName(WorldBuilderHudView.TOOL_ICON) as Image
 
 fun WorldBuilderHudView.highlightedTools(): List<WorldBuilderHudView.Tool> = toolButtons.filterValues { button -> button.bgColorOut == WorldBuilderHudView.SELECTED_TOOL_COLOR }.keys.toList()
 
@@ -37,10 +33,6 @@ suspend fun ViewsForTesting.clickTool(
     hudView: WorldBuilderHudView,
     tool: WorldBuilderHudView.Tool,
 ) = clickOn(hudView.toolButtons.getValue(tool))
-
-suspend fun ViewsForTesting.clickUndo(hudView: WorldBuilderHudView) = clickOn(hudView.undoButton)
-
-suspend fun ViewsForTesting.clickRedo(hudView: WorldBuilderHudView) = clickOn(hudView.redoButton)
 
 fun WorldBuilderHudView.paletteKeys(tab: WorldBuilderHudView.Tab): List<String> = paletteButtons.getValue(tab).keys.toList()
 

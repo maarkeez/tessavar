@@ -48,13 +48,16 @@ class WorldBuilderPresenter(
     WorldBuilderResizeView.Delegate,
     WorldBuilderDetailsView.Delegate,
     WorldBuilderStockView.Delegate,
-    WorldBuilderFormView.Delegate {
+    WorldBuilderFormView.Delegate,
+    WorldBuilderMenuView.Delegate {
     companion object {
         const val WORLD_FILE_NAME = "world"
         const val HOW_TO_SHARE_URL = "https://github.com/maarkeez/tessavar/blob/main/CONTRIBUTING.md#share-a-world"
         const val WORLD_FILE_EXTENSION = ".toml"
         const val QUESTS_FORM = "quests"
         const val GOLD_STEP = 5
+        const val UNDO_FINGERS = 2
+        const val REDO_FINGERS = 3
         val PLAYTEST_BLOCKERS = setOf(UnplayableReasonDto.NO_HUMAN_BATTLE_UNIT, UnplayableReasonDto.NO_MAIN_QUEST, UnplayableReasonDto.QUEST_WITHOUT_TASKS)
     }
 
@@ -80,10 +83,12 @@ class WorldBuilderPresenter(
             eventBus.subscribe<WorldBuilderEvent.EditUndone> {
                 displayWorld()
                 displayForm()
+                infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_UNDONE])
             },
             eventBus.subscribe<WorldBuilderEvent.EditRedone> {
                 displayWorld()
                 displayForm()
+                infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_REDONE])
             },
             eventBus.subscribe<WorldBuilderEvent.QuestAdded> { event -> openQuest(event.questId) },
             eventBus.subscribe<WorldBuilderEvent.QuestRemoved> { openQuests() },
@@ -109,6 +114,7 @@ class WorldBuilderPresenter(
     init {
         battlefieldView.setDelegate(this)
         hudView.setDelegate(this)
+        menuView.setDelegate(this)
         resizeView.setDelegate(this)
         detailsView.setDelegate(this)
         stockView.setDelegate(this)
@@ -137,7 +143,7 @@ class WorldBuilderPresenter(
         battlefieldView.displayBattlefield(BattlefieldMapper.terrain(battlefieldApi.previewBattlefield(world.tiles)))
         infoView.displaySize(rows = world.rows, columns = world.columns)
         resizeView.displaySize(rows = world.rows, columns = world.columns, allowedSizes = WorldBuilder.MINIMUM_SIZE..WorldBuilder.MAXIMUM_SIZE)
-        hudView.displayHistory(canUndo = world.canUndo, canRedo = world.canRedo)
+        menuView.displayHistory(canUndo = world.canUndo, canRedo = world.canRedo)
         world.buildings.forEach { building -> battlefieldView.displayBuilding(row = building.row, column = building.column, buildingId = building.id) }
         world.battleUnits.forEach { battleUnit -> battlefieldView.displayBattleUnit(row = battleUnit.row, column = battleUnit.column, unitId = battleUnit.unitId) }
         val catalogNpcs = worldBuilderApi.searchCatalog().npcs
@@ -447,7 +453,7 @@ class WorldBuilderPresenter(
                 .filter { (tileRow, tileColumn) -> tileRow in 0 until world.rows && tileColumn in 0 until world.columns }
                 .map { (tileRow, tileColumn) -> TilePosition(tileRow, tileColumn) }
         battlefieldView.updateTerrain(BattlefieldMapper.terrain(battlefieldApi.previewBattlefield(world.tiles)), positions)
-        hudView.displayHistory(canUndo = world.canUndo, canRedo = world.canRedo)
+        menuView.displayHistory(canUndo = world.canUndo, canRedo = world.canRedo)
     }
 
     private fun exportWorld() {
@@ -612,4 +618,12 @@ class WorldBuilderPresenter(
     override fun undoSelected() = worldBuilderApi.undoEdit()
 
     override fun redoSelected() = worldBuilderApi.redoEdit()
+
+    override fun fingersTapped(fingers: Int) {
+        val world = worldBuilderApi.searchWorld() ?: return
+        when (fingers) {
+            UNDO_FINGERS -> if (world.canUndo) undoSelected() else infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_NOTHING_TO_UNDO])
+            REDO_FINGERS -> if (world.canRedo) redoSelected() else infoView.displayInfo(messages[UiMessage.WORLD_BUILDER_NOTHING_TO_REDO])
+        }
+    }
 }

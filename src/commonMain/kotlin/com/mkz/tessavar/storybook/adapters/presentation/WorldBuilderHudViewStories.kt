@@ -16,10 +16,8 @@ object WorldBuilderHudViewStories : StoryBinding {
     private const val CAN_RESTOCK = "canRestock"
     private val PLAYER_IDS = listOf("player-one", "player-two")
     private const val TOOL = "tool"
-    private const val CAN_UNDO = "canUndo"
-    private const val CAN_REDO = "canRedo"
 
-    private val default = StoryDto(id = "screen-world-builder-hud--default", name = "Default", description = "Paint and the grass selected, with edits to undo and to redo.", args = emptyMap())
+    private val default = StoryDto(id = "screen-world-builder-hud--default", name = "Default", description = "Paint and the grass selected.", args = emptyMap())
     private val otherTerrain =
         StoryDto(
             id = "screen-world-builder-hud--other-terrain",
@@ -34,14 +32,6 @@ object WorldBuilderHudViewStories : StoryBinding {
             name = "Fill tool",
             description = "Fill selected, in blue: tapping a tile paints every tile of its terrain connected to it.",
             args = mapOf(TOOL to ValueDto.text(WorldBuilderHudView.Tool.FILL.name)),
-        )
-
-    private val nothingToUndo =
-        StoryDto(
-            id = "screen-world-builder-hud--nothing-to-undo",
-            name = "Nothing to undo",
-            description = "A new world: Undo and Redo are disabled, their icons dimmed, until the world is edited.",
-            args = mapOf(CAN_UNDO to ValueDto.boolean(false), CAN_REDO to ValueDto.boolean(false)),
         )
 
     private val buildingsTab =
@@ -74,16 +64,14 @@ object WorldBuilderHudViewStories : StoryBinding {
             group = "Screen",
             title = "World builder HUD",
             description =
-                "Under the world in the world builder: the palette's tabs, the tools a tapped tile is painted, placed on or erased with, Undo and Redo, " +
-                    "and the terrains, buildings, units or npcs of the tab. canUndo and canRedo: whether there is an edit to undo or to redo. " +
+                "Under the world in the world builder: the palette's tabs, the tools a tapped tile is painted, placed on or erased with, " +
+                    "and the terrains, buildings, units or npcs of the tab. " +
                     "canRestock: whether the npc selected stands in the world, so its stock can be chosen.",
             controls =
                 listOf(
                     ControlDto.enum(TAB, WorldBuilderHudView.Tab.entries.map { tab -> tab.name }),
                     ControlDto.enum(TOOL, WorldBuilderHudView.Tool.entries.map { tool -> tool.name }),
                     ControlDto.pick(SELECTED_TERRAIN, context.terrainIds()),
-                    ControlDto.boolean(CAN_UNDO),
-                    ControlDto.boolean(CAN_REDO),
                     ControlDto.boolean(CAN_RESTOCK),
                 ),
             args =
@@ -92,10 +80,8 @@ object WorldBuilderHudViewStories : StoryBinding {
                     CAN_RESTOCK to ValueDto.boolean(false),
                     TOOL to ValueDto.text(WorldBuilderHudView.Tool.PAINT.name),
                     SELECTED_TERRAIN to ValueDto.text(DEFAULT_TERRAIN),
-                    CAN_UNDO to ValueDto.boolean(true),
-                    CAN_REDO to ValueDto.boolean(true),
                 ),
-            stories = listOf(default, otherTerrain, fillTool, nothingToUndo, buildingsTab, unitsTab, npcsTab),
+            stories = listOf(default, otherTerrain, fillTool, buildingsTab, unitsTab, npcsTab),
         )
 
     private const val FORTRESS = "fortress"
@@ -121,10 +107,6 @@ object WorldBuilderHudViewStories : StoryBinding {
                 object : WorldBuilderHudView.Delegate {
                     override fun toolSelected(tool: WorldBuilderHudView.Tool) = context.action("toolSelected", tool.name, setArg = TOOL to ValueDto.text(tool.name))
 
-                    override fun undoSelected() = context.action("undoSelected")
-
-                    override fun redoSelected() = context.action("redoSelected")
-
                     override fun terrainSelected(terrainId: String) = context.action("terrainSelected", terrainId, setArg = SELECTED_TERRAIN to ValueDto.text(terrainId))
 
                     override fun tabSelected(tab: WorldBuilderHudView.Tab) = context.action("tabSelected", tab.name, setArg = TAB to ValueDto.text(tab.name))
@@ -143,7 +125,6 @@ object WorldBuilderHudViewStories : StoryBinding {
             )
             displayTab(WorldBuilderHudView.Tab.valueOf(args.text(TAB)))
             selectTool(WorldBuilderHudView.Tool.valueOf(args.text(TOOL)))
-            displayHistory(canUndo = args.boolean(CAN_UNDO), canRedo = args.boolean(CAN_REDO))
             displayTerrains(terrains, selectedTerrainId = args.text(SELECTED_TERRAIN))
             val buildings = paletteOptions(context, listOf(FORTRESS)) { buildingId -> "building/$buildingId.png" }
             displayBuildings(buildings)

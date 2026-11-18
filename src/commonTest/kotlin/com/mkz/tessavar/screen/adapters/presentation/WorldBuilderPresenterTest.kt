@@ -200,7 +200,7 @@ class WorldBuilderPresenterTest {
         // When
         givenWorldCreated()
         // Then
-        hudView.displayedHistory shouldBe (false to false)
+        menuView.displayedHistory shouldBe (false to false)
     }
 
     @Test
@@ -211,7 +211,7 @@ class WorldBuilderPresenterTest {
         // When
         selectTile(row = 2, column = 3)
         // Then
-        hudView.displayedHistory shouldBe (true to false)
+        menuView.displayedHistory shouldBe (true to false)
     }
 
     @Test
@@ -221,11 +221,11 @@ class WorldBuilderPresenterTest {
         selectTerrain("lava")
         selectTile(row = 2, column = 3)
         // When
-        hudView.delegate!!.undoSelected()
+        menuView.delegate!!.undoSelected()
         eventBus.dispatch()
         // Then
         battlefieldView.displayedBattlefields.last() shouldBe BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(List(16) { List(16) { "sand" } }))
-        hudView.displayedHistory shouldBe (false to true)
+        menuView.displayedHistory shouldBe (false to true)
     }
 
     @Test
@@ -233,15 +233,99 @@ class WorldBuilderPresenterTest {
         // Given
         givenWorldCreated()
         resizeView.delegate!!.sizeChanged(rows = 4, columns = 2)
-        hudView.delegate!!.undoSelected()
+        menuView.delegate!!.undoSelected()
         eventBus.dispatch()
         // When
-        hudView.delegate!!.redoSelected()
+        menuView.delegate!!.redoSelected()
         eventBus.dispatch()
         // Then
         battlefieldView.displayedBattlefields.last() shouldBe BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(List(4) { List(2) { "sand" } }))
         resizeView.displayedSize shouldBe (4 to 2)
-        hudView.displayedHistory shouldBe (true to false)
+        menuView.displayedHistory shouldBe (true to false)
+    }
+
+    @Test
+    fun `EditUndone should display Undo when undo is selected in the menu`() {
+        // Given
+        givenWorldCreated()
+        selectTerrain("lava")
+        selectTile(row = 2, column = 3)
+        // When
+        menuView.delegate!!.undoSelected()
+        eventBus.dispatch()
+        // Then
+        infoView.infos.shouldContainExactly("Undo")
+    }
+
+    @Test
+    fun `FingersTapped should undo the last edit and display Undo when two fingers tap the world`() {
+        // Given
+        givenWorldCreated()
+        selectTerrain("lava")
+        selectTile(row = 2, column = 3)
+        // When
+        battlefieldView.delegate!!.fingersTapped(2)
+        eventBus.dispatch()
+        // Then
+        battlefieldView.displayedBattlefields.last() shouldBe BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(List(16) { List(16) { "sand" } }))
+        menuView.displayedHistory shouldBe (false to true)
+        infoView.infos.shouldContainExactly("Undo")
+    }
+
+    @Test
+    fun `FingersTapped should redo the edit undone and display Redo when three fingers tap the world`() {
+        // Given
+        givenWorldCreated()
+        resizeView.delegate!!.sizeChanged(rows = 4, columns = 2)
+        battlefieldView.delegate!!.fingersTapped(2)
+        eventBus.dispatch()
+        // When
+        battlefieldView.delegate!!.fingersTapped(3)
+        eventBus.dispatch()
+        // Then
+        battlefieldView.displayedBattlefields.last() shouldBe BattlefieldMapper.terrain(apis.battlefieldApi.previewBattlefield(List(4) { List(2) { "sand" } }))
+        menuView.displayedHistory shouldBe (true to false)
+        infoView.infos.shouldContainExactly("Undo", "Redo")
+    }
+
+    @Test
+    fun `FingersTapped should display Nothing to undo when two fingers tap a world without edits`() {
+        // Given
+        givenWorldCreated()
+        // When
+        battlefieldView.delegate!!.fingersTapped(2)
+        eventBus.dispatch()
+        // Then
+        infoView.infos.shouldContainExactly("Nothing to undo")
+        battlefieldView.displayedBattlefields.shouldHaveSize(1)
+    }
+
+    @Test
+    fun `FingersTapped should display Nothing to redo when three fingers tap with nothing undone`() {
+        // Given
+        givenWorldCreated()
+        selectTerrain("lava")
+        selectTile(row = 2, column = 3)
+        // When
+        battlefieldView.delegate!!.fingersTapped(3)
+        eventBus.dispatch()
+        // Then
+        infoView.infos.shouldContainExactly("Nothing to redo")
+        menuView.displayedHistory shouldBe (true to false)
+    }
+
+    @Test
+    fun `FingersTapped should do nothing when four fingers tap the world`() {
+        // Given
+        givenWorldCreated()
+        selectTerrain("lava")
+        selectTile(row = 2, column = 3)
+        // When
+        battlefieldView.delegate!!.fingersTapped(4)
+        eventBus.dispatch()
+        // Then
+        infoView.infos.shouldBeEmpty()
+        menuView.displayedHistory shouldBe (true to false)
     }
 
     @Test

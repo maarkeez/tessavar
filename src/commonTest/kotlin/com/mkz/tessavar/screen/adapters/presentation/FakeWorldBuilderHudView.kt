@@ -9,8 +9,6 @@ class FakeWorldBuilderHudView : WorldBuilderHudView(MessagesMother.messages()) {
         private set
     var displayedTool: Tool? = null
         private set
-    var displayedHistory: Pair<Boolean, Boolean>? = null
-        private set
     var displayedTabs = mutableListOf<Tab>()
         private set
     var displayedBuildings: List<PaletteOption> = emptyList()
@@ -73,13 +71,6 @@ class FakeWorldBuilderHudView : WorldBuilderHudView(MessagesMother.messages()) {
     ) {
         displayedTerrains = terrains
         this.selectedTerrainId = selectedTerrainId
-    }
-
-    override fun displayHistory(
-        canUndo: Boolean,
-        canRedo: Boolean,
-    ) {
-        displayedHistory = canUndo to canRedo
     }
 
     override fun selectTool(tool: Tool) {

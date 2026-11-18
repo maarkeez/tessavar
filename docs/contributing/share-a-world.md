@@ -34,6 +34,9 @@ Check the world holds:
 
 Tap *Playtest* in the menu. When something is missing, the info line says what, e.g.: `To playtest, add one main quest`.
 
+Tip: tap the world with two fingers to undo the last edit, and with three to redo it, or use the arrows at the top of the
+menu.
+
 ### 3. Playtest it
 
 Play the world through: start the main quest, finish its tasks and the side quests. Open the pause screen and tap *Quit to

@@ -27,6 +27,7 @@ import io.kotest.matchers.ints.shouldBeInRange
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import korlibs.korge.tests.ViewsForTesting
+import korlibs.math.geom.Point
 import kotlinx.coroutines.Job
 import kotlin.math.round
 import kotlin.test.Test
@@ -47,6 +48,90 @@ class BattlefieldViewTest : ViewsForTesting() {
 
         const val WINDOW_TILES = BattlefieldView.VISIBLE_TILES + BattlefieldView.TILE_WINDOW_MARGIN
     }
+
+    private val tapsOnTheWorld = mutableListOf<String>()
+
+    private val tapDelegate =
+        object : BattlefieldView.Delegate {
+            override fun tileSelected(
+                row: Int,
+                column: Int,
+            ) {
+                tapsOnTheWorld += "tile $row $column"
+            }
+
+            override fun fingersTapped(fingers: Int) {
+                tapsOnTheWorld += "$fingers fingers"
+            }
+        }
+
+    private fun ViewsForTesting.tileCenter(
+        battlefieldView: BattlefieldView,
+        row: Int,
+        column: Int,
+    ): Point = battlefieldView.tile(row, column).getGlobalBounds().center
+
+    @Test
+    fun `FingerTap should ask the delegate for two fingers and select no tile when two fingers tap the world`() =
+        sharedViewsTest {
+            // Given
+            val battlefieldView = BattlefieldView(loadedResourcesLoader())
+            battlefieldView.displayBattlefield(battlefield(rows = 6, columns = 6).toTerrain())
+            battlefieldView.setDelegate(tapDelegate)
+            addChild(battlefieldView)
+            // When
+            tapWithFingers(tileCenter(battlefieldView, row = 2, column = 2), tileCenter(battlefieldView, row = 2, column = 4))
+            nextFrame()
+            // Then
+            tapsOnTheWorld.shouldContainExactly("2 fingers")
+        }
+
+    @Test
+    fun `FingerTap should ask the delegate for three fingers when three fingers tap the world`() =
+        sharedViewsTest {
+            // Given
+            val battlefieldView = BattlefieldView(loadedResourcesLoader())
+            battlefieldView.displayBattlefield(battlefield(rows = 6, columns = 6).toTerrain())
+            battlefieldView.setDelegate(tapDelegate)
+            addChild(battlefieldView)
+            // When
+            tapWithFingers(tileCenter(battlefieldView, row = 2, column = 1), tileCenter(battlefieldView, row = 2, column = 3), tileCenter(battlefieldView, row = 2, column = 5))
+            nextFrame()
+            // Then
+            tapsOnTheWorld.shouldContainExactly("3 fingers")
+        }
+
+    @Test
+    fun `FingerTap should not move the world when two fingers tap it and the first one slides`() =
+        sharedViewsTest {
+            // Given
+            val battlefieldView = BattlefieldView(loadedResourcesLoader())
+            battlefieldView.displayBattlefield(battlefield(rows = 20, columns = 20).toTerrain())
+            battlefieldView.setDelegate(tapDelegate)
+            addChild(battlefieldView)
+            val scroll = battlefieldView.scrollOffset()
+            // When
+            tapWithFingers(tileCenter(battlefieldView, row = 2, column = 2), tileCenter(battlefieldView, row = 2, column = 4), moveBy = Point(-40, -40))
+            repeat(3) { nextFrame() }
+            // Then
+            battlefieldView.scrollOffset() shouldBe scroll
+            tapsOnTheWorld.shouldBeEmpty()
+        }
+
+    @Test
+    fun `Tile should still be selected when one finger taps it`() =
+        sharedViewsTest {
+            // Given
+            val battlefieldView = BattlefieldView(loadedResourcesLoader())
+            battlefieldView.displayBattlefield(battlefield(rows = 6, columns = 6).toTerrain())
+            battlefieldView.setDelegate(tapDelegate)
+            addChild(battlefieldView)
+            // When
+            tapWithFingers(tileCenter(battlefieldView, row = 2, column = 2))
+            nextFrame()
+            // Then
+            tapsOnTheWorld.shouldContainExactly("tile 2 2")
+        }
 
     @Test
     fun `DisplayBattlefield should not scroll the battlefield when is clicked and is smaller than the viewport`() =

@@ -17,6 +17,7 @@ import com.mkz.tessavar.screen.adapters.presentation.isBattlefieldDisplayed
 import com.mkz.tessavar.screen.adapters.presentation.menuView
 import com.mkz.tessavar.screen.adapters.presentation.paletteTerrainIds
 import com.mkz.tessavar.screen.adapters.presentation.subtitleText
+import com.mkz.tessavar.screen.adapters.presentation.tapWithFingersOn
 import com.mkz.tessavar.screen.adapters.presentation.terrainBitmapAt
 import com.mkz.tessavar.screen.adapters.presentation.tileCount
 import com.mkz.tessavar.screen.adapters.presentation.worldBuilderHudView
@@ -82,9 +83,29 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
             val sandBitmap = battlefieldView.terrainBitmapAt(row = 2, column = 2)
             clickPaletteTerrain(hudView, "lava")
             clickTile(battlefieldView, row = 2, column = 2)
-            waitUntil { hudView.undoButton.enabled }
+            val menuView = worldBuilderMenuView()!!
+            clickMenuButton(menuView)
+            waitUntil { menuView.undoButton?.enabled == true }
             // When
-            clickUndo(hudView)
+            clickUndo(menuView)
+            // Then
+            waitUntil { battlefieldView()!!.terrainBitmapAt(row = 2, column = 2) == sandBitmap }
+            battlefieldView()!!.terrainBitmapAt(row = 2, column = 2) shouldBe sandBitmap
+        }
+
+    @Test
+    fun `should bring the tile back when two fingers tap the world after a paint`() =
+        sharedViewsTest {
+            // Given
+            startWorldBuilder()
+            val battlefieldView = battlefieldView()!!
+            val hudView = worldBuilderHudView()!!
+            val sandBitmap = battlefieldView.terrainBitmapAt(row = 2, column = 2)
+            clickPaletteTerrain(hudView, "lava")
+            clickTile(battlefieldView, row = 2, column = 2)
+            waitUntil { battlefieldView()!!.terrainBitmapAt(row = 2, column = 2) != sandBitmap }
+            // When
+            tapWithFingersOn(battlefieldView()!!, fingers = 2)
             // Then
             waitUntil { battlefieldView()!!.terrainBitmapAt(row = 2, column = 2) == sandBitmap }
             battlefieldView()!!.terrainBitmapAt(row = 2, column = 2) shouldBe sandBitmap

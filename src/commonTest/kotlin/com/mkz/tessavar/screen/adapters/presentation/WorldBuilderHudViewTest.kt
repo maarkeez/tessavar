@@ -1,6 +1,5 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import com.mkz.tessavar.shared.adapters.presentation.isFaded
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -12,7 +11,6 @@ import kotlin.test.Test
 class WorldBuilderHudViewTest : ViewsForTesting() {
     private val selectedTerrains = mutableListOf<String>()
     private val selectedTools = mutableListOf<WorldBuilderHudView.Tool>()
-    private val historySelections = mutableListOf<String>()
     private val paletteSelections = mutableListOf<String>()
     private val delegate =
         object : WorldBuilderHudView.Delegate {
@@ -41,14 +39,6 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
 
             override fun toolSelected(tool: WorldBuilderHudView.Tool) {
                 selectedTools += tool
-            }
-
-            override fun undoSelected() {
-                historySelections += "undo"
-            }
-
-            override fun redoSelected() {
-                historySelections += "redo"
             }
 
             override fun terrainSelected(terrainId: String) {
@@ -114,13 +104,12 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
         }
 
     @Test
-    fun `WorldBuilderHudView should display the paint, fill and erase tools, then undo and redo, as icons without a label when it is created`() =
+    fun `WorldBuilderHudView should display the paint, fill and erase tools as icons without a label when it is created`() =
         sharedViewsTest {
             // When
             val hudView = newHudView()
             // Then
             hudView.toolIcons().shouldContainExactly(WorldBuilderHudView.ToolIcon.PAINT, WorldBuilderHudView.ToolIcon.FILL, WorldBuilderHudView.ToolIcon.ERASE)
-            hudView.historyIcons().shouldContainExactly(WorldBuilderHudView.ToolIcon.UNDO, WorldBuilderHudView.ToolIcon.REDO)
             hudView.toolButtons.values
                 .map { button -> button.text }
                 .shouldContainExactly("", "", "")
@@ -131,14 +120,14 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val hudView = newHudView()
-            hudView.displayHistory(canUndo = true, canRedo = false)
+            hudView.displayTab(WorldBuilderHudView.Tab.UNITS)
             // When
             hudView.displayToolIcons(toolIcons)
             // Then
+            hudView.toolIconImage(WorldBuilderHudView.Tool.ERASE).scale shouldBe WorldBuilderHudView.ICON_SCALE
+            hudView.toolIconImage(WorldBuilderHudView.Tool.ERASE).isDimmed() shouldBe false
             hudView.toolIconImage(WorldBuilderHudView.Tool.FILL).bitmap.base shouldBe fillIcon
-            hudView.toolIconImage(WorldBuilderHudView.Tool.FILL).scale shouldBe WorldBuilderHudView.ICON_SCALE
-            hudView.toolIconImage(WorldBuilderHudView.Tool.FILL).isDimmed() shouldBe false
-            hudView.redoIconImage().isDimmed() shouldBe true
+            hudView.toolIconImage(WorldBuilderHudView.Tool.FILL).isDimmed() shouldBe true
         }
 
     @Test
@@ -177,55 +166,6 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
             clickTool(hudView, WorldBuilderHudView.Tool.FILL)
             // Then
             selectedTools.shouldContainExactly(WorldBuilderHudView.Tool.FILL)
-        }
-
-    @Test
-    fun `WorldBuilderHudView should disable undo and redo when it is created`() =
-        sharedViewsTest {
-            // When
-            val hudView = newHudView()
-            // Then
-            hudView.undoButton.enabled shouldBe false
-            hudView.redoButton.enabled shouldBe false
-        }
-
-    @Test
-    fun `DisplayHistory should enable undo and disable redo when there is only an edit to undo`() =
-        sharedViewsTest {
-            // Given
-            val hudView = newHudView()
-            // When
-            hudView.displayHistory(canUndo = true, canRedo = false)
-            // Then
-            hudView.undoButton.enabled shouldBe true
-            hudView.redoButton.isFaded() shouldBe true
-        }
-
-    @Test
-    fun `Undo and Redo should ask to undo and redo when they are clicked`() =
-        sharedViewsTest {
-            // Given
-            val hudView = newHudView()
-            hudView.displayHistory(canUndo = true, canRedo = true)
-            addChild(hudView)
-            // When
-            clickUndo(hudView)
-            clickRedo(hudView)
-            // Then
-            historySelections.shouldContainExactly("undo", "redo")
-        }
-
-    @Test
-    fun `Undo should ask nothing when there is nothing to undo`() =
-        sharedViewsTest {
-            // Given
-            val hudView = newHudView()
-            hudView.displayHistory(canUndo = false, canRedo = false)
-            addChild(hudView)
-            // When
-            clickUndo(hudView)
-            // Then
-            historySelections.shouldContainExactly()
         }
 
     private val fortressBitmap = Bitmap32(64, 64, Colors.DARKGRAY)
