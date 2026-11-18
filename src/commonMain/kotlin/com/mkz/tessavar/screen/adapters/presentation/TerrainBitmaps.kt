@@ -15,9 +15,10 @@ class TerrainBitmaps(
             .bitmaps(TRANSITIONS_DIRECTORY)
             .filterKeys { fileName -> fileName.endsWith(".png") }
             .map { (fileName, transitionBitmap) ->
+                val tilePixelSize = transitionBitmap.height
                 fileName.removeSuffix(".png") to
-                    List(transitionBitmap.width / BattlefieldView.TILE_PIXEL_SIZE) { index ->
-                        transitionBitmap.crop(index * BattlefieldView.TILE_PIXEL_SIZE, 0, BattlefieldView.TILE_PIXEL_SIZE, BattlefieldView.TILE_PIXEL_SIZE)
+                    List(transitionBitmap.width / tilePixelSize) { index ->
+                        transitionBitmap.crop(index * tilePixelSize, 0, tilePixelSize, tilePixelSize)
                     }
             }.toMap()
     }

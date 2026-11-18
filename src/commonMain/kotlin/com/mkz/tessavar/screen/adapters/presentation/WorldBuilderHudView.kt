@@ -50,12 +50,12 @@ open class WorldBuilderHudView(
         val SELECTED_TOOL_COLOR = RGBA(0x00, 0x6A, 0xCC)
         val SELECTED_TOOL_OVER_COLOR = RGBA(0x00, 0x84, 0xFF)
 
-        const val TERRAIN_BUTTON_SIZE = 48.0
+        const val TERRAIN_BUTTON_SIZE = 64.0
         const val OCCUPANT_BUTTON_SIZE = 34.0
         const val PALETTE_GAP = 10.0
         const val UNIT_GAP = 4.0
         const val PLAYER_TITLE_HEIGHT = 18.0
-        const val TERRAIN_SCALE = 3.0
+        const val TERRAIN_SCALE = 2.0
         const val SELECTION_BORDER = 3.0
         const val TERRAIN_IMAGE = "TERRAIN_IMAGE"
         const val OCCUPANT_IMAGE = "OCCUPANT_IMAGE"

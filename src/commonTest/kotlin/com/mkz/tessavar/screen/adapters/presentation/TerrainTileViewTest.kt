@@ -60,7 +60,7 @@ class TerrainTileViewTest : ViewsForTesting() {
             terrainTileView.display(terrainId = "grass", transition = null)
             // Then
             terrainTileView.placement() shouldBe TilePlacement(x = 0.0, y = 0.0, width = tileSize, height = tileSize)
-            (tileSize / BattlefieldView.TILE_PIXEL_SIZE) % 1.0 shouldBe 0.0
+            (tileSize / terrainTileView.drawnBitmap().width) % 1.0 shouldBe 0.0
         }
 
     @Test

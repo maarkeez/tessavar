@@ -21,8 +21,8 @@ class TerrainBitmapsTest : ViewsForTesting() {
             // When
             val tileBitmap = terrainBitmaps.bitmap(terrainId = "sand", transition = null)
             // Then
-            tileBitmap.width shouldBe BattlefieldView.TILE_PIXEL_SIZE
-            tileBitmap.height shouldBe BattlefieldView.TILE_PIXEL_SIZE
+            tileBitmap.width shouldBe transitionStrip.height
+            tileBitmap.height shouldBe transitionStrip.height
             matchesWangTile(tileBitmap, transitionStrip, stripIndex = 0).shouldBeTrue()
         }
 
@@ -51,8 +51,8 @@ class TerrainBitmapsTest : ViewsForTesting() {
                     transition = TerrainTransition(fromTerrainId = "sand", toTerrainId = "void", wangIndex = 9),
                 )
             // Then
-            tileBitmap.width shouldBe BattlefieldView.TILE_PIXEL_SIZE
-            tileBitmap.height shouldBe BattlefieldView.TILE_PIXEL_SIZE
+            tileBitmap.width shouldBe transitionStrip.height
+            tileBitmap.height shouldBe transitionStrip.height
             matchesWangTile(tileBitmap, transitionStrip, stripIndex = 9).shouldBeTrue()
         }
 
@@ -88,7 +88,7 @@ class TerrainBitmapsTest : ViewsForTesting() {
         transitionStrip: Bitmap,
         stripIndex: Int,
     ): Boolean {
-        val tileSize = BattlefieldView.TILE_PIXEL_SIZE
+        val tileSize = transitionStrip.height
         val stripOffset = stripIndex * tileSize
         for (y in 0 until tileSize) {
             for (x in 0 until tileSize) {
