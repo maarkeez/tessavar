@@ -52,3 +52,8 @@ suspend fun ViewsForTesting.clickPaletteUnit(
 suspend fun ViewsForTesting.clickStock(hudView: WorldBuilderHudView) = clickOn(hudView.stockButton)
 
 fun Image.isDimmed(): Boolean = alpha < 1.0
+
+suspend fun ViewsForTesting.clickPaletteNpc(
+    hudView: WorldBuilderHudView,
+    npcId: String,
+) = clickOn(hudView.paletteButtons.getValue(WorldBuilderHudView.Tab.NPCS).getValue(npcId))

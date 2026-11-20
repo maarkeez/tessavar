@@ -83,6 +83,7 @@ dependencies {
     add("jvmTestRuntimeOnly", "org.junit.jupiter:junit-jupiter:6.1.3")
     add("jvmTestApi", "com.tngtech.archunit:archunit:1.5.0")
     add("jvmTestApi", "com.lemonappdev:konsist:0.13.0")
+    add("jvmTestImplementation", "org.jcodec:jcodec-javase:0.2.5")
 
     add("pitest", "org.pitest:pitest-command-line:1.25.8")
     add("pitest", "org.pitest:pitest-junit5-plugin:1.2.3")
@@ -103,8 +104,24 @@ tasks.withType<Test>().configureEach {
 // See telemetry-collector/README.md.
 val telemetryCollectorEndToEndTest = "com.mkz.tessavar.telemetry.adapters.storage.RemoteTelemetryRepositoryEndToEndTest"
 
+// The clips, GIFs and MP4s of the game for its posts, rendered with OpenGL, are left out of jvmTest, and recorded by
+// recordClips only, into build/clips, e.g.: ./gradlew recordClips. See docs/testing/how-to-record-a-clip.md.
+val clips = "com.mkz.tessavar.shared.adapters.clip.*Clip"
+
 tasks.named<Test>("jvmTest") {
     filter.excludeTestsMatching(telemetryCollectorEndToEndTest)
+    filter.excludeTestsMatching(clips)
+}
+
+tasks.register<Test>("recordClips") {
+    group = "verification"
+    description = "Records the clips of the game for its posts into build/clips."
+
+    val jvmTest = tasks.named<Test>("jvmTest")
+    testClassesDirs = files(jvmTest.map { it.testClassesDirs })
+    classpath = files(jvmTest.map { it.classpath })
+    filter.includeTestsMatching(clips)
+    outputs.upToDateWhen { false }
 }
 
 tasks.register<Test>("jvmTelemetryCollectorTest") {
@@ -275,7 +292,7 @@ val pitestReport = tasks.register<JavaExec>("pitest") {
         // (e.g.: `screen.adapters.presentation.selection`) are still mutation tested.
         // Note: PIT escapes '+' and the CLI splits on ',', so neither can be used in the regex.
         """--excludedClasses=~com\.mkz\.tessavar\.[^.]*\.adapters\.presentation\.[^.]*""",
-        "--excludedTestClasses=com.mkz.tessavar.shared.adapters.architecture.*,com.mkz.tessavar.shared.adapters.e2e.*",
+        "--excludedTestClasses=com.mkz.tessavar.shared.adapters.architecture.*,com.mkz.tessavar.shared.adapters.e2e.*,com.mkz.tessavar.shared.adapters.clip.*",
         "--sourceDirs=${commonMainSources.absolutePath},${jvmMainSources.absolutePath}",
         "--mutableCodePaths=${jvmMainClasses.absolutePath}",
         "--outputFormats=HTML,XML",

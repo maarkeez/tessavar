@@ -320,7 +320,7 @@ End-to-end tests play the game as a player would: they boot the game headless, c
 - They MUST wait for the game to react using the shared [`waitUntil`](../../src/commonTest/kotlin/com/mkz/tessavar/shared/adapters/e2e/EndToEndExtension.kt) helper, which is bounded by real time. The game loads its resources asynchronously in real time, while the frames are simulated much faster than that, so a fixed number of frames is not enough. `waitUntil` fails the test once its 10 seconds run out, so every wait MUST be for something the game does show.
 - To check that something is not displayed, they MUST first wait for something that comes after it, then assert its absence once (e.g.: a new game shows no quest announcement once the knight has walked a tile). They MUST NOT wait for the absence, nor wait a fixed time.
 
-To see what the player sees at any step of an end-to-end test, see [How to take a snapshot of the game during an end-to-end test](how-to-take-a-game-snapshot.md).
+To see what the player sees at any step of an end-to-end test, see [How to take a snapshot of the game during an end-to-end test](how-to-take-a-game-snapshot.md). To record a GIF and an MP4 of it for a post, see [How to record a clip of the game for a post](how-to-record-a-clip.md).
 
 The end-to-end tests simulate the frames, so they do not catch a game that stutters in the browser. To check it, see [How to measure the frame times of the web build](how-to-measure-the-frame-times.md).
 

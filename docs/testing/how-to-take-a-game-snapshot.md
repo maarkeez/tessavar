@@ -108,3 +108,8 @@ Open `build/snapshots/knight-selected.png`. It is a 390x844 image of the game sc
 | The background is white and the white texts are missing | `views.clearColor` is not set, and the tests do not use the game background | Set `views.clearColor` before rendering, as in step 2 |
 | The snapshot does not show the last action | The snapshot is taken before the scene has displayed it | Wait for what the player sees with `waitUntil` before calling `takeSnapshot` |
 | Creating the OpenGL context fails | The machine has no OpenGL, e.g.: a headless CI runner | Run the test on a development machine |
+
+## See also
+
+- [How to record a clip of the game for a post](how-to-record-a-clip.md), for a GIF and an MP4 of a script played,
+  with the same OpenGL rendering.
