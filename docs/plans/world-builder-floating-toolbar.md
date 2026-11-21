@@ -1,6 +1,6 @@
 # Plan: a full-screen world builder with a floating toolbar
 
-> **Status:** built on the local `main`, the screenshots of M1 and M2 still to be approved.
+> **Status:** built on the local `main`, the screenshots of M1, M2 and M3 still to be approved.
 >
 > **Summary:** In the world builder, the world shows in the battlefield's 384x384 viewport, 6x6 tiles of 64 px, under
 > the info line, and the HUD fills the rest of the 390x844 screen below it: four tab buttons, the row of tools and the
@@ -43,7 +43,7 @@ Each milestone is a few commits on the local `main`, green on CI, pushed when th
 |----|--------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
 | M1 | Full-screen world  | The world fills the screen under the top strip, today's HUD floats over its bottom in a panel, and Details opens in the bottom sheet. | ✅      | 0b44f0e8 |
 | M2 | Floating toolbar   | The pill and the palette card replace today's HUD, with Stock in the pill on the Npcs tab, and a tap on the world closes the card.   | ✅      | 9546e56b |
-| M3 | Scrolling rows     | The card's rows scroll sideways: both players' ten units are reachable on the Units tab.                                             | ⬜      |         |
+| M3 | Scrolling rows     | The card's rows scroll sideways: both players' ten units are reachable on the Units tab.                                             | ✅      | a6a40275 |
 
 ### M1 commits
 
@@ -169,3 +169,13 @@ Each milestone is a few commits on the local `main`, green on CI, pushed when th
   labels are 12 px.
 - **The CPU's rat in M2.** Until the rows scroll in M3, `WorldBuilderEndToEndTest` placed the CPU's bee, the second unit,
   instead of the rat, the eighth, which only M3 brings into reach.
+- **`PaletteRowView.display(slots, onTapped)`.** The row takes the callback of a tapped slot with its slots, and also
+  has `scrollTo(key)` and `scroll`. `PaletteRowViewTest` gains `PaletteRowView should tap the slot under the press when it
+  moves 10 px or less`, and `WorldBuilderHudViewTest` gains a test of the brush and the tab sprites and one of a
+  two-finger tap keeping the card open.
+- **The page objects scroll.** `clickPaletteTerrain`, `clickPaletteUnit` and `clickPaletteNpc` open the card, then drag
+  the slot's row until the slot is in view, so `WorldBuilderEndToEndTest` places the CPU's rat again, and the new test
+  drags the CPU's row to its last unit, the viking warrior.
+- **The slots drawn as bitmaps.** KorGE draws a `RoundRect` on the GPU by default, which ignores a clip, so a scrolled
+  row drew its slots over the card and the world. The slots' faces and the selection frame use
+  `GraphicsRenderer.SYSTEM`, drawn as bitmaps the row clips.
