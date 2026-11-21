@@ -1,6 +1,6 @@
 # Plan: a full-screen world builder with a floating toolbar
 
-> **Status:** built on the local `main`, the screenshots of M1, M2 and M3 still to be approved.
+> **Status:** done, built on `main` in 0b44f0e8, 9546e56b and a6a40275 and approved on screenshots.
 >
 > **Summary:** In the world builder, the world shows in the battlefield's 384x384 viewport, 6x6 tiles of 64 px, under
 > the info line, and the HUD fills the rest of the 390x844 screen below it: four tab buttons, the row of tools and the
