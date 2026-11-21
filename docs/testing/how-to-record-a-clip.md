@@ -58,11 +58,18 @@ views.recordClip("explore", frameTime) {
 
 ### 3. Choose the formats
 
-By default, `recordClip` writes a GIF at x1, 390x844, and an MP4 at x2, 780x1688, for YouTube Shorts. Pass `formats` to
+By default, `recordClip` writes a GIF at x1, 390x844, and an MP4 at x2, 780x1688, in the middle of a 1080x1920 canvas
+filled with `views.clearColor`, as YouTube Shorts and Buffer take videos between 9:16 and 1:1 only. Pass `formats` to
 choose others, e.g.: only a GIF at x2:
 
 ```kotlin
 views.recordClip("explore", frameTime, formats = listOf(ClipFormat.Gif(scale = 2))) { ... }
+```
+
+Or an MP4 at x2 without the canvas, at the game's 9:19.5:
+
+```kotlin
+views.recordClip("explore", frameTime, formats = listOf(ClipFormat.Mp4(canvas = null))) { ... }
 ```
 
 ### 4. Save a still (optional)
@@ -99,6 +106,7 @@ taps are ringed, and the frames that do not change are merged into one, so a hol
 | `jvmTest` runs the clip and fails on CI | The class name does not end with `Clip` | Rename it, e.g.: `ExploreClip` |
 | A single tile of terrain does not show | The terrain is drawn from the corners of the tiles, so a tile alone in another terrain draws nothing | Paint at least 2x2 tiles of it |
 | A tap misses its tile | The tile is out of the battlefield's 6x6 tiles on screen | Scroll to it first with `dragBattlefield` |
+| Buffer refuses the MP4: "Aspect ratio must be between 9:16 (vertical) and 1:1 (square)" | The MP4 was recorded without its canvas, at the game's 9:19.5 | Keep the default `ClipFormat.Mp4()`, which pads it to 1080x1920 |
 | The GIF is too big for a post | The clip is long, or scaled up | Shorten the holds, or record the GIF at x1 |
 
 ## See also

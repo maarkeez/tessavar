@@ -7,6 +7,7 @@ import korlibs.korge.view.Views
 import korlibs.korge.view.renderToBitmap
 import korlibs.korge.view.unsafeRenderToBitmapSync
 import korlibs.math.geom.Point
+import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -16,15 +17,25 @@ import kotlin.time.Duration.Companion.seconds
 
 val CLIPS_DIRECTORY = File("build/clips")
 
+val SHORTS_CANVAS = ClipCanvas(width = 1080, height = 1920)
+
+data class ClipCanvas(
+    val width: Int,
+    val height: Int,
+)
+
 sealed interface ClipFormat {
     val scale: Int
+    val canvas: ClipCanvas?
 
     data class Gif(
         override val scale: Int = 1,
+        override val canvas: ClipCanvas? = null,
     ) : ClipFormat
 
     data class Mp4(
         override val scale: Int = 2,
+        override val canvas: ClipCanvas? = SHORTS_CANVAS,
     ) : ClipFormat
 }
 
@@ -41,6 +52,7 @@ suspend fun Views.recordClip(
     val writers = formats.associateWith { format -> format.writer(name, frameDuration, framesPerSecond) }
     val renderedFramesPerCapture = (frameDuration / frameTime).roundToInt().coerceAtLeast(1)
     val taps = mutableListOf<Tap>()
+    val background = (clearColor.r shl 16) or (clearColor.g shl 8) or clearColor.b
     var renderedFrames = 0
     var capturedFrames = 0
     val tapListener =
@@ -52,7 +64,10 @@ suspend fun Views.recordClip(
             if (renderedFrames++ % renderedFramesPerCapture != 0) return@add
             val frame = stage.unsafeRenderToBitmapSync(context, bgcolor = clearColor).toBufferedImage()
             val shownTaps = taps.filter { tap -> tap.isShownAt(capturedFrames) }
-            writers.forEach { (format, writer) -> writer.write(frame.scaled(format.scale).withTaps(shownTaps, capturedFrames, format.scale)) }
+            writers.forEach { (format, writer) ->
+                val scaledFrame = frame.scaled(format.scale).withTaps(shownTaps, capturedFrames, format.scale)
+                writer.write(scaledFrame.onCanvas(format.canvas, background))
+            }
             capturedFrames++
         }
     try {
@@ -99,6 +114,23 @@ private fun BufferedImage.scaled(scale: Int): BufferedImage {
     val image = BufferedImage(width * scale, height * scale, BufferedImage.TYPE_INT_RGB)
     val graphics = image.createGraphics()
     graphics.drawImage(this, 0, 0, width * scale, height * scale, null)
+    graphics.dispose()
+    return image
+}
+
+private fun BufferedImage.onCanvas(
+    canvas: ClipCanvas?,
+    background: Int,
+): BufferedImage {
+    if (canvas == null) return this
+    require(canvas.width >= width && canvas.height >= height) {
+        "The ${width}x$height frame does not fit on the ${canvas.width}x${canvas.height} canvas"
+    }
+    val image = BufferedImage(canvas.width, canvas.height, BufferedImage.TYPE_INT_RGB)
+    val graphics = image.createGraphics()
+    graphics.color = Color(background)
+    graphics.fillRect(0, 0, canvas.width, canvas.height)
+    graphics.drawImage(this, (canvas.width - width) / 2, (canvas.height - height) / 2, null)
     graphics.dispose()
     return image
 }
