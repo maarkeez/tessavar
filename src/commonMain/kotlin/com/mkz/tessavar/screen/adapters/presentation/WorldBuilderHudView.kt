@@ -17,7 +17,6 @@ import korlibs.korge.view.SolidRect
 import korlibs.korge.view.Text
 import korlibs.korge.view.View
 import korlibs.korge.view.addTo
-import korlibs.korge.view.clipContainer
 import korlibs.korge.view.container
 import korlibs.korge.view.image
 import korlibs.korge.view.solidRect
@@ -201,6 +200,7 @@ open class WorldBuilderHudView(
     internal val tabButtons = mutableMapOf<Tab, UIButton>()
     internal val palettes = mutableMapOf<Tab, Container>()
     internal val paletteButtons = Tab.entries.associateWith { mutableMapOf<String, SlotButton>() }
+    internal val paletteRows = Tab.entries.associateWith { mutableListOf<PaletteRowView>() }
     internal val selectionBorders = mutableMapOf<Tab, View>()
     internal val brushButton: SlotButton
     internal val toolButtons = mutableMapOf<Tool, SlotButton>()
@@ -376,27 +376,20 @@ open class WorldBuilderHudView(
         top: Double,
         onSelected: (String) -> Unit,
     ) {
-        val row =
-            clipContainer(Size(ROW_WIDTH + 2 * SELECTION_BORDER, SLOT_SIZE + 2 * SELECTION_BORDER)) {
-                xy(-SELECTION_BORDER, top - SELECTION_BORDER)
-            }
-        slots.forEachIndexed { index, (key, bitmap) ->
-            paletteButtons.getValue(tab)[key] =
-                SlotButton(Size(SLOT_SIZE, SLOT_SIZE)).addTo(row).apply {
-                    xy(SELECTION_BORDER + index * (SLOT_SIZE + SLOT_GAP), SELECTION_BORDER)
-                    fittedImage(bitmap, SLOT_SIZE, SLOT_SIZE - SLOT_SPRITE_INSET, imageName)
-                    onClick {
-                        onSelected(key)
-                        closeCard()
-                    }
-                }
+        val row = PaletteRowView(ROW_WIDTH, SLOT_SIZE, SLOT_GAP).addTo(this).xy(-PaletteRowView.BORDER, top - PaletteRowView.BORDER)
+        row.display(slots.map { (key, bitmap) -> PaletteRowView.Slot(key, bitmap, imageName) }) { key ->
+            onSelected(key)
+            closeCard()
         }
+        paletteRows.getValue(tab) += row
+        paletteButtons.getValue(tab).putAll(row.slotButtons)
     }
 
     private fun resetPalette(tab: Tab): Container {
         val palette = palettes.getValue(tab)
         palette.removeChildren()
         paletteButtons.getValue(tab).clear()
+        paletteRows.getValue(tab).clear()
         options.getValue(tab).clear()
         selectionBorders.remove(tab)
         return palette
@@ -418,6 +411,7 @@ open class WorldBuilderHudView(
         val row = button.parent!!
         row.addChildAt(border, 0)
         selectionBorders[tab] = border
+        paletteRows.getValue(tab).firstOrNull { paletteRow -> key in paletteRow.slotButtons }?.scrollTo(key)
         refreshTabIcon(tab)
         if (tab == displayedTab) refreshBrush()
     }

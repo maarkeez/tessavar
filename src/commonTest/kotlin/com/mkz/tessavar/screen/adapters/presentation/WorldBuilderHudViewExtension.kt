@@ -36,14 +36,50 @@ suspend fun ViewsForTesting.openPaletteCard(hudView: WorldBuilderHudView) {
     if (!hudView.isCardOpen) clickOn(hudView.brushButton)
 }
 
+fun WorldBuilderHudView.paletteRowOf(
+    tab: WorldBuilderHudView.Tab,
+    key: String,
+): PaletteRowView = paletteRows.getValue(tab).first { row -> key in row.slotButtons }
+
+suspend fun ViewsForTesting.scrollToPaletteSlot(
+    hudView: WorldBuilderHudView,
+    tab: WorldBuilderHudView.Tab,
+    key: String,
+) {
+    val row = hudView.paletteRowOf(tab, key)
+    repeat(MAX_PALETTE_DRAGS) {
+        if (row.isSlotInView(key)) return
+        val isLeftOfView = row.slotButtons.getValue(key).x + row.scroll < 0
+        dragPaletteRow(row, if (isLeftOfView) PALETTE_DRAG else -PALETTE_DRAG)
+    }
+}
+
+private const val MAX_PALETTE_DRAGS = 10
+private const val PALETTE_DRAG = 150.0
+
+suspend fun ViewsForTesting.clickPaletteSlot(
+    hudView: WorldBuilderHudView,
+    tab: WorldBuilderHudView.Tab,
+    key: String,
+) {
+    openPaletteCard(hudView)
+    scrollToPaletteSlot(hudView, tab, key)
+    clickOn(hudView.paletteButtons.getValue(tab).getValue(key))
+}
+
+suspend fun ViewsForTesting.tapPaletteSlot(
+    hudView: WorldBuilderHudView,
+    tab: WorldBuilderHudView.Tab,
+    key: String,
+) = clickOn(hudView.paletteButtons.getValue(tab).getValue(key))
+
 suspend fun ViewsForTesting.clickBrush(hudView: WorldBuilderHudView) = clickOn(hudView.brushButton)
 
 suspend fun ViewsForTesting.clickPaletteTerrain(
     hudView: WorldBuilderHudView,
     terrainId: String,
 ) {
-    openPaletteCard(hudView)
-    clickOn(hudView.terrainButtons.getValue(terrainId))
+    clickPaletteSlot(hudView, WorldBuilderHudView.Tab.TERRAIN, terrainId)
 }
 
 fun WorldBuilderHudView.toolIcons(): List<WorldBuilderHudView.ToolIcon> = toolButtons.values.map { button -> displayedIcons.getValue(button) }
@@ -89,8 +125,7 @@ suspend fun ViewsForTesting.clickPaletteUnit(
     playerId: String,
     unitId: String,
 ) {
-    openPaletteCard(hudView)
-    clickOn(hudView.paletteButtons.getValue(WorldBuilderHudView.Tab.UNITS).getValue("$playerId/$unitId"))
+    clickPaletteSlot(hudView, WorldBuilderHudView.Tab.UNITS, "$playerId/$unitId")
 }
 
 suspend fun ViewsForTesting.clickStock(hudView: WorldBuilderHudView) = clickOn(hudView.stockButton)
@@ -101,6 +136,5 @@ suspend fun ViewsForTesting.clickPaletteNpc(
     hudView: WorldBuilderHudView,
     npcId: String,
 ) {
-    openPaletteCard(hudView)
-    clickOn(hudView.paletteButtons.getValue(WorldBuilderHudView.Tab.NPCS).getValue(npcId))
+    clickPaletteSlot(hudView, WorldBuilderHudView.Tab.NPCS, npcId)
 }

@@ -1,6 +1,7 @@
 package com.mkz.tessavar.shared.adapters.e2e
 
 import com.mkz.tessavar.screen.adapters.presentation.WorldBuilderHudView
+import com.mkz.tessavar.screen.adapters.presentation.battleUnitBitmapAt
 import com.mkz.tessavar.screen.adapters.presentation.battlefieldView
 import com.mkz.tessavar.screen.adapters.presentation.clickBuildWorld
 import com.mkz.tessavar.screen.adapters.presentation.clickMenuButton
@@ -12,11 +13,16 @@ import com.mkz.tessavar.screen.adapters.presentation.clickTab
 import com.mkz.tessavar.screen.adapters.presentation.clickTile
 import com.mkz.tessavar.screen.adapters.presentation.clickTool
 import com.mkz.tessavar.screen.adapters.presentation.clickUndo
+import com.mkz.tessavar.screen.adapters.presentation.dragPaletteRow
 import com.mkz.tessavar.screen.adapters.presentation.hasBattleUnitAt
 import com.mkz.tessavar.screen.adapters.presentation.isBattlefieldDisplayed
+import com.mkz.tessavar.screen.adapters.presentation.isSlotInView
 import com.mkz.tessavar.screen.adapters.presentation.menuView
+import com.mkz.tessavar.screen.adapters.presentation.paletteKeys
+import com.mkz.tessavar.screen.adapters.presentation.paletteRowOf
 import com.mkz.tessavar.screen.adapters.presentation.paletteTerrainIds
 import com.mkz.tessavar.screen.adapters.presentation.subtitleText
+import com.mkz.tessavar.screen.adapters.presentation.tapPaletteSlot
 import com.mkz.tessavar.screen.adapters.presentation.tapWithFingersOn
 import com.mkz.tessavar.screen.adapters.presentation.terrainBitmapAt
 import com.mkz.tessavar.screen.adapters.presentation.tileCount
@@ -202,11 +208,30 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
             startWorldBuilder()
             val hudView = worldBuilderHudView()!!
             clickTab(hudView, WorldBuilderHudView.Tab.UNITS)
-            clickPaletteUnit(hudView, "player-two", "bee")
+            clickPaletteUnit(hudView, "player-two", "rat")
             // When
             clickTile(battlefieldView()!!, row = 3, column = 4)
             // Then
             waitUntil { battlefieldView()!!.hasBattleUnitAt(3, 4) }
             battlefieldView()!!.hasBattleUnitAt(3, 4) shouldBe true
+        }
+
+    @Test
+    fun `should place a battle unit of the CPU's last unit when its row is scrolled on the Units tab`() =
+        sharedViewsTest {
+            // Given
+            startWorldBuilder()
+            val hudView = worldBuilderHudView()!!
+            clickTab(hudView, WorldBuilderHudView.Tab.UNITS)
+            val lastUnit = hudView.paletteKeys(WorldBuilderHudView.Tab.UNITS).last()
+            val cpuRow = hudView.paletteRowOf(WorldBuilderHudView.Tab.UNITS, lastUnit)
+            // When
+            dragPaletteRow(cpuRow, -2000.0)
+            tapPaletteSlot(hudView, WorldBuilderHudView.Tab.UNITS, lastUnit)
+            clickTile(battlefieldView()!!, row = 3, column = 4)
+            // Then
+            waitUntil { battlefieldView()!!.hasBattleUnitAt(3, 4) }
+            battlefieldView()!!.battleUnitBitmapAt(3, 4).shouldNotBeNull()
+            cpuRow.isSlotInView(lastUnit) shouldBe true
         }
 }
