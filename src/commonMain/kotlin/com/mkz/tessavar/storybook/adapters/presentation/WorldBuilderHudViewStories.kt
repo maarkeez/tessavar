@@ -16,13 +16,15 @@ object WorldBuilderHudViewStories : StoryBinding {
     private const val CAN_RESTOCK = "canRestock"
     private val PLAYER_IDS = listOf("player-one", "player-two")
     private const val TOOL = "tool"
+    private const val OPEN = "open"
 
-    private val default = StoryDto(id = "screen-world-builder-hud--default", name = "Default", description = "Paint and the grass selected.", args = emptyMap())
+    private val default =
+        StoryDto(id = "screen-world-builder-hud--default", name = "Default", description = "The pill closed: the grass as the brush, then Paint selected, Fill and Erase.", args = emptyMap())
     private val otherTerrain =
         StoryDto(
             id = "screen-world-builder-hud--other-terrain",
             name = "Other terrain",
-            description = "Another terrain selected, framed in white.",
+            description = "Another terrain selected, shown as the brush.",
             args = mapOf(SELECTED_TERRAIN to ValueDto.text("water")),
         )
 
@@ -38,24 +40,24 @@ object WorldBuilderHudViewStories : StoryBinding {
         StoryDto(
             id = "screen-world-builder-hud--buildings-tab",
             name = "Buildings tab",
-            description = "The buildings to place, the first selected: Paint shows the Place icon, a pin, and Fill is disabled and dimmed.",
-            args = mapOf(TAB to ValueDto.text(WorldBuilderHudView.Tab.BUILDINGS.name)),
+            description = "The card open on the buildings to place, the first framed: Paint shows the Place icon, a pin, and Fill is disabled and dimmed.",
+            args = mapOf(TAB to ValueDto.text(WorldBuilderHudView.Tab.BUILDINGS.name), OPEN to ValueDto.boolean(true)),
         )
 
     private val unitsTab =
         StoryDto(
             id = "screen-world-builder-hud--units-tab",
             name = "Units tab",
-            description = "Every unit in a row for each player, titled with the player's name: a tap places a battle unit of that player.",
-            args = mapOf(TAB to ValueDto.text(WorldBuilderHudView.Tab.UNITS.name)),
+            description = "The card open on a row of units for each player, titled with the player's name: a tap picks a battle unit of that player.",
+            args = mapOf(TAB to ValueDto.text(WorldBuilderHudView.Tab.UNITS.name), OPEN to ValueDto.boolean(true)),
         )
 
     private val npcsTab =
         StoryDto(
             id = "screen-world-builder-hud--npcs-tab",
             name = "Npcs tab",
-            description = "The npcs to place, with Stock enabled as the npc selected stands in the world.",
-            args = mapOf(TAB to ValueDto.text(WorldBuilderHudView.Tab.NPCS.name), CAN_RESTOCK to ValueDto.boolean(true)),
+            description = "The card open on the npcs to place, and Stock in the pill instead of Fill, enabled as the npc selected stands in the world.",
+            args = mapOf(TAB to ValueDto.text(WorldBuilderHudView.Tab.NPCS.name), CAN_RESTOCK to ValueDto.boolean(true), OPEN to ValueDto.boolean(true)),
         )
 
     override fun component(context: StoryContext) =
@@ -64,15 +66,17 @@ object WorldBuilderHudViewStories : StoryBinding {
             group = "Screen",
             title = "World builder HUD",
             description =
-                "Under the world in the world builder: the palette's tabs, the tools a tapped tile is painted, placed on or erased with, " +
-                    "and the terrains, buildings, units or npcs of the tab. " +
-                    "canRestock: whether the npc selected stands in the world, so its stock can be chosen.",
+                "Floating over the world in the world builder: a pill with the brush, the option a tapped tile is painted or placed with, " +
+                    "and the tools to paint, fill or erase with. Tapping the brush opens a card above it with the palette's tabs " +
+                    "and the terrains, buildings, units or npcs of the tab in two rows. " +
+                    "open: whether the card is open. canRestock: whether the npc selected stands in the world, so its stock can be chosen.",
             controls =
                 listOf(
                     ControlDto.enum(TAB, WorldBuilderHudView.Tab.entries.map { tab -> tab.name }),
                     ControlDto.enum(TOOL, WorldBuilderHudView.Tool.entries.map { tool -> tool.name }),
                     ControlDto.pick(SELECTED_TERRAIN, context.terrainIds()),
                     ControlDto.boolean(CAN_RESTOCK),
+                    ControlDto.boolean(OPEN),
                 ),
             args =
                 mapOf(
@@ -80,6 +84,7 @@ object WorldBuilderHudViewStories : StoryBinding {
                     CAN_RESTOCK to ValueDto.boolean(false),
                     TOOL to ValueDto.text(WorldBuilderHudView.Tool.PAINT.name),
                     SELECTED_TERRAIN to ValueDto.text(DEFAULT_TERRAIN),
+                    OPEN to ValueDto.boolean(false),
                 ),
             stories = listOf(default, otherTerrain, fillTool, buildingsTab, unitsTab, npcsTab),
         )
@@ -136,6 +141,7 @@ object WorldBuilderHudViewStories : StoryBinding {
             displayNpcs(npcs)
             npcs.firstOrNull()?.let { npc -> selectNpc(npc.id) }
             displayStock(isEnabled = args.boolean(CAN_RESTOCK))
+            if (args.boolean(OPEN)) openCard()
         }
     }
 }

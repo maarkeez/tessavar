@@ -1,14 +1,23 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.GAME_WINDOW_SIZE
+import com.mkz.tessavar.battlefield.domain.BattlefieldMother.battlefield
+import com.mkz.tessavar.screen.adapters.presentation.GameSceneResourcesLoaderMother.loadedResourcesLoader
+import com.mkz.tessavar.shared.adapters.presentation.clickOn
+import com.mkz.tessavar.shared.adapters.presentation.nextFrame
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import korlibs.image.bitmap.Bitmap32
 import korlibs.image.color.Colors
 import korlibs.korge.tests.ViewsForTesting
+import korlibs.math.geom.Point
 import kotlin.test.Test
 
-class WorldBuilderHudViewTest : ViewsForTesting() {
+class WorldBuilderHudViewTest : ViewsForTesting(windowSize = GAME_WINDOW_SIZE) {
     private val selectedTerrains = mutableListOf<String>()
     private val selectedTools = mutableListOf<WorldBuilderHudView.Tool>()
     private val paletteSelections = mutableListOf<String>()
@@ -63,6 +72,9 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
             }
         }
 
+    private val fortressBitmap = Bitmap32(64, 64, Colors.DARKGRAY)
+    private val knightBitmap = Bitmap32(16, 16, Colors.BLUE)
+
     private fun newHudView() = WorldBuilderHudView(MessagesMother.messages()).also { hudView -> hudView.setDelegate(delegate) }
 
     @Test
@@ -91,28 +103,128 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
         }
 
     @Test
-    fun `PaletteTerrain should ask to select the terrain when it is clicked`() =
+    fun `PaletteTerrain should ask to select the terrain and close the card when it is clicked`() =
         sharedViewsTest {
             // Given
             val hudView = newHudView()
             hudView.displayTerrains(terrains, selectedTerrainId = "sand")
             addChild(hudView)
+            clickBrush(hudView)
             // When
-            clickPaletteTerrain(hudView, "lava")
+            clickOn(hudView.terrainButtons.getValue("lava"))
             // Then
             selectedTerrains.shouldContainExactly("lava")
+            hudView.isCardOpen.shouldBeFalse()
         }
 
     @Test
-    fun `WorldBuilderHudView should display the paint, fill and erase tools as icons without a label when it is created`() =
+    fun `WorldBuilderHudView should display the brush, paint, fill and erase in the pill with the card closed when it is created`() =
         sharedViewsTest {
             // When
             val hudView = newHudView()
+            hudView.displayTerrains(terrains, selectedTerrainId = "sand")
+            addChild(hudView)
             // Then
+            hudView.brushBitmap() shouldBe sandBitmap
+            hudView.pillTools().shouldContainExactly("PAINT", "FILL", "ERASE")
             hudView.toolIcons().shouldContainExactly(WorldBuilderHudView.ToolIcon.PAINT, WorldBuilderHudView.ToolIcon.FILL, WorldBuilderHudView.ToolIcon.ERASE)
             hudView.toolButtons.values
                 .map { button -> button.text }
                 .shouldContainExactly("", "", "")
+            hudView.isCardOpen.shouldBeFalse()
+            hudView.card.visible.shouldBeFalse()
+        }
+
+    @Test
+    fun `Brush should open the card when it is clicked and close it when clicked again`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            addChild(hudView)
+            // When
+            clickBrush(hudView)
+            // Then
+            hudView.isCardOpen.shouldBeTrue()
+            hudView.card.visible.shouldBeTrue()
+            // When
+            clickBrush(hudView)
+            // Then
+            hudView.isCardOpen.shouldBeFalse()
+            hudView.card.visible.shouldBeFalse()
+        }
+
+    @Test
+    fun `DisplayTab should show the option selected on the tab in the brush and on its tab when the tab is displayed`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            hudView.displayTerrains(terrains, selectedTerrainId = "sand")
+            hudView.displayBuildings(listOf(WorldBuilderHudView.PaletteOption("fortress", fortressBitmap)))
+            hudView.selectBuilding("fortress")
+            // When
+            hudView.displayTab(WorldBuilderHudView.Tab.BUILDINGS)
+            // Then
+            hudView.brushBitmap() shouldBe fortressBitmap
+            hudView.tabIconBitmap(WorldBuilderHudView.Tab.TERRAIN) shouldBe sandBitmap
+            hudView.tabIconBitmap(WorldBuilderHudView.Tab.BUILDINGS) shouldBe fortressBitmap
+        }
+
+    @Test
+    fun `DisplayTab should show Stock instead of Fill in the pill when the Npcs tab is displayed`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            addChild(hudView)
+            // When
+            hudView.displayTab(WorldBuilderHudView.Tab.NPCS)
+            // Then
+            hudView.pillTools().shouldContainExactly("PAINT", "STOCK", "ERASE")
+            // When
+            hudView.displayTab(WorldBuilderHudView.Tab.UNITS)
+            // Then
+            hudView.pillTools().shouldContainExactly("PAINT", "FILL", "ERASE")
+        }
+
+    @Test
+    fun `OutsideTapCatcher should close the card without asking to select a tile when the world is tapped with one finger`() =
+        sharedViewsTest {
+            // Given
+            val tappedTiles = mutableListOf<String>()
+            val battlefieldView = BattlefieldView(loadedResourcesLoader(), viewportSize = GAME_WINDOW_SIZE)
+            battlefieldView.displayBattlefield(battlefield(rows = 16, columns = 16).toTerrain())
+            battlefieldView.setDelegate(
+                object : BattlefieldView.Delegate {
+                    override fun tileSelected(
+                        row: Int,
+                        column: Int,
+                    ) {
+                        tappedTiles += "tile $row $column"
+                    }
+                },
+            )
+            addChild(battlefieldView)
+            val hudView = newHudView()
+            addChild(hudView)
+            clickBrush(hudView)
+            // When
+            tapWithFingers(Point(100, 200))
+            nextFrame()
+            // Then
+            hudView.isCardOpen.shouldBeFalse()
+            tappedTiles.shouldBeEmpty()
+        }
+
+    @Test
+    fun `OutsideTapCatcher should keep the card open when the world is tapped with two fingers`() =
+        sharedViewsTest {
+            // Given
+            val hudView = newHudView()
+            addChild(hudView)
+            clickBrush(hudView)
+            // When
+            tapWithFingers(Point(100, 200), Point(200, 200))
+            // Then
+            hudView.isCardOpen.shouldBeTrue()
         }
 
     @Test
@@ -168,9 +280,6 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
             selectedTools.shouldContainExactly(WorldBuilderHudView.Tool.FILL)
         }
 
-    private val fortressBitmap = Bitmap32(64, 64, Colors.DARKGRAY)
-    private val knightBitmap = Bitmap32(16, 16, Colors.BLUE)
-
     @Test
     fun `DisplayTab should display only its palette, show the place icon on Paint and disable Fill when a tab other than Terrain is displayed`() =
         sharedViewsTest {
@@ -202,7 +311,7 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
         }
 
     @Test
-    fun `DisplayUnits should display a row of units for each player, titled with its name, and a click ask to select the unit of that player`() =
+    fun `DisplayUnits should display a row of units for each player, titled with its name, in the card`() =
         sharedViewsTest {
             // Given
             val hudView = newHudView()
@@ -214,6 +323,7 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
             clickPaletteUnit(hudView, "player-two", "knight")
             // Then
             hudView.paletteKeys(WorldBuilderHudView.Tab.UNITS).shouldContainExactly("player-one/knight", "player-two/knight")
+            hudView.playerTitles().shouldContainExactly("Human", "CPU")
             paletteSelections.shouldContainExactly("unit player-two knight")
         }
 
@@ -227,6 +337,7 @@ class WorldBuilderHudViewTest : ViewsForTesting() {
             hudView.selectBuilding("fortress")
             // Then
             hudView.selectionBorders.keys.shouldContainExactly(WorldBuilderHudView.Tab.BUILDINGS)
+            hudView.highlightedKey(WorldBuilderHudView.Tab.BUILDINGS) shouldBe "fortress"
         }
 
     @Test

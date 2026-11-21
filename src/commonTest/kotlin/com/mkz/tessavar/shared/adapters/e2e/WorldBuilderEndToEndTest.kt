@@ -202,7 +202,7 @@ class WorldBuilderEndToEndTest : ViewsForTesting() {
             startWorldBuilder()
             val hudView = worldBuilderHudView()!!
             clickTab(hudView, WorldBuilderHudView.Tab.UNITS)
-            clickPaletteUnit(hudView, "player-two", "rat")
+            clickPaletteUnit(hudView, "player-two", "bee")
             // When
             clickTile(battlefieldView()!!, row = 3, column = 4)
             // Then

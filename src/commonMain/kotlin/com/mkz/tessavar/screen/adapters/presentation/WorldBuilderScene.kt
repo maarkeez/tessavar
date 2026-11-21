@@ -37,8 +37,6 @@ class WorldBuilderScene(
         const val TOP_STRIP_ALPHA = 0.9
         const val PADDING = 12.0
         const val INFO_Y = 9.0
-        const val HUD_PANEL_HEIGHT = 250.0
-        const val HUD_PANEL_TOP = 16.0
         const val PANEL_SHEET_HEIGHT = 360.0
         const val PANEL_SHEET_TOP = 26.0
         const val SHEET_RADIUS = 16.0
@@ -46,7 +44,7 @@ class WorldBuilderScene(
         const val GRABBER_HEIGHT = 5.0
         const val GRABBER_TOP = 8.0
 
-        val SCROLL_MARGIN = Margin(top = TOP_STRIP_HEIGHT, right = 0.0, bottom = HUD_PANEL_HEIGHT, left = 0.0)
+        val SCROLL_MARGIN = Margin(top = TOP_STRIP_HEIGHT, right = 0.0, bottom = WorldBuilderHudView.BOTTOM_CLEARANCE, left = 0.0)
     }
 
     override val coroutineContext by lazy { super.coroutineContext + views.gameWindow.coroutineDispatcher }
@@ -105,12 +103,13 @@ class WorldBuilderScene(
         )
 
         addChild(battlefieldView)
-        val hudPanel = hudPanel()
+        addChild(hudView)
         val panelSheet = panelSheet()
         addUpdater {
             val isPanelOpen = resizeView.isOpen || detailsView.isOpen || stockView.isOpen || formView.isOpen
             panelSheet.visible = isPanelOpen
-            hudPanel.visible = !isPanelOpen
+            hudView.visible = !isPanelOpen
+            if (hudView.isCardOpen && (isPanelOpen || menuView.isOpen)) hudView.closeCard()
         }
         topStrip()
 
@@ -126,14 +125,6 @@ class WorldBuilderScene(
         addChild(infoView)
         infoView.xy(PADDING, INFO_Y)
     }
-
-    private fun Container.hudPanel(): Container =
-        container {
-            y = GAME_WINDOW_SIZE.height - HUD_PANEL_HEIGHT
-            panel(Size(GAME_WINDOW_SIZE.width, HUD_PANEL_HEIGHT + SHEET_RADIUS), radius = SHEET_RADIUS)
-            addChild(hudView)
-            hudView.y = HUD_PANEL_TOP
-        }
 
     private fun Container.panelSheet(): Container =
         container {
