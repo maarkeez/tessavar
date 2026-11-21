@@ -11,6 +11,7 @@ import korlibs.korge.input.onClick
 import korlibs.korge.ui.UIButton
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.view.Container
+import korlibs.korge.view.GraphicsRenderer
 import korlibs.korge.view.Image
 import korlibs.korge.view.RoundRect
 import korlibs.korge.view.SolidRect
@@ -92,6 +93,8 @@ open class WorldBuilderHudView(
         val SELECTED_TOOL_COLOR = RGBA(0x00, 0x6A, 0xCC)
         val SELECTED_TOOL_OVER_COLOR = RGBA(0x00, 0x84, 0xFF)
 
+        internal fun RoundRect.clippable(): RoundRect = apply { renderer = GraphicsRenderer.SYSTEM }
+
         internal fun Container.fittedImage(
             bitmap: Bitmap,
             boxSize: Double,
@@ -154,7 +157,7 @@ open class WorldBuilderHudView(
     class SlotButton(
         size: Size,
     ) : UIButton(size) {
-        private var face: RoundRect = panel(size, fill = HudStyle.PANEL_RAISED, radius = HudStyle.SLOT_RADIUS)
+        private var face: RoundRect = panel(size, fill = HudStyle.PANEL_RAISED, radius = HudStyle.SLOT_RADIUS).clippable()
 
         var isHighlighted: Boolean = false
             set(value) {
@@ -175,7 +178,7 @@ open class WorldBuilderHudView(
             val index = face.index
             face.removeFromParent()
             val color = if (isHighlighted) SELECTED_TOOL_COLOR else HudStyle.PANEL_RAISED
-            face = RoundRect(size, RectCorners(HudStyle.SLOT_RADIUS), fill = color, stroke = if (isHighlighted) color else HudStyle.STROKE, strokeThickness = 1.0)
+            face = RoundRect(size, RectCorners(HudStyle.SLOT_RADIUS), fill = color, stroke = if (isHighlighted) color else HudStyle.STROKE, strokeThickness = 1.0).clippable()
             addChildAt(face, index)
         }
     }
@@ -407,7 +410,7 @@ open class WorldBuilderHudView(
                 Size(button.width + 2 * SELECTION_BORDER, button.height + 2 * SELECTION_BORDER),
                 RectCorners(HudStyle.SLOT_RADIUS + SELECTION_BORDER),
                 fill = HudStyle.SELECTION,
-            ).xy(button.x - SELECTION_BORDER, button.y - SELECTION_BORDER)
+            ).clippable().xy(button.x - SELECTION_BORDER, button.y - SELECTION_BORDER)
         val row = button.parent!!
         row.addChildAt(border, 0)
         selectionBorders[tab] = border
