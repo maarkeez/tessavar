@@ -25,6 +25,8 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  # Lists the run's artifacts, for deploy-pages and for the wait before it
+  actions: read
 
 concurrency:
   group: "pages"
@@ -36,6 +38,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      # One artifact per attempt, so a re-run does not find two artifacts with the same name
+      PAGES_ARTIFACT: github-pages-${{ github.run_attempt }}
     steps:
       - { uses: actions/checkout@v4 }
       - { name: Set up JDK, uses: actions/setup-java@v3, with: { distribution: "${{ env.JAVA_DISTRIBUTION }}", java-version: "${{ env.JAVA_VERSION }}" } }
@@ -53,5 +58,18 @@ jobs:
           sed 's#"sourceRoot": "../../#"sourceRoot": "${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/#' \
             docs/architecture/dependencies.html > build/www/dependencies/index.html
           grep -q '"sourceRoot": "https://' build/www/dependencies/index.html
-      - { name: Upload artifact, uses: actions/upload-pages-artifact@v3, with: { path: 'build/www' } }
-      - { name: Deploy 🚀 to GitHub Pages, id: deployment, uses: actions/deploy-pages@v4}
+      - { name: Upload artifact, uses: actions/upload-pages-artifact@v5.0.0, with: { path: 'build/www', name: "${{ env.PAGES_ARTIFACT }}" } }
+      # An artifact uploaded in the same job can take a moment to be listed, and deploy-pages fails at once with
+      # "No artifacts named ... were found" when it is not: see https://github.com/actions/deploy-pages/issues/451
+      - name: Wait for the Pages artifact
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          for attempt in $(seq 24); do
+            count=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts?name=$PAGES_ARTIFACT" --jq '.total_count' || echo 0)
+            if [ "$count" -ge 1 ]; then echo "Artifact $PAGES_ARTIFACT is listed"; exit 0; fi
+            echo "Artifact $PAGES_ARTIFACT not listed yet, waiting 5 s ($attempt/24)"
+            sleep 5
+          done
+          echo "::error::Artifact $PAGES_ARTIFACT was not listed after 2 minutes"
+          exit 1
+      - { name: Deploy 🚀 to GitHub Pages, id: deployment, uses: actions/deploy-pages@v5.0.1, with: { artifact_name: "${{ env.PAGES_ARTIFACT }}" } }
