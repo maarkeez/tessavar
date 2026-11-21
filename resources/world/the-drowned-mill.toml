@@ -39,8 +39,8 @@ row = 1
 column = 2
 
 [[battleUnits]]
-id = "knight"
-unitId = "knight"
+id = "hero-2"
+unitId = "hero"
 playerId = "player-one"
 row = 1
 column = 3
@@ -81,22 +81,22 @@ row = 18
 column = 6
 
 [[battleUnits]]
-id = "mill-goat-1"
-unitId = "goat"
+id = "mill-goat-wizard-1"
+unitId = "goat-wizard"
 playerId = "player-two"
 row = 13
 column = 4
 
 [[battleUnits]]
-id = "mill-goat-2"
-unitId = "goat"
+id = "mill-goat-wizard-2"
+unitId = "goat-wizard"
 playerId = "player-two"
 row = 16
 column = 11
 
 [[battleUnits]]
-id = "mill-goat-3"
-unitId = "goat"
+id = "mill-goat-wizard-3"
+unitId = "goat-wizard"
 playerId = "player-two"
 row = 17
 column = 3
@@ -145,19 +145,19 @@ id = "the-drowned-mill"
 type = "MAIN"
 startTiles = [[2, 2], [2, 3]]
 name = "The Drowned Mill"
-description = "Goats broke the dam above the mill, and the water took the fields. The Princess wants the mill turning again."
+description = "Goat wizards broke the dam above the mill, and the water took the fields. The Princess wants the mill turning again."
 
 [[quests.tasks]]
 type = "TALK"
 npcId = "princess"
 text = "Talk to the Princess"
-line = "Three goats butted the dam until it broke, and now they roam the drowned fields. Drive them off, then follow the stream down to see where the water goes."
+line = "Three goat wizards cracked the dam with their spells until it broke, and now they roam the drowned fields. Drive them off, then follow the stream down to see where the water goes."
 
 [[quests.tasks]]
 type = "DEFEAT"
-unitId = "goat"
+unitId = "goat-wizard"
 requiredDefeats = 3
-text = "Defeat 3 Goats"
+text = "Defeat 3 Goat Wizards"
 
 [[quests.tasks]]
 type = "VISIT"

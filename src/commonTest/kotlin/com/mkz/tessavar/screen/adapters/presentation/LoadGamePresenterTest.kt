@@ -38,8 +38,8 @@ class LoadGamePresenterTest {
     private val loadedWorldIds = mutableListOf<String>()
 
     init {
-        storage["save.slot2"] = """{"summary":{"version":${Save.SAVE_VERSION},"savedAt":0.0,"leaderUnitId":"knight","partySize":3,"worldId":"tessavar"},"snapshots":{}}"""
-        storage["save.slot3"] = """{"summary":{"version":0,"savedAt":0.0,"leaderUnitId":"knight","partySize":1},"snapshots":{}}"""
+        storage["save.slot2"] = """{"summary":{"version":${Save.SAVE_VERSION},"savedAt":0.0,"leaderUnitId":"hero","partySize":3,"worldId":"tessavar"},"snapshots":{}}"""
+        storage["save.slot3"] = """{"summary":{"version":0,"savedAt":0.0,"leaderUnitId":"hero","partySize":1},"snapshots":{}}"""
     }
 
     private fun presenter(incompatibleSlot: Int? = null) =
@@ -62,7 +62,7 @@ class LoadGamePresenterTest {
         saveSlotsView.title() shouldBe "Load a game"
         saveSlotsView.slotLabels()[0] shouldBe "Empty"
         saveSlotsView.slotLabels()[1] shouldStartWith "Tessavar · "
-        saveSlotsView.slotLabels()[1] shouldEndWith "Knight · party of 3"
+        saveSlotsView.slotLabels()[1] shouldEndWith "Mage · party of 3"
         saveSlotsView.slotLabels()[2] shouldBe "Incompatible save"
         saveSlotsView.enabledSlots().shouldContainExactly(false, true, false)
         saveSlotsView.deletableSlots().shouldContainExactly(2, 3)
@@ -82,7 +82,7 @@ class LoadGamePresenterTest {
     @Test
     fun `LoadGamePresenter should list a save as incompatible when its world is no longer shipped`() {
         // Given
-        storage["save.slot1"] = """{"summary":{"version":${Save.SAVE_VERSION},"savedAt":0.0,"leaderUnitId":"knight","partySize":3,"worldId":"the-sunken-keep"},"snapshots":{}}"""
+        storage["save.slot1"] = """{"summary":{"version":${Save.SAVE_VERSION},"savedAt":0.0,"leaderUnitId":"hero","partySize":3,"worldId":"the-sunken-keep"},"snapshots":{}}"""
         val presenter = presenter().apply { open() }
         // When
         presenter.saveSlotSelected(1)

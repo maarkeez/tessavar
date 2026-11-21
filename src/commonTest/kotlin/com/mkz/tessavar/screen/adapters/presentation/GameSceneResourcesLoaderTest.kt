@@ -72,7 +72,7 @@ class GameSceneResourcesLoaderTest {
             // When
             resourcesLoader.load()
             // Then
-            resourcesLoader.bitmapOrNull("unit/knight.png").shouldNotBeNull()
+            resourcesLoader.bitmapOrNull("unit/hero.png").shouldNotBeNull()
             resourcesLoader.bitmaps("terrain/transitions").shouldNotBeEmpty()
         }
 

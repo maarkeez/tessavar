@@ -9,7 +9,7 @@ Aseprite.
 
 ```shell
 tools/pixel-art/pixel --help
-tools/pixel-art/pixel grid art/unit/knight.aseprite
+tools/pixel-art/pixel grid art/unit/hero.aseprite
 ```
 
 The `pixel` launcher builds the tool when its sources changed, then runs it. Every command has a `--help`. Coding

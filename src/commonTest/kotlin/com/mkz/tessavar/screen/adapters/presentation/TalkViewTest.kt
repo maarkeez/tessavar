@@ -45,7 +45,7 @@ class TalkViewTest : ViewsForTesting() {
             // Given
             val dialog = newTalkView()
             // When
-            dialog.display(TalkInfo(npcId = "a-knight-to-recruit", unitId = "knight", name = "Knight", line = "Take me with you."))
+            dialog.display(TalkInfo(npcId = "a-knight-to-recruit", unitId = "hero", name = "Mage", line = "Take me with you."))
             // Then
             dialog.portraitSize() shouldBe (96.0 to 96.0)
         }

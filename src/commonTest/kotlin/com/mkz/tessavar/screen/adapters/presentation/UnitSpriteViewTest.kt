@@ -15,11 +15,11 @@ class UnitSpriteViewTest : ViewsForTesting() {
     fun `UnitSpriteView should draw the image of the unit when it is created`() =
         sharedViewsTest {
             // Given
-            val knightBitmap = loadedResourcesLoader().bitmap("unit/knight.png")
+            val heroBitmap = loadedResourcesLoader().bitmap("unit/hero.png")
             // When
-            val unitSpriteView = UnitSpriteView(knightBitmap)
+            val unitSpriteView = UnitSpriteView(heroBitmap)
             // Then
-            unitSpriteView.drawnBitmap() shouldBe knightBitmap
+            unitSpriteView.drawnBitmap() shouldBe heroBitmap
         }
 
     @Test

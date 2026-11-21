@@ -9,7 +9,7 @@ import korlibs.korge.view.View
 
 object TileBlinkViewStories : StoryBinding {
     private const val DEFAULT_TERRAIN = "sand"
-    private const val DEFAULT_UNIT = "knight"
+    private const val DEFAULT_UNIT = "hero"
     private const val TERRAIN = StoryTiles.TERRAIN
     private const val UNIT = "unit"
     private const val BLINKING = "blinking"

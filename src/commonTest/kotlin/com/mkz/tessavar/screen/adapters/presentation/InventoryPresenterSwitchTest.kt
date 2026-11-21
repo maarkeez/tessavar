@@ -34,8 +34,8 @@ class InventoryPresenterSwitchTest {
             lootableItems = listOf(consumableLootableItem(id = "health-potion", price = 10, consumable = consumable(effectIds = setOf("heal"))).toDto()),
             units =
                 listOf(
-                    unit(id = "knight", startingGold = 20).toDto(),
-                    unit(id = "viking", startingGold = 30).toDto(),
+                    unit(id = "hero", startingGold = 20).toDto(),
+                    unit(id = "viking-warrior", startingGold = 30).toDto(),
                     unit(id = "mage").toDto(),
                     unit(id = "rat").toDto(),
                 ),
@@ -45,8 +45,8 @@ class InventoryPresenterSwitchTest {
             tiles = List(4) { List(4) { "sand" } },
             deployments =
                 listOf(
-                    Deployment(battleUnitId = "knight-1", unitId = "knight", playerId = "human", row = 1, column = 1),
-                    Deployment(battleUnitId = "viking-1", unitId = "viking", playerId = "human", row = 1, column = 2),
+                    Deployment(battleUnitId = "knight-1", unitId = "hero", playerId = "human", row = 1, column = 1),
+                    Deployment(battleUnitId = "viking-1", unitId = "viking-warrior", playerId = "human", row = 1, column = 2),
                     Deployment(battleUnitId = "mage-1", unitId = "mage", playerId = "human", row = 2, column = 1),
                     Deployment(battleUnitId = "rat-1", unitId = "rat", playerId = "cpu", row = 3, column = 3),
                 ),
@@ -126,7 +126,7 @@ class InventoryPresenterSwitchTest {
         // When
         openInventoryOf("knight-1")
         // Then
-        inventoryView.displayedOwner shouldBe Owner(name = "Knight", partyIndex = 0, partySize = 3, canGiveGold = true)
+        inventoryView.displayedOwner shouldBe Owner(name = "Mage", partyIndex = 0, partySize = 3, canGiveGold = true)
     }
 
     @Test
@@ -164,7 +164,7 @@ class InventoryPresenterSwitchTest {
         step(-1)
         // Then
         selectedBattleUnitIds.shouldBeEmpty()
-        inventoryView.displayedOwner shouldBe Owner(name = "Knight", partyIndex = 0, partySize = 3, canGiveGold = true)
+        inventoryView.displayedOwner shouldBe Owner(name = "Mage", partyIndex = 0, partySize = 3, canGiveGold = true)
     }
 
     @Test

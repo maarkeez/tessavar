@@ -29,7 +29,6 @@ import com.mkz.tessavar.shared.domain.subscribe
 import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.terrain.adapters.resources.ResourcesTerrainLoader
 import com.mkz.tessavar.unit.adapters.presentation.UnitApi
-import com.mkz.tessavar.unit.adapters.resources.ResourcesUnitLoader
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly
@@ -47,7 +46,7 @@ class WanderingAcceptanceTest {
     ) {
         val eventBus = InMemoryEventBus()
         val terrainApi = TerrainApi(eventBus, ResourcesTerrainLoader())
-        val unitApi = UnitApi(eventBus, ResourcesUnitLoader())
+        val unitApi = UnitApi(eventBus, AcceptanceUnitLoader())
         val playerApi = PlayerApi(eventBus, ResourcesPlayerLoader())
         val battlefieldApi = BattlefieldApi(terrainApi, eventBus, ResourcesBattlefieldLoader(), TomlBattlefieldEncoder(), TomlBattlefieldDecoder())
         val effectApi = EffectApi(eventBus, ResourcesEffectLoader())

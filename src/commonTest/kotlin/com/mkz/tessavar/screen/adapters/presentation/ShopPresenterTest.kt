@@ -38,13 +38,13 @@ class ShopPresenterTest {
                     consumableLootableItem(id = "health-potion", price = 10, consumable = consumable(effectIds = setOf("cure"))).toDto(),
                     equippableLootableItem(id = "hammer", price = 50, equippable = equippable(effectIds = setOf("sturdy"), equipmentZone = WEAPON)).toDto(),
                 ),
-            units = listOf(unit(id = "knight", startingGold = 20).toDto(), unit(id = "viking", startingGold = 100).toDto()),
+            units = listOf(unit(id = "hero", startingGold = 20).toDto(), unit(id = "viking-warrior", startingGold = 100).toDto()),
             players = listOf(player(id = "human", type = HUMAN).toDto(), player(id = "cpu", type = CPU).toDto()),
             tiles = List(3) { List(3) { "sand" } },
             deployments =
                 listOf(
-                    Deployment(battleUnitId = "knight-1", unitId = "knight", playerId = "human", row = 1, column = 1),
-                    Deployment(battleUnitId = "viking-1", unitId = "viking", playerId = "human", row = 2, column = 1),
+                    Deployment(battleUnitId = "knight-1", unitId = "hero", playerId = "human", row = 1, column = 1),
+                    Deployment(battleUnitId = "viking-1", unitId = "viking-warrior", playerId = "human", row = 2, column = 1),
                 ),
             npcs = listOf(merchant),
         ).also(SubdomainApis::initialise)
@@ -112,7 +112,7 @@ class ShopPresenterTest {
         // Then
         presenter.isOpen.shouldBeTrue()
         shopView.visible.shouldBeTrue()
-        shopView.buyerText() shouldBe "Knight · 20 G · Inventory 0/12"
+        shopView.buyerText() shouldBe "Mage · 20 G · Inventory 0/12"
         shopView.arrowsEnabled() shouldBe (false to true)
         shopView.footerText() shouldBe "Tap an item to buy"
         action().shouldBeNull()
@@ -197,7 +197,7 @@ class ShopPresenterTest {
         // When
         presenter.shopBuyerStepped(-1)
         // Then
-        shopView.buyerText() shouldBe "Knight · 20 G · Inventory 0/12"
+        shopView.buyerText() shouldBe "Mage · 20 G · Inventory 0/12"
         // When
         presenter.shopBuyerStepped(1)
         presenter.shopBuyerStepped(1)
@@ -233,7 +233,7 @@ class ShopPresenterTest {
         // When
         trade()
         // Then
-        shopView.buyerText() shouldBe "Knight · 20 G · Inventory 0/12"
+        shopView.buyerText() shouldBe "Mage · 20 G · Inventory 0/12"
     }
 
     @Test

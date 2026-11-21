@@ -13,7 +13,7 @@ import kotlin.test.Test
 class CastPreviewViewTest : ViewsForTesting() {
     private val battleHudHeight = 300.0
 
-    private val casterBattleUnit = battleUnitInfo(unitId = "knight")
+    private val casterBattleUnit = battleUnitInfo(unitId = "hero")
 
     private fun recipients(count: Int): List<CastPreviewView.Recipient> =
         List(count) {
@@ -46,7 +46,7 @@ class CastPreviewViewTest : ViewsForTesting() {
             // Then
             castPreviewView.isAbilityIconDisplayed().shouldBeTrue()
             castPreviewView.abilityName() shouldBe "Mushroom"
-            castPreviewView.caster() shouldBe "by Knight"
+            castPreviewView.caster() shouldBe "by Mage"
             castPreviewView.manaSpent() shouldBe "-10 mana"
         }
 
@@ -69,7 +69,7 @@ class CastPreviewViewTest : ViewsForTesting() {
             // When
             castPreviewView.display(
                 abilityId = "heal",
-                casterBattleUnit = battleUnitInfo(unitId = "knight", remainingHealth = 10),
+                casterBattleUnit = battleUnitInfo(unitId = "hero", remainingHealth = 10),
                 manaCost = 10,
                 recipients = emptyList(),
                 casterRemainingHealth = 20,

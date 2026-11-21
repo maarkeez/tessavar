@@ -53,10 +53,10 @@ class ExplorationPresenterTest {
                     consumableLootableItem(id = "health-potion", price = 10, consumable = consumable(effectIds = setOf("cure"))).toDto(),
                     consumableLootableItem(id = "mana-potion", price = 15, consumable = consumable(effectIds = setOf("cure"))).toDto(),
                 ),
-            units = listOf(unit(id = "knight").toDto()),
+            units = listOf(unit(id = "hero").toDto()),
             players = listOf(player(id = "human", type = HUMAN).toDto(), player(id = "cpu", type = CPU).toDto()),
             tiles = List(3) { List(3) { "sand" } },
-            deployments = listOf(Deployment(battleUnitId = "knight-1", unitId = "knight", playerId = "human", row = 1, column = 1)),
+            deployments = listOf(Deployment(battleUnitId = "knight-1", unitId = "hero", playerId = "human", row = 1, column = 1)),
             npcs =
                 listOf(
                     npc(id = "elder", row = 1, column = 0).toDto(),
@@ -351,10 +351,10 @@ class ExplorationPresenterTest {
         SubdomainApis(
             terrains = listOf(terrainThatCanBeOccupied(id = "sand", transitionsTo = setOf("water")).toDto(), terrainThatCanBeOccupied(id = "water", effectId = "water-heal").toDto()),
             effects = listOf(healEffect(id = "water-heal").toDto()),
-            units = listOf(unit(id = "knight").toDto()),
+            units = listOf(unit(id = "hero").toDto()),
             players = listOf(player(id = "human", type = HUMAN).toDto(), player(id = "cpu", type = CPU).toDto()),
             tiles = listOf(listOf("sand"), listOf("water"), listOf("water"), listOf("water")),
-            deployments = (1..3).map { index -> Deployment(battleUnitId = "knight-$index", unitId = "knight", playerId = "human", row = index, column = 0) },
+            deployments = (1..3).map { index -> Deployment(battleUnitId = "knight-$index", unitId = "hero", playerId = "human", row = index, column = 0) },
         ).also(SubdomainApis::initialise)
 
     private fun partyOnWaterPresenters(
@@ -904,7 +904,7 @@ class ExplorationPresenterTest {
         openFormation()
         // Then
         formationView.visible.shouldBeTrue()
-        formationView.names().shouldContainExactly("Knight")
+        formationView.names().shouldContainExactly("Mage")
         formationView.crownedRowIndexes().shouldContainExactly(0)
         virtualPadView.visible.shouldBeFalse()
         hudView.visible.shouldBeFalse()

@@ -1426,10 +1426,6 @@ msgctxt "unit.goat-wizard.name"
 msgid "Goat Wizard"
 msgstr "Mago Cabra"
 
-msgctxt "unit.goat.name"
-msgid "Goat"
-msgstr "Cabra"
-
 msgctxt "unit.herbalist.name"
 msgid "Herbalist"
 msgstr "Herbolaria"
@@ -1438,18 +1434,10 @@ msgctxt "unit.hero.name"
 msgid "Mage"
 msgstr "Maga"
 
-msgctxt "unit.knight.name"
-msgid "Knight"
-msgstr "Caballero"
-
 msgctxt "unit.rat.name"
 msgid "Rat"
 msgstr "Rata"
 
 msgctxt "unit.viking-warrior.name"
-msgid "Viking"
-msgstr "Vikingo"
-
-msgctxt "unit.viking.name"
 msgid "Viking"
 msgstr "Vikingo"

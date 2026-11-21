@@ -1,4 +1,0 @@
-baseMaximumHealth = 30
-baseMaximumMana = 30
-maximumSteps = 1
-startingAbilities = ["bat", "teleport", "heal"]

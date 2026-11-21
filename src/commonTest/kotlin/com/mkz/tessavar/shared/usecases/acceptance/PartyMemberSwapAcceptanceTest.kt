@@ -25,7 +25,6 @@ import com.mkz.tessavar.shared.domain.FixedDoublesRandom
 import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.terrain.adapters.resources.ResourcesTerrainLoader
 import com.mkz.tessavar.unit.adapters.presentation.UnitApi
-import com.mkz.tessavar.unit.adapters.resources.ResourcesUnitLoader
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldContainExactly
@@ -35,7 +34,7 @@ import kotlin.test.Test
 class PartyMemberSwapAcceptanceTest {
     private val eventBus = InMemoryEventBus()
     private val terrainApi = TerrainApi(eventBus, ResourcesTerrainLoader())
-    private val unitApi = UnitApi(eventBus, ResourcesUnitLoader())
+    private val unitApi = UnitApi(eventBus, AcceptanceUnitLoader())
     private val playerApi = PlayerApi(eventBus, ResourcesPlayerLoader())
     private val battlefieldApi = BattlefieldApi(terrainApi, eventBus, ResourcesBattlefieldLoader(), TomlBattlefieldEncoder(), TomlBattlefieldDecoder())
     private val effectApi = EffectApi(eventBus, ResourcesEffectLoader())

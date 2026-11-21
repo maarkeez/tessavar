@@ -35,7 +35,7 @@ class InventoryPresenterGiveGoldTest {
         knightGold: Int = 120,
         vikingGold: Int = 100,
         mageGold: Int = 99_990,
-        party: List<Pair<String, String>> = listOf("knight-1" to "knight", "viking-1" to "viking", "mage-1" to "mage"),
+        party: List<Pair<String, String>> = listOf("knight-1" to "hero", "viking-1" to "viking-warrior", "mage-1" to "mage"),
     ): SubdomainApis =
         SubdomainApis(
             terrains = listOf(terrainThatCanBeOccupied(id = "sand").toDto()),
@@ -43,8 +43,8 @@ class InventoryPresenterGiveGoldTest {
             lootableItems = listOf(consumableLootableItem(id = "health-potion", price = 10, consumable = consumable(effectIds = setOf("heal"))).toDto()),
             units =
                 listOf(
-                    unit(id = "knight", startingGold = knightGold).toDto(),
-                    unit(id = "viking", startingGold = vikingGold).toDto(),
+                    unit(id = "hero", startingGold = knightGold).toDto(),
+                    unit(id = "viking-warrior", startingGold = vikingGold).toDto(),
                     unit(id = "mage", startingGold = mageGold).toDto(),
                     unit(id = "rat").toDto(),
                 ),
@@ -139,8 +139,8 @@ class InventoryPresenterGiveGoldTest {
         scene.tapGold()
         // Then
         val panel = scene.displayedPanel()
-        panel.giver shouldBe Member(name = "Knight", unitId = "knight", gold = 120)
-        panel.receiver shouldBe Member(name = "Viking", unitId = "viking", gold = 100)
+        panel.giver shouldBe Member(name = "Mage", unitId = "hero", gold = 120)
+        panel.receiver shouldBe Member(name = "Viking", unitId = "viking-warrior", gold = 100)
         panel.amount shouldBe 1
         panel.maximum shouldBe 120
         panel.canStepToPrevious.shouldBeFalse()
@@ -200,7 +200,7 @@ class InventoryPresenterGiveGoldTest {
     @Test
     fun `GoldSelected should display why when the giver is alone, or every other member is at the limit`() {
         // Given
-        val alone = Scene(apis(party = listOf("knight-1" to "knight")))
+        val alone = Scene(apis(party = listOf("knight-1" to "hero")))
         alone.openKnightInventory()
         // When
         alone.tapGold()
@@ -370,7 +370,7 @@ class InventoryPresenterGiveGoldTest {
             .shouldBeTrue()
         scene.hudView.displays.last() shouldBe Display.INVENTORY
         scene.callToActionView.displayedGiveGold.shouldBeNull()
-        scene.battlefieldView.blinkedBattleUnits.last() shouldBe BattleUnitAt(row = 1, column = 2, unitId = "viking")
+        scene.battlefieldView.blinkedBattleUnits.last() shouldBe BattleUnitAt(row = 1, column = 2, unitId = "viking-warrior")
         scene.battlefieldView.tileSelections.last() shouldBe knightTile
         scene.battlefieldView.tilesNotDimmed.last() shouldBe setOf(knightTile)
     }
@@ -468,7 +468,7 @@ class InventoryPresenterGiveGoldTest {
         val scene = Scene()
         scene.openPanel()
         // When
-        scene.publish(BattleUnitDefeated(playerId = "human", battleUnitId = "knight-1", unitId = "knight", defeatedAtRow = 1, defeatedAtColumn = 1))
+        scene.publish(BattleUnitDefeated(playerId = "human", battleUnitId = "knight-1", unitId = "hero", defeatedAtRow = 1, defeatedAtColumn = 1))
         // Then
         scene.callToActionView.displayedGiveGold.shouldBeNull()
         scene.hudView.displays.last() shouldBe Display.INVENTORY
@@ -480,7 +480,7 @@ class InventoryPresenterGiveGoldTest {
         val scene = Scene()
         scene.openPanel()
         // When
-        scene.publish(BattleUnitDefeated(playerId = "human", battleUnitId = "viking-1", unitId = "viking", defeatedAtRow = 1, defeatedAtColumn = 2))
+        scene.publish(BattleUnitDefeated(playerId = "human", battleUnitId = "viking-1", unitId = "viking-warrior", defeatedAtRow = 1, defeatedAtColumn = 2))
         // Then
         scene.displayedPanel().receiver.unitId shouldBe "mage"
         scene.displayedPanel().canStepToPrevious.shouldBeFalse()

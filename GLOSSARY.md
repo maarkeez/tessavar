@@ -1159,7 +1159,7 @@ its files rather than saved.
 _Avoid_: Config, content
 
 **Definition**:
-The game data of one thing, such as the knight in `unit/knight.toml`.
+The game data of one thing, such as the hero in `unit/hero.toml`.
 
 #### Bars
 
@@ -1322,7 +1322,7 @@ A terrain whose terrain effect heals the occupant standing on it, such as water.
 ### Unit
 
 **Unit**:
-The kind of battle unit a battle unit is deployed from, such as the knight. It sets the base maximum health and mana,
+The kind of battle unit a battle unit is deployed from, such as the hero. It sets the base maximum health and mana,
 maximum steps, starting abilities and starting gold of its battle units.
 _Avoid_: Unit type, class, template, character
 

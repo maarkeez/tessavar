@@ -20,8 +20,8 @@ class FormationViewTest : ViewsForTesting() {
         }
     }
 
-    private val knight = Row(unitId = "knight", name = "Knight", remainingHealth = 20, maximumHealth = 30, remainingMana = 5, maximumMana = 10, isLeader = true)
-    private val viking = Row(unitId = "viking", name = "Viking", remainingHealth = 40, maximumHealth = 40, remainingMana = 0, maximumMana = 0, isLeader = false)
+    private val knight = Row(unitId = "hero", name = "Mage", remainingHealth = 20, maximumHealth = 30, remainingMana = 5, maximumMana = 10, isLeader = true)
+    private val viking = Row(unitId = "viking-warrior", name = "Viking", remainingHealth = 40, maximumHealth = 40, remainingMana = 0, maximumMana = 0, isLeader = false)
 
     @Test
     fun `Init should stack the rows above the hint`() =
@@ -42,10 +42,10 @@ class FormationViewTest : ViewsForTesting() {
             // When
             formationView.display(listOf(knight, viking))
             // Then
-            formationView.names().shouldContainExactly("Knight", "Viking")
+            formationView.names().shouldContainExactly("Mage", "Viking")
             formationView.portraitBitmaps().shouldContainExactly(
-                resourcesLoader.bitmap("unit/knight_portrait.png"),
-                resourcesLoader.bitmap("unit/viking_portrait.png"),
+                resourcesLoader.bitmap("unit/hero_portrait.png"),
+                resourcesLoader.bitmap("unit/viking-warrior_portrait.png"),
             )
             formationView.bars().shouldContainExactly("20/30" to "5/10", "40/40" to "0/0")
         }
@@ -72,7 +72,7 @@ class FormationViewTest : ViewsForTesting() {
             // When
             formationView.display(listOf(viking.copy(isLeader = true), knight.copy(isLeader = false)))
             // Then
-            formationView.names().shouldContainExactly("Viking", "Knight")
+            formationView.names().shouldContainExactly("Viking", "Mage")
             formationView.crownedRowIndexes().shouldContainExactly(0)
         }
 
@@ -86,7 +86,7 @@ class FormationViewTest : ViewsForTesting() {
             // When
             formationView.display(listOf(knight))
             // Then
-            formationView.names().shouldContainExactly("Knight")
+            formationView.names().shouldContainExactly("Mage")
             formationView.selectedRowIndexes().shouldBeEmpty()
         }
 

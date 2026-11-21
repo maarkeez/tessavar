@@ -17,7 +17,7 @@ class ResourcesCatalogTest {
             // Then
             val loaded = catalog.loadCatalog()
             loaded.buildings.shouldContainExactly(WorldBuilder.Dto.CatalogBuildingDto(id = "fortress", rows = 4, columns = 4))
-            loaded.unitIds shouldContain "knight"
+            loaded.unitIds shouldContain "hero"
             loaded.npcs shouldContain WorldBuilder.Dto.CatalogNpcDto(id = "viking", unitId = "viking-warrior")
             loaded.npcs shouldContain WorldBuilder.Dto.CatalogNpcDto(id = "alchemist", unitId = null)
             loaded.playerIds.shouldContainExactly("player-one", "player-two")

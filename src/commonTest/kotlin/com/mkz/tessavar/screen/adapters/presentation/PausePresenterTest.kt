@@ -25,10 +25,10 @@ class PausePresenterTest {
     private val apis =
         SubdomainApis(
             terrains = listOf(terrainThatCanBeOccupied(id = "sand").toDto()),
-            units = listOf(unit(id = "knight").toDto()),
+            units = listOf(unit(id = "hero").toDto()),
             players = listOf(player(id = "human", type = HUMAN).toDto()),
             tiles = List(2) { List(2) { "sand" } },
-            deployments = listOf(Deployment(battleUnitId = "knight-1", unitId = "knight", playerId = "human", row = 0, column = 0)),
+            deployments = listOf(Deployment(battleUnitId = "knight-1", unitId = "hero", playerId = "human", row = 0, column = 0)),
             explore = true,
         ).also(SubdomainApis::initialise)
     private val saveApi =
@@ -37,7 +37,7 @@ class PausePresenterTest {
             eventBus = apis.eventBus,
             snapshottables = listOf(apis.battleUnitApi.snapshottable, apis.partyApi.snapshottable),
             canSave = { apis.partyApi.searchParty()?.isPaused == true },
-            leaderUnitId = { "knight" },
+            leaderUnitId = { "hero" },
             partySize = { 1 },
             worldId = "tessavar",
             now = { DateTime.nowUnixMillis() },
@@ -135,7 +135,7 @@ class PausePresenterTest {
         confirmDialogView.visible.shouldBeTrue()
         confirmDialogView.message() shouldBe "Overwrite the game saved in slot 2?"
         callToActionView.actionLabels().shouldContainExactly("Cancel", "Overwrite")
-        saveSlotsView.slotLabels()[1] shouldEndWith "Knight · party of 1"
+        saveSlotsView.slotLabels()[1] shouldEndWith "Mage · party of 1"
     }
 
     @Test

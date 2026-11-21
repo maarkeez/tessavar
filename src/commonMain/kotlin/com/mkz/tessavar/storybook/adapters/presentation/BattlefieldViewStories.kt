@@ -43,7 +43,7 @@ object BattlefieldViewStories : StoryBinding {
     private val CAST_RANGE = listOf(TilePosition(4, 1), TilePosition(4, 3), TilePosition(4, 4), TilePosition(5, 2), TilePosition(5, 3), TilePosition(3, 1))
     private val CAST_GROUP = listOf(TilePosition(4, 3), OTHER_BATTLE_UNIT_TILE, TilePosition(5, 3))
 
-    private const val DEFAULT_UNIT = "knight"
+    private const val DEFAULT_UNIT = "hero"
     private const val OTHER_UNIT = "rat"
     private const val DEFAULT_NPC = "alchemist"
     private const val DEFAULT_DROPPED_ITEM = "health-potion"

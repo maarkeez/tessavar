@@ -17,7 +17,7 @@ class UnitPortraitViewTest : ViewsForTesting() {
             // Given
             val unitPortraitView = UnitPortraitView(Size(width = 97.5, height = 97.5), loadedResourcesLoader())
             // When
-            unitPortraitView.display(unitId = "knight")
+            unitPortraitView.display(unitId = "hero")
             // Then
             unitPortraitView.isVisibleToUser().shouldBeTrue()
         }
@@ -28,7 +28,7 @@ class UnitPortraitViewTest : ViewsForTesting() {
             // Given
             val unitPortraitView = UnitPortraitView(Size(width = 97.5, height = 97.5), loadedResourcesLoader())
             // When
-            unitPortraitView.display(unitId = "knight")
+            unitPortraitView.display(unitId = "hero")
             // Then
             unitPortraitView.isPortraitDisplayed().shouldBeTrue()
         }
@@ -61,7 +61,7 @@ class UnitPortraitViewTest : ViewsForTesting() {
             // Given
             val unitPortraitView = UnitPortraitView(Size(width = 97.5, height = 97.5), loadedResourcesLoader())
             // When
-            unitPortraitView.display(unitId = "knight", ring = HudStyle.ALLY)
+            unitPortraitView.display(unitId = "hero", ring = HudStyle.ALLY)
             // Then
             unitPortraitView.ringColor() shouldBe HudStyle.ALLY
         }
@@ -71,9 +71,9 @@ class UnitPortraitViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val unitPortraitView = UnitPortraitView(Size(width = 97.5, height = 97.5), loadedResourcesLoader())
-            unitPortraitView.display(unitId = "knight", ring = HudStyle.ENEMY)
+            unitPortraitView.display(unitId = "hero", ring = HudStyle.ENEMY)
             // When
-            unitPortraitView.display(unitId = "knight")
+            unitPortraitView.display(unitId = "hero")
             // Then
             unitPortraitView.ringColor().shouldBeNull()
         }
@@ -83,7 +83,7 @@ class UnitPortraitViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val unitPortraitView = UnitPortraitView(Size(width = 97.5, height = 97.5), loadedResourcesLoader())
-            unitPortraitView.display(unitId = "knight")
+            unitPortraitView.display(unitId = "hero")
             // When
             unitPortraitView.hide()
             // Then

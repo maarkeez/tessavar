@@ -226,7 +226,7 @@ class StorySmokeTest : ViewsForTesting() {
                     "screen-tile-blink--not-blinking",
                     "screen-tile-blink--small-unit",
                     "screen-unit-sprite",
-                    "screen-unit-sprite--knight",
+                    "screen-unit-sprite--hero",
                     "screen-unit-sprite--rat",
                     "screen-unit-sprite--npc",
                     "screen-unit-sprite--on-lava",

@@ -64,7 +64,7 @@ One table per battle unit.
 | Key        | Type     | Default | Required | Description                                                                                                                                     |
 |------------|----------|---------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | `id`       | `string` | none    | Yes      | The battle unit's id, unique in the world, e.g.: `rat-1`.                                                                                       |
-| `unitId`   | `string` | none    | Yes      | Its unit, from `resources/unit/`. Accepted values: `bat`, `bee`, `goat`, `goat-wizard`, `herbalist`, `hero`, `knight`, `rat`, `viking`, `viking-warrior`. |
+| `unitId`   | `string` | none    | Yes      | Its unit, from `resources/unit/`. Accepted values: `bat`, `bee`, `goat-wizard`, `herbalist`, `hero`, `rat`, `viking-warrior`. |
 | `playerId` | `string` | none    | Yes      | Its player. Accepted values: `player-one` (Human), `player-two` (CPU).                                                                         |
 | `row`      | `int`    | none    | Yes      | The row of its tile.                                                                                                                            |
 | `column`   | `int`    | none    | Yes      | The column of its tile.                                                                                                                         |
@@ -160,8 +160,8 @@ tiles = [
 ]
 
 [[battleUnits]]
-id = "knight-1"
-unitId = "knight"
+id = "hero-1"
+unitId = "hero"
 playerId = "player-one"
 row = 1
 column = 1

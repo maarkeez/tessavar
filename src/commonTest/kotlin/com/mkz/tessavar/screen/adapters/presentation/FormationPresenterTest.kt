@@ -22,13 +22,13 @@ class FormationPresenterTest {
     private val apis =
         SubdomainApis(
             terrains = listOf(terrainThatCanBeOccupied(id = "sand").toDto()),
-            units = listOf(unit(id = "knight").toDto(), unit(id = "viking").toDto(), unit(id = "herbalist").toDto()),
+            units = listOf(unit(id = "hero").toDto(), unit(id = "viking-warrior").toDto(), unit(id = "herbalist").toDto()),
             players = listOf(player(id = "human", type = HUMAN).toDto(), player(id = "cpu", type = CPU).toDto()),
             tiles = List(3) { List(3) { "sand" } },
             deployments =
                 listOf(
-                    Deployment(battleUnitId = "knight-1", unitId = "knight", playerId = "human", row = 1, column = 1),
-                    Deployment(battleUnitId = "viking-1", unitId = "viking", playerId = "human", row = 2, column = 1),
+                    Deployment(battleUnitId = "knight-1", unitId = "hero", playerId = "human", row = 1, column = 1),
+                    Deployment(battleUnitId = "viking-1", unitId = "viking-warrior", playerId = "human", row = 2, column = 1),
                     Deployment(battleUnitId = "herbalist-1", unitId = "herbalist", playerId = "human", row = 2, column = 2),
                 ),
         ).also(SubdomainApis::initialise)
@@ -65,7 +65,7 @@ class FormationPresenterTest {
         // Then
         presenter.isOpen.shouldBeTrue()
         formationView.visible.shouldBeTrue()
-        formationView.names().shouldContainExactly("Knight", "Viking", "Herbalist")
+        formationView.names().shouldContainExactly("Mage", "Viking", "Herbalist")
         formationView.crownedRowIndexes().shouldContainExactly(0)
         formationView.selectedRowIndexes().shouldBeEmpty()
         formationView.hint() shouldBe "Tap two members to reorder them"
@@ -93,7 +93,7 @@ class FormationPresenterTest {
         // When
         presenter.formationRowSelected(0)
         // Then
-        formationView.names().shouldContainExactly("Herbalist", "Viking", "Knight")
+        formationView.names().shouldContainExactly("Herbalist", "Viking", "Mage")
         formationView.crownedRowIndexes().shouldContainExactly(0)
         formationView.selectedRowIndexes().shouldBeEmpty()
         formationView.hint() shouldBe "Tap two members to reorder them"
@@ -108,7 +108,7 @@ class FormationPresenterTest {
         // When
         presenter.formationRowSelected(1)
         // Then
-        formationView.names().shouldContainExactly("Knight", "Viking", "Herbalist")
+        formationView.names().shouldContainExactly("Mage", "Viking", "Herbalist")
         formationView.selectedRowIndexes().shouldBeEmpty()
         battlefieldView.resetTilesCount shouldBe resetTilesCount + 1
     }

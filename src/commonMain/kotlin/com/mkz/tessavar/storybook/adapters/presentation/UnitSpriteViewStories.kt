@@ -9,16 +9,16 @@ import korlibs.korge.view.View
 
 object UnitSpriteViewStories : StoryBinding {
     private const val DEFAULT_TERRAIN = "sand"
-    private const val DEFAULT_UNIT = "knight"
+    private const val DEFAULT_UNIT = "hero"
     private const val TERRAIN = StoryTiles.TERRAIN
     private const val UNIT = "unit"
     private const val NPC = "npc"
     private const val NONE = StoryTiles.NONE
 
-    private val knight =
+    private val hero =
         StoryDto(
-            id = "screen-unit-sprite--knight",
-            name = "Knight",
+            id = "screen-unit-sprite--hero",
+            name = "Hero",
             description = "A battle unit with 32x32 art, drawn at twice its size to fill the tile.",
             args = emptyMap(),
         )
@@ -41,7 +41,7 @@ object UnitSpriteViewStories : StoryBinding {
             id = "screen-unit-sprite--on-lava",
             name = "On lava",
             description = "A battle unit over another terrain.",
-            args = mapOf(UNIT to ValueDto.text("goat"), TERRAIN to ValueDto.text("lava")),
+            args = mapOf(UNIT to ValueDto.text("goat-wizard"), TERRAIN to ValueDto.text("lava")),
         )
 
     override fun component(context: StoryContext) =
@@ -59,7 +59,7 @@ object UnitSpriteViewStories : StoryBinding {
                     ControlDto.pick(TERRAIN, context.terrainIds()),
                 ),
             args = mapOf(UNIT to ValueDto.text(DEFAULT_UNIT), NPC to ValueDto.text(NONE), TERRAIN to ValueDto.text(DEFAULT_TERRAIN)),
-            stories = listOf(knight, rat, npc, onLava),
+            stories = listOf(hero, rat, npc, onLava),
         )
 
     override fun render(

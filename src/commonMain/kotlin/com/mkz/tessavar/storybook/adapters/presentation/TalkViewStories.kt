@@ -12,7 +12,7 @@ import korlibs.math.geom.Size
 object TalkViewStories : StoryBinding {
     private val SIZE = Size(390, 300)
     private const val DEFAULT_NPC = "elder"
-    private const val RECRUITABLE_UNIT = "knight"
+    private const val RECRUITABLE_UNIT = "hero"
 
     private const val NONE = "none"
 
@@ -53,7 +53,7 @@ object TalkViewStories : StoryBinding {
             description = "An npc that joins the party takes the portrait of its unit.",
             args =
                 mapOf(
-                    NAME to ValueDto.text("Knight"),
+                    NAME to ValueDto.text("Mage"),
                     LINE to ValueDto.text("Take me with you, and I will protect the party."),
                     NPC to ValueDto.text(NONE),
                     UNIT to ValueDto.text(RECRUITABLE_UNIT),

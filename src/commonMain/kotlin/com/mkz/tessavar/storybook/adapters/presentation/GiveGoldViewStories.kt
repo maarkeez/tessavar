@@ -10,8 +10,8 @@ import korlibs.korge.view.View
 object GiveGoldViewStories : StoryBinding {
     private const val MAXIMUM_GOLD = 99_999
     private const val RECEIVERS_LIMIT = 3
-    private const val GIVER_UNIT = "knight"
-    private val RECEIVER_UNITS = listOf("viking", "herbalist", "hero")
+    private const val GIVER_UNIT = "hero"
+    private val RECEIVER_UNITS = listOf("viking-warrior", "herbalist", "goat-wizard")
 
     private const val AMOUNT = "amount"
     private const val GIVER_GOLD = "giverGold"
@@ -21,7 +21,7 @@ object GiveGoldViewStories : StoryBinding {
     private const val GIVER_NAME = "giverName"
     private const val RECEIVER_NAME = "receiverName"
 
-    private val default = StoryDto(id = "screen-give-gold--default", name = "Default", description = "The knight gives 25 of its 120 G to the only receiver: there are no arrows.", args = emptyMap())
+    private val default = StoryDto(id = "screen-give-gold--default", name = "Default", description = "The mage gives 25 of its 120 G to the only receiver: there are no arrows.", args = emptyMap())
     private val severalReceivers =
         StoryDto(
             id = "screen-give-gold--several-receivers",
@@ -67,7 +67,7 @@ object GiveGoldViewStories : StoryBinding {
                     RECEIVER_GOLD to ValueDto.int(100),
                     RECEIVERS to ValueDto.int(1),
                     RECEIVER_INDEX to ValueDto.int(0),
-                    GIVER_NAME to ValueDto.text("Knight"),
+                    GIVER_NAME to ValueDto.text("Mage"),
                     RECEIVER_NAME to ValueDto.text("Viking"),
                 ),
             stories = listOf(default, severalReceivers, limited, longNames),

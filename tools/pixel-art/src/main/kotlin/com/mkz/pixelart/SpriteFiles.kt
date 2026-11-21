@@ -44,7 +44,7 @@ object SpriteFiles {
 
     /**
      * The PNG a source under an `art` folder is exported to: the same path under the `resources` folder next to it,
-     * e.g.: `art/unit/knight.aseprite` to `resources/unit/knight.png`. `null` when the source is not under `art`, or is a
+     * e.g.: `art/unit/hero.aseprite` to `resources/unit/hero.png`. `null` when the source is not under `art`, or is a
      * draft under `art/drafts`, as everything under `resources` ships with the game.
      */
     fun exportedPng(source: File): File? {

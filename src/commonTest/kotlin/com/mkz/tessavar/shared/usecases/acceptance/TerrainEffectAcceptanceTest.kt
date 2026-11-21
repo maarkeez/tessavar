@@ -25,7 +25,6 @@ import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.terrain.domain.Terrain
 import com.mkz.tessavar.terrain.usecases.services.TerrainLoader
 import com.mkz.tessavar.unit.adapters.presentation.UnitApi
-import com.mkz.tessavar.unit.adapters.resources.ResourcesUnitLoader
 import com.mkz.tessavar.unit.domain.UnitMother
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
@@ -49,7 +48,7 @@ class TerrainEffectAcceptanceTest {
                 ),
             ),
         )
-    private val unitApi = UnitApi(eventBus, ResourcesUnitLoader())
+    private val unitApi = UnitApi(eventBus, AcceptanceUnitLoader())
     private val playerApi = PlayerApi(eventBus, ResourcesPlayerLoader())
     private val battlefieldApi = BattlefieldApi(terrainApi, eventBus, ResourcesBattlefieldLoader(), TomlBattlefieldEncoder(), TomlBattlefieldDecoder())
     private val effectApi = EffectApi(eventBus, ResourcesEffectLoader())

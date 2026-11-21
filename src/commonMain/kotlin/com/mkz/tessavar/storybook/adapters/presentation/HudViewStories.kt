@@ -146,8 +146,8 @@ object HudViewStories : StoryBinding {
                     },
                 )
                 display(
-                    giver = GiveGoldView.Member("Knight", "knight", GOLD),
-                    receiver = GiveGoldView.Member("Viking", "viking", OTHER_GOLD),
+                    giver = GiveGoldView.Member("Mage", "hero", GOLD),
+                    receiver = GiveGoldView.Member("Viking", "viking-warrior", OTHER_GOLD),
                     amount = GIVEN_GOLD,
                     maximum = GOLD,
                     canStepToPrevious = false,

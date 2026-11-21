@@ -6,7 +6,7 @@ description: Draws and edits the game's pixel art (units, npcs, portraits, items
 # Pixel art
 
 Every image of the game has a layered Aseprite source under `art/`, mirroring `resources/`:
-`art/unit/knight.aseprite` is exported to `resources/unit/knight.png`. Draw on the sources with
+`art/unit/hero.aseprite` is exported to `resources/unit/hero.png`. Draw on the sources with
 `tools/pixel-art/pixel`, never on the PNGs: every command that saves a source also exports its PNG. Drafts under
 `art/drafts/` are the exception: they are never exported.
 
