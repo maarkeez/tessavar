@@ -27,7 +27,9 @@ import io.kotest.matchers.ints.shouldBeInRange
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import korlibs.korge.tests.ViewsForTesting
+import korlibs.math.geom.Margin
 import korlibs.math.geom.Point
+import korlibs.math.geom.Size
 import kotlinx.coroutines.Job
 import kotlin.math.round
 import kotlin.test.Test
@@ -648,6 +650,42 @@ class BattlefieldViewTest : ViewsForTesting() {
             dragBattlefield(battlefieldView, -48.0 to -96.0)
             // Then
             battlefieldView.scrollOffset() shouldBe (-48.0 to -96.0)
+        }
+
+    @Test
+    fun `DisplayBattlefield should scroll the battlefield past its edges by the margins when it is dragged with scroll margins`() =
+        sharedViewsTest {
+            // Given
+            val battlefieldView =
+                BattlefieldView(
+                    loadedResourcesLoader(),
+                    viewportSize = Size(390, 844),
+                    scrollMargin = Margin(top = 52.0, right = 0.0, bottom = 104.0, left = 0.0),
+                )
+            battlefieldView.displayBattlefield(battlefield(rows = 16, columns = 16).toTerrain())
+            addChild(battlefieldView)
+            // Then
+            battlefieldView.scrollOffset() shouldBe (0.0 to 52.0)
+            // When
+            dragBattlefield(battlefieldView, 100.0 to 100.0)
+            // Then
+            battlefieldView.scrollOffset() shouldBe (0.0 to 52.0)
+            // When
+            dragBattlefield(battlefieldView, -2000.0 to -2000.0)
+            // Then
+            battlefieldView.scrollOffset() shouldBe (-634.0 to -284.0)
+        }
+
+    @Test
+    fun `DisplayBattlefield should size its viewport and the tiles it creates to the viewport size when it is given one`() =
+        sharedViewsTest {
+            // Given
+            val battlefieldView = BattlefieldView(loadedResourcesLoader(), viewportSize = Size(390, 844))
+            // When
+            battlefieldView.displayBattlefield(battlefield(rows = 128, columns = 128).toTerrain())
+            // Then
+            battlefieldView.size shouldBe Size(390, 844)
+            battlefieldView.createdTileCount() shouldBe 8 * 15
         }
 
     @Test

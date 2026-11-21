@@ -27,6 +27,7 @@ import korlibs.korge.view.image
 import korlibs.korge.view.solidRect
 import korlibs.math.clamp
 import korlibs.math.geom.Anchor
+import korlibs.math.geom.Margin
 import korlibs.math.geom.Size
 import korlibs.math.interpolation.EASE_IN_QUAD
 import korlibs.math.interpolation.EASE_OUT_QUAD
@@ -46,7 +47,9 @@ import kotlin.time.DurationUnit
 
 open class BattlefieldView(
     private val resourcesLoader: GameSceneResourcesLoader,
-) : UIContainer(Size(width = VIEWPORT_WIDTH, height = VIEWPORT_HEIGHT)) {
+    viewportSize: Size = Size(width = VIEWPORT_WIDTH, height = VIEWPORT_HEIGHT),
+    private val scrollMargin: Margin = Margin.ZERO,
+) : UIContainer(viewportSize) {
     companion object {
         const val TERRAIN = "TERRAIN"
         const val DROPPED_ITEMS = "DROPPED_ITEMS"
@@ -126,12 +129,17 @@ open class BattlefieldView(
 
     private val risingLoot = mutableSetOf<View>()
 
+    private val viewportWidth = viewportSize.width.toInt()
+    private val viewportHeight = viewportSize.height.toInt()
+
     private var minScrollX = 0.0
     private var minScrollY = 0.0
+    private val maxScrollX = scrollMargin.left
+    private val maxScrollY = scrollMargin.top
 
     private val viewport =
         clipContainer(
-            size = Size(VIEWPORT_WIDTH, VIEWPORT_HEIGHT),
+            size = Size(viewportWidth, viewportHeight),
         )
 
     internal lateinit var battlefieldGrid: Container
@@ -187,7 +195,7 @@ open class BattlefieldView(
     open fun displayBattlefield(battlefield: BattlefieldTerrain) {
         val battlefieldHeight = TILE_SIZE * battlefield.rows
         val battlefieldWidth = TILE_SIZE * battlefield.columns
-        val previousScroll = if (isDisplayed) battlefieldGrid.x to battlefieldGrid.y else 0.0 to 0.0
+        val previousScroll = if (isDisplayed) battlefieldGrid.x to battlefieldGrid.y else maxScrollX to maxScrollY
         if (isDisplayed) {
             battlefieldAnimator.cancel()
             createdTiles.values.forEach(::removeHealthPreview)
@@ -201,13 +209,13 @@ open class BattlefieldView(
         windowScroll = null
         trailedView = null
         this.battlefield = battlefield
-        minScrollX = minOf(0, VIEWPORT_WIDTH - battlefieldWidth).toDouble()
-        minScrollY = minOf(0, VIEWPORT_HEIGHT - battlefieldHeight).toDouble()
+        minScrollX = minOf(0, viewportWidth - battlefieldWidth).toDouble() - scrollMargin.right
+        minScrollY = minOf(0, viewportHeight - battlefieldHeight).toDouble() - scrollMargin.bottom
         battlefieldGrid =
             viewport.container {
                 name = BATTLEFIELD
-                x = previousScroll.first.clamp(minScrollX, 0.0)
-                y = previousScroll.second.clamp(minScrollY, 0.0)
+                x = previousScroll.first.clamp(minScrollX, maxScrollX)
+                y = previousScroll.second.clamp(minScrollY, maxScrollY)
             }
         battlefieldAnimator = battlefieldGrid.animator(parallel = true)
         movingBattleUnits = viewport.container { name = MOVING_BATTLE_UNITS }
@@ -224,9 +232,9 @@ open class BattlefieldView(
 
     private fun tileWindow(): Pair<IntRange, IntRange> {
         val firstRow = (-battlefieldGrid.y / TILE_SIZE).toInt() - TILE_WINDOW_MARGIN
-        val lastRow = ((-battlefieldGrid.y + VIEWPORT_HEIGHT - 1) / TILE_SIZE).toInt() + TILE_WINDOW_MARGIN
+        val lastRow = ((-battlefieldGrid.y + viewportHeight - 1) / TILE_SIZE).toInt() + TILE_WINDOW_MARGIN
         val firstColumn = (-battlefieldGrid.x / TILE_SIZE).toInt() - TILE_WINDOW_MARGIN
-        val lastColumn = ((-battlefieldGrid.x + VIEWPORT_WIDTH - 1) / TILE_SIZE).toInt() + TILE_WINDOW_MARGIN
+        val lastColumn = ((-battlefieldGrid.x + viewportWidth - 1) / TILE_SIZE).toInt() + TILE_WINDOW_MARGIN
         return firstRow.coerceAtLeast(0)..lastRow.coerceAtMost(rows - 1) to firstColumn.coerceAtLeast(0)..lastColumn.coerceAtMost(columns - 1)
     }
 
@@ -719,7 +727,7 @@ open class BattlefieldView(
         }
 
     open suspend fun tint(color: RGBA) {
-        val overlay = viewport.solidRect(Size(VIEWPORT_WIDTH, VIEWPORT_HEIGHT), color) { alpha = 0.0 }
+        val overlay = viewport.solidRect(Size(viewportWidth, viewportHeight), color) { alpha = 0.0 }
         tintOverlay = overlay
         val tintAnimator =
             overlay.animator {
@@ -862,8 +870,8 @@ open class BattlefieldView(
         column: Int,
     ) {
         if (isTrailing) return
-        val followedX = followedScroll(column, battlefieldGrid.x, VIEWPORT_WIDTH, minScrollX)
-        val followedY = followedScroll(row, battlefieldGrid.y, VIEWPORT_HEIGHT, minScrollY)
+        val followedX = followedScroll(column, battlefieldGrid.x, viewportWidth, minScrollX)
+        val followedY = followedScroll(row, battlefieldGrid.y, viewportHeight, minScrollY)
         if (followedX == battlefieldGrid.x && followedY == battlefieldGrid.y) return
         scrollTo(x = followedX, y = followedY)
         battlefieldAnimator.awaitComplete()
@@ -893,8 +901,8 @@ open class BattlefieldView(
         x: Double,
         y: Double,
     ) {
-        val newX = x.clamp(minScrollX, 0.0)
-        val newY = y.clamp(minScrollY, 0.0)
+        val newX = x.clamp(minScrollX, maxScrollX)
+        val newY = y.clamp(minScrollY, maxScrollY)
         battlefieldAnimator
             .cancel()
             .moveTo(
