@@ -1,6 +1,6 @@
 # Plan: a full-screen world builder with a floating toolbar
 
-> **Status:** to do.
+> **Status:** built on the local `main`, the screenshots of M1 still to be approved.
 >
 > **Summary:** In the world builder, the world shows in the battlefield's 384x384 viewport, 6x6 tiles of 64 px, under
 > the info line, and the HUD fills the rest of the 390x844 screen below it: four tab buttons, the row of tools and the
@@ -41,7 +41,7 @@ Each milestone is a few commits on the local `main`, green on CI, pushed when th
 
 | #  | Milestone          | Done when                                                                                                                             | Status | Done in |
 |----|--------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
-| M1 | Full-screen world  | The world fills the screen under the top strip, today's HUD floats over its bottom in a panel, and Details opens in the bottom sheet. | ⬜      |         |
+| M1 | Full-screen world  | The world fills the screen under the top strip, today's HUD floats over its bottom in a panel, and Details opens in the bottom sheet. | ✅      | 0b44f0e8|
 | M2 | Floating toolbar   | The pill and the palette card replace today's HUD, with Stock in the pill on the Npcs tab, and a tap on the world closes the card.   | ⬜      |         |
 | M3 | Scrolling rows     | The card's rows scroll sideways: both players' ten units are reachable on the Units tab.                                             | ⬜      |         |
 
