@@ -1,6 +1,6 @@
 # Plan: a full-screen world builder with a floating toolbar
 
-> **Status:** built on the local `main`, the screenshots of M1 still to be approved.
+> **Status:** built on the local `main`, the screenshots of M1 and M2 still to be approved.
 >
 > **Summary:** In the world builder, the world shows in the battlefield's 384x384 viewport, 6x6 tiles of 64 px, under
 > the info line, and the HUD fills the rest of the 390x844 screen below it: four tab buttons, the row of tools and the
@@ -41,8 +41,8 @@ Each milestone is a few commits on the local `main`, green on CI, pushed when th
 
 | #  | Milestone          | Done when                                                                                                                             | Status | Done in |
 |----|--------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
-| M1 | Full-screen world  | The world fills the screen under the top strip, today's HUD floats over its bottom in a panel, and Details opens in the bottom sheet. | ✅      | 0b44f0e8|
-| M2 | Floating toolbar   | The pill and the palette card replace today's HUD, with Stock in the pill on the Npcs tab, and a tap on the world closes the card.   | ⬜      |         |
+| M1 | Full-screen world  | The world fills the screen under the top strip, today's HUD floats over its bottom in a panel, and Details opens in the bottom sheet. | ✅      | 0b44f0e8 |
+| M2 | Floating toolbar   | The pill and the palette card replace today's HUD, with Stock in the pill on the Npcs tab, and a tap on the world closes the card.   | ✅      | 9546e56b |
 | M3 | Scrolling rows     | The card's rows scroll sideways: both players' ten units are reachable on the Units tab.                                             | ⬜      |         |
 
 ### M1 commits
@@ -153,3 +153,19 @@ Each milestone is a few commits on the local `main`, green on CI, pushed when th
 - A world with more than two players would need a third row on Units; the catalog has two today.
 - The tabs and the slots have no keyboard focus on desktop, as today.
 - The clip in the world builder post shows today's HUD until it is recorded again.
+
+## Changes while building
+
+- **M2 in one commit.** The pill, the card, Stock in the pill, the scene and the page objects went in one commit instead of
+  three, as the world builder's end-to-end tests pass only once the view, the scene and the page objects change together.
+- **The tab sprites.** Each tab shows the option selected on it, the first until one is picked (e.g. the grass, the
+  fortress), instead of a fixed option per tab, so no catalog id is written in the view.
+- **`SlotButton`.** The brush, the tools, Stock, the tabs and the palette's slots are `WorldBuilderHudView.SlotButton`s, a
+  `UIButton` drawn with `HudStyle` and filled `SELECTED_TOOL_COLOR` when highlighted, instead of `GameButton`s. The page
+  objects read `isHighlighted` and the tab's underline instead of `bgColorOut`.
+- **The HUD covers the window.** `WorldBuilderHudView` is 390x844 at (0, 0), and its own area is not hit by a tap, only
+  the pill, the card and the tap catcher are, so the world's two- and three-finger taps still reach `BattlefieldView`.
+- **The tab sprites and labels.** The sprites are fitted in 32 px instead of 28, so a 16 px unit shows at 2x, and the
+  labels are 12 px.
+- **The CPU's rat in M2.** Until the rows scroll in M3, `WorldBuilderEndToEndTest` placed the CPU's bee, the second unit,
+  instead of the rat, the eighth, which only M3 brings into reach.
