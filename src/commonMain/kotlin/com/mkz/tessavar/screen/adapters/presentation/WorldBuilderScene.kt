@@ -6,6 +6,7 @@ import com.mkz.tessavar.battlefield.adapters.resources.ResourcesBattlefieldLoade
 import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldDecoder
 import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldEncoder
 import com.mkz.tessavar.localization.adapters.presentation.LocalizationApi
+import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.shared.adapters.events.InMemoryEventBus
 import com.mkz.tessavar.telemetry.adapters.presentation.TelemetryApi
 import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
@@ -16,11 +17,13 @@ import korlibs.io.async.launchImmediately
 import korlibs.korge.scene.Scene
 import korlibs.korge.service.storage.IStorage
 import korlibs.korge.service.storage.storage
-import korlibs.korge.ui.uiSpacing
-import korlibs.korge.ui.uiVerticalStack
+import korlibs.korge.view.Container
 import korlibs.korge.view.SContainer
 import korlibs.korge.view.addUpdater
 import korlibs.korge.view.container
+import korlibs.korge.view.solidRect
+import korlibs.korge.view.xy
+import korlibs.math.geom.Margin
 import korlibs.math.geom.Size
 
 class WorldBuilderScene(
@@ -28,15 +31,29 @@ class WorldBuilderScene(
     private val telemetryApi: TelemetryApi,
     private val storage: IStorage? = null,
 ) : Scene() {
-    private companion object {
+    companion object {
         const val MENU_MARGIN = 6.0
+        const val TOP_STRIP_HEIGHT = 52.0
+        const val TOP_STRIP_ALPHA = 0.9
+        const val PADDING = 12.0
+        const val INFO_Y = 9.0
+        const val HUD_PANEL_HEIGHT = 250.0
+        const val HUD_PANEL_TOP = 16.0
+        const val PANEL_SHEET_HEIGHT = 360.0
+        const val PANEL_SHEET_TOP = 26.0
+        const val SHEET_RADIUS = 16.0
+        const val GRABBER_WIDTH = 40.0
+        const val GRABBER_HEIGHT = 5.0
+        const val GRABBER_TOP = 8.0
+
+        val SCROLL_MARGIN = Margin(top = TOP_STRIP_HEIGHT, right = 0.0, bottom = HUD_PANEL_HEIGHT, left = 0.0)
     }
 
     override val coroutineContext by lazy { super.coroutineContext + views.gameWindow.coroutineDispatcher }
 
     private val messages = Messages(localizationApi)
     private val resourcesLoader = GameSceneResourcesLoader()
-    val battlefieldView = BattlefieldView(resourcesLoader)
+    val battlefieldView = BattlefieldView(resourcesLoader, viewportSize = GAME_WINDOW_SIZE, scrollMargin = SCROLL_MARGIN)
     val infoView = WorldBuilderInfoView(messages)
     val hudView = WorldBuilderHudView(messages)
     val resizeView = WorldBuilderResizeView(messages)
@@ -87,21 +104,15 @@ class WorldBuilderScene(
             eventBus = eventBus,
         )
 
-        uiVerticalStack(padding = 2.0) {
-            uiSpacing(Size(0, 10))
-            addChild(infoView)
-            addChild(battlefieldView)
-            uiVerticalStack(padding = 5.0) {
-                uiSpacing(Size(0, 10))
-                container {
-                    addChild(hudView)
-                    addChild(resizeView)
-                    addChild(detailsView)
-                    addChild(stockView)
-                    addChild(formView)
-                }
-            }
+        addChild(battlefieldView)
+        val hudPanel = hudPanel()
+        val panelSheet = panelSheet()
+        addUpdater {
+            val isPanelOpen = resizeView.isOpen || detailsView.isOpen || stockView.isOpen || formView.isOpen
+            panelSheet.visible = isPanelOpen
+            hudPanel.visible = !isPanelOpen
         }
+        topStrip()
 
         menuView.x = GAME_WINDOW_SIZE.width - WorldBuilderMenuView.BUTTON_WIDTH - MENU_MARGIN
         menuView.y = MENU_MARGIN
@@ -109,4 +120,34 @@ class WorldBuilderScene(
 
         worldBuilderApi.openWorld()
     }
+
+    private fun Container.topStrip() {
+        solidRect(Size(GAME_WINDOW_SIZE.width, TOP_STRIP_HEIGHT), HudStyle.PANEL.withAd(TOP_STRIP_ALPHA))
+        addChild(infoView)
+        infoView.xy(PADDING, INFO_Y)
+    }
+
+    private fun Container.hudPanel(): Container =
+        container {
+            y = GAME_WINDOW_SIZE.height - HUD_PANEL_HEIGHT
+            panel(Size(GAME_WINDOW_SIZE.width, HUD_PANEL_HEIGHT + SHEET_RADIUS), radius = SHEET_RADIUS)
+            addChild(hudView)
+            hudView.y = HUD_PANEL_TOP
+        }
+
+    private fun Container.panelSheet(): Container =
+        container {
+            y = GAME_WINDOW_SIZE.height - PANEL_SHEET_HEIGHT
+            visible = false
+            panel(Size(GAME_WINDOW_SIZE.width, PANEL_SHEET_HEIGHT + SHEET_RADIUS), radius = SHEET_RADIUS)
+            panel(Size(GRABBER_WIDTH, GRABBER_HEIGHT), fill = HudStyle.FAINT, radius = GRABBER_HEIGHT / 2, stroke = HudStyle.FAINT)
+                .xy((GAME_WINDOW_SIZE.width - GRABBER_WIDTH) / 2, GRABBER_TOP)
+            container {
+                xy(PADDING, PANEL_SHEET_TOP)
+                addChild(resizeView)
+                addChild(detailsView)
+                addChild(stockView)
+                addChild(formView)
+            }
+        }
 }
