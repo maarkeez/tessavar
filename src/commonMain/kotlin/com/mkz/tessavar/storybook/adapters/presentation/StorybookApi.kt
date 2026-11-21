@@ -90,6 +90,7 @@ class StorybookApi(
                 PrivacyNoticeViewStories,
                 WorldBuilderInfoViewStories,
                 WorldBuilderHudViewStories,
+                PaletteRowViewStories,
                 WorldBuilderResizeViewStories,
                 WorldBuilderStockViewStories,
                 WorldBuilderDetailsViewStories,
