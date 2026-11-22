@@ -13,7 +13,7 @@ class OnBattleFinished(
 ) {
     val subscription =
         eventBus.subscribe<BattleEvent.BattleFinished> {
-            endStacksAtZero.ofEveryBattleUnit()
+            endStacksAtZero()
             vanishSummons()
         }
 }

@@ -13,7 +13,7 @@ class OnPlayerTurnFinished(
 ) {
     val subscription =
         eventBus.subscribe<BattleEvent.PlayerTurnFinished> { event ->
-            endStacksAtZero.ofPlayer(playerId = event.playerId, battleUnitIds = event.battleUnitIds)
+            endStacksAtZero()
             reduceRemainingSummonDurations(playerId = event.playerId, battleUnitIds = event.battleUnitIds)
         }
 }

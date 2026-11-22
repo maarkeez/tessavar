@@ -36,34 +36,24 @@ class EndStacksAtZeroTest {
             .ongoingEffects.effects
 
     @Test
-    fun `OfPlayer should end the stacks at 0 of the player's battle units when the player turn finishes`() {
-        // Given
-        battleUnitRepository.create(stunnedThisTurn(id = "knight-1", player = human))
-        // When
-        endStacksAtZero.ofPlayer(playerId = "human", battleUnitIds = setOf("knight-1"))
-        // Then
-        effectsOf("knight-1").shouldBeEmpty()
-    }
-
-    @Test
-    fun `OfPlayer should not end the stacks at 0 when the battle units are the other players'`() {
-        // Given
-        battleUnitRepository.create(stunnedThisTurn(id = "bat-1", player = cpu))
-        // When
-        endStacksAtZero.ofPlayer(playerId = "human", battleUnitIds = setOf("bat-1"))
-        // Then
-        effectsOf("bat-1").shouldContainExactly(OngoingEffectDto(effectId = "stun", remainingDuration = 0))
-    }
-
-    @Test
-    fun `OfEveryBattleUnit should end the stacks at 0 of every battle unit when the battle finishes`() {
+    fun `should end the stacks at 0 of every battle unit`() {
         // Given
         battleUnitRepository.create(stunnedThisTurn(id = "knight-1", player = human))
         battleUnitRepository.create(stunnedThisTurn(id = "bat-1", player = cpu))
         // When
-        endStacksAtZero.ofEveryBattleUnit()
+        endStacksAtZero()
         // Then
         effectsOf("knight-1").shouldBeEmpty()
         effectsOf("bat-1").shouldBeEmpty()
+    }
+
+    @Test
+    fun `should keep the stacks with a remaining duration left`() {
+        // Given
+        battleUnitRepository.create(battleUnit(id = "knight-1", player = human).receiveOnPlayerTurnStartedEffect(effectId = "stun", remainingDuration = 1))
+        // When
+        endStacksAtZero()
+        // Then
+        effectsOf("knight-1").shouldContainExactly(OngoingEffectDto(effectId = "stun", remainingDuration = 1))
     }
 }
