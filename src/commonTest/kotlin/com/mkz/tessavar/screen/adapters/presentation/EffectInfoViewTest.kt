@@ -52,6 +52,41 @@ class EffectInfoViewTest : ViewsForTesting() {
         }
 
     @Test
+    fun `Display should say ends this turn when a stack is at 0`() =
+        sharedViewsTest {
+            // Given
+            val effectInfoView = effectInfoView()
+            val stun = EffectInfo("stun", stacks = 1, sentence = EffectInfo.Sentence.NegateActions, remainingDurations = listOf(0), isExploring = false)
+            // When
+            effectInfoView.display(stun)
+            // Then
+            effectInfoView.title() shouldBe "Stun"
+            effectInfoView.remainingDurations() shouldBe "Ends this turn"
+        }
+
+    @Test
+    fun `Display should say ends this turn after the longer stacks when it is stacked`() =
+        sharedViewsTest {
+            // Given
+            val effectInfoView = effectInfoView()
+            // When
+            effectInfoView.display(venom.copy(stacks = 2, remainingDurations = listOf(2, 0)))
+            // Then
+            effectInfoView.remainingDurations() shouldBe "2 turns left · Ends this turn"
+        }
+
+    @Test
+    fun `Display should say ends this turn in Spanish when the language is Spanish and a stack is at 0`() =
+        sharedViewsTest {
+            // Given
+            val effectInfoView = effectInfoView(languageCode = "es")
+            // When
+            effectInfoView.display(venom.copy(remainingDurations = listOf(0)))
+            // Then
+            effectInfoView.remainingDurations() shouldBe "Termina este turno"
+        }
+
+    @Test
     fun `Display should display seconds when exploring`() =
         sharedViewsTest {
             // Given

@@ -1051,6 +1051,11 @@ msgid_plural "{seconds} seconds left"
 msgstr[0] "queda {seconds} segundo"
 msgstr[1] "quedan {seconds} segundos"
 
+#. How a stack of an effect that has triggered for the last time reads in a battle: it ends when the battle unit's turn finishes, e.g.: the stun that took its actions this turn.
+msgctxt "ui.effectInfo.endsThisTurn"
+msgid "Ends this turn"
+msgstr "Termina este turno"
+
 #. A caption of the steps a battle unit has left this turn, before its points.
 msgctxt "ui.hud.move"
 msgid "MOVE"

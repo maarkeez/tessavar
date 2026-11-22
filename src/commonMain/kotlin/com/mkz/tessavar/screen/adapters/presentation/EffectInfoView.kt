@@ -122,7 +122,9 @@ open class EffectInfoView(
     private fun remainingDurations(effectInfo: EffectInfo): String? =
         effectInfo.remainingDurations
             .map { remainingDuration ->
-                if (effectInfo.isExploring) {
+                if (remainingDuration == 0) {
+                    messages[UiMessage.EFFECT_INFO_ENDS_THIS_TURN]
+                } else if (effectInfo.isExploring) {
                     messages.plural(UiMessage.EFFECT_INFO_SECONDS_LEFT, remainingDuration, "seconds" to remainingDuration)
                 } else {
                     messages.plural(UiMessage.EFFECT_INFO_TURNS_LEFT, remainingDuration, "turns" to remainingDuration)

@@ -212,6 +212,7 @@ enum class UiMessage(
     EFFECT_INFO_RESIST("ui.effectInfo.resist"),
     EFFECT_INFO_TURNS_LEFT("ui.effectInfo.turnsLeft", isPlural = true),
     EFFECT_INFO_SECONDS_LEFT("ui.effectInfo.secondsLeft", isPlural = true),
+    EFFECT_INFO_ENDS_THIS_TURN("ui.effectInfo.endsThisTurn"),
     HUD_MOVE("ui.hud.move"),
     HUD_CAST("ui.hud.cast"),
     HUD_HEALTH("ui.hud.health"),
