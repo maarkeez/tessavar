@@ -1,6 +1,6 @@
 # Plan: effects that interact: soak, burn, stun and venom
 
-> **Status:** built on `main`, the screenshots of M5 still to be approved.
+> **Status:** done.
 >
 > **Summary:** Today an effect only does its own outcome, and no effect knows about another. E.g.: venom-strike's
 > `venom-damage` deals 3 damage on each of the target's next 5 player turns, whatever else the target has, and water
