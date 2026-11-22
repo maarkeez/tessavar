@@ -1,6 +1,6 @@
 # Plan: every effect readable: stacks at 0 through their last player turn, and equipped effect icons
 
-> **Status:** built on `main` up to M1, the screenshots of M1 still to be approved.
+> **Status:** built on `main`, the screenshots of M1 and M2 still to be approved.
 >
 > **Summary:** Today a stack ends the moment its remaining duration counts down to 0, at the start of its recipient's
 > player turn, so the effect icon is gone for the whole last turn the effect shapes. E.g.: a CPU water bat soaks the hero
@@ -58,10 +58,10 @@ For example, a CPU water bat casts Splash on the hero, and a storm bat casts Thu
 
 Each milestone is a few commits straight on `main`, green on CI.
 
-| #  | Milestone             | Done when                                                                                                                                          | Status | Done in |
-|----|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
+| #  | Milestone             | Done when                                                                                                                                          | Status | Done in  |
+|----|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
 | M1 | Stacks at 0           | A stunned or soaked battle unit shows its effect icon at 0 and "Ends this turn" through its last player turn, approved on Storybook screenshots.   | ✅      | 5627f5a0 |
-| M2 | Equipped effect icons | The battle unit info shows an effect icon and an effect info for every equipped effect, in English and Spanish, approved on Storybook screenshots. | ⬜      |         |
+| M2 | Equipped effect icons | The battle unit info shows an effect icon and an effect info for every equipped effect, in English and Spanish, approved on Storybook screenshots. | ✅      | 49e0cdea |
 
 ### M1 commits
 
@@ -208,3 +208,15 @@ Each new key gets a `UiMessage` and a translator comment, as the effect info's o
 - **Screen / Effect**'s `remainingDuration` control goes from -1, for none, as 0 now draws a 0. **Screen / Effect info**
   gains an `ending` control (`boolean`), which puts its shortest stack at 0, used by **Stun ending**.
 - `EffectInfoViewTest` also checks "Termina este turno" in Spanish.
+- The equipped story is **Screen / HUD › Equipped effect info** (`screen-hud--equipped-effect-info`), not **Screen /
+  Battle unit info › Equipped**: an `equipped` control would make the battle unit info's controls cover its actions,
+  which `StorySmokeTest` checks, as for the effect info of the readable effects plan. It shows the ongoing sample effects,
+  then the rune hammer's maximum health and maximum mana, the maximum health tapped.
+- The five equipped effect sources are `art/effect/maximum-health-20.aseprite`, `-30`, `-40`, `maximum-mana-20` and
+  `-40`, copies of the two drawings, as the `pixel` tool exports a source to the PNG of its own name: a
+  `maximum-health.aseprite` would export an unused `maximum-health.png`.
+- `StoryContext.effects`, the sample effects of the stories, keeps to the ongoing effects (not `maximum-*`), as the new
+  PNGs sort among them and would have turned **Screen / Effects › Some** into burn and two hearts. The art commit
+  (4b7dfe5b) holds it, and its sample effect info tells an equipped effect with no time line.
+- `BattleUnitInfoViewTest` also checks that a tap on an equipped icon selects it, and `EffectInfoViewTest` checks an
+  equipped effect info in Spanish.
