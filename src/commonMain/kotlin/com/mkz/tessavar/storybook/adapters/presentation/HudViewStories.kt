@@ -30,10 +30,20 @@ object HudViewStories : StoryBinding {
 
     private const val DISPLAY = "display"
 
-    private enum class Display { BATTLE_UNIT_INFO, ATTACK_PREVIEW, INVENTORY, GIVE_GOLD, HIDDEN }
+    private enum class Display { BATTLE_UNIT_INFO, EFFECT_INFO, ATTACK_PREVIEW, INVENTORY, GIVE_GOLD, HIDDEN }
+
+    private const val EFFECTS = 5
+    private const val VENOM_SAMPLE_INDEX = 4
 
     private val battleUnitInfo =
         StoryDto(id = "screen-hud--battle-unit-info", name = "Battle unit info", description = "A battle unit selected: its info, with its abilities and its inventory button.", args = emptyMap())
+    private val effectInfo =
+        StoryDto(
+            id = "screen-hud--effect-info",
+            name = "Effect info",
+            description = "A battle unit under a few effects, its venom tapped: the venom is ringed in gold, and its effect info takes the place of the abilities. Tapping it again brings them back.",
+            args = mapOf(DISPLAY to ValueDto.text(Display.EFFECT_INFO.name)),
+        )
     private val attackPreview =
         StoryDto(
             id = "screen-hud--cast-preview",
@@ -71,7 +81,7 @@ object HudViewStories : StoryBinding {
             description = "Under the battlefield, in a battle: it displays one of the battle unit info, the cast preview, the inventory and the panel to give gold at a time, or none.",
             controls = listOf(ControlDto.enum(DISPLAY, Display.entries.map { display -> display.name })),
             args = mapOf(DISPLAY to ValueDto.text(Display.BATTLE_UNIT_INFO.name)),
-            stories = listOf(battleUnitInfo, attackPreview, inventory, giveGold, hidden),
+            stories = listOf(battleUnitInfo, effectInfo, attackPreview, inventory, giveGold, hidden),
         )
 
     override fun render(
@@ -79,6 +89,7 @@ object HudViewStories : StoryBinding {
         context: StoryContext,
     ): View {
         val display = Display.valueOf(args.text(DISPLAY))
+        val effects = if (display == Display.EFFECT_INFO) context.effects(EFFECTS) else emptyList()
         val heroInfo =
             BattleUnitInfo(
                 unitId = UNIT,
@@ -86,8 +97,9 @@ object HudViewStories : StoryBinding {
                 maximumHealth = MAXIMUM_HEALTH,
                 remainingMana = MAXIMUM_MANA,
                 maximumMana = MAXIMUM_MANA,
-                effects = emptyList(),
+                effects = effects,
                 isHumanPlayers = true,
+                effectInfos = effects.associate { effect -> effect.effectId to context.effectInfo(effect.effectId) },
             )
         val battleUnitInfoView =
             BattleUnitInfoView(context.resourcesLoader, context.messages).apply {
@@ -156,6 +168,10 @@ object HudViewStories : StoryBinding {
         return HudView(SIZE, battleUnitInfoView, castPreviewView, inventoryView, giveGoldView).apply {
             when (display) {
                 Display.BATTLE_UNIT_INFO -> displayBattleUnitInfoView()
+                Display.EFFECT_INFO -> {
+                    displayBattleUnitInfoView()
+                    battleUnitInfoView.effectTapped(effects[VENOM_SAMPLE_INDEX].effectId)
+                }
                 Display.ATTACK_PREVIEW -> displayCastPreviewView()
                 Display.INVENTORY -> displayInventoryView()
                 Display.GIVE_GOLD -> displayGiveGoldView()

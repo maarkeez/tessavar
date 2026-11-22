@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import korlibs.image.color.Colors
+import korlibs.korge.input.onClick
 import korlibs.korge.ui.uiHorizontalStack
 import korlibs.korge.view.Container
 import korlibs.korge.view.Text
@@ -21,6 +22,8 @@ class EffectsView(
 
     internal lateinit var overflowLabel: Text
 
+    private var onEffectTapped: ((String) -> Unit)? = null
+
     private val effectViewsLayout =
         uiHorizontalStack(padding = 2.0) {
             val effectViewSize = Size(width = 20, height = 20)
@@ -32,6 +35,20 @@ class EffectsView(
     init {
         visible = false
         addChild(effectViewsLayout)
+        effectViews.forEach { effectView ->
+            effectView.onClick {
+                val effect = effectView.effect
+                if (effectView.visible && effect != null) onEffectTapped?.invoke(effect.effectId)
+            }
+        }
+    }
+
+    fun setOnEffectTapped(onEffectTapped: (String) -> Unit) {
+        this.onEffectTapped = onEffectTapped
+    }
+
+    fun select(effectId: String?) {
+        effectViews.forEach { effectView -> if (effectView.effect?.effectId == effectId && effectView.visible) effectView.select() else effectView.unselect() }
     }
 
     fun display(effects: List<Effect>) {

@@ -94,11 +94,18 @@ open class BattleUnitInfoView(
     internal val stripCastPointsView = PointsView(CAST_POINTS_COLOR).addTo(strip, STRIP_POINTS_X, 31.0)
 
     internal val body: Container = container { y = ABILITIES_Y }
+    internal val abilityButtonsRow: Container = body.container()
     internal val abilityButtons: Array<AbilityButtonView> =
         Array(ABILITIES) { index ->
-            AbilityButtonView(Size(ABILITY_BUTTON_SIZE, ABILITY_BUTTON_SIZE), resourcesLoader).addTo(body, MARGIN + index * (ABILITY_BUTTON_SIZE + ABILITY_BUTTONS_GAP), 0.0)
+            AbilityButtonView(Size(ABILITY_BUTTON_SIZE, ABILITY_BUTTON_SIZE), resourcesLoader).addTo(abilityButtonsRow, MARGIN + index * (ABILITY_BUTTON_SIZE + ABILITY_BUTTONS_GAP), 0.0)
         }
     internal val abilityInfoView = AbilityInfoView(AbilityInfoView.WIDTH, resourcesLoader, messages).addTo(body, (WIDTH - AbilityInfoView.WIDTH) / 2, ABILITY_BUTTON_SIZE + SPACING)
+    internal val effectInfoView = EffectInfoView(AbilityInfoView.WIDTH, resourcesLoader, messages).addTo(body, (WIDTH - AbilityInfoView.WIDTH) / 2, 0.0)
+
+    private var displayedBattleUnit: BattleUnitInfo? = null
+
+    internal var openEffectId: String? = null
+        private set
 
     internal val focusAnimator: Animator = body.animator(parallel = true)
 
@@ -112,6 +119,8 @@ open class BattleUnitInfoView(
         strip.caption(UiMessage.HUD_MANA, STRIP_CONTENT_X, 29.0)
         strip.caption(UiMessage.HUD_MOVE, STRIP_ACTIONS_X, 11.0)
         strip.caption(UiMessage.HUD_CAST, STRIP_ACTIONS_X, 29.0)
+        effectsView.setOnEffectTapped(::effectTapped)
+        effectInfoView.setOnTapped(::closeEffectInfo)
         visible = false
     }
 
@@ -128,6 +137,7 @@ open class BattleUnitInfoView(
         abilityButtons.forEach(AbilityButtonView::hide)
         abilityInfoView.hide()
         expand()
+        val isSameBattleUnit = battleUnit.battleUnitId == displayedBattleUnit?.battleUnitId
         val ring = if (battleUnit.isHumanPlayers) HudStyle.ALLY else HudStyle.ENEMY
         unitPortraitView.display(battleUnit.unitId, ring = ring)
         stripPortraitView.display(battleUnit.unitId, ring = ring)
@@ -136,6 +146,8 @@ open class BattleUnitInfoView(
         remainingSummonDurationView.x = nameText.x + nameText.width + 8
         displayTurnActions(turnActions)
         displayHealthManaAndEffects(battleUnit)
+        if (!isSameBattleUnit) closeEffectInfo()
+        refreshEffectInfo()
         abilities.forEachIndexed { index, ability ->
             abilityButtons[index].display(
                 abilityId = ability.abilityId,
@@ -149,6 +161,7 @@ open class BattleUnitInfoView(
 
     open fun refresh(battleUnit: BattleUnitInfo) {
         displayHealthManaAndEffects(battleUnit)
+        refreshEffectInfo()
     }
 
     open fun displayInventoryButton(onInventoryButtonSelected: () -> kotlin.Unit) {
@@ -159,12 +172,39 @@ open class BattleUnitInfoView(
         inventoryButton.hide()
     }
 
+    internal fun effectTapped(effectId: String) {
+        if (effectId == openEffectId) closeEffectInfo() else openEffectInfo(effectId)
+    }
+
+    private fun openEffectInfo(effectId: String) {
+        val effectInfo = displayedBattleUnit?.effectInfos?.get(effectId) ?: return
+        openEffectId = effectId
+        abilityInfoView.hide()
+        expand()
+        effectInfoView.display(effectInfo)
+        abilityButtonsRow.visible = false
+        effectsView.select(effectId)
+    }
+
+    private fun closeEffectInfo() {
+        openEffectId = null
+        effectInfoView.hide()
+        abilityButtonsRow.visible = true
+        effectsView.select(null)
+    }
+
+    private fun refreshEffectInfo() {
+        val effectId = openEffectId ?: return
+        if (displayedBattleUnit?.effectInfos?.containsKey(effectId) == true) openEffectInfo(effectId) else closeEffectInfo()
+    }
+
     open fun displayAbilitySelected(index: Int) {
         abilityButtons.forEach(AbilityButtonView::unselect)
         abilityButtons[index].select()
     }
 
     open fun displayAbilityInfo(abilityInfo: AbilityInfoView.AbilityInfo) {
+        closeEffectInfo()
         abilityInfoView.display(abilityInfo)
         focus()
     }
@@ -175,6 +215,7 @@ open class BattleUnitInfoView(
     }
 
     open fun hide() {
+        closeEffectInfo()
         visible = false
     }
 
@@ -184,6 +225,7 @@ open class BattleUnitInfoView(
         stripHealthBarView.display(remaining = battleUnit.remainingHealth, maximum = battleUnit.maximumHealth)
         stripManaBarView.display(remaining = battleUnit.remainingMana, maximum = battleUnit.maximumMana)
         effectsView.display(battleUnit.effects)
+        displayedBattleUnit = battleUnit
     }
 
     private fun displayTurnActions(turnActions: TurnActions) {

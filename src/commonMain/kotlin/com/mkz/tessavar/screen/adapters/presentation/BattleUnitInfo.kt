@@ -8,4 +8,6 @@ data class BattleUnitInfo(
     val maximumMana: Int,
     val effects: List<EffectsView.Effect>,
     val isHumanPlayers: Boolean,
+    val battleUnitId: String = "",
+    val effectInfos: Map<String, EffectInfoView.EffectInfo> = emptyMap(),
 )

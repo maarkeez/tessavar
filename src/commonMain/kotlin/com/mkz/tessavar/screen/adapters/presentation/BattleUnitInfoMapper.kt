@@ -9,6 +9,7 @@ internal object BattleUnitInfoMapper {
         battleUnit: BattleUnit.Dto,
         isHumanPlayers: Boolean,
         searchEffect: (String) -> Effect.Dto?,
+        isExploring: Boolean = false,
         newEffectIds: List<String> = emptyList(),
     ): BattleUnitInfo =
         BattleUnitInfo(
@@ -19,7 +20,22 @@ internal object BattleUnitInfoMapper {
             maximumMana = battleUnit.maximumMana,
             effects = effects(battleUnit.ongoingEffects.effects, newEffectIds, searchEffect),
             isHumanPlayers = isHumanPlayers,
+            battleUnitId = battleUnit.id,
+            effectInfos = effectInfos(battleUnit.ongoingEffects.effects, isExploring, searchEffect),
         )
+
+    private fun effectInfos(
+        ongoingEffects: List<BattleUnit.Dto.OngoingEffectDto>,
+        isExploring: Boolean,
+        searchEffect: (String) -> Effect.Dto?,
+    ): Map<String, EffectInfoView.EffectInfo> =
+        ongoingEffects
+            .groupBy { ongoingEffect -> ongoingEffect.effectId }
+            .mapNotNull { (effectId, stacks) ->
+                searchEffect(effectId)?.let { effect ->
+                    effectId to EffectInfoMapper.effectInfo(effect, stacks.map { stack -> stack.remainingDuration }, isExploring, searchEffect)
+                }
+            }.toMap()
 
     fun effects(
         ongoingEffects: List<BattleUnit.Dto.OngoingEffectDto>,

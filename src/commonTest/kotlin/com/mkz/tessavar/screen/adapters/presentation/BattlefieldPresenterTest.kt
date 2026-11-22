@@ -1170,6 +1170,7 @@ class BattlefieldPresenterTest {
                 maximumMana = knight.maximumMana,
                 effects = emptyList(),
                 isHumanPlayers = true,
+                battleUnitId = "knight-1",
             )
     }
 
@@ -1491,9 +1492,10 @@ class BattlefieldPresenterTest {
                 maximumMana = knight.maximumMana,
                 effects = emptyList(),
                 isHumanPlayers = true,
+                battleUnitId = "knight-1",
             )
         preview.recipients.map { recipient -> recipient.battleUnit }.shouldContainExactly(
-            List(2) {
+            List(2) { index ->
                 BattleUnitInfo(
                     unitId = "rat",
                     remainingHealth = 21,
@@ -1502,6 +1504,7 @@ class BattlefieldPresenterTest {
                     maximumMana = rat.maximumMana,
                     effects = listOf(EffectsView.Effect(effectId = "venom", stacks = 1, remainingDuration = 5, isNew = true)),
                     isHumanPlayers = false,
+                    battleUnitId = "rat-${index + 1}",
                 )
             },
         )

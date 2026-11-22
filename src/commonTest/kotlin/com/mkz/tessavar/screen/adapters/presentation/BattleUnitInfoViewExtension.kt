@@ -47,3 +47,19 @@ suspend fun ViewsForTesting.clickAbility(
     battleUnitInfoView: BattleUnitInfoView,
     index: Int,
 ) = clickAbilityButton(battleUnitInfoView.abilityButtons[index])
+
+fun BattleUnitInfoView.isEffectInfoDisplayed(): Boolean = effectInfoView.visible
+
+fun BattleUnitInfoView.areAbilityButtonsDisplayed(): Boolean = abilityButtonsRow.visible
+
+fun BattleUnitInfoView.displayedEffectInfo(): EffectInfoView.EffectInfo? = effectInfoView.effectInfo?.takeIf { effectInfoView.visible }
+
+fun BattleUnitInfoView.selectedEffectIds(): List<String> =
+    effectsView.effectViews.filter { effectView -> effectView.visible && effectView.isSelected }.mapNotNull { effectView -> effectView.effect?.effectId }
+
+suspend fun ViewsForTesting.clickEffect(
+    battleUnitInfoView: BattleUnitInfoView,
+    index: Int,
+) = clickOn(battleUnitInfoView.effectsView.effectViews[index])
+
+suspend fun ViewsForTesting.clickEffectInfo(battleUnitInfoView: BattleUnitInfoView) = clickOn(battleUnitInfoView.effectInfoView)

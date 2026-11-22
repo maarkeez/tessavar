@@ -678,7 +678,13 @@ class InventoryPresenter(
             timeline.play {
                 clearDisplayedInventory()
                 battleUnitInfoView.display(
-                    battleUnit = BattleUnitInfoMapper.battleUnitInfo(battleUnit, isHumanPlayers = true, searchEffect = { effectId -> effectApi.searchEffectById(effectId) }),
+                    battleUnit =
+                        BattleUnitInfoMapper.battleUnitInfo(
+                            battleUnit,
+                            isHumanPlayers = true,
+                            searchEffect = { effectId -> effectApi.searchEffectById(effectId) },
+                            isExploring = battleApi.searchBattle()?.isFinished != false,
+                        ),
                     turnActions = BattleUnitInfoMapper.turnActions(battleUnit),
                     remainingTurns = battleUnit.remainingSummonDuration,
                     abilities = BattleUnitInfoMapper.abilities(abilityAvailabilities),

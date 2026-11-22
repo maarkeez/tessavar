@@ -41,6 +41,7 @@ class StorybookApi(
                 PillViewStories,
                 EffectViewStories,
                 EffectsViewStories,
+                EffectInfoViewStories,
                 AbilityButtonViewStories,
                 AbilityInfoViewStories,
                 InventoryButtonViewStories,

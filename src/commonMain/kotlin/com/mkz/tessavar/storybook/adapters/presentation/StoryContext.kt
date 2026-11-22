@@ -1,5 +1,6 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
+import com.mkz.tessavar.screen.adapters.presentation.EffectInfoView
 import com.mkz.tessavar.screen.adapters.presentation.EffectsView
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneResourcesLoader
 import com.mkz.tessavar.screen.adapters.presentation.Messages
@@ -59,6 +60,28 @@ class StoryContext(
             )
         }
     }
+
+    fun effectInfo(
+        effectId: String,
+        stacks: Int = 1,
+        isExploring: Boolean = false,
+    ): EffectInfoView.EffectInfo =
+        EffectInfoView.EffectInfo(
+            effectId = effectId,
+            stacks = stacks,
+            sentence = sampleSentence(effectId),
+            remainingDurations = if (effectId == ON_DEFEATED_EFFECT_ID) emptyList() else List(stacks) { index -> LONGEST_SAMPLE_DURATION - 2 * index }.filter { duration -> duration > 0 },
+            isExploring = isExploring,
+        )
+
+    private fun sampleSentence(effectId: String): EffectInfoView.EffectInfo.Sentence =
+        when (effectId) {
+            "burn" -> EffectInfoView.EffectInfo.Sentence.DamageOnPlayerTurnStarted(damage = 4)
+            "soak" -> EffectInfoView.EffectInfo.Sentence.Resist(resistedEffectId = "burn", share = 50)
+            "stun", "stun-long" -> EffectInfoView.EffectInfo.Sentence.NegateActions
+            ON_DEFEATED_EFFECT_ID -> EffectInfoView.EffectInfo.Sentence.OnDefeatedDamageAdjacentAllies(damage = 3, turns = 5)
+            else -> EffectInfoView.EffectInfo.Sentence.DamageOnPlayerTurnStarted(damage = 3)
+        }
 
     fun abilityIds(): List<String> = imageIds(ABILITIES_DIRECTORY)
 

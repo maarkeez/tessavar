@@ -447,6 +447,7 @@ class BattlefieldPresenter(
             battleUnit = battleUnit,
             isHumanPlayers = !isCpuBattleUnit(battleUnit),
             searchEffect = { effectId -> effectApi.searchEffectById(effectId) },
+            isExploring = !isBattling(),
             newEffectIds = newEffectIds,
         )
 

@@ -6,6 +6,7 @@ import com.mkz.tessavar.screen.adapters.presentation.GameSceneResourcesLoaderMot
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import korlibs.korge.tests.ViewsForTesting
@@ -24,6 +25,30 @@ class BattleUnitInfoViewTest : ViewsForTesting() {
             targeting = AbilityInfoView.AbilityInfo.Targeting.ADJACENT_ENEMY,
             effects = listOf(AbilityInfoView.AbilityInfo.Effect.Damage(10)),
         )
+
+    private val venom =
+        EffectInfoView.EffectInfo(
+            "venom-damage",
+            stacks = 1,
+            sentence = EffectInfoView.EffectInfo.Sentence.DamageOnPlayerTurnStarted(3),
+            remainingDurations = listOf(4),
+            isExploring = false,
+        )
+    private val soak = EffectInfoView.EffectInfo("soak", stacks = 1, sentence = EffectInfoView.EffectInfo.Sentence.Resist("burn", 50), remainingDurations = listOf(2), isExploring = false)
+
+    private fun poisonedAndSoaked(
+        battleUnitId: String = "knight-1",
+        venomInfo: EffectInfoView.EffectInfo = venom,
+        withVenom: Boolean = true,
+    ) = battleUnitInfo(
+        effects =
+            listOfNotNull(
+                EffectsView.Effect("venom-damage", remainingDuration = venomInfo.remainingDurations.max()).takeIf { withVenom },
+                EffectsView.Effect("soak", remainingDuration = 2),
+            ),
+    ).copy(battleUnitId = battleUnitId, effectInfos = listOfNotNull(("venom-damage" to venomInfo).takeIf { withVenom }, "soak" to soak).toMap())
+
+    private fun BattleUnitInfoView.displayBattleUnit(battleUnit: BattleUnitInfo) = display(battleUnit = battleUnit, turnActions = turnActions(), remainingTurns = null, abilities = emptyList())
 
     private fun BattleUnitInfoView.display(
         turnActions: BattleUnitInfoView.TurnActions = turnActions(),
@@ -326,5 +351,143 @@ class BattleUnitInfoViewTest : ViewsForTesting() {
             battleUnitInfoView.hideInventoryButton()
             // Then
             battleUnitInfoView.isInventoryButtonDisplayed().shouldBeFalse()
+        }
+
+    @Test
+    fun `TapEffect should display the effect info in place of the abilities when an effect icon is tapped`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked())
+            addChild(battleUnitInfoView)
+            // When
+            clickEffect(battleUnitInfoView, 0)
+            // Then
+            battleUnitInfoView.displayedEffectInfo() shouldBe venom
+            battleUnitInfoView.areAbilityButtonsDisplayed().shouldBeFalse()
+            battleUnitInfoView.selectedEffectIds().shouldContainExactly("venom-damage")
+        }
+
+    @Test
+    fun `TapEffect should display the abilities again when the same effect icon is tapped again`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked())
+            addChild(battleUnitInfoView)
+            clickEffect(battleUnitInfoView, 0)
+            // When
+            clickEffect(battleUnitInfoView, 0)
+            // Then
+            battleUnitInfoView.isEffectInfoDisplayed().shouldBeFalse()
+            battleUnitInfoView.areAbilityButtonsDisplayed().shouldBeTrue()
+            battleUnitInfoView.selectedEffectIds().shouldBeEmpty()
+        }
+
+    @Test
+    fun `TapEffect should switch the effect info when another effect icon is tapped`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked())
+            addChild(battleUnitInfoView)
+            clickEffect(battleUnitInfoView, 0)
+            // When
+            clickEffect(battleUnitInfoView, 1)
+            // Then
+            battleUnitInfoView.displayedEffectInfo() shouldBe soak
+            battleUnitInfoView.selectedEffectIds().shouldContainExactly("soak")
+        }
+
+    @Test
+    fun `TapEffectInfo should display the abilities again when the effect info is tapped`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked())
+            addChild(battleUnitInfoView)
+            clickEffect(battleUnitInfoView, 0)
+            // When
+            clickEffectInfo(battleUnitInfoView)
+            // Then
+            battleUnitInfoView.isEffectInfoDisplayed().shouldBeFalse()
+            battleUnitInfoView.areAbilityButtonsDisplayed().shouldBeTrue()
+        }
+
+    @Test
+    fun `Display should keep the effect info open when the same battle unit is displayed again`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked())
+            addChild(battleUnitInfoView)
+            clickEffect(battleUnitInfoView, 0)
+            val venomLater = venom.copy(remainingDurations = listOf(3))
+            // When
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked(venomInfo = venomLater))
+            // Then
+            battleUnitInfoView.displayedEffectInfo() shouldBe venomLater
+            battleUnitInfoView.areAbilityButtonsDisplayed().shouldBeFalse()
+            battleUnitInfoView.selectedEffectIds().shouldContainExactly("venom-damage")
+        }
+
+    @Test
+    fun `Display should close the effect info when another battle unit is displayed`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked())
+            addChild(battleUnitInfoView)
+            clickEffect(battleUnitInfoView, 0)
+            // When
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked(battleUnitId = "knight-2"))
+            // Then
+            battleUnitInfoView.isEffectInfoDisplayed().shouldBeFalse()
+            battleUnitInfoView.areAbilityButtonsDisplayed().shouldBeTrue()
+        }
+
+    @Test
+    fun `Display should close the effect info when its effect is no longer ongoing`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked())
+            addChild(battleUnitInfoView)
+            clickEffect(battleUnitInfoView, 0)
+            // When
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked(withVenom = false))
+            // Then
+            battleUnitInfoView.isEffectInfoDisplayed().shouldBeFalse()
+            battleUnitInfoView.areAbilityButtonsDisplayed().shouldBeTrue()
+        }
+
+    @Test
+    fun `Refresh should display the effect info with its new remaining durations when it is open`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked())
+            addChild(battleUnitInfoView)
+            clickEffect(battleUnitInfoView, 0)
+            val venomLater = venom.copy(remainingDurations = listOf(3))
+            // When
+            battleUnitInfoView.refresh(poisonedAndSoaked(venomInfo = venomLater))
+            // Then
+            battleUnitInfoView.displayedEffectInfo() shouldBe venomLater
+        }
+
+    @Test
+    fun `Hide should close the effect info when is hidden`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoaked())
+            addChild(battleUnitInfoView)
+            clickEffect(battleUnitInfoView, 0)
+            // When
+            battleUnitInfoView.hide()
+            // Then
+            battleUnitInfoView.isEffectInfoDisplayed().shouldBeFalse()
+            battleUnitInfoView.areAbilityButtonsDisplayed().shouldBeTrue()
         }
 }

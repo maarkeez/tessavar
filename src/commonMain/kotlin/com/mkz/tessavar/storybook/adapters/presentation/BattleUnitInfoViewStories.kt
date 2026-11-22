@@ -52,7 +52,7 @@ object BattleUnitInfoViewStories : StoryBinding {
         StoryDto(
             id = "screen-battle-unit-info--with-effects",
             name = "With effects",
-            description = "A battle unit under a few effects, one icon each.",
+            description = "A battle unit under a few effects, one icon each, with its remaining duration. Tapping one shows its effect info in place of the abilities.",
             args = mapOf(EFFECTS to ValueDto.int(4)),
         )
     private val summon =
@@ -126,6 +126,7 @@ object BattleUnitInfoViewStories : StoryBinding {
         context: StoryContext,
     ): View {
         val abilityIds = context.abilityIds()
+        val effects = context.effects(args.int(EFFECTS))
         val battleUnit =
             BattleUnitInfo(
                 unitId = args.text(UNIT),
@@ -133,8 +134,9 @@ object BattleUnitInfoViewStories : StoryBinding {
                 maximumHealth = MAXIMUM_HEALTH,
                 remainingMana = args.int(MANA),
                 maximumMana = MAXIMUM_MANA,
-                effects = context.effects(args.int(EFFECTS)),
+                effects = effects,
                 isHumanPlayers = true,
+                effectInfos = effects.associate { effect -> effect.effectId to context.effectInfo(effect.effectId) },
             )
         val abilities =
             List(args.int(ABILITIES)) { index ->
