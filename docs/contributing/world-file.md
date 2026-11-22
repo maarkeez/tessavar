@@ -34,13 +34,13 @@ campaign's.
 
 Terrain ids, from `resources/terrain/`:
 
-| Terrain id | Occupiable | Effect        |
-|------------|------------|---------------|
-| `void`     | No         | none          |
-| `sand`     | Yes        | none          |
-| `grass`    | Yes        | none          |
-| `water`    | Yes        | `water-heal`  |
-| `lava`     | Yes        | `lava-damage` |
+| Terrain id | Occupiable | Effects                |
+|------------|------------|------------------------|
+| `void`     | No         | none                   |
+| `sand`     | Yes        | none                   |
+| `grass`    | Yes        | none                   |
+| `water`    | Yes        | `soak`                 |
+| `lava`     | Yes        | `lava-damage`, `burn`  |
 
 Two tiles side by side hold the same terrain, or two terrains with a transition under `resources/terrain/transitions/`:
 `sand` next to `grass`, `lava`, `void` or `water`.

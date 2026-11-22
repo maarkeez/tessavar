@@ -1,2 +1,2 @@
 canBeOccupied = true
-effectIds = ["lava-damage"]
+effectIds = ["lava-damage", "burn"]

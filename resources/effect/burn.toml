@@ -1,0 +1,7 @@
+[outcome]
+type = "DAMAGE"
+damage = 4
+
+[timing]
+type = "ON_PLAYER_TURN_STARTED"
+duration = 2

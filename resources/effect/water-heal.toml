@@ -1,6 +1,0 @@
-[outcome]
-type = "HEAL"
-healing = 5
-
-[timing]
-type = "IMMEDIATELY"

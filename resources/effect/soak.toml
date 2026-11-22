@@ -1,0 +1,8 @@
+[outcome]
+type = "RESIST"
+effectId = "burn"
+share = 50
+
+[timing]
+type = "WHILE_ONGOING"
+duration = 2
