@@ -303,7 +303,7 @@ The border drawn on a tile where its terrain meets a different terrain on an adj
 _Avoid_: Border, edge
 
 **Terrain effect**:
-The effect a terrain has on the occupant standing on it.
+The effects a terrain has on the occupant standing on it.
 
 #### Occupants
 
@@ -484,6 +484,20 @@ _Avoid_: Power, points, health points, mana points
 A battle unit getting mana back from an effect.
 _Avoid_: Increase mana
 
+**Negate actions**:
+The outcome that takes away the actions a battle unit has left, such as the outcome of stun.
+_Avoid_: Stun, skip turn
+
+**Apply if ongoing**:
+The outcome that applies another effect to its recipient only if the recipient has a given ongoing effect, such as
+another venom to a battle unit with an ongoing venom.
+_Avoid_: Amplify, combo, reaction
+
+**Resist**:
+The outcome that lessens by a share the damage its recipient takes from a given effect, such as soak halving the
+damage of burn.
+_Avoid_: Resistance, halve, reduce
+
 #### Applying
 
 **Apply**:
@@ -522,8 +536,11 @@ The timing of an effect whose outcome triggers when its recipient is defeated.
 **While equipped**:
 The timing of an effect whose outcome lasts while the item that applied it is equipped.
 
+**While ongoing**:
+The timing of an effect whose outcome lasts for its duration.
+
 **Duration**:
-How many player turns an effect timed on player turn started triggers for.
+How many player turns an effect timed on player turn started or while ongoing lasts for.
 
 ### Inventory
 
@@ -1315,9 +1332,6 @@ _Avoid_: Occupiable, walkable
 
 **Harmful terrain**:
 A terrain whose terrain effect damages the occupant standing on it, such as lava.
-
-**Healing terrain**:
-A terrain whose terrain effect heals the occupant standing on it, such as water.
 
 ### Unit
 
