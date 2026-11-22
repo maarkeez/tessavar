@@ -18,6 +18,7 @@ import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.BattleUnitRespawned
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.BattleUnitVanished
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.EffectReceived
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.OnPlayerTurnStartedEffectTriggered
+import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.OngoingEffectsTriggered
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.RequestWalkBattleUnitInBattle
 import com.mkz.tessavar.battleUnit.usecases.services.BattleUnitLoader.Deployment
 import com.mkz.tessavar.battlefield.domain.Battlefield.Dto.PositionDto
@@ -354,6 +355,49 @@ class BattlefieldPresenterTest {
         timeline = timeline,
         eventBus = apis.eventBus,
     )
+
+    @Test
+    fun `OngoingEffectsTriggered should display the battle unit info again when it shows that battle unit while exploring`() {
+        // Given
+        val exploringApis = exploringApis(effects = listOf(damageEffect(id = "venom", damage = 3, timingType = "ON_PLAYER_TURN_STARTED").toDto()))
+        val exploringBattleUnitInfoView = FakeBattleUnitInfoView()
+        val presenter = exploringPresenter(exploringApis, FakeBattlefieldView(), battleUnitInfoView = exploringBattleUnitInfoView)
+        presenter.select("knight-1")
+        exploringApis.eventBus.dispatch()
+        exploringApis.battleUnitApi.applyEffect(
+            EffectApplicationDto(source = SourceDto.battleUnit("knight-1"), recipient = RecipientDto.battleUnit("knight-1"), effectId = "venom", destination = null),
+        )
+        exploringApis.eventBus.publish(OngoingEffectsTriggered(battleUnitId = "knight-1"))
+        // When
+        exploringApis.eventBus.dispatch()
+        // Then
+        exploringBattleUnitInfoView.refreshedBattleUnits
+            .last()
+            .effects
+            .shouldContainExactly(EffectsView.Effect(effectId = "venom", stacks = 1, remainingDuration = 5))
+    }
+
+    @Test
+    fun `OngoingEffectsTriggered should not display the battle unit info when it shows another battle unit`() {
+        // Given
+        val exploringApis =
+            exploringApis(
+                deployments =
+                    listOf(
+                        Deployment(battleUnitId = "knight-1", unitId = "knight", playerId = "human", row = 1, column = 1),
+                        Deployment(battleUnitId = "knight-2", unitId = "knight", playerId = "human", row = 2, column = 2),
+                    ),
+            )
+        val exploringBattleUnitInfoView = FakeBattleUnitInfoView()
+        val presenter = exploringPresenter(exploringApis, FakeBattlefieldView(), battleUnitInfoView = exploringBattleUnitInfoView)
+        presenter.select("knight-1")
+        exploringApis.eventBus.dispatch()
+        exploringApis.eventBus.publish(OngoingEffectsTriggered(battleUnitId = "knight-2"))
+        // When
+        exploringApis.eventBus.dispatch()
+        // Then
+        exploringBattleUnitInfoView.refreshedBattleUnits.shouldBeEmpty()
+    }
 
     @Test
     fun `MoveUnit should move the battle unit quicker when exploring`() {

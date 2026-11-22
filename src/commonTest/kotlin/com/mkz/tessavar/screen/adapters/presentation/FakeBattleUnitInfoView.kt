@@ -11,6 +11,7 @@ class FakeBattleUnitInfoView : BattleUnitInfoView(GameSceneResourcesLoader(), Me
     var delegate: AbilityButtonView.Delegate? = null
         private set
     val displayedBattleUnits = mutableListOf<DisplayedBattleUnit>()
+    val refreshedBattleUnits = mutableListOf<BattleUnitInfo>()
     val selectedAbilities = mutableListOf<Int>()
     val displayedAbilityInfos = mutableListOf<AbilityInfoView.AbilityInfo>()
     var hideAbilityInfoCount = 0
@@ -32,6 +33,10 @@ class FakeBattleUnitInfoView : BattleUnitInfoView(GameSceneResourcesLoader(), Me
         abilities: List<Ability>,
     ) {
         displayedBattleUnits += DisplayedBattleUnit(battleUnit, turnActions, remainingTurns, abilities)
+    }
+
+    override fun refresh(battleUnit: BattleUnitInfo) {
+        refreshedBattleUnits += battleUnit
     }
 
     override fun displayAbilitySelected(index: Int) {

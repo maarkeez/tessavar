@@ -57,6 +57,8 @@ class BattlefieldPresenter(
 
     private var pendingSwap: Pair<BattleUnitEvent.BattleUnitMoved, String>? = null
 
+    private var displayedBattleUnitId: String? = null
+
     private val subscriptions =
         listOf(
             eventBus.subscribe<BattlefieldCreated> { displayBattlefield() },
@@ -105,6 +107,9 @@ class BattlefieldPresenter(
             },
             eventBus.subscribe<BattleUnitEvent.OnPlayerTurnStartedEffectTriggered> { event ->
                 blinkUnit(event.battleUnitId, isAlongside = !isBattling())
+            },
+            eventBus.subscribe<BattleUnitEvent.OngoingEffectsTriggered> { event ->
+                refreshBattleUnitInfo(event.battleUnitId)
             },
             eventBus.subscribe<BattleUnitEvent.BattleUnitDamaged> { event ->
                 if (!isBattling()) blinkHealth(event.battleUnitId)
@@ -341,11 +346,19 @@ class BattlefieldPresenter(
         timeline.playAlongside { battlefieldView.blinkHealth(row = position.row, column = position.column, previewOption = previewOption) }
     }
 
+    private fun refreshBattleUnitInfo(battleUnitId: String) {
+        if (isBattling() || battleUnitId != displayedBattleUnitId) return
+        val battleUnit = battleUnitApi.searchBattleUnitById(battleUnitId) ?: return
+        val battleUnitInfo = battleUnitInfo(battleUnit)
+        timeline.playAlongside { battleUnitInfoView.refresh(battleUnitInfo) }
+    }
+
     private fun displayWalkingRange(battleUnitSelectedEvent: SelectionEvent.BattleUnitSelected): suspend () -> Unit {
         val battleUnit = battleUnitApi.searchBattleUnitById(battleUnitSelectedEvent.battleUnitId)!!
         val abilityAvailabilities = battleUnitApi.searchAbilityAvailabilities(battleUnit.id)
         val isBattling = isBattling()
         return {
+            displayedBattleUnitId = battleUnitSelectedEvent.battleUnitId
             if (isBattling) battlefieldView.scrollToTile(row = battleUnitSelectedEvent.tile.row, column = battleUnitSelectedEvent.tile.column)
             battlefieldView.resetTiles()
             battleUnitInfoView.display(
@@ -374,6 +387,7 @@ class BattlefieldPresenter(
     }
 
     private fun clearSelection() {
+        displayedBattleUnitId = null
         battleUnitInfoView.hide()
         battlefieldView.resetTiles()
         hudView.hide()

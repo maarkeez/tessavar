@@ -135,10 +135,7 @@ open class BattleUnitInfoView(
         if (remainingTurns != null) remainingSummonDurationView.display(remainingTurns) else remainingSummonDurationView.hide()
         remainingSummonDurationView.x = nameText.x + nameText.width + 8
         displayTurnActions(turnActions)
-        healthBarView.display(remaining = battleUnit.remainingHealth, maximum = battleUnit.maximumHealth)
-        manaBarView.display(remaining = battleUnit.remainingMana, maximum = battleUnit.maximumMana)
-        stripHealthBarView.display(remaining = battleUnit.remainingHealth, maximum = battleUnit.maximumHealth)
-        stripManaBarView.display(remaining = battleUnit.remainingMana, maximum = battleUnit.maximumMana)
+        displayHealthManaAndEffects(battleUnit)
         abilities.forEachIndexed { index, ability ->
             abilityButtons[index].display(
                 abilityId = ability.abilityId,
@@ -147,8 +144,11 @@ open class BattleUnitInfoView(
                 manaCost = ability.manaCost,
             )
         }
-        effectsView.display(battleUnit.effects)
         visible = true
+    }
+
+    open fun refresh(battleUnit: BattleUnitInfo) {
+        displayHealthManaAndEffects(battleUnit)
     }
 
     open fun displayInventoryButton(onInventoryButtonSelected: () -> kotlin.Unit) {
@@ -176,6 +176,14 @@ open class BattleUnitInfoView(
 
     open fun hide() {
         visible = false
+    }
+
+    private fun displayHealthManaAndEffects(battleUnit: BattleUnitInfo) {
+        healthBarView.display(remaining = battleUnit.remainingHealth, maximum = battleUnit.maximumHealth)
+        manaBarView.display(remaining = battleUnit.remainingMana, maximum = battleUnit.maximumMana)
+        stripHealthBarView.display(remaining = battleUnit.remainingHealth, maximum = battleUnit.maximumHealth)
+        stripManaBarView.display(remaining = battleUnit.remainingMana, maximum = battleUnit.maximumMana)
+        effectsView.display(battleUnit.effects)
     }
 
     private fun displayTurnActions(turnActions: TurnActions) {

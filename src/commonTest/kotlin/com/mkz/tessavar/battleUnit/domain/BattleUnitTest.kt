@@ -688,6 +688,7 @@ class BattleUnitTest {
             .shouldBeEmpty()
         updatedBattleUnit.pullEvents().first.shouldContainExactly(
             BattleUnitEvent.OnPlayerTurnStartedEffectTriggered(battleUnitId = updatedBattleUnit.toDto().id, effectId = "stun"),
+            BattleUnitEvent.OngoingEffectsTriggered(battleUnitId = updatedBattleUnit.toDto().id),
         )
     }
 
@@ -709,7 +710,7 @@ class BattleUnitTest {
             .toDto()
             .ongoingEffects.onPlayerTurnStarted
             .shouldBeEmpty()
-        updatedBattleUnit.pullEvents().first.shouldBeEmpty()
+        updatedBattleUnit.pullEvents().first.shouldContainExactly(BattleUnitEvent.OngoingEffectsTriggered(battleUnitId = updatedBattleUnit.toDto().id))
     }
 
     @Test
@@ -854,7 +855,25 @@ class BattleUnitTest {
         events.shouldContainExactly(
             BattleUnitEvent.OnPlayerTurnStartedEffectTriggered(battleUnitId = updatedBattleUnit.toDto().id, effectId = onPlayerTurnStartedEffect.id),
             BattleUnitEvent.BattleUnitDamaged(battleUnitId = updatedBattleUnit.toDto().id),
+            BattleUnitEvent.OngoingEffectsTriggered(battleUnitId = updatedBattleUnit.toDto().id),
         )
+    }
+
+    @Test
+    fun `TriggerOnPlayerTurnStartedEffects should publish ongoing effects triggered when it has ongoing effects`() {
+        // Given
+        val soak = EffectMother.resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2).toDto()
+        val battleUnit =
+            BattleUnitMother
+                .battleUnit()
+                .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+                .pullEvents()
+                .second
+        // When
+        val updatedBattleUnit = battleUnit.triggerOnPlayerTurnStartedEffects(effects = listOf(soak), currentRow = 0, currentColumn = 0)
+        // Then
+        val (events, _) = updatedBattleUnit.pullEvents()
+        events.shouldContainExactly(BattleUnitEvent.OngoingEffectsTriggered(battleUnitId = battleUnit.toDto().id))
     }
 
     @Test
@@ -882,6 +901,7 @@ class BattleUnitTest {
             BattleUnitEvent.BattleUnitDamaged::class,
             BattleUnitEvent.BattleUnitDefeated::class,
             BattlefieldEvent.RequestRemoveOccupant::class,
+            BattleUnitEvent.OngoingEffectsTriggered::class,
         )
     }
 
@@ -987,6 +1007,7 @@ class BattleUnitTest {
         events.map { event -> event::class }.shouldContainExactly(
             BattleUnitEvent.OnPlayerTurnStartedEffectTriggered::class,
             BattleUnitEvent.BattleUnitDamaged::class,
+            BattleUnitEvent.OngoingEffectsTriggered::class,
         )
     }
 
@@ -1022,6 +1043,7 @@ class BattleUnitTest {
             BattleUnitEvent.BattleUnitDamaged::class,
             BattleUnitEvent.BattleUnitDefeated::class,
             BattlefieldEvent.RequestRemoveOccupant::class,
+            BattleUnitEvent.OngoingEffectsTriggered::class,
         )
     }
 

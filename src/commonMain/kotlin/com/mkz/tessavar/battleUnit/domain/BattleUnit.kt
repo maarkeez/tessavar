@@ -24,6 +24,7 @@ import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.BattleUnitVanished
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.EffectReceived
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.EquippedEffectsRemoved
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.OnPlayerTurnStartedEffectTriggered
+import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.OngoingEffectsTriggered
 import com.mkz.tessavar.battlefield.domain.Battlefield
 import com.mkz.tessavar.battlefield.domain.BattlefieldEvent.RequestMoveOccupant
 import com.mkz.tessavar.battlefield.domain.BattlefieldEvent.RequestOccupyTile
@@ -522,7 +523,10 @@ data class BattleUnit private constructor(
             from = if (stackFinished) index else index + 1
             battleUnit = triggeredBattleUnit
         }
-        return battleUnit.copy(ongoingEffects = battleUnit.ongoingEffects.countDownWhileOngoing())
+        return battleUnit.copy(
+            ongoingEffects = battleUnit.ongoingEffects.countDownWhileOngoing(),
+            events = battleUnit.events + OngoingEffectsTriggered(battleUnitId = id.value),
+        )
     }
 
     private fun triggerOnPlayerTurnStartedEffectAt(

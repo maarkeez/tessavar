@@ -100,6 +100,10 @@ sealed interface BattleUnitEvent : DomainEvent {
         val effectId: String,
     ) : BattleUnitEvent
 
+    data class OngoingEffectsTriggered(
+        val battleUnitId: String,
+    ) : BattleUnitEvent
+
     data class BattleUnitDamaged(
         val battleUnitId: String,
     ) : BattleUnitEvent

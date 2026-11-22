@@ -52,6 +52,29 @@ class TriggerOnPlayerTurnStartedEffectsTest {
         eventBus.shouldHavePublishedEvents(
             BattleUnitEvent.OnPlayerTurnStartedEffectTriggered(battleUnitId = battleUnit.toDto().id, effectId = effectId),
             BattleUnitEvent.BattleUnitDamaged(battleUnit.toDto().id),
+            BattleUnitEvent.OngoingEffectsTriggered(battleUnitId = battleUnit.toDto().id),
+        )
+    }
+
+    @Test
+    fun `Trigger should publish ongoing effects triggered for each battle unit when exploring`() {
+        // Given
+        queries.effectRepository.create(resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2))
+        listOf("knight-1", "knight-2").forEach { battleUnitId ->
+            battleUnitRepository.create(
+                battleUnit(id = battleUnitId, player = player(id = "player-1").toDto())
+                    .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+                    .pullEvents()
+                    .second,
+            )
+        }
+        queries.battlefieldRepository.create(battlefield("K L", occupants = mapOf('K' to "knight-1", 'L' to "knight-2")))
+        // When
+        triggerOngoingEffectsWhileExploring(setOf("knight-1", "knight-2"))
+        // Then
+        eventBus.shouldHavePublishedEvents(
+            BattleUnitEvent.OngoingEffectsTriggered(battleUnitId = "knight-1"),
+            BattleUnitEvent.OngoingEffectsTriggered(battleUnitId = "knight-2"),
         )
     }
 
@@ -75,7 +98,7 @@ class TriggerOnPlayerTurnStartedEffectsTest {
             .toDto()
             .ongoingEffects.whileOngoing
             .shouldContainExactly("soak")
-        eventBus.publishedEvents.shouldBeEmpty()
+        eventBus.publishedEvents.shouldContainExactly(BattleUnitEvent.OngoingEffectsTriggered(battleUnitId = "knight-1"))
     }
 
     @Test
