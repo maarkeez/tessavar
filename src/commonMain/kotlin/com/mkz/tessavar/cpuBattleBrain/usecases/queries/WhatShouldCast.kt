@@ -84,13 +84,16 @@ class WhatShouldCast(
         enemiesWithinReach: List<BattleUnit.Dto>,
     ): UtilityEvaluationData {
         val effects = effectsOf(ability)
-        val damage = expectedAmount(effects, target = EffectTargetDto.Type.TARGETED_BATTLE_UNIT, outcome = TypeDto.DAMAGE)
+        val targetEffects = effects.filter { (target, _) -> target == EffectTargetDto.Type.TARGETED_BATTLE_UNIT }.map { (_, effect) -> effect }
         val healing = expectedAmount(effects, target = EffectTargetDto.Type.CASTER, outcome = TypeDto.HEAL)
         val deployedUnitId = effects.firstNotNullOfOrNull { (_, effect) -> effect.outcome.summon?.unitId }
         return when {
-            damage > 0 -> UtilityEvaluationData(ability.id, castGroup, CastKind.DAMAGE, damageUtility(damage, castGroup, caster, casterMaxHealth, enemiesWithinReach))
+            targetEffects.any { effect -> effect.outcome.type in HARMFUL_OUTCOMES } ->
+                UtilityEvaluationData(ability.id, castGroup, CastKind.DAMAGE, damageUtility(targetEffects, castGroup, caster, casterMaxHealth, enemiesWithinReach))
             healing > 0 -> UtilityEvaluationData(ability.id, castGroup, CastKind.HEAL, healUtility(healing, caster, casterMaxHealth))
             deployedUnitId != null -> UtilityEvaluationData(ability.id, castGroup, CastKind.SUMMON, summonUtility(deployedUnitId, castGroup, caster, casterMaxHealth, enemiesWithinReach))
+            targetEffects.any { effect -> effect.outcome.type == TypeDto.RESIST } ->
+                UtilityEvaluationData(ability.id, castGroup, CastKind.DAMAGE, setupUtility(ability, targetEffects, castGroup, caster, casterMaxHealth, enemiesWithinReach))
             else -> UtilityEvaluationData(ability.id, castGroup, CastKind.OTHER, utility = 0.0)
         }
     }
@@ -99,22 +102,142 @@ class WhatShouldCast(
         ability.abilityEffects.mapNotNull { abilityEffect -> searchEffectById(abilityEffect.effectId)?.let { effect -> abilityEffect.target.type to effect } }
 
     private fun damageUtility(
-        damage: Double,
+        targetEffects: List<Effect.Dto>,
         castGroup: WhereCanCast.CastGroup,
         caster: BattleUnit.Dto,
         casterMaxHealth: Int,
         enemiesWithinReach: List<BattleUnit.Dto>,
     ): Double {
-        val enemyIdsWithinReach = enemiesWithinReach.map(BattleUnit.Dto::id).toSet()
         val targetsUtility =
-            castGroup.positions
-                .mapNotNull { position -> searchOccupant(row = position.row, column = position.column) }
-                .filter { targetId -> targetId in enemyIdsWithinReach }
-                .mapNotNull { targetId -> searchBattleUnitById(id = targetId) }
-                .sumOf { target -> min(damage, target.remainingHealth.toDouble()) / target.remainingHealth }
+            targets(castGroup, enemiesWithinReach)
+                .sumOf { target -> harmUtility(harm(targetEffects, target, ongoingEffectIds(target)), target) }
                 .coerceAtMost(1.0)
         val casterHealthRatio = caster.remainingHealth.toDouble() / casterMaxHealth
         return casterHealthRatio * targetsUtility
+    }
+
+    private fun setupUtility(
+        ability: Ability.Dto,
+        targetEffects: List<Effect.Dto>,
+        castGroup: WhereCanCast.CastGroup,
+        caster: BattleUnit.Dto,
+        casterMaxHealth: Int,
+        enemiesWithinReach: List<BattleUnit.Dto>,
+    ): Double {
+        val setUpEffectIds = targetEffects.filter { effect -> effect.outcome.type == TypeDto.RESIST }.map(Effect.Dto::id).toSet()
+        val followUps =
+            caster.knownAbilities.keys
+                .filter { abilityId -> abilityId != ability.id }
+                .mapNotNull { abilityId -> searchAbilityById(abilityId) }
+                .map { followUp -> effectsOf(followUp).filter { (target, _) -> target == EffectTargetDto.Type.TARGETED_BATTLE_UNIT }.map { (_, effect) -> effect } }
+                .filter { followUpEffects -> followUpEffects.any { effect -> effect.outcome.applyIfOngoing?.ongoingEffectId in setUpEffectIds } }
+        val targetsUtility =
+            targets(castGroup, enemiesWithinReach)
+                .sumOf { target ->
+                    val ongoing = ongoingEffectIds(target)
+                    followUps.maxOfOrNull { followUpEffects ->
+                        harmUtility(harm(followUpEffects, target, ongoing + setUpEffectIds), target) - harmUtility(harm(followUpEffects, target, ongoing), target)
+                    } ?: 0.0
+                }.coerceAtMost(1.0)
+        val casterHealthRatio = caster.remainingHealth.toDouble() / casterMaxHealth
+        return casterHealthRatio * PLAYER_TURN_DISCOUNT * targetsUtility
+    }
+
+    private fun targets(
+        castGroup: WhereCanCast.CastGroup,
+        enemiesWithinReach: List<BattleUnit.Dto>,
+    ): List<BattleUnit.Dto> {
+        val enemyIdsWithinReach = enemiesWithinReach.map(BattleUnit.Dto::id).toSet()
+        return castGroup.positions
+            .mapNotNull { position -> searchOccupant(row = position.row, column = position.column) }
+            .filter { targetId -> targetId in enemyIdsWithinReach }
+            .mapNotNull { targetId -> searchBattleUnitById(id = targetId) }
+    }
+
+    private fun ongoingEffectIds(battleUnit: BattleUnit.Dto): Set<String> =
+        (battleUnit.ongoingEffects.onPlayerTurnStarted + battleUnit.ongoingEffects.whileOngoing + battleUnit.ongoingEffects.onDefeatedEffects).toSet()
+
+    private data class Harm(
+        val damage: Double,
+        val playerTurnsNegated: Int,
+        val damageToOthers: Map<String, Double>,
+    )
+
+    private fun harm(
+        effects: List<Effect.Dto>,
+        target: BattleUnit.Dto,
+        ongoingEffectIds: Set<String>,
+        nesting: Int = 0,
+    ): Harm {
+        var applied = ongoingEffectIds
+        var damage = 0.0
+        var playerTurnsNegated = 0
+        val damageToOthers = mutableMapOf<String, Double>()
+        effects.forEach { effect ->
+            when (effect.outcome.type) {
+                TypeDto.DAMAGE -> damage += discountedDamage(effect)
+                TypeDto.NEGATE_ACTIONS -> playerTurnsNegated = maxOf(playerTurnsNegated, effect.timing.onPlayerTurnStarted?.duration ?: 0)
+                TypeDto.APPLY_IF_ONGOING -> {
+                    val applyIfOngoing = effect.outcome.applyIfOngoing!!
+                    val appliedEffect = searchEffectById(applyIfOngoing.effectId)
+                    if (applyIfOngoing.ongoingEffectId in applied && appliedEffect != null && nesting < MAXIMUM_NESTING) {
+                        val nested = harm(listOf(appliedEffect), target, applied, nesting + 1)
+                        damage += nested.damage
+                        playerTurnsNegated = maxOf(playerTurnsNegated, nested.playerTurnsNegated)
+                        nested.damageToOthers.forEach { (battleUnitId, amount) -> damageToOthers[battleUnitId] = (damageToOthers[battleUnitId] ?: 0.0) + amount }
+                        applied = applied + appliedEffect.id
+                    }
+                }
+                TypeDto.APPLY_EFFECT_TO_ADJACENT_ALLIES ->
+                    if (effect.timing.type == TimingTypeDto.IMMEDIATELY) {
+                        val spreadDamage = searchEffectById(effect.outcome.applyEffectToAdjacentAllies!!.effectId)?.let(::discountedDamage) ?: 0.0
+                        adjacentAllies(target).forEach { ally -> damageToOthers[ally.id] = (damageToOthers[ally.id] ?: 0.0) + spreadDamage }
+                    }
+                else -> Unit
+            }
+            applied = applied + effect.id
+        }
+        return Harm(damage = damage, playerTurnsNegated = playerTurnsNegated, damageToOthers = damageToOthers)
+    }
+
+    private fun harmUtility(
+        harm: Harm,
+        target: BattleUnit.Dto,
+    ): Double {
+        val preventedDamage = bestDamage(target) * (1..harm.playerTurnsNegated).sumOf { turn -> PLAYER_TURN_DISCOUNT.pow(turn) }
+        val targetUtility = min(harm.damage + preventedDamage, target.remainingHealth.toDouble()) / target.remainingHealth
+        val othersUtility =
+            harm.damageToOthers.entries.sumOf { (battleUnitId, damage) ->
+                val other = searchBattleUnitById(id = battleUnitId) ?: return@sumOf 0.0
+                min(damage, other.remainingHealth.toDouble()) / other.remainingHealth
+            }
+        return targetUtility + othersUtility
+    }
+
+    private fun bestDamage(battleUnit: BattleUnit.Dto): Double =
+        battleUnit.knownAbilities.keys
+            .mapNotNull { abilityId -> searchAbilityById(abilityId) }
+            .maxOfOrNull { ability -> expectedAmount(effectsOf(ability), target = EffectTargetDto.Type.TARGETED_BATTLE_UNIT, outcome = TypeDto.DAMAGE) }
+            ?: 0.0
+
+    private fun adjacentAllies(battleUnit: BattleUnit.Dto): List<BattleUnit.Dto> {
+        val position = searchPosition(occupantId = battleUnit.id) ?: return emptyList()
+        return listOf(-1 to 0, 1 to 0, 0 to -1, 0 to 1)
+            .mapNotNull { (rowOffset, columnOffset) -> searchOccupant(row = position.row + rowOffset, column = position.column + columnOffset) }
+            .mapNotNull { occupantId -> searchBattleUnitById(id = occupantId) }
+            .filter { occupant -> occupant.playerId == battleUnit.playerId && occupant.remainingHealth > 0 }
+    }
+
+    private fun discountedDamage(effect: Effect.Dto): Double {
+        val amount = effect.outcome.damage?.damage ?: return 0.0
+        return when (effect.timing.type) {
+            TimingTypeDto.IMMEDIATELY -> amount.toDouble()
+            TimingTypeDto.ON_PLAYER_TURN_STARTED -> {
+                val turns = effect.timing.onPlayerTurnStarted?.duration ?: 0
+                (1..turns).sumOf { turn -> amount * PLAYER_TURN_DISCOUNT.pow(turn) }
+            }
+            else -> 0.0
+        }
     }
 
     private fun healUtility(
@@ -181,5 +304,7 @@ class WhatShouldCast(
 
     private companion object {
         const val PLAYER_TURN_DISCOUNT = 0.9
+        const val MAXIMUM_NESTING = 5
+        val HARMFUL_OUTCOMES = setOf(TypeDto.DAMAGE, TypeDto.NEGATE_ACTIONS, TypeDto.APPLY_IF_ONGOING, TypeDto.APPLY_EFFECT_TO_ADJACENT_ALLIES)
     }
 }

@@ -16,8 +16,14 @@ import com.mkz.tessavar.battleUnit.usecases.queries.WhereCanCast
 import com.mkz.tessavar.battleUnit.usecases.queries.WhereCanCast.CastGroup
 import com.mkz.tessavar.battlefield.domain.BattlefieldMother.battlefield
 import com.mkz.tessavar.cpuBattleBrain.usecases.queries.WhatShouldCast.CastDecision
+import com.mkz.tessavar.effect.domain.Effect
+import com.mkz.tessavar.effect.domain.EffectMother
+import com.mkz.tessavar.effect.domain.EffectMother.applyEffectToAdjacentAlliesEffect
+import com.mkz.tessavar.effect.domain.EffectMother.applyIfOngoingEffect
 import com.mkz.tessavar.effect.domain.EffectMother.damageEffect
 import com.mkz.tessavar.effect.domain.EffectMother.healEffect
+import com.mkz.tessavar.effect.domain.EffectMother.negateActionsEffect
+import com.mkz.tessavar.effect.domain.EffectMother.resistEffect
 import com.mkz.tessavar.effect.domain.EffectMother.summonEffect
 import com.mkz.tessavar.effect.domain.EffectMother.teleportEffect
 import com.mkz.tessavar.player.domain.Player.Dto.PlayerTypeDto.CPU
@@ -53,6 +59,25 @@ class WhatShouldCastTest {
     private val deployScarecrow =
         ability(id = "deploy-scarecrow", manaCost = 0, cooldown = 0, targeting = VACANT_TILE_ADJACENT_TO_CASTER, abilityEffects = listOf(abilityEffect("deploy-scarecrow", TARGETED_TILE)))
 
+    private val thunder =
+        ability(
+            id = "thunder",
+            manaCost = 0,
+            cooldown = 0,
+            targeting = ADJACENT_ENEMY,
+            abilityEffects = listOf(abilityEffect("stun", TARGETED_BATTLE_UNIT), abilityEffect("stun-long-if-soaked", TARGETED_BATTLE_UNIT)),
+        )
+    private val unaffordableThunder = ability(id = "thunder", manaCost = 100, cooldown = 0, targeting = ADJACENT_ENEMY, abilityEffects = thunder.toDto().abilityEffects)
+    private val splash = ability(id = "splash", manaCost = 0, cooldown = 0, targeting = ADJACENT_ENEMY, abilityEffects = listOf(abilityEffect("soak", TARGETED_BATTLE_UNIT)))
+    private val fireball =
+        ability(
+            id = "fireball",
+            manaCost = 0,
+            cooldown = 0,
+            targeting = ADJACENT_ENEMY,
+            abilityEffects = listOf(abilityEffect("burn", TARGETED_BATTLE_UNIT), abilityEffect("venom-spread-if-venom", TARGETED_BATTLE_UNIT)),
+        )
+
     private val unaffordableHeal = ability(id = "heal", manaCost = 100, cooldown = 0, targeting = TargetingDto.CASTER, abilityEffects = listOf(abilityEffect("heal", CASTER)))
 
     init {
@@ -63,6 +88,16 @@ class WhatShouldCastTest {
         queries.effectRepository.create(teleportEffect(id = "teleport"))
         queries.effectRepository.create(summonEffect(id = "deploy-bat", unitId = "bat"))
         queries.effectRepository.create(summonEffect(id = "deploy-scarecrow", unitId = "scarecrow"))
+        queries.effectRepository.create(negateActionsEffect(id = "stun", duration = 1))
+        queries.effectRepository.create(negateActionsEffect(id = "stun-long", duration = 2))
+        queries.effectRepository.create(applyIfOngoingEffect(id = "stun-long-if-soaked", effectId = "stun-long", ongoingEffectId = "soak"))
+        queries.effectRepository.create(resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2))
+        queries.effectRepository.create(damageEffect(id = "burn", damage = 4, timingType = "ON_PLAYER_TURN_STARTED"))
+        queries.effectRepository.create(Effect.create(applyEffectToAdjacentAlliesEffect(id = "venom-spread", effectId = "venom").toDto().copy(timing = EffectMother.immediatelyTiming())))
+        queries.effectRepository.create(applyIfOngoingEffect(id = "venom-spread-if-venom", effectId = "venom-spread", ongoingEffectId = "venom"))
+        queries.abilityRepository.create(bigSword)
+        queries.unitRepository.create(unit(id = "armed-knight", baseMaximumHealth = 100, startingAbilities = listOf("sword")))
+        queries.unitRepository.create(unit(id = "big-armed-knight", baseMaximumHealth = 100, startingAbilities = listOf("big-sword")))
         queries.abilityRepository.create(sword)
         queries.unitRepository.create(unit(id = "bat", maximumSteps = 2, startingAbilities = listOf("sword")))
         queries.unitRepository.create(unit(id = "scarecrow", maximumSteps = 2, startingAbilities = listOf("heal")))
@@ -105,6 +140,82 @@ class WhatShouldCastTest {
     ) {
         queries.battleUnitRepository.create(battleUnit(id = id, unit = knightUnit, player = human, remainingHealth = remainingHealth))
         place(id, position)
+    }
+
+    private fun givenArmedKnight(
+        id: String,
+        position: WhereCanCast.PositionDto,
+        unitId: String = "armed-knight",
+        ongoingEffectId: String? = null,
+    ) {
+        val knight = battleUnit(id = id, unit = queries.unitRepository.searchById(unitId)!!.toDto(), player = human)
+        val withOngoingEffect =
+            when (ongoingEffectId) {
+                null -> knight
+                "soak" -> knight.receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+                else -> knight.receiveOnPlayerTurnStartedEffect(effectId = ongoingEffectId, remainingDuration = 5)
+            }
+        queries.battleUnitRepository.create(withOngoingEffect.pullEvents().second)
+        place(id, position)
+    }
+
+    @Test
+    fun `should stun the soaked enemy when a dry enemy is also adjacent`() {
+        // Given
+        givenRat(remainingHealth = 20, abilities = listOf(thunder))
+        givenArmedKnight(id = "dry-knight", position = east)
+        givenArmedKnight(id = "soaked-knight", position = south, ongoingEffectId = "soak")
+        // When
+        val decision = whatShouldCast(ratId)
+        // Then
+        decision shouldBe CastDecision(abilityId = "thunder", castGroup = CastGroup(listOf(south)))
+    }
+
+    @Test
+    fun `should prefer the enemy with an ongoing venom when the fireball spreads it`() {
+        // Given
+        givenRat(remainingHealth = 20, abilities = listOf(fireball))
+        givenArmedKnight(id = "healthy-knight", position = east)
+        givenArmedKnight(id = "poisoned-knight", position = south, ongoingEffectId = "venom")
+        givenArmedKnight(id = "ally-knight", position = WhereCanCast.PositionDto(row = 2, column = 0))
+        // When
+        val decision = whatShouldCast(ratId)
+        // Then
+        decision shouldBe CastDecision(abilityId = "fireball", castGroup = CastGroup(listOf(south)))
+    }
+
+    @Test
+    fun `should soak the enemy when the caster knows thunder`() {
+        // Given
+        givenRat(remainingHealth = 20, abilities = listOf(splash, unaffordableThunder))
+        givenArmedKnight(id = "knight-1", position = east)
+        // When
+        val decision = whatShouldCast(ratId)
+        // Then
+        decision shouldBe CastDecision(abilityId = "splash", castGroup = CastGroup(listOf(east)))
+    }
+
+    @Test
+    fun `should not soak the enemy when the caster knows no follow up`() {
+        // Given
+        givenRat(remainingHealth = 20, abilities = listOf(splash))
+        givenArmedKnight(id = "knight-1", position = east)
+        // When
+        val decision = whatShouldCast(ratId)
+        // Then
+        decision.shouldBeNull()
+    }
+
+    @Test
+    fun `should stun the enemy whose best ability deals the most damage`() {
+        // Given
+        givenRat(remainingHealth = 20, abilities = listOf(thunder))
+        givenArmedKnight(id = "knight-1", position = east)
+        givenArmedKnight(id = "big-knight", position = south, unitId = "big-armed-knight")
+        // When
+        val decision = whatShouldCast(ratId)
+        // Then
+        decision shouldBe CastDecision(abilityId = "thunder", castGroup = CastGroup(listOf(south)))
     }
 
     @Test
