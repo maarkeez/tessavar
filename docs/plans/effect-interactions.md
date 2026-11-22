@@ -1,6 +1,6 @@
 # Plan: effects that interact: soak, burn, stun and venom
 
-> **Status:** to do.
+> **Status:** built on `main` up to M5, the screenshots of M5 still to be approved.
 >
 > **Summary:** Today an effect only does its own outcome, and no effect knows about another. E.g.: venom-strike's
 > `venom-damage` deals 3 damage on each of the target's next 5 player turns, whatever else the target has, and water
@@ -61,7 +61,7 @@ Each milestone is a few commits straight on `main`, green on CI, except M1, whic
 | M2 | Effect blocks      | Negate actions, apply if ongoing, resist and while ongoing work through `ApplyEffect`, adjacent allies works immediately, the stubs are gone, and saves are at version 12.                                    | ✅      | 1dfd134c |
 | M3 | Exploring second   | Every second of exploring triggers and counts down the ongoing effects of every battle unit on the battlefield: a venom left from a battle runs out while exploring.                                          | ✅      | 30318a5c |
 | M4 | Terrain lists      | Water soaks and lava deals its damage and burns, in battles and while exploring.                                                                                                                              | ✅      | 36bcec74 |
-| M5 | Bats and abilities | Splash, Fireball and Thunder, the water, fire and storm bats with their art, the new effect icons and the chosen display, in English and Spanish, can be placed in the world builder.                         | ⬜      |          |
+| M5 | Bats and abilities | Splash, Fireball and Thunder, the water, fire and storm bats with their art, the new effect icons and the chosen display, in English and Spanish, can be placed in the world builder.                         | ✅      | af8014b4 |
 | M6 | CPU battle brain   | A CPU storm bat stuns a soaked enemy over a dry one, a CPU water bat soaks an enemy when it knows Thunder, and a CPU fire bat targets an enemy with an ongoing venom.                                         | ⬜      |          |
 
 ### M1 commits
@@ -259,3 +259,13 @@ Each milestone is a few commits straight on `main`, green on CI, except M1, whic
   of a terrain changes. `TerrainEffectAcceptanceTest` keeps its stub terrains and gives sand two effects, a damage and
   a burn; the real water and lava are covered by `ExploringTerrainEffectAcceptanceTest` and, in a battle, by
   `EffectInteractionsAcceptanceTest` in M5.
+- **M5**: two commits instead of five, as the localization and ability info tests only pass with the effects, abilities,
+  sentences and words together; the first blinks a battle unit alongside the timeline when one of its ongoing effects
+  triggers while exploring, which M3 made happen every second. The sentences name each effect by a word in the
+  catalogs, `effect.<id>.verb`, `.name` and `.condition` (e.g.: "Burns: 4 damage each turn for 2 turns.", "If
+  soaked: stuns for 2 turns."), which `LocalizationResourcesTest` allows for every effect and `AbilityInfoResourcesTest`
+  requires for the ones the game's abilities show; venom's sentence now reads "Poisons" from `effect.venom-damage.verb`.
+  The **Screen / Cast preview › Conditional** story shows Thunder on one soaked enemy, as a cast preview has one row
+  per target, and keys the soaked enemy on the Thunder ability, as one more control would cover the actions. The cast
+  preview shows no row for the adjacent allies Fireball spreads the venom to. `EffectInteractionsAcceptanceTest` plays
+  them on CPU battle units with no ability, so a stunned one is the one with no cast left after the CPU's turn.
