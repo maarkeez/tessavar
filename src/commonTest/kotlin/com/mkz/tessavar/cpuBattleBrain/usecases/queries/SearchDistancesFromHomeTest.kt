@@ -16,8 +16,8 @@ class SearchDistancesFromHomeTest {
 
     init {
         queries.terrainRepository.create(terrainThatCanBeOccupied(id = "sand"))
-        queries.terrainRepository.create(terrainThatCanBeOccupied(id = "lava", effectId = "effect-lava"))
-        queries.terrainRepository.create(terrainThatCanBeOccupied(id = "water", effectId = "effect-water"))
+        queries.terrainRepository.create(terrainThatCanBeOccupied(id = "lava", effectIds = listOf("effect-lava")))
+        queries.terrainRepository.create(terrainThatCanBeOccupied(id = "water", effectIds = listOf("effect-water")))
         queries.effectRepository.create(damageEffect(id = "effect-lava", damage = 10))
         queries.effectRepository.create(healEffect(id = "effect-water", healing = 10))
     }

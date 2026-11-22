@@ -10,7 +10,6 @@ import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldNotBeEmpty
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import korlibs.io.file.std.MemoryVfsMix
@@ -58,7 +57,7 @@ class ResourcesTerrainLoaderTest {
             // When
             val terrains = loader.loadTerrains()
             // Then
-            terrains.shouldContainExactly(Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = setOf("sand"), effectId = null))
+            terrains.shouldContainExactly(Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = setOf("sand"), effectIds = emptyList()))
         }
 
     @Test
@@ -191,20 +190,20 @@ class ResourcesTerrainLoaderTest {
         }
 
     @Test
-    fun `LoadTerrains should load the effect id when the terrain definition contains an effect id`() =
+    fun `Loader should read the effect ids of lava in order`() =
         runTest {
             // Given
-            val terrainRoot = MemoryVfsMix("terrain/swamp.toml" to "canBeOccupied = true\neffectId = \"swamp-effect\"")["terrain"]
+            val terrainRoot = MemoryVfsMix("terrain/lava.toml" to "canBeOccupied = true\neffectIds = [\"lava-damage\", \"burn\"]")["terrain"]
             val loader = ResourcesTerrainLoader(terrainRoot = terrainRoot)
             loader.initResources()
             // When
             val terrains = loader.loadTerrains()
             // Then
-            terrains.first { it.id == "swamp" }.effectId shouldBe "swamp-effect"
+            terrains.first { it.id == "lava" }.effectIds.shouldContainExactly("lava-damage", "burn")
         }
 
     @Test
-    fun `LoadTerrains should load no effect id when the terrain definition does not contain an effect id`() =
+    fun `LoadTerrains should load no effect ids when the terrain definition does not contain any`() =
         runTest {
             // Given
             val terrainRoot = MemoryVfsMix("terrain/sand.toml" to "canBeOccupied = true")["terrain"]
@@ -213,7 +212,7 @@ class ResourcesTerrainLoaderTest {
             // When
             val terrains = loader.loadTerrains()
             // Then
-            terrains.first { it.id == "sand" }.effectId.shouldBeNull()
+            terrains.first { it.id == "sand" }.effectIds.shouldBeEmpty()
         }
 
     @Test

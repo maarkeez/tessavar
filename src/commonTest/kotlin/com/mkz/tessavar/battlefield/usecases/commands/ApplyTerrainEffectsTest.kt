@@ -30,7 +30,7 @@ class ApplyTerrainEffectsTest {
         // Given
         val occupiedBattlefield = battlefield().occupy(1, 1, "battle-unit-1").pullEvents().second
         battlefieldRepository.create(occupiedBattlefield)
-        terrainRepository.create(terrainThatCanBeOccupied(id = "sand", effectId = "effect-1"))
+        terrainRepository.create(terrainThatCanBeOccupied(id = "sand", effectIds = listOf("effect-1")))
         // When
         applyTerrainEffects(occupantIds = setOf("battle-unit-1", "battle-unit-2"))
         // Then
@@ -57,7 +57,7 @@ class ApplyTerrainEffectsTest {
                 .pullEvents()
                 .second
         battlefieldRepository.create(occupiedBattlefield)
-        terrainRepository.create(terrainThatCanBeOccupied(id = "sand", effectId = "effect-1"))
+        terrainRepository.create(terrainThatCanBeOccupied(id = "sand", effectIds = listOf("effect-1")))
         // When
         applyTerrainEffects(occupantIds = setOf("battle-unit-1", "battle-unit-2"))
         // Then
@@ -93,7 +93,7 @@ class ApplyTerrainEffectsTest {
                 .pullEvents()
                 .second
         battlefieldRepository.create(occupiedBattlefield)
-        terrainRepository.create(terrainThatCanBeOccupied(id = "sand", effectId = "effect-1"))
+        terrainRepository.create(terrainThatCanBeOccupied(id = "sand", effectIds = listOf("effect-1")))
         // When
         applyTerrainEffects(occupantIds = setOf("battle-unit-1", "battle-unit-2"))
         // Then
@@ -114,7 +114,7 @@ class ApplyTerrainEffectsTest {
     fun `should not apply terrain effects when the battlefield has no occupant`() {
         // Given
         battlefieldRepository.create(battlefield())
-        terrainRepository.create(terrainThatCanBeOccupied(id = "sand", effectId = "effect-1"))
+        terrainRepository.create(terrainThatCanBeOccupied(id = "sand", effectIds = listOf("effect-1")))
         // When
         applyTerrainEffects(occupantIds = setOf("battle-unit-1", "battle-unit-2"))
         // Then

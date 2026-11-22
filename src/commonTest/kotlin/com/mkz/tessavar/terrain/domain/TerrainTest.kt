@@ -5,7 +5,6 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldNotBeEmpty
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
@@ -23,32 +22,32 @@ class TerrainTest {
                     id = id,
                     canBeOccupied = canBeOccupied,
                     transitionsTo = transitionsTo,
-                    effectId = null,
+                    effectIds = emptyList(),
                 ),
             )
         // Then
-        terrain.toDto() shouldBe Terrain.Dto(id = id, canBeOccupied = canBeOccupied, transitionsTo = transitionsTo, effectId = null)
+        terrain.toDto() shouldBe Terrain.Dto(id = id, canBeOccupied = canBeOccupied, transitionsTo = transitionsTo, effectIds = emptyList())
     }
 
     @Test
-    fun `Create should create terrain with the effect id when the dto contains an effect id`() {
+    fun `Terrain should hold every effect id when it has several`() {
         // Given
-        val id = "swamp"
-        val effectId = "swamp-effect"
+        val id = "lava"
+        val effectIds = listOf("lava-damage", "burn")
         // When
-        val terrain = Terrain.create(Terrain.Dto(id = id, canBeOccupied = true, transitionsTo = emptySet(), effectId = effectId))
+        val terrain = Terrain.create(Terrain.Dto(id = id, canBeOccupied = true, transitionsTo = emptySet(), effectIds = effectIds))
         // Then
-        terrain.toDto().effectId shouldBe effectId
+        terrain.toDto().effectIds.shouldContainExactly("lava-damage", "burn")
     }
 
     @Test
-    fun `Create should create terrain without an effect id when the dto does not contain an effect id`() {
+    fun `Create should create terrain without effect ids when the dto does not contain any`() {
         // Given
         val id = "sand"
         // When
-        val terrain = Terrain.create(Terrain.Dto(id = id, canBeOccupied = true, transitionsTo = emptySet(), effectId = null))
+        val terrain = Terrain.create(Terrain.Dto(id = id, canBeOccupied = true, transitionsTo = emptySet(), effectIds = emptyList()))
         // Then
-        terrain.toDto().effectId.shouldBeNull()
+        terrain.toDto().effectIds.shouldBeEmpty()
     }
 
     @Test
@@ -56,7 +55,7 @@ class TerrainTest {
         // Given
         val id = "sand"
         // When
-        val terrain = Terrain.create(Terrain.Dto(id = id, canBeOccupied = true, transitionsTo = emptySet(), effectId = null))
+        val terrain = Terrain.create(Terrain.Dto(id = id, canBeOccupied = true, transitionsTo = emptySet(), effectIds = emptyList()))
         val (events, _) = terrain.pullEvents()
         // Then
         events.shouldContainExactly(TerrainEvent.TerrainCreated(terrainId = id))
@@ -99,17 +98,17 @@ class TerrainTest {
         // When
         val dto = terrain.toDto()
         // Then
-        dto shouldBe Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = setOf("void"), effectId = null)
+        dto shouldBe Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = setOf("void"), effectIds = emptyList())
     }
 
     @Test
     fun `ToDto should expose the effect id when the terrain has an effect assigned`() {
         // Given
-        val terrain = Terrain.create(Terrain.Dto(id = "swamp", canBeOccupied = true, transitionsTo = emptySet(), effectId = "swamp-effect"))
+        val terrain = Terrain.create(Terrain.Dto(id = "swamp", canBeOccupied = true, transitionsTo = emptySet(), effectIds = listOf("swamp-effect")))
         // When
         val dto = terrain.toDto()
         // Then
-        dto.effectId shouldBe "swamp-effect"
+        dto.effectIds.shouldContainExactly("swamp-effect")
     }
 
     @Test

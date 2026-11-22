@@ -26,8 +26,8 @@ class InitialiseTerrainsTest {
                 FakeTerrainLoader(
                     terrains =
                         listOf(
-                            Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = setOf("sand", "void"), effectId = null),
-                            Terrain.Dto(id = "void", canBeOccupied = false, transitionsTo = setOf("void", "sand"), effectId = null),
+                            Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = setOf("sand", "void"), effectIds = emptyList()),
+                            Terrain.Dto(id = "void", canBeOccupied = false, transitionsTo = setOf("void", "sand"), effectIds = emptyList()),
                         ),
                 ),
                 terrainRepository,
@@ -36,8 +36,8 @@ class InitialiseTerrainsTest {
         // When
         initialiseTerrains()
         // Then
-        terrainRepository.searchById("sand")?.toDto() shouldBe Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = setOf("sand", "void"), effectId = null)
-        terrainRepository.searchById("void")?.toDto() shouldBe Terrain.Dto(id = "void", canBeOccupied = false, transitionsTo = setOf("void", "sand"), effectId = null)
+        terrainRepository.searchById("sand")?.toDto() shouldBe Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = setOf("sand", "void"), effectIds = emptyList())
+        terrainRepository.searchById("void")?.toDto() shouldBe Terrain.Dto(id = "void", canBeOccupied = false, transitionsTo = setOf("void", "sand"), effectIds = emptyList())
     }
 
     @Test
@@ -48,8 +48,8 @@ class InitialiseTerrainsTest {
                 FakeTerrainLoader(
                     terrains =
                         listOf(
-                            Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = emptySet(), effectId = null),
-                            Terrain.Dto(id = "void", canBeOccupied = false, transitionsTo = emptySet(), effectId = null),
+                            Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = emptySet(), effectIds = emptyList()),
+                            Terrain.Dto(id = "void", canBeOccupied = false, transitionsTo = emptySet(), effectIds = emptyList()),
                         ),
                 ),
                 terrainRepository,
@@ -69,7 +69,7 @@ class InitialiseTerrainsTest {
         // Given
         terrainRepository.create(terrainThatCanBeOccupied(id = "sand"))
         val initialiseTerrains =
-            InitialiseTerrains(FakeTerrainLoader(terrains = listOf(Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = emptySet(), effectId = null))), terrainRepository, eventBus)
+            InitialiseTerrains(FakeTerrainLoader(terrains = listOf(Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = emptySet(), effectIds = emptyList()))), terrainRepository, eventBus)
         // When
         val result = runCatching { initialiseTerrains() }
         // Then

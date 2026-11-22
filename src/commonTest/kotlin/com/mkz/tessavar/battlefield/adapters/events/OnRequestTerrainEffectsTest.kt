@@ -30,7 +30,7 @@ class OnRequestTerrainEffectsTest {
     fun `should apply the terrain effect for the requested occupants only when it is requested`() {
         // Given
         battlefieldRepository.create(battlefield("K L", occupants = mapOf('K' to "knight-1", 'L' to "knight-2")))
-        terrainRepository.create(terrainThatCanBeOccupied(id = "sand", effectId = "effect-1"))
+        terrainRepository.create(terrainThatCanBeOccupied(id = "sand", effectIds = listOf("effect-1")))
         eventBus.publish(BattlefieldEvent.RequestTerrainEffects(occupantIds = setOf("knight-2")))
         // When
         eventBus.dispatch()

@@ -26,6 +26,8 @@ import com.mkz.tessavar.terrain.domain.Terrain
 import com.mkz.tessavar.terrain.usecases.services.TerrainLoader
 import com.mkz.tessavar.unit.adapters.presentation.UnitApi
 import com.mkz.tessavar.unit.domain.UnitMother
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
@@ -38,13 +40,14 @@ class TerrainEffectAcceptanceTest {
 
     private val eventBus = InMemoryEventBus()
     private val terrainEffectId = "terrain-effect"
+    private val burnEffectId = "terrain-burn"
     private val terrainApi =
         TerrainApi(
             eventBus,
             StubTerrainLoader(
                 listOf(
-                    Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = setOf("forest"), effectId = terrainEffectId),
-                    Terrain.Dto(id = "forest", canBeOccupied = true, transitionsTo = setOf("sand"), effectId = null),
+                    Terrain.Dto(id = "sand", canBeOccupied = true, transitionsTo = setOf("forest"), effectIds = listOf(terrainEffectId, burnEffectId)),
+                    Terrain.Dto(id = "forest", canBeOccupied = true, transitionsTo = setOf("sand"), effectIds = emptyList()),
                 ),
             ),
         )
@@ -74,6 +77,7 @@ class TerrainEffectAcceptanceTest {
 
         val terrainEffect = EffectMother.damageEffect(id = terrainEffectId, damage = 7, timingType = "IMMEDIATELY")
         effectApi.requestEffectCreation(terrainEffect.toDto())
+        effectApi.requestEffectCreation(EffectMother.damageEffect(id = burnEffectId, damage = 4, timingType = "ON_PLAYER_TURN_STARTED").toDto())
 
         val tiles =
             List(8) { row ->
@@ -128,7 +132,7 @@ class TerrainEffectAcceptanceTest {
     }
 
     @Test
-    fun `should apply the terrain effect to the occupants of the terrain tiles when a new round starts`() =
+    fun `should apply every effect of the terrain to the occupants of its tiles when a new round starts`() =
         scenarioTest(::setUp) {
             // Given
             battleApi.searchBattle()!!.currentRound shouldBe 1
@@ -145,5 +149,13 @@ class TerrainEffectAcceptanceTest {
             battleUnitApi.searchBattleUnitById(sandBattleUnitId)!!.remainingHealth shouldBe 13
             battleUnitApi.searchBattleUnitById(secondSandBattleUnitId)!!.remainingHealth shouldBe 33
             battleUnitApi.searchBattleUnitById(forestBattleUnitId)!!.remainingHealth shouldBe 30
+            battleUnitApi
+                .searchBattleUnitById(sandBattleUnitId)!!
+                .ongoingEffects.onPlayerTurnStarted
+                .shouldContainExactly(burnEffectId)
+            battleUnitApi
+                .searchBattleUnitById(forestBattleUnitId)!!
+                .ongoingEffects.onPlayerTurnStarted
+                .shouldBeEmpty()
         }
 }

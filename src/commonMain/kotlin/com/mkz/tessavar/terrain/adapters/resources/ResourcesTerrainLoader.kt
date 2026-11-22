@@ -32,7 +32,7 @@ class ResourcesTerrainLoader(
                     id = terrainId,
                     canBeOccupied = definition.canBeOccupied,
                     transitionsTo = transitionsTo(terrainId),
-                    effectId = definition.effectId,
+                    effectIds = definition.effectIds,
                 )
             }
     }
@@ -71,7 +71,7 @@ class ResourcesTerrainLoader(
     @Serializable
     data class TerrainDefinition(
         val canBeOccupied: Boolean,
-        val effectId: String? = null,
+        val effectIds: List<String> = emptyList(),
     )
 
     private companion object {

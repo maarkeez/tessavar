@@ -22,9 +22,8 @@ class ApplyTerrainEffects(
                 .values
                 .map { it.terrainId }
                 .distinct()
-                .associateWith { terrainId -> searchTerrainById(terrainId)?.effectId }
-                .filterValues { it != null }
-                .mapValues { it.value!! }
+                .associateWith { terrainId -> searchTerrainById(terrainId)?.effectIds.orEmpty() }
+                .filterValues { effectIds -> effectIds.isNotEmpty() }
         val terrainEffects =
             battlefield
                 .terrainEffectsOnOccupants(terrainEffectIds)

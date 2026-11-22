@@ -526,7 +526,7 @@ class BattlefieldTest {
                 .occupy(row = 0, column = 0, occupantId = "battle-unit-1")
                 .occupy(row = 2, column = 1, occupantId = "battle-unit-2")
         // When
-        val result = battlefield.terrainEffectsOnOccupants(terrainEffectIds = mapOf("sand" to "effect-1"))
+        val result = battlefield.terrainEffectsOnOccupants(terrainEffectIds = mapOf("sand" to listOf("effect-1")))
         // Then
         result.shouldContainExactly(
             Battlefield.Dto.TerrainEffectOnOccupantDto(occupantId = "battle-unit-1", terrainId = "sand", effectId = "effect-1"),
@@ -535,11 +535,24 @@ class BattlefieldTest {
     }
 
     @Test
+    fun `Terrain effects on occupants should list one entry per effect of the terrain`() {
+        // Given
+        val battlefield = BattlefieldMother.battlefield().occupy(row = 0, column = 0, occupantId = "battle-unit-1")
+        // When
+        val result = battlefield.terrainEffectsOnOccupants(terrainEffectIds = mapOf("sand" to listOf("lava-damage", "burn")))
+        // Then
+        result.shouldContainExactly(
+            Battlefield.Dto.TerrainEffectOnOccupantDto(occupantId = "battle-unit-1", terrainId = "sand", effectId = "lava-damage"),
+            Battlefield.Dto.TerrainEffectOnOccupantDto(occupantId = "battle-unit-1", terrainId = "sand", effectId = "burn"),
+        )
+    }
+
+    @Test
     fun `TerrainEffectsOnOccupants should not return a terrain effect when the tile is vacant`() {
         // Given
         val battlefield = BattlefieldMother.battlefield()
         // When
-        val result = battlefield.terrainEffectsOnOccupants(terrainEffectIds = mapOf("sand" to "effect-1"))
+        val result = battlefield.terrainEffectsOnOccupants(terrainEffectIds = mapOf("sand" to listOf("effect-1")))
         // Then
         result.shouldBeEmpty()
     }
@@ -564,7 +577,7 @@ class BattlefieldTest {
                 .occupy(row = 0, column = 0, occupantId = "battle-unit-1")
                 .occupy(row = 0, column = 1, occupantId = "battle-unit-2")
         // When
-        val result = battlefield.terrainEffectsOnOccupants(terrainEffectIds = mapOf("sand" to "effect-1"))
+        val result = battlefield.terrainEffectsOnOccupants(terrainEffectIds = mapOf("sand" to listOf("effect-1")))
         // Then
         result.shouldContainExactly(
             Battlefield.Dto.TerrainEffectOnOccupantDto(occupantId = "battle-unit-1", terrainId = "sand", effectId = "effect-1"),

@@ -122,7 +122,7 @@ data class Battlefield private constructor(
         column: Int,
     ): String? = tiles.occupant(row, column)
 
-    fun terrainEffectsOnOccupants(terrainEffectIds: Map<String, String>): List<Dto.TerrainEffectOnOccupantDto> = tiles.terrainEffectsOnOccupants(terrainEffectIds)
+    fun terrainEffectsOnOccupants(terrainEffectIds: Map<String, List<String>>): List<Dto.TerrainEffectOnOccupantDto> = tiles.terrainEffectsOnOccupants(terrainEffectIds)
 
     fun position(occupantId: String): PositionDto? = tiles.position(occupantId)
 
@@ -261,20 +261,18 @@ data class Battlefield private constructor(
             column: Int,
         ): String? = tiles[Position(row = row, column = column)]?.terrainIdValue()
 
-        fun terrainEffectsOnOccupants(terrainEffectIds: Map<String, String>): List<Dto.TerrainEffectOnOccupantDto> =
+        fun terrainEffectsOnOccupants(terrainEffectIds: Map<String, List<String>>): List<Dto.TerrainEffectOnOccupantDto> =
             tiles.values
                 .sortedWith(compareBy({ it.row() }, { it.column() }))
-                .mapNotNull { tile ->
+                .flatMap { tile ->
                     val terrainId = tile.terrainIdValue()
-                    val occupantId = tile.occupantId()
-                    if (occupantId != null && terrainId in terrainEffectIds) {
+                    val occupantId = tile.occupantId() ?: return@flatMap emptyList()
+                    terrainEffectIds[terrainId].orEmpty().map { effectId ->
                         Dto.TerrainEffectOnOccupantDto(
                             occupantId = occupantId,
                             terrainId = terrainId,
-                            effectId = terrainEffectIds.getValue(terrainId),
+                            effectId = effectId,
                         )
-                    } else {
-                        null
                     }
                 }
 

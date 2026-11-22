@@ -16,12 +16,15 @@ class SearchTerrainHealthEffect(
         column: Int,
     ): Int {
         val terrainId = searchTerrainId(row = row, column = column) ?: return 0
-        val effectId = searchTerrainById(terrainId)?.effectId ?: return 0
-        val effect = searchEffectById(effectId) ?: return 0
-        return when (effect.outcome.type) {
-            HEAL -> effect.outcome.heal!!.healing
-            DAMAGE -> -effect.outcome.damage!!.damage
-            else -> 0
-        }
+        val effectIds = searchTerrainById(terrainId)?.effectIds.orEmpty()
+        return effectIds
+            .mapNotNull { effectId -> searchEffectById(effectId) }
+            .sumOf { effect ->
+                when (effect.outcome.type) {
+                    HEAL -> effect.outcome.heal!!.healing
+                    DAMAGE -> -effect.outcome.damage!!.damage
+                    else -> 0
+                }
+            }
     }
 }

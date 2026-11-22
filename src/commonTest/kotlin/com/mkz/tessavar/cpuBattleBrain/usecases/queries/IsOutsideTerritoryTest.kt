@@ -14,7 +14,7 @@ class IsOutsideTerritoryTest {
 
     init {
         queries.terrainRepository.create(terrainThatCanBeOccupied(id = "sand"))
-        queries.terrainRepository.create(terrainThatCanBeOccupied(id = "lava", effectId = "effect-lava"))
+        queries.terrainRepository.create(terrainThatCanBeOccupied(id = "lava", effectIds = listOf("effect-lava")))
         queries.effectRepository.create(damageEffect(id = "effect-lava", damage = 10))
     }
 

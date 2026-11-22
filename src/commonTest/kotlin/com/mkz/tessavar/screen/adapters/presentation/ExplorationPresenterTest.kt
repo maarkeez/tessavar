@@ -349,7 +349,7 @@ class ExplorationPresenterTest {
 
     private fun partyOnWaterApis() =
         SubdomainApis(
-            terrains = listOf(terrainThatCanBeOccupied(id = "sand", transitionsTo = setOf("water")).toDto(), terrainThatCanBeOccupied(id = "water", effectId = "water-heal").toDto()),
+            terrains = listOf(terrainThatCanBeOccupied(id = "sand", transitionsTo = setOf("water")).toDto(), terrainThatCanBeOccupied(id = "water", effectIds = listOf("water-heal")).toDto()),
             effects = listOf(healEffect(id = "water-heal").toDto()),
             units = listOf(unit(id = "hero").toDto()),
             players = listOf(player(id = "human", type = HUMAN).toDto(), player(id = "cpu", type = CPU).toDto()),

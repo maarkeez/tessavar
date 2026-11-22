@@ -1,2 +1,2 @@
 canBeOccupied = true
-effectId = "water-heal"
+effectIds = ["water-heal"]

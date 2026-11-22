@@ -43,8 +43,8 @@ class WhereShouldWanderTest {
     private fun terrains() =
         listOf(
             terrainThatCanBeOccupied(id = "sand"),
-            terrainThatCanBeOccupied(id = "lava", effectId = "effect-lava"),
-            terrainThatCanBeOccupied(id = "water", effectId = "effect-water"),
+            terrainThatCanBeOccupied(id = "lava", effectIds = listOf("effect-lava")),
+            terrainThatCanBeOccupied(id = "water", effectIds = listOf("effect-water")),
         )
 
     private fun givenBattleUnits(

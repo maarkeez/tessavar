@@ -39,7 +39,7 @@ class WhereShouldWalkTest {
         effect: Effect? = null,
     ) {
         effect?.let(queries.effectRepository::create)
-        queries.terrainRepository.create(terrainThatCanBeOccupied(id = id, effectId = effect?.toDto()?.id))
+        queries.terrainRepository.create(terrainThatCanBeOccupied(id = id, effectIds = listOfNotNull(effect?.toDto()?.id)))
     }
 
     private fun givenBattlefieldRow(
