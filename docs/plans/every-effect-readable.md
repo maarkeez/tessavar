@@ -1,6 +1,6 @@
 # Plan: every effect readable: stacks at 0 through their last player turn, and equipped effect icons
 
-> **Status:** to do.
+> **Status:** built on `main` up to M1, the screenshots of M1 still to be approved.
 >
 > **Summary:** Today a stack ends the moment its remaining duration counts down to 0, at the start of its recipient's
 > player turn, so the effect icon is gone for the whole last turn the effect shapes. E.g.: a CPU water bat soaks the hero
@@ -60,7 +60,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 
 | #  | Milestone             | Done when                                                                                                                                          | Status | Done in |
 |----|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
-| M1 | Stacks at 0           | A stunned or soaked battle unit shows its effect icon at 0 and "Ends this turn" through its last player turn, approved on Storybook screenshots.   | ⬜      |         |
+| M1 | Stacks at 0           | A stunned or soaked battle unit shows its effect icon at 0 and "Ends this turn" through its last player turn, approved on Storybook screenshots.   | ✅      | 5627f5a0 |
 | M2 | Equipped effect icons | The battle unit info shows an effect icon and an effect info for every equipped effect, in English and Spanish, approved on Storybook screenshots. | ⬜      |         |
 
 ### M1 commits
@@ -189,3 +189,22 @@ Each new key gets a `UiMessage` and a translator comment, as the effect info's o
 - An equipped effect's info does not say which item gives it; the inventory does.
 - A stack at 0 counts as ongoing through its recipient's own player turn. Should an ability one day be cast on an ally
   with apply if ongoing, the spent stack would still meet it.
+
+## Changes while building
+
+- `EndStacksAtZero` is a command use case with a single `invoke()`, as `CommandUseCaseArchitectureTest` asks, not
+  `ofPlayer` and `ofEveryBattleUnit`: it ends the stacks at 0 of every battle unit, both when a player turn finishes and
+  when the battle finishes, which is the same, as only the battle units whose player turn is finishing hold any. Its
+  tests are `should end the stacks at 0 of every battle unit` and `should keep the stacks with a remaining duration
+  left`, and the fix is its own commit (5627f5a0).
+- `OngoingEffects.nextOnPlayerTurnStartedIndex` skips a stack at 0, so a stack that is somehow still at 0 when a player
+  turn starts is never triggered again, with `TriggerOnPlayerTurnStartedEffects should not trigger a stack at 0 when the
+  next player turn starts before it ended` in `BattleUnitTest`.
+- The `BattleUnitTest`s that play two player turns in a row on a battle unit now call `endStacksAtZero()` between them,
+  as the player turn finishing does, and the ones that expected a stack gone after its last trigger in a battle expect
+  it at 0: `TriggerOnPlayerTurnStartedEffects should reduce the health and keep the stack at 0 when the effect damages
+  for its last player turn in a battle` and `TriggerOnPlayerTurnStartedEffects should remove the on player turn started
+  effect when its player turn finishes after its last trigger` replace the two that said "remove".
+- **Screen / Effect**'s `remainingDuration` control goes from -1, for none, as 0 now draws a 0. **Screen / Effect info**
+  gains an `ending` control (`boolean`), which puts its shortest stack at 0, used by **Stun ending**.
+- `EffectInfoViewTest` also checks "Termina este turno" in Spanish.
