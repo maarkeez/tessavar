@@ -5,6 +5,7 @@ import com.mkz.tessavar.battleUnit.domain.BattleUnitMother.battleUnit
 import com.mkz.tessavar.battleUnit.usecases.commands.ReplenishMana
 import com.mkz.tessavar.battleUnit.usecases.commands.ResetBattleUnitActionsAndReduceCooldowns
 import com.mkz.tessavar.battleUnit.usecases.commands.TriggerOnPlayerTurnStartedEffects
+import com.mkz.tessavar.battleUnit.usecases.services.OngoingEffectsTrigger
 import com.mkz.tessavar.battlefield.domain.Battlefield.Dto.PositionDto
 import com.mkz.tessavar.battlefield.domain.BattlefieldMother.battlefield
 import com.mkz.tessavar.effect.domain.EffectMother.damageEffect
@@ -23,11 +24,9 @@ class OnPlayerTurnStartedTest {
             resetBattleUnitActionsAndReduceCooldowns = ResetBattleUnitActionsAndReduceCooldowns(queries.battleUnitRepository),
             triggerOnPlayerTurnStartedEffects =
                 TriggerOnPlayerTurnStartedEffects(
-                    searchEffectById = queries.searchEffectById,
                     searchBattleUnitsByPlayerId = queries.searchBattleUnitsByPlayerId,
                     battleUnitRepository = queries.battleUnitRepository,
-                    searchPosition = queries.searchPosition,
-                    eventBus = eventBus,
+                    ongoingEffectsTrigger = OngoingEffectsTrigger(queries.searchEffectById, queries.battleUnitRepository, queries.searchPosition, eventBus),
                 ),
             replenishMana = ReplenishMana(queries.battleUnitRepository),
             eventBus = eventBus,

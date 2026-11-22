@@ -16,6 +16,7 @@ import com.mkz.tessavar.battleUnit.adapters.events.OnRequestRecoverBattleUnits
 import com.mkz.tessavar.battleUnit.adapters.events.OnRequestRemoveEquippedEffects
 import com.mkz.tessavar.battleUnit.adapters.events.OnRequestRespawnBattleUnit
 import com.mkz.tessavar.battleUnit.adapters.events.OnRequestSwapBattleUnits
+import com.mkz.tessavar.battleUnit.adapters.events.OnRequestTriggerOngoingEffects
 import com.mkz.tessavar.battleUnit.adapters.events.OnRequestWalkBattleUnitInBattle
 import com.mkz.tessavar.battleUnit.adapters.events.OnRequestWalkBattleUnitOutOfBattle
 import com.mkz.tessavar.battleUnit.adapters.events.OnTerrainEffectApplied
@@ -39,6 +40,7 @@ import com.mkz.tessavar.battleUnit.usecases.commands.RespawnBattleUnit
 import com.mkz.tessavar.battleUnit.usecases.commands.SwapBattleUnits
 import com.mkz.tessavar.battleUnit.usecases.commands.TriggerOnDefeatedEffects
 import com.mkz.tessavar.battleUnit.usecases.commands.TriggerOnPlayerTurnStartedEffects
+import com.mkz.tessavar.battleUnit.usecases.commands.TriggerOngoingEffectsWhileExploring
 import com.mkz.tessavar.battleUnit.usecases.commands.VanishSummons
 import com.mkz.tessavar.battleUnit.usecases.commands.WalkBattleUnitInBattle
 import com.mkz.tessavar.battleUnit.usecases.commands.WalkBattleUnitOutOfBattle
@@ -58,6 +60,7 @@ import com.mkz.tessavar.battleUnit.usecases.services.AdjacentAllies
 import com.mkz.tessavar.battleUnit.usecases.services.BattleUnitDeployment
 import com.mkz.tessavar.battleUnit.usecases.services.BattleUnitLoader
 import com.mkz.tessavar.battleUnit.usecases.services.CastResolution
+import com.mkz.tessavar.battleUnit.usecases.services.OngoingEffectsTrigger
 import com.mkz.tessavar.battlefield.adapters.presentation.BattlefieldApi
 import com.mkz.tessavar.effect.adapters.presentation.EffectApi
 import com.mkz.tessavar.player.adapters.presentation.PlayerApi
@@ -209,14 +212,9 @@ class BattleUnitApi(
             eventBus,
         )
     val searchBattleUnitsByPlayerId = SearchBattleUnitsByPlayerId(battleUnitRepository)
-    val triggerOnPlayerTurnStartedEffects =
-        TriggerOnPlayerTurnStartedEffects(
-            effectApi.searchEffectById,
-            searchBattleUnitsByPlayerId,
-            battleUnitRepository,
-            battlefieldApi.searchPosition,
-            eventBus,
-        )
+    private val ongoingEffectsTrigger = OngoingEffectsTrigger(effectApi.searchEffectById, battleUnitRepository, battlefieldApi.searchPosition, eventBus)
+    val triggerOnPlayerTurnStartedEffects = TriggerOnPlayerTurnStartedEffects(searchBattleUnitsByPlayerId, battleUnitRepository, ongoingEffectsTrigger)
+    private val triggerOngoingEffectsWhileExploring = TriggerOngoingEffectsWhileExploring(battleUnitRepository, ongoingEffectsTrigger)
     val replenishMana = ReplenishMana(battleUnitRepository)
     val recoverBattleUnits = RecoverBattleUnits(battleUnitRepository)
     val respawnBattleUnit = RespawnBattleUnit(battleUnitRepository, unitApi.searchUnitById, battlefieldApi.isTileVacant, eventBus)
@@ -242,6 +240,7 @@ class BattleUnitApi(
     private val onRequestDeployBattleUnit = OnRequestDeployBattleUnit(deployBattleUnit, eventBus)
     private val onRequestInitialiseBattleUnits = OnRequestInitialiseBattleUnits(initialiseBattleUnits, eventBus)
     private val onRequestApplyEffect = OnRequestApplyEffect(applyEffect, eventBus)
+    private val onRequestTriggerOngoingEffects = OnRequestTriggerOngoingEffects(triggerOngoingEffectsWhileExploring, eventBus)
     private val onRequestRemoveEquippedEffects = OnRequestRemoveEquippedEffects(removeEquippedEffects, eventBus)
     private val onTerrainEffectApplied = OnTerrainEffectApplied(applyEffect, eventBus)
 

@@ -2,16 +2,12 @@ package com.mkz.tessavar.battleUnit.usecases.commands
 
 import com.mkz.tessavar.battleUnit.domain.BattleUnitRepository
 import com.mkz.tessavar.battleUnit.usecases.queries.SearchBattleUnitsByPlayerId
-import com.mkz.tessavar.battlefield.usecases.queries.SearchPosition
-import com.mkz.tessavar.effect.usecases.queries.SearchEffectById
-import com.mkz.tessavar.shared.domain.EventBus
+import com.mkz.tessavar.battleUnit.usecases.services.OngoingEffectsTrigger
 
 class TriggerOnPlayerTurnStartedEffects(
-    private val searchEffectById: SearchEffectById,
     private val searchBattleUnitsByPlayerId: SearchBattleUnitsByPlayerId,
     private val battleUnitRepository: BattleUnitRepository,
-    private val searchPosition: SearchPosition,
-    private val eventBus: EventBus,
+    private val ongoingEffectsTrigger: OngoingEffectsTrigger,
 ) {
     operator fun invoke(
         playerId: String,
@@ -21,24 +17,6 @@ class TriggerOnPlayerTurnStartedEffects(
             searchBattleUnitsByPlayerId(playerId)
                 .filter { battleUnit -> battleUnit.id in battleUnitIds }
                 .map { battleUnit -> battleUnitRepository.searchById(battleUnit.id)!! }
-        battleUnits
-            .filter { battleUnit -> battleUnit.hasEffectsCountedDownOnPlayerTurnStarted() }
-            .forEach { battleUnit ->
-                val ongoingEffects = battleUnit.toDto().ongoingEffects
-                val effects =
-                    (ongoingEffects.onPlayerTurnStarted + ongoingEffects.whileOngoing)
-                        .distinct()
-                        .map { effectId -> searchEffectById(effectId)!! }
-                val position = searchPosition(occupantId = battleUnit.toDto().id)!!
-                val (events, updatedBattleUnit) =
-                    battleUnit
-                        .triggerOnPlayerTurnStartedEffects(
-                            effects = effects,
-                            currentRow = position.row,
-                            currentColumn = position.column,
-                        ).pullEvents()
-                battleUnitRepository.update(updatedBattleUnit)
-                eventBus.publish(events)
-            }
+        ongoingEffectsTrigger.trigger(battleUnits, inBattle = true)
     }
 }

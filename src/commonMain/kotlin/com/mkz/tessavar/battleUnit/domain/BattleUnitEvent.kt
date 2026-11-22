@@ -60,6 +60,10 @@ sealed interface BattleUnitEvent : DomainEvent {
         val application: Effect.Dto.EffectApplicationDto,
     ) : BattleUnitEvent
 
+    data class RequestTriggerOngoingEffects(
+        val battleUnitIds: Set<String>,
+    ) : BattleUnitEvent
+
     data class RequestRemoveEquippedEffects(
         val battleUnitId: String,
         val lootableItemId: String,

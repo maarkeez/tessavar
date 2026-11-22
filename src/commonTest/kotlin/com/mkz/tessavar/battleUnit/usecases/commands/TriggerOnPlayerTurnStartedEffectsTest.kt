@@ -2,8 +2,10 @@ package com.mkz.tessavar.battleUnit.usecases.commands
 
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent
 import com.mkz.tessavar.battleUnit.domain.BattleUnitMother.battleUnit
+import com.mkz.tessavar.battleUnit.usecases.services.OngoingEffectsTrigger
 import com.mkz.tessavar.battlefield.domain.BattlefieldMother.battlefield
 import com.mkz.tessavar.effect.domain.EffectMother.damageEffect
+import com.mkz.tessavar.effect.domain.EffectMother.negateActionsEffect
 import com.mkz.tessavar.effect.domain.EffectMother.resistEffect
 import com.mkz.tessavar.player.domain.PlayerMother.player
 import com.mkz.tessavar.shared.domain.FakeEventBus
@@ -19,14 +21,14 @@ class TriggerOnPlayerTurnStartedEffectsTest {
     private val queries = InMemoryQueries()
     private val battleUnitRepository = queries.battleUnitRepository
     private val eventBus = FakeEventBus()
+    private val ongoingEffectsTrigger = OngoingEffectsTrigger(queries.searchEffectById, battleUnitRepository, queries.searchPosition, eventBus)
     private val triggerOnPlayerTurnStartedEffects =
         TriggerOnPlayerTurnStartedEffects(
-            searchEffectById = queries.searchEffectById,
             searchBattleUnitsByPlayerId = queries.searchBattleUnitsByPlayerId,
             battleUnitRepository = battleUnitRepository,
-            searchPosition = queries.searchPosition,
-            eventBus = eventBus,
+            ongoingEffectsTrigger = ongoingEffectsTrigger,
         )
+    private val triggerOngoingEffectsWhileExploring = TriggerOngoingEffectsWhileExploring(battleUnitRepository, ongoingEffectsTrigger)
 
     @Test
     fun `should trigger the on player turn started effect when the battle unit has one`() {
@@ -93,6 +95,33 @@ class TriggerOnPlayerTurnStartedEffectsTest {
         triggerOnPlayerTurnStartedEffects("player-1", setOf("knight-1"))
         // Then
         battleUnitRepository.searchById("knight-1")!!.toDto().remainingHealth shouldBe 8
+    }
+
+    @Test
+    fun `Trigger while exploring should trigger the ongoing effects of every player's battle units, without negating actions`() {
+        // Given
+        queries.effectRepository.create(damageEffect(id = "venom-damage", damage = 3, timingType = "ON_PLAYER_TURN_STARTED"))
+        queries.effectRepository.create(negateActionsEffect(id = "stun", duration = 1))
+        val knight =
+            battleUnit(id = "knight-1", unit = unit(baseMaximumHealth = 10).toDto(), player = player(id = "human").toDto())
+                .receiveOnPlayerTurnStartedEffect(effectId = "venom-damage", remainingDuration = 2)
+                .pullEvents()
+                .second
+        val rat =
+            battleUnit(id = "rat-1", player = player(id = "cpu").toDto())
+                .receiveOnPlayerTurnStartedEffect(effectId = "stun", remainingDuration = 1)
+                .pullEvents()
+                .second
+        battleUnitRepository.create(knight)
+        battleUnitRepository.create(rat)
+        queries.battlefieldRepository.create(battlefield("K R", occupants = mapOf('K' to "knight-1", 'R' to "rat-1")))
+        // When
+        triggerOngoingEffectsWhileExploring(setOf("knight-1", "rat-1"))
+        // Then
+        battleUnitRepository.searchById("knight-1")!!.toDto().remainingHealth shouldBe 7
+        val storedRat = battleUnitRepository.searchById("rat-1")!!.toDto()
+        storedRat.remainingActions shouldBe rat.toDto().remainingActions
+        storedRat.ongoingEffects.onPlayerTurnStarted.shouldBeEmpty()
     }
 
     @Test
