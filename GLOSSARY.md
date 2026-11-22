@@ -1123,6 +1123,11 @@ The part of the HUD showing the selected battle unit: its portrait, name, health
 effects and abilities.
 _Avoid_: Unit info
 
+**Effect info**:
+What an ongoing effect of the selected battle unit does and how long each of its stacks has left, shown when the
+player taps its icon in the battle unit info.
+_Avoid_: Effect tooltip, effect description
+
 **Inventory button**:
 The chest that opens the inventory of the selected party member.
 _Avoid_: Bag
