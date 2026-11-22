@@ -34,6 +34,8 @@ class LocalizationResourcesTest {
             "unit" to listOf("name"),
         )
 
+    private val effectWords: List<String> = listOf("verb", "name", "condition")
+
     private val drawnCharacters: Set<Int> = CharacterSet.LATIN_ALL.codePoints.toSet() + '\n'.code
 
     private val placeholder = Regex("""\{([A-Za-z][A-Za-z0-9]*)\}""")
@@ -89,7 +91,8 @@ class LocalizationResourcesTest {
     @Test
     fun `should only have the keys the screen translates in the source catalog`() =
         runTest {
-            val keys = UiMessage.entries.map(UiMessage::key).toSet() + Localization.LANGUAGE_NAME_KEY + gameDataKeys() + worldQuestTexts().keys + npcOwnLineKeys()
+            val keys =
+                UiMessage.entries.map(UiMessage::key).toSet() + Localization.LANGUAGE_NAME_KEY + gameDataKeys() + effectWordKeys() + worldQuestTexts().keys + npcOwnLineKeys()
             val orphans = sourceCatalog.entries.map { entry -> entry.context ?: entry.id }.filter { key -> key !in keys }
             withClue("Entries of $SOURCE_FILE_NAME the screen does not translate, or without msgctxt: $orphans") { orphans.shouldBeEmpty() }
         }
@@ -144,6 +147,13 @@ class LocalizationResourcesTest {
                 .distinct()
         withClue("Characters the font does not draw: $undrawn") { undrawn.shouldBeEmpty() }
     }
+
+    private suspend fun effectWordKeys(): Set<String> =
+        ResourcesBundle.root["effect"]
+            .listNames()
+            .filter { fileName -> fileName.endsWith(".toml") }
+            .flatMap { fileName -> effectWords.map { word -> "effect.${fileName.removeSuffix(".toml")}.$word" } }
+            .toSet()
 
     private suspend fun gameDataKeys(): Set<String> =
         gameDataFields

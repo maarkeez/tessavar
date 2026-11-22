@@ -1,0 +1,6 @@
+[outcome]
+type = "NEGATE_ACTIONS"
+
+[timing]
+type = "ON_PLAYER_TURN_STARTED"
+duration = 2

@@ -141,6 +141,7 @@ class BattleUnitApi(
             abilityApi.searchAbilityById,
             effectApi.searchEffectById,
             castResolution,
+            battleUnitRepository,
         )
     val previewCastRemainingHealth =
         PreviewCastRemainingHealth(

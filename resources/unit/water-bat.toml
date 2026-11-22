@@ -1,0 +1,4 @@
+baseMaximumHealth = 10
+baseMaximumMana = 20
+maximumSteps = 5
+startingAbilities = ["splash"]

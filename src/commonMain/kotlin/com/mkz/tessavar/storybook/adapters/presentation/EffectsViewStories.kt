@@ -13,7 +13,8 @@ object EffectsViewStories : StoryBinding {
     private const val EFFECTS = "effects"
     private const val NEW_EFFECTS = "newEffects"
 
-    private val some = StoryDto(id = "screen-effects--some", name = "Some", description = "A few effects of a battle unit, one icon each.", args = emptyMap())
+    private val some =
+        StoryDto(id = "screen-effects--some", name = "Some", description = "A few effects of a battle unit, one icon each: burn, soak, stun, a longer stun and venom.", args = emptyMap())
     private val none = StoryDto(id = "screen-effects--none", name = "None", description = "A battle unit with no effect: nothing is drawn.", args = mapOf(EFFECTS to ValueDto.int(0)))
     private val withNewEffects =
         StoryDto(
@@ -37,7 +38,7 @@ object EffectsViewStories : StoryBinding {
             title = "Effects",
             description = "The row of effect icons of a battle unit, in its info and in the previews, followed by the effects an ability cast would apply.",
             controls = listOf(ControlDto.int(EFFECTS, minimum = 0, maximum = EFFECTS_LIMIT), ControlDto.int(NEW_EFFECTS, minimum = 0, maximum = EFFECTS_LIMIT)),
-            args = mapOf(EFFECTS to ValueDto.int(3), NEW_EFFECTS to ValueDto.int(0)),
+            args = mapOf(EFFECTS to ValueDto.int(5), NEW_EFFECTS to ValueDto.int(0)),
             stories = listOf(some, none, withNewEffects, overflow),
         )
 

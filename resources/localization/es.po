@@ -950,12 +950,12 @@ msgctxt "ui.abilityInfo.effect.damage"
 msgid "Deals {damage} damage."
 msgstr "Inflige {damage} de daño."
 
-#. {damage}: the health points the target loses at the start of each of its turns. {turns}: how many turns.
+#. {verb}: what the effect does, e.g.: Poisons. {damage}: the health points the target loses at the start of each of its turns. {turns}: how many turns.
 msgctxt "ui.abilityInfo.effect.damageOnPlayerTurnStarted"
-msgid "Poisons: {damage} damage each turn for {turns} turn."
-msgid_plural "Poisons: {damage} damage each turn for {turns} turns."
-msgstr[0] "Envenena: {damage} de daño por turno durante {turns} turno."
-msgstr[1] "Envenena: {damage} de daño por turno durante {turns} turnos."
+msgid "{verb}: {damage} damage each turn for {turns} turn."
+msgid_plural "{verb}: {damage} damage each turn for {turns} turns."
+msgstr[0] "{verb}: {damage} de daño por turno durante {turns} turno."
+msgstr[1] "{verb}: {damage} de daño por turno durante {turns} turnos."
 
 #. {heal}: the health points the caster recovers.
 msgctxt "ui.abilityInfo.effect.healCaster"
@@ -985,6 +985,32 @@ msgid "When defeated: poisons its adjacent allies ({damage} damage each turn for
 msgid_plural "When defeated: poisons its adjacent allies ({damage} damage each turn for {turns} turns)."
 msgstr[0] "Al ser derrotado: envenena a sus aliados adyacentes ({damage} de daño por turno durante {turns} turno)."
 msgstr[1] "Al ser derrotado: envenena a sus aliados adyacentes ({damage} de daño por turno durante {turns} turnos)."
+
+#. {verb}: what the effect does, e.g.: Poisons. {damage}: the health points each ally next to the target loses at the start of each of its turns. {turns}: how many turns.
+msgctxt "ui.abilityInfo.effect.damageAdjacentAllies"
+msgid "{verb} its adjacent allies ({damage} damage each turn for {turns} turn)."
+msgid_plural "{verb} its adjacent allies ({damage} damage each turn for {turns} turns)."
+msgstr[0] "{verb} a sus aliados adyacentes ({damage} de daño por turno durante {turns} turno)."
+msgstr[1] "{verb} a sus aliados adyacentes ({damage} de daño por turno durante {turns} turnos)."
+
+#. {verb}: what the effect does, e.g.: Stuns. {turns}: how many of the target's turns it can not move nor cast.
+msgctxt "ui.abilityInfo.effect.negateActions"
+msgid "{verb} for {turns} turn."
+msgid_plural "{verb} for {turns} turns."
+msgstr[0] "{verb} durante {turns} turno."
+msgstr[1] "{verb} durante {turns} turnos."
+
+#. {verb}: what the effect does, e.g.: Soaks. {share}: the share of the damage the target no longer takes. {effect}: the effect whose damage it takes less of, e.g.: burn. {turns}: how many turns.
+msgctxt "ui.abilityInfo.effect.resist"
+msgid "{verb}: {share}% less damage from {effect} for {turns} turn."
+msgid_plural "{verb}: {share}% less damage from {effect} for {turns} turns."
+msgstr[0] "{verb}: {share}% menos de daño por {effect} durante {turns} turno."
+msgstr[1] "{verb}: {share}% menos de daño por {effect} durante {turns} turnos."
+
+#. An effect applied only when the target already has another one. {condition}: what the target must be, e.g.: soaked. {effect}: what happens then, e.g.: stuns for 2 turns.
+msgctxt "ui.abilityInfo.effect.ifOngoing"
+msgid "If {condition}: {effect}"
+msgstr "Si está {condition}: {effect}"
 
 #. A caption of the steps a battle unit has left this turn, before its points.
 msgctxt "ui.hud.move"
@@ -1107,6 +1133,46 @@ msgstr "MISIÓN COMPLETADA"
 
 # Game data: the names of resources/ability/<id>.toml, lootableItem, npc, player, terrain and unit, and the own lines of the npcs.
 
+#. The effect a resist lessens the damage of, e.g.: "50% less damage from {effect}".
+msgctxt "effect.burn.name"
+msgid "burn"
+msgstr "quemadura"
+
+#. What the effect does to its target, e.g.: "{verb}: 4 damage each turn for 2 turns."
+msgctxt "effect.burn.verb"
+msgid "Burns"
+msgstr "Quema"
+
+#. What a target with this effect is, e.g.: "If {condition}: stuns for 2 turns."
+msgctxt "effect.soak.condition"
+msgid "soaked"
+msgstr "empapado"
+
+#. What the effect does to its target, e.g.: "{verb}: 50% less damage from burn for 2 turns."
+msgctxt "effect.soak.verb"
+msgid "Soaks"
+msgstr "Empapa"
+
+#. What the effect does to its target, e.g.: "{verb} for 1 turn."
+msgctxt "effect.stun.verb"
+msgid "Stuns"
+msgstr "Aturde"
+
+#. What the effect does to its target, e.g.: "{verb} for 2 turns."
+msgctxt "effect.stun-long.verb"
+msgid "Stuns"
+msgstr "Aturde"
+
+#. What a target with this effect is, e.g.: "If {condition}: poisons its adjacent allies."
+msgctxt "effect.venom-damage.condition"
+msgid "poisoned"
+msgstr "envenenado"
+
+#. What the effect does to its target, e.g.: "{verb}: 3 damage each turn for 5 turns."
+msgctxt "effect.venom-damage.verb"
+msgid "Poisons"
+msgstr "Envenena"
+
 msgctxt "ability.bat.name"
 msgid "Bat"
 msgstr "Murciélago"
@@ -1118,6 +1184,10 @@ msgstr "Abeja"
 msgctxt "ability.cleave.name"
 msgid "Cleave"
 msgstr "Tajo"
+
+msgctxt "ability.fireball.name"
+msgid "Fireball"
+msgstr "Bola de fuego"
 
 msgctxt "ability.heal.name"
 msgid "Heal"
@@ -1139,6 +1209,10 @@ msgctxt "ability.skull.name"
 msgid "Skull"
 msgstr "Calavera"
 
+msgctxt "ability.splash.name"
+msgid "Splash"
+msgstr "Salpicadura"
+
 msgctxt "ability.sword.name"
 msgid "Sword"
 msgstr "Espada"
@@ -1146,6 +1220,10 @@ msgstr "Espada"
 msgctxt "ability.teleport.name"
 msgid "Teleport"
 msgstr "Teletransporte"
+
+msgctxt "ability.thunder.name"
+msgid "Thunder"
+msgstr "Trueno"
 
 msgctxt "ability.venom-strike.name"
 msgid "Venom Strike"
@@ -1422,6 +1500,10 @@ msgctxt "unit.bee.name"
 msgid "Bee"
 msgstr "Abeja"
 
+msgctxt "unit.fire-bat.name"
+msgid "Fire Bat"
+msgstr "Murciélago de fuego"
+
 msgctxt "unit.goat-wizard.name"
 msgid "Goat Wizard"
 msgstr "Mago Cabra"
@@ -1438,6 +1520,15 @@ msgctxt "unit.rat.name"
 msgid "Rat"
 msgstr "Rata"
 
+msgctxt "unit.storm-bat.name"
+msgid "Storm Bat"
+msgstr "Murciélago de tormenta"
+
 msgctxt "unit.viking-warrior.name"
 msgid "Viking"
 msgstr "Vikingo"
+
+msgctxt "unit.water-bat.name"
+msgid "Water Bat"
+msgstr "Murciélago de agua"
+

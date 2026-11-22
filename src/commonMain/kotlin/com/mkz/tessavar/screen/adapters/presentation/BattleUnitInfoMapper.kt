@@ -14,7 +14,7 @@ internal object BattleUnitInfoMapper {
             maximumHealth = battleUnit.maximumHealth,
             remainingMana = battleUnit.remainingMana,
             maximumMana = battleUnit.maximumMana,
-            effectIds = battleUnit.ongoingEffects.onPlayerTurnStarted + battleUnit.ongoingEffects.onDefeatedEffects,
+            effectIds = battleUnit.ongoingEffects.onPlayerTurnStarted + battleUnit.ongoingEffects.whileOngoing + battleUnit.ongoingEffects.onDefeatedEffects,
             isHumanPlayers = isHumanPlayers,
         )
 

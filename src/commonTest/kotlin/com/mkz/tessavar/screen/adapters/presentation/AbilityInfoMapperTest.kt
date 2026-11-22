@@ -9,9 +9,13 @@ import com.mkz.tessavar.ability.domain.Ability.Dto.TargetingDto
 import com.mkz.tessavar.ability.domain.AbilityMother.ability
 import com.mkz.tessavar.ability.domain.AbilityMother.abilityEffect
 import com.mkz.tessavar.effect.domain.Effect
+import com.mkz.tessavar.effect.domain.EffectMother
 import com.mkz.tessavar.effect.domain.EffectMother.applyEffectToAdjacentAlliesEffect
+import com.mkz.tessavar.effect.domain.EffectMother.applyIfOngoingEffect
 import com.mkz.tessavar.effect.domain.EffectMother.damageEffect
 import com.mkz.tessavar.effect.domain.EffectMother.healEffect
+import com.mkz.tessavar.effect.domain.EffectMother.negateActionsEffect
+import com.mkz.tessavar.effect.domain.EffectMother.resistEffect
 import com.mkz.tessavar.effect.domain.EffectMother.restoreManaEffect
 import com.mkz.tessavar.effect.domain.EffectMother.summonEffect
 import com.mkz.tessavar.screen.adapters.presentation.AbilityInfoView.AbilityInfo
@@ -66,7 +70,7 @@ class AbilityInfoMapperTest {
         // When
         val abilityInfo = abilityInfo(mushroom, venom)
         // Then
-        abilityInfo.effects shouldBe listOf(AbilityInfo.Effect.DamageOnPlayerTurnStarted(damage = 3, turns = 5))
+        abilityInfo.effects shouldBe listOf(AbilityInfo.Effect.DamageOnPlayerTurnStarted(effectId = "venom-damage", damage = 3, turns = 5))
     }
 
     @Test
@@ -102,6 +106,49 @@ class AbilityInfoMapperTest {
         val abilityInfo = abilityInfo(skull, venom, venomOnDeath)
         // Then
         abilityInfo.effects shouldBe listOf(AbilityInfo.Effect.OnDefeatedDamageAdjacentAllies(damage = 3, turns = 5))
+    }
+
+    @Test
+    fun `AbilityInfoMapper should map thunder to a stun and a longer stun if the target is soaked`() {
+        // Given
+        val stun = negateActionsEffect(id = "stun", duration = 1).toDto()
+        val stunLong = negateActionsEffect(id = "stun-long", duration = 2).toDto()
+        val stunLongIfSoaked = applyIfOngoingEffect(id = "stun-long-if-soaked", effectId = "stun-long", ongoingEffectId = "soak").toDto()
+        val thunder =
+            ability(targeting = TargetingDto.ADJACENT_ENEMY, abilityEffects = listOf(abilityEffect("stun", TARGETED_BATTLE_UNIT), abilityEffect("stun-long-if-soaked", TARGETED_BATTLE_UNIT))).toDto()
+        // When
+        val abilityInfo = abilityInfo(thunder, stun, stunLong, stunLongIfSoaked)
+        // Then
+        abilityInfo.effects shouldBe
+            listOf(
+                AbilityInfo.Effect.NegateActions(effectId = "stun", turns = 1),
+                AbilityInfo.Effect.IfOngoing(ongoingEffectId = "soak", effect = AbilityInfo.Effect.NegateActions(effectId = "stun-long", turns = 2)),
+            )
+    }
+
+    @Test
+    fun `AbilityInfoMapper should map splash to a resist of burn`() {
+        // Given
+        val soak = resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2).toDto()
+        val splash = ability(targeting = TargetingDto.ADJACENT_ENEMY, abilityEffects = listOf(abilityEffect("soak", TARGETED_BATTLE_UNIT))).toDto()
+        // When
+        val abilityInfo = abilityInfo(splash, soak)
+        // Then
+        abilityInfo.effects shouldBe listOf(AbilityInfo.Effect.Resist(effectId = "soak", resistedEffectId = "burn", share = 50, turns = 2))
+    }
+
+    @Test
+    fun `AbilityInfoMapper should map fireball's spread of venom to a damage of the adjacent allies if the target is poisoned`() {
+        // Given
+        val venom = damageEffect(id = "venom-damage", damage = 3, timingType = "ON_PLAYER_TURN_STARTED").toDto()
+        val venomSpread = applyEffectToAdjacentAlliesEffect(id = "venom-spread", effectId = "venom-damage").toDto().copy(timing = EffectMother.immediatelyTiming())
+        val venomSpreadIfVenom = applyIfOngoingEffect(id = "venom-spread-if-venom", effectId = "venom-spread", ongoingEffectId = "venom-damage").toDto()
+        val fireball = ability(targeting = TargetingDto.ADJACENT_ENEMY, abilityEffects = listOf(abilityEffect("venom-spread-if-venom", TARGETED_BATTLE_UNIT))).toDto()
+        // When
+        val abilityInfo = abilityInfo(fireball, venom, venomSpread, venomSpreadIfVenom)
+        // Then
+        abilityInfo.effects shouldBe
+            listOf(AbilityInfo.Effect.IfOngoing(ongoingEffectId = "venom-damage", effect = AbilityInfo.Effect.DamageAdjacentAllies(effectId = "venom-damage", damage = 3, turns = 5)))
     }
 
     @Test

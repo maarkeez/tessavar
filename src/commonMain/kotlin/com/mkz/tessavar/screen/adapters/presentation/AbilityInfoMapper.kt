@@ -10,6 +10,8 @@ import com.mkz.tessavar.screen.adapters.presentation.AbilityInfoView.AbilityInfo
 import com.mkz.tessavar.unit.domain.Unit
 
 internal object AbilityInfoMapper {
+    private const val MAXIMUM_NESTING = 5
+
     fun abilityInfo(
         ability: Ability.Dto,
         searchEffect: (String) -> Effect.Dto?,
@@ -50,8 +52,10 @@ internal object AbilityInfoMapper {
         abilityEffect: Ability.Dto.AbilityEffectDto,
         searchEffect: (String) -> Effect.Dto?,
         searchUnit: (String) -> Unit.Dto?,
+        effectId: String = abilityEffect.effectId,
+        nesting: Int = 0,
     ): AbilityInfo.Effect {
-        val effect = searchEffect(abilityEffect.effectId) ?: error("The ability '${ability.id}' has the effect '${abilityEffect.effectId}', which does not exist")
+        val effect = searchEffect(effectId) ?: error("The ability '${ability.id}' has the effect '$effectId', which does not exist")
         val outcome = effect.outcome
         val timing = effect.timing
 
@@ -64,7 +68,7 @@ internal object AbilityInfoMapper {
             outcome.type == EffectOutcomeDto.TypeDto.DAMAGE && timing.type == TimingTypeDto.IMMEDIATELY ->
                 AbilityInfo.Effect.Damage(damage = outcome.damage!!.damage)
             outcome.type == EffectOutcomeDto.TypeDto.DAMAGE && timing.type == TimingTypeDto.ON_PLAYER_TURN_STARTED ->
-                AbilityInfo.Effect.DamageOnPlayerTurnStarted(damage = outcome.damage!!.damage, turns = timing.onPlayerTurnStarted!!.duration)
+                AbilityInfo.Effect.DamageOnPlayerTurnStarted(effectId = effect.id, damage = outcome.damage!!.damage, turns = timing.onPlayerTurnStarted!!.duration)
             outcome.type == EffectOutcomeDto.TypeDto.HEAL && timing.type == TimingTypeDto.IMMEDIATELY ->
                 when (abilityEffect.target.type) {
                     EffectTargetDto.Type.CASTER -> AbilityInfo.Effect.HealCaster(healing = outcome.heal!!.healing)
@@ -84,6 +88,25 @@ internal object AbilityInfoMapper {
                 val isDamageOnPlayerTurnStarted = nestedEffect.outcome.type == EffectOutcomeDto.TypeDto.DAMAGE && nestedEffect.timing.type == TimingTypeDto.ON_PLAYER_TURN_STARTED
                 if (!isDamageOnPlayerTurnStarted) noSentence()
                 AbilityInfo.Effect.OnDefeatedDamageAdjacentAllies(damage = nestedEffect.outcome.damage!!.damage, turns = nestedEffect.timing.onPlayerTurnStarted!!.duration)
+            }
+            outcome.type == EffectOutcomeDto.TypeDto.APPLY_EFFECT_TO_ADJACENT_ALLIES && timing.type == TimingTypeDto.IMMEDIATELY -> {
+                val nestedEffectId = outcome.applyEffectToAdjacentAllies!!.effectId
+                val nestedEffect = searchEffect(nestedEffectId) ?: error("The effect '${effect.id}' applies the effect '$nestedEffectId', which does not exist")
+                val isDamageOnPlayerTurnStarted = nestedEffect.outcome.type == EffectOutcomeDto.TypeDto.DAMAGE && nestedEffect.timing.type == TimingTypeDto.ON_PLAYER_TURN_STARTED
+                if (!isDamageOnPlayerTurnStarted) noSentence()
+                AbilityInfo.Effect.DamageAdjacentAllies(effectId = nestedEffectId, damage = nestedEffect.outcome.damage!!.damage, turns = nestedEffect.timing.onPlayerTurnStarted!!.duration)
+            }
+            outcome.type == EffectOutcomeDto.TypeDto.NEGATE_ACTIONS && timing.type == TimingTypeDto.ON_PLAYER_TURN_STARTED ->
+                AbilityInfo.Effect.NegateActions(effectId = effect.id, turns = timing.onPlayerTurnStarted!!.duration)
+            outcome.type == EffectOutcomeDto.TypeDto.RESIST && timing.type == TimingTypeDto.WHILE_ONGOING ->
+                AbilityInfo.Effect.Resist(effectId = effect.id, resistedEffectId = outcome.resist!!.effectId, share = outcome.resist.share, turns = timing.whileOngoing!!.duration)
+            outcome.type == EffectOutcomeDto.TypeDto.APPLY_IF_ONGOING && timing.type == TimingTypeDto.IMMEDIATELY -> {
+                if (nesting >= MAXIMUM_NESTING) noSentence()
+                val applyIfOngoing = outcome.applyIfOngoing!!
+                AbilityInfo.Effect.IfOngoing(
+                    ongoingEffectId = applyIfOngoing.ongoingEffectId,
+                    effect = effect(ability, abilityEffect, searchEffect, searchUnit, effectId = applyIfOngoing.effectId, nesting = nesting + 1),
+                )
             }
             else -> noSentence()
         }

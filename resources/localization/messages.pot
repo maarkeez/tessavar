@@ -944,10 +944,10 @@ msgctxt "ui.abilityInfo.effect.damage"
 msgid "Deals {damage} damage."
 msgstr ""
 
-#. {damage}: the health points the target loses at the start of each of its turns. {turns}: how many turns.
+#. {verb}: what the effect does, e.g.: Poisons. {damage}: the health points the target loses at the start of each of its turns. {turns}: how many turns.
 msgctxt "ui.abilityInfo.effect.damageOnPlayerTurnStarted"
-msgid "Poisons: {damage} damage each turn for {turns} turn."
-msgid_plural "Poisons: {damage} damage each turn for {turns} turns."
+msgid "{verb}: {damage} damage each turn for {turns} turn."
+msgid_plural "{verb}: {damage} damage each turn for {turns} turns."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -979,6 +979,32 @@ msgid "When defeated: poisons its adjacent allies ({damage} damage each turn for
 msgid_plural "When defeated: poisons its adjacent allies ({damage} damage each turn for {turns} turns)."
 msgstr[0] ""
 msgstr[1] ""
+
+#. {verb}: what the effect does, e.g.: Poisons. {damage}: the health points each ally next to the target loses at the start of each of its turns. {turns}: how many turns.
+msgctxt "ui.abilityInfo.effect.damageAdjacentAllies"
+msgid "{verb} its adjacent allies ({damage} damage each turn for {turns} turn)."
+msgid_plural "{verb} its adjacent allies ({damage} damage each turn for {turns} turns)."
+msgstr[0] ""
+msgstr[1] ""
+
+#. {verb}: what the effect does, e.g.: Stuns. {turns}: how many of the target's turns it can not move nor cast.
+msgctxt "ui.abilityInfo.effect.negateActions"
+msgid "{verb} for {turns} turn."
+msgid_plural "{verb} for {turns} turns."
+msgstr[0] ""
+msgstr[1] ""
+
+#. {verb}: what the effect does, e.g.: Soaks. {share}: the share of the damage the target no longer takes. {effect}: the effect whose damage it takes less of, e.g.: burn. {turns}: how many turns.
+msgctxt "ui.abilityInfo.effect.resist"
+msgid "{verb}: {share}% less damage from {effect} for {turns} turn."
+msgid_plural "{verb}: {share}% less damage from {effect} for {turns} turns."
+msgstr[0] ""
+msgstr[1] ""
+
+#. An effect applied only when the target already has another one. {condition}: what the target must be, e.g.: soaked. {effect}: what happens then, e.g.: stuns for 2 turns.
+msgctxt "ui.abilityInfo.effect.ifOngoing"
+msgid "If {condition}: {effect}"
+msgstr ""
 
 #. A caption of the steps a battle unit has left this turn, before its points.
 msgctxt "ui.hud.move"
@@ -1101,6 +1127,46 @@ msgstr ""
 
 # Game data: the names of resources/ability/<id>.toml, lootableItem, npc, player, terrain and unit, and the own lines of the npcs.
 
+#. The effect a resist lessens the damage of, e.g.: "50% less damage from {effect}".
+msgctxt "effect.burn.name"
+msgid "burn"
+msgstr ""
+
+#. What the effect does to its target, e.g.: "{verb}: 4 damage each turn for 2 turns."
+msgctxt "effect.burn.verb"
+msgid "Burns"
+msgstr ""
+
+#. What a target with this effect is, e.g.: "If {condition}: stuns for 2 turns."
+msgctxt "effect.soak.condition"
+msgid "soaked"
+msgstr ""
+
+#. What the effect does to its target, e.g.: "{verb}: 50% less damage from burn for 2 turns."
+msgctxt "effect.soak.verb"
+msgid "Soaks"
+msgstr ""
+
+#. What the effect does to its target, e.g.: "{verb} for 1 turn."
+msgctxt "effect.stun.verb"
+msgid "Stuns"
+msgstr ""
+
+#. What the effect does to its target, e.g.: "{verb} for 2 turns."
+msgctxt "effect.stun-long.verb"
+msgid "Stuns"
+msgstr ""
+
+#. What a target with this effect is, e.g.: "If {condition}: poisons its adjacent allies."
+msgctxt "effect.venom-damage.condition"
+msgid "poisoned"
+msgstr ""
+
+#. What the effect does to its target, e.g.: "{verb}: 3 damage each turn for 5 turns."
+msgctxt "effect.venom-damage.verb"
+msgid "Poisons"
+msgstr ""
+
 msgctxt "ability.bat.name"
 msgid "Bat"
 msgstr ""
@@ -1111,6 +1177,10 @@ msgstr ""
 
 msgctxt "ability.cleave.name"
 msgid "Cleave"
+msgstr ""
+
+msgctxt "ability.fireball.name"
+msgid "Fireball"
 msgstr ""
 
 msgctxt "ability.heal.name"
@@ -1133,12 +1203,20 @@ msgctxt "ability.skull.name"
 msgid "Skull"
 msgstr ""
 
+msgctxt "ability.splash.name"
+msgid "Splash"
+msgstr ""
+
 msgctxt "ability.sword.name"
 msgid "Sword"
 msgstr ""
 
 msgctxt "ability.teleport.name"
 msgid "Teleport"
+msgstr ""
+
+msgctxt "ability.thunder.name"
+msgid "Thunder"
 msgstr ""
 
 msgctxt "ability.venom-strike.name"
@@ -1416,6 +1494,10 @@ msgctxt "unit.bee.name"
 msgid "Bee"
 msgstr ""
 
+msgctxt "unit.fire-bat.name"
+msgid "Fire Bat"
+msgstr ""
+
 msgctxt "unit.goat-wizard.name"
 msgid "Goat Wizard"
 msgstr ""
@@ -1432,6 +1514,15 @@ msgctxt "unit.rat.name"
 msgid "Rat"
 msgstr ""
 
+msgctxt "unit.storm-bat.name"
+msgid "Storm Bat"
+msgstr ""
+
 msgctxt "unit.viking-warrior.name"
 msgid "Viking"
 msgstr ""
+
+msgctxt "unit.water-bat.name"
+msgid "Water Bat"
+msgstr ""
+

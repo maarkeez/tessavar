@@ -1,0 +1,7 @@
+[outcome]
+type = "APPLY_IF_ONGOING"
+effectId = "venom-spread"
+ongoingEffectId = "venom-damage"
+
+[timing]
+type = "IMMEDIATELY"

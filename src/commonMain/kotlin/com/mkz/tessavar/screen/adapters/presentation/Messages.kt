@@ -25,6 +25,12 @@ class Messages(
 
     fun abilityName(abilityId: String): String = localizationApi.translate("ability.$abilityId.name")
 
+    fun effectVerb(effectId: String): String = localizationApi.translate("effect.$effectId.verb")
+
+    fun effectName(effectId: String): String = localizationApi.translate("effect.$effectId.name")
+
+    fun effectCondition(effectId: String): String = localizationApi.translate("effect.$effectId.condition")
+
     fun lootableItemName(lootableItemId: String): String = localizationApi.translate("lootableItem.$lootableItemId.name")
 
     fun npcName(npcId: String): String = localizationApi.translate("npc.$npcId.name")

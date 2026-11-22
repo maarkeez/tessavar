@@ -11,7 +11,10 @@ import com.mkz.tessavar.battlefield.domain.Battlefield.Dto.PositionDto
 import com.mkz.tessavar.battlefield.domain.BattlefieldMother.battlefield
 import com.mkz.tessavar.effect.domain.Effect
 import com.mkz.tessavar.effect.domain.EffectMother.applyEffectToAdjacentAlliesEffect
+import com.mkz.tessavar.effect.domain.EffectMother.applyIfOngoingEffect
 import com.mkz.tessavar.effect.domain.EffectMother.damageEffect
+import com.mkz.tessavar.effect.domain.EffectMother.negateActionsEffect
+import com.mkz.tessavar.effect.domain.EffectMother.resistEffect
 import com.mkz.tessavar.player.domain.PlayerMother.player
 import com.mkz.tessavar.shared.usecases.InMemoryQueries
 import io.kotest.matchers.maps.shouldBeEmpty
@@ -25,6 +28,7 @@ class PreviewCastOngoingEffectsTest {
             searchAbilityById = queries.searchAbilityById,
             searchEffectById = queries.searchEffectById,
             castResolution = queries.castResolution,
+            battleUnitRepository = queries.battleUnitRepository,
         )
 
     private fun givenBattle(map: String) {
@@ -38,6 +42,10 @@ class PreviewCastOngoingEffectsTest {
         queries.effectRepository.create(Effect.create(damageEffect(id = "venom", timingType = "ON_PLAYER_TURN_STARTED").toDto()))
         queries.effectRepository.create(Effect.create(applyEffectToAdjacentAlliesEffect(id = "curse", effectId = "venom").toDto()))
         queries.effectRepository.create(Effect.create(damageEffect(id = "slash", timingType = "IMMEDIATELY").toDto()))
+        queries.effectRepository.create(negateActionsEffect(id = "stun", duration = 1))
+        queries.effectRepository.create(negateActionsEffect(id = "stun-long", duration = 2))
+        queries.effectRepository.create(applyIfOngoingEffect(id = "stun-long-if-soaked", effectId = "stun-long", ongoingEffectId = "soak"))
+        queries.effectRepository.create(resistEffect(id = "soak", effectId = "venom", share = 50))
     }
 
     private fun givenAbility(
@@ -58,6 +66,46 @@ class PreviewCastOngoingEffectsTest {
         val ongoingEffects = previewCastOngoingEffects(battleUnitId = "caster", abilityId = "ability-1", castGroup = listOf(PositionDto(0, 1)))
         // Then
         ongoingEffects shouldBe mapOf("enemy-1" to listOf("venom", "curse"))
+    }
+
+    @Test
+    fun `should list the effect an apply if ongoing applies when the target has the ongoing effect`() {
+        // Given
+        givenBattle("C E")
+        givenAbility(TargetingDto.ADJACENT_ENEMY, "stun" to TARGETED_BATTLE_UNIT, "stun-long-if-soaked" to TARGETED_BATTLE_UNIT)
+        queries.battleUnitRepository.update(
+            queries.battleUnitRepository
+                .searchById("enemy-1")!!
+                .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+                .pullEvents()
+                .second,
+        )
+        // When
+        val ongoingEffects = previewCastOngoingEffects(battleUnitId = "caster", abilityId = "ability-1", castGroup = listOf(PositionDto(0, 1)))
+        // Then
+        ongoingEffects shouldBe mapOf("enemy-1" to listOf("stun", "stun-long"))
+    }
+
+    @Test
+    fun `should not list the effect an apply if ongoing applies when the target lacks the ongoing effect`() {
+        // Given
+        givenBattle("C E")
+        givenAbility(TargetingDto.ADJACENT_ENEMY, "stun" to TARGETED_BATTLE_UNIT, "stun-long-if-soaked" to TARGETED_BATTLE_UNIT)
+        // When
+        val ongoingEffects = previewCastOngoingEffects(battleUnitId = "caster", abilityId = "ability-1", castGroup = listOf(PositionDto(0, 1)))
+        // Then
+        ongoingEffects shouldBe mapOf("enemy-1" to listOf("stun"))
+    }
+
+    @Test
+    fun `should list the effects timed while ongoing when the ability is cast`() {
+        // Given
+        givenBattle("C E")
+        givenAbility(TargetingDto.ADJACENT_ENEMY, "soak" to TARGETED_BATTLE_UNIT)
+        // When
+        val ongoingEffects = previewCastOngoingEffects(battleUnitId = "caster", abilityId = "ability-1", castGroup = listOf(PositionDto(0, 1)))
+        // Then
+        ongoingEffects shouldBe mapOf("enemy-1" to listOf("soak"))
     }
 
     @Test

@@ -35,6 +35,39 @@ class AbilityInfoViewTest : ViewsForTesting() {
             effects = listOf(Effect.HealCaster(15), Effect.HealAdjacentAllies(15)),
         )
 
+    private val thunder =
+        AbilityInfo(
+            abilityId = "thunder",
+            manaCost = 10,
+            cooldown = 2,
+            targeting = Targeting.ADJACENT_ENEMY,
+            effects =
+                listOf(
+                    Effect.NegateActions(effectId = "stun", turns = 1),
+                    Effect.IfOngoing(ongoingEffectId = "soak", effect = Effect.NegateActions(effectId = "stun-long", turns = 2)),
+                ),
+        )
+    private val splash =
+        AbilityInfo(
+            abilityId = "splash",
+            manaCost = 10,
+            cooldown = 1,
+            targeting = Targeting.ADJACENT_ENEMY,
+            effects = listOf(Effect.Resist(effectId = "soak", resistedEffectId = "burn", share = 50, turns = 2)),
+        )
+    private val fireball =
+        AbilityInfo(
+            abilityId = "fireball",
+            manaCost = 10,
+            cooldown = 1,
+            targeting = Targeting.ADJACENT_ENEMY,
+            effects =
+                listOf(
+                    Effect.DamageOnPlayerTurnStarted(effectId = "burn", damage = 4, turns = 2),
+                    Effect.IfOngoing(ongoingEffectId = "venom-damage", effect = Effect.DamageAdjacentAllies(effectId = "venom-damage", damage = 3, turns = 5)),
+                ),
+        )
+
     private suspend fun abilityInfoView() = AbilityInfoView(AbilityInfoView.WIDTH, loadedResourcesLoader(), MessagesMother.messages())
 
     @Test
@@ -78,6 +111,54 @@ class AbilityInfoViewTest : ViewsForTesting() {
                     "Deals 10 damage.",
                     "When defeated: poisons its adjacent allies (3 damage each turn for 5 turns).",
                 )
+        }
+
+    @Test
+    fun `AbilityInfoView should start the sentence of an effect with its condition when it applies only if the target has an ongoing effect`() =
+        sharedViewsTest {
+            // Given
+            val abilityInfoView = abilityInfoView()
+            // When
+            abilityInfoView.display(thunder)
+            // Then
+            abilityInfoView.effects() shouldBe listOf("Stuns for 1 turn.", "If soaked: stuns for 2 turns.")
+        }
+
+    @Test
+    fun `AbilityInfoView should name the effect and the damage it resists when the ability soaks`() =
+        sharedViewsTest {
+            // Given
+            val abilityInfoView = abilityInfoView()
+            // When
+            abilityInfoView.display(splash)
+            // Then
+            abilityInfoView.effects() shouldBe listOf("Soaks: 50% less damage from burn for 2 turns.")
+        }
+
+    @Test
+    fun `AbilityInfoView should tell the burn and the spread of venom when the ability is fireball`() =
+        sharedViewsTest {
+            // Given
+            val abilityInfoView = abilityInfoView()
+            // When
+            abilityInfoView.display(fireball)
+            // Then
+            abilityInfoView.effects() shouldBe
+                listOf(
+                    "Burns: 4 damage each turn for 2 turns.",
+                    "If poisoned: poisons its adjacent allies (3 damage each turn for 5 turns).",
+                )
+        }
+
+    @Test
+    fun `AbilityInfoView should translate the conditions when the language is Spanish`() =
+        sharedViewsTest {
+            // Given
+            val abilityInfoView = AbilityInfoView(AbilityInfoView.WIDTH, loadedResourcesLoader(), MessagesMother.messages("es"))
+            // When
+            abilityInfoView.display(thunder)
+            // Then
+            abilityInfoView.effects() shouldBe listOf("Aturde durante 1 turno.", "Si está empapado: aturde durante 2 turnos.")
         }
 
     @Test
@@ -135,7 +216,7 @@ class AbilityInfoViewTest : ViewsForTesting() {
             // When
             abilityInfoView.display(
                 skull.copy(
-                    effects = skull.effects + Effect.DamageOnPlayerTurnStarted(damage = 3, turns = 5),
+                    effects = skull.effects + Effect.DamageOnPlayerTurnStarted(effectId = "venom-damage", damage = 3, turns = 5),
                     reason = Reason.NotEnoughMana(manaCost = 10, remainingMana = 4),
                 ),
             )

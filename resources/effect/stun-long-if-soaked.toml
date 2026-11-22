@@ -1,0 +1,7 @@
+[outcome]
+type = "APPLY_IF_ONGOING"
+effectId = "stun-long"
+ongoingEffectId = "soak"
+
+[timing]
+type = "IMMEDIATELY"

@@ -28,6 +28,7 @@ object CastPreviewViewStories : StoryBinding {
     private const val RECIPIENT_HEALTH_AFTER = "recipientHealthAfter"
     private const val EFFECTS = "effects"
     private const val NEW_EFFECTS = "newEffects"
+    private const val CONDITIONAL_ABILITY = "thunder"
 
     private val oneEnemy =
         StoryDto(
@@ -65,6 +66,14 @@ object CastPreviewViewStories : StoryBinding {
             args = mapOf(NEW_EFFECTS to ValueDto.int(2)),
         )
 
+    private val conditional =
+        StoryDto(
+            id = "screen-cast-preview--conditional",
+            name = "Conditional",
+            description = "Thunder on a soaked enemy: its row shows the soak it has, then the stun and the longer stun the cast would apply. On a dry enemy, only the stun would show.",
+            args = mapOf(ABILITY to ValueDto.text(CONDITIONAL_ABILITY), CASTER to ValueDto.text("storm-bat"), RECIPIENT_HEALTH_AFTER to ValueDto.int(MAXIMUM_HEALTH)),
+        )
+
     override fun component(context: StoryContext) =
         ComponentDto(
             id = "screen-cast-preview",
@@ -72,7 +81,7 @@ object CastPreviewViewStories : StoryBinding {
             title = "Cast preview",
             description =
                 "The cast waiting to be confirmed, in the HUD, as a forecast: the ability and its caster, then a row per battle unit it changes. " +
-                    "effects: the ones every battle unit has already. newEffects: the ones the cast would apply to each.",
+                    "effects: the ones every battle unit has already. newEffects: the ones the cast would apply to each. With thunder, the enemy is soaked, and the cast would stun it twice.",
             controls =
                 listOf(
                     ControlDto.pick(ABILITY, context.abilityIds()),
@@ -97,7 +106,7 @@ object CastPreviewViewStories : StoryBinding {
                     EFFECTS to ValueDto.int(0),
                     NEW_EFFECTS to ValueDto.int(0),
                 ),
-            stories = listOf(oneEnemy, selfCast, severalEnemies, defeat, newEffects),
+            stories = listOf(oneEnemy, selfCast, severalEnemies, defeat, newEffects, conditional),
         )
 
     override fun render(
@@ -126,11 +135,11 @@ object CastPreviewViewStories : StoryBinding {
                         maximumHealth = MAXIMUM_HEALTH,
                         remainingMana = RECIPIENT_MANA,
                         maximumMana = RECIPIENT_MANA,
-                        effectIds = effects,
+                        effectIds = if (args.text(ABILITY) == CONDITIONAL_ABILITY) effects + "soak" else effects,
                         isHumanPlayers = false,
                     ),
                 remainingHealth = args.int(RECIPIENT_HEALTH_AFTER),
-                newEffectIds = newEffects,
+                newEffectIds = if (args.text(ABILITY) == CONDITIONAL_ABILITY) listOf("stun", "stun-long") else newEffects,
             )
         return CastPreviewView(context.resourcesLoader, context.messages).apply {
             display(

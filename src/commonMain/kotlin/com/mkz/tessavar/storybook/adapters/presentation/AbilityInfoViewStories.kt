@@ -27,11 +27,35 @@ object AbilityInfoViewStories : StoryBinding {
             AbilityInfo("mending", manaCost = 10, cooldown = 2, Targeting.CASTER, listOf(Effect.HealCaster(15), Effect.HealAdjacentAllies(15))),
             AbilityInfo("teleport", manaCost = 5, cooldown = 1, Targeting.VACANT_TILE_ADJACENT_TO_ANOTHER_BATTLE_UNIT, listOf(Effect.Teleport)),
             AbilityInfo("cleave", manaCost = 5, cooldown = 1, Targeting.ALL_ADJACENT_ENEMIES, listOf(Effect.Damage(15))),
-            AbilityInfo("venom-strike", manaCost = 5, cooldown = 1, Targeting.ADJACENT_ENEMY, listOf(Effect.Damage(5), Effect.DamageOnPlayerTurnStarted(damage = 3, turns = 5))),
-            AbilityInfo("poisoned-sword", manaCost = 5, cooldown = 1, Targeting.ADJACENT_ENEMY, listOf(Effect.DamageOnPlayerTurnStarted(damage = 3, turns = 5))),
-            AbilityInfo("mushroom", manaCost = 10, cooldown = 0, Targeting.ALL_ADJACENT_ENEMIES, listOf(Effect.DamageOnPlayerTurnStarted(damage = 3, turns = 5))),
+            AbilityInfo(
+                "venom-strike",
+                manaCost = 5,
+                cooldown = 1,
+                Targeting.ADJACENT_ENEMY,
+                listOf(Effect.Damage(5), Effect.DamageOnPlayerTurnStarted(effectId = "venom-damage", damage = 3, turns = 5)),
+            ),
+            AbilityInfo("poisoned-sword", manaCost = 5, cooldown = 1, Targeting.ADJACENT_ENEMY, listOf(Effect.DamageOnPlayerTurnStarted(effectId = "venom-damage", damage = 3, turns = 5))),
+            AbilityInfo("mushroom", manaCost = 10, cooldown = 0, Targeting.ALL_ADJACENT_ENEMIES, listOf(Effect.DamageOnPlayerTurnStarted(effectId = "venom-damage", damage = 3, turns = 5))),
             AbilityInfo("heal", manaCost = 10, cooldown = 2, Targeting.CASTER, listOf(Effect.HealCaster(20))),
             AbilityInfo("bee", manaCost = 10, cooldown = 0, Targeting.VACANT_TILE_ADJACENT_TO_CASTER, listOf(Effect.Summon(unitId = "bee", turns = 5, baseMaximumHealth = 10))),
+            AbilityInfo("splash", manaCost = 10, cooldown = 1, Targeting.ADJACENT_ENEMY, listOf(Effect.Resist(effectId = "soak", resistedEffectId = "burn", share = 50, turns = 2))),
+            AbilityInfo(
+                "fireball",
+                manaCost = 10,
+                cooldown = 1,
+                Targeting.ADJACENT_ENEMY,
+                listOf(
+                    Effect.DamageOnPlayerTurnStarted(effectId = "burn", damage = 4, turns = 2),
+                    Effect.IfOngoing(ongoingEffectId = "venom-damage", effect = Effect.DamageAdjacentAllies(effectId = "venom-damage", damage = 3, turns = 5)),
+                ),
+            ),
+            AbilityInfo(
+                "thunder",
+                manaCost = 10,
+                cooldown = 2,
+                Targeting.ADJACENT_ENEMY,
+                listOf(Effect.NegateActions(effectId = "stun", turns = 1), Effect.IfOngoing(ongoingEffectId = "soak", effect = Effect.NegateActions(effectId = "stun-long", turns = 2))),
+            ),
         ).associateBy(AbilityInfo::abilityId)
 
     private val sword = StoryDto(id = "screen-ability-info--sword", name = "Sword", description = "One effect, free and with no cooldown: no cooldown pill.", args = emptyMap())
@@ -65,6 +89,28 @@ object AbilityInfoViewStories : StoryBinding {
             args = mapOf(ABILITY to ValueDto.text("bat"), REMAINING_MANA to ValueDto.int(4)),
         )
 
+    private val splash =
+        StoryDto(
+            id = "screen-ability-info--splash",
+            name = "Splash",
+            description = "A resist: the effect it soaks with, and the share of the damage of burn it lessens.",
+            args = mapOf(ABILITY to ValueDto.text("splash")),
+        )
+    private val fireball =
+        StoryDto(
+            id = "screen-ability-info--fireball",
+            name = "Fireball",
+            description = "A burn, and the venom of a poisoned target spread to its adjacent allies, as a sentence that starts with the condition.",
+            args = mapOf(ABILITY to ValueDto.text("fireball")),
+        )
+    private val thunder =
+        StoryDto(
+            id = "screen-ability-info--thunder",
+            name = "Thunder",
+            description = "A stun, and a longer one if the target is soaked, as a sentence that starts with the condition.",
+            args = mapOf(ABILITY to ValueDto.text("thunder")),
+        )
+
     override fun component(context: StoryContext) =
         ComponentDto(
             id = "screen-ability-info",
@@ -78,7 +124,7 @@ object AbilityInfoViewStories : StoryBinding {
                     ControlDto.int(REMAINING_MANA, minimum = 0, maximum = MANA_LIMIT),
                 ),
             args = mapOf(ABILITY to ValueDto.text("sword"), COOLDOWN_TURNS_LEFT to ValueDto.int(0), REMAINING_MANA to ValueDto.int(MANA_LIMIT)),
-            stories = listOf(sword, skull, bat, mending, inCooldown, notEnoughMana),
+            stories = listOf(sword, skull, bat, mending, inCooldown, notEnoughMana, splash, fireball, thunder),
         )
 
     override fun render(

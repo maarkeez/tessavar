@@ -945,7 +945,7 @@ class BattlefieldPresenterTest {
         abilityInfo.abilityId shouldBe "mushroom"
         abilityInfo.manaCost shouldBe 10
         abilityInfo.targeting shouldBe AbilityInfoView.AbilityInfo.Targeting.ALL_ADJACENT_ENEMIES
-        abilityInfo.effects.shouldContainExactly(AbilityInfoView.AbilityInfo.Effect.Damage(7), AbilityInfoView.AbilityInfo.Effect.DamageOnPlayerTurnStarted(damage = 3, turns = 5))
+        abilityInfo.effects.shouldContainExactly(AbilityInfoView.AbilityInfo.Effect.Damage(7), AbilityInfoView.AbilityInfo.Effect.DamageOnPlayerTurnStarted(effectId = "venom", damage = 3, turns = 5))
         abilityInfo.reason shouldBe null
     }
 

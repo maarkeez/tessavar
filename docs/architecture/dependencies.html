@@ -209,12 +209,12 @@ const DATA = {
   "subdomains": [
     {"name": "ability", "files": 14, "fanIn": 4, "fanOut": 2, "instability": 0.33, "importsIn": 29, "importsOut": 15},
     {"name": "battle", "files": 21, "fanIn": 8, "fanOut": 1, "instability": 0.11, "importsIn": 39, "importsOut": 22},
-    {"name": "battleUnit", "files": 65, "fanIn": 7, "fanOut": 7, "instability": 0.5, "importsIn": 70, "importsOut": 175},
+    {"name": "battleUnit", "files": 65, "fanIn": 7, "fanOut": 7, "instability": 0.5, "importsIn": 70, "importsOut": 176},
     {"name": "battlefield", "files": 44, "fanIn": 10, "fanOut": 4, "instability": 0.29, "importsIn": 110, "importsOut": 40},
     {"name": "building", "files": 10, "fanIn": 2, "fanOut": 2, "instability": 0.5, "importsIn": 4, "importsOut": 14},
     {"name": "cpuBattleBrain", "files": 35, "fanIn": 2, "fanOut": 10, "instability": 0.83, "importsIn": 7, "importsOut": 107},
     {"name": "cpuWanderBrain", "files": 26, "fanIn": 1, "fanOut": 7, "instability": 0.88, "importsIn": 1, "importsOut": 56},
-    {"name": "effect", "files": 13, "fanIn": 9, "fanOut": 1, "instability": 0.1, "importsIn": 73, "importsOut": 13},
+    {"name": "effect", "files": 13, "fanIn": 9, "fanOut": 1, "instability": 0.1, "importsIn": 74, "importsOut": 13},
     {"name": "inventory", "files": 37, "fanIn": 3, "fanOut": 8, "instability": 0.73, "importsIn": 19, "importsOut": 62},
     {"name": "localization", "files": 14, "fanIn": 2, "fanOut": 1, "instability": 0.33, "importsIn": 7, "importsOut": 6},
     {"name": "lootDrop", "files": 23, "fanIn": 3, "fanOut": 4, "instability": 0.57, "importsIn": 8, "importsOut": 32},
@@ -343,7 +343,7 @@ const DATA = {
       {"file": "com/mkz/tessavar/battleUnit/usecases/services/CastResolution.kt", "layer": "usecases", "name": "battlefield.usecases.queries.SearchPosition"},
       {"file": "com/mkz/tessavar/battleUnit/usecases/services/OngoingEffectsTrigger.kt", "layer": "usecases", "name": "battlefield.usecases.queries.SearchPosition"}
     ]},
-    {"from": "battleUnit", "to": "effect", "weight": 42, "files": 10, "imports": [
+    {"from": "battleUnit", "to": "effect", "weight": 43, "files": 10, "imports": [
       {"file": "com/mkz/tessavar/battleUnit/adapters/presentation/BattleUnitApi.kt", "layer": "adapters", "name": "effect.adapters.presentation.EffectApi"},
       {"file": "com/mkz/tessavar/battleUnit/domain/BattleUnit.kt", "layer": "domain", "name": "effect.domain.Effect"},
       {"file": "com/mkz/tessavar/battleUnit/domain/BattleUnit.kt", "layer": "domain", "name": "effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.APPLY_EFFECT_TO_ADJACENT_ALLIES"},
@@ -376,6 +376,7 @@ const DATA = {
       {"file": "com/mkz/tessavar/battleUnit/usecases/commands/TriggerOnDefeatedEffects.kt", "layer": "usecases", "name": "effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.APPLY_EFFECT_TO_ADJACENT_ALLIES"},
       {"file": "com/mkz/tessavar/battleUnit/usecases/commands/TriggerOnDefeatedEffects.kt", "layer": "usecases", "name": "effect.domain.Effect.Dto.RecipientDto"},
       {"file": "com/mkz/tessavar/battleUnit/usecases/commands/TriggerOnDefeatedEffects.kt", "layer": "usecases", "name": "effect.usecases.queries.SearchEffectById"},
+      {"file": "com/mkz/tessavar/battleUnit/usecases/queries/PreviewCastOngoingEffects.kt", "layer": "usecases", "name": "effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.APPLY_IF_ONGOING"},
       {"file": "com/mkz/tessavar/battleUnit/usecases/queries/PreviewCastOngoingEffects.kt", "layer": "usecases", "name": "effect.domain.Effect.Dto.TimingDto.TimingTypeDto"},
       {"file": "com/mkz/tessavar/battleUnit/usecases/queries/PreviewCastOngoingEffects.kt", "layer": "usecases", "name": "effect.usecases.queries.SearchEffectById"},
       {"file": "com/mkz/tessavar/battleUnit/usecases/queries/PreviewCastRemainingHealth.kt", "layer": "usecases", "name": "effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto"},

@@ -1,0 +1,6 @@
+[outcome]
+type = "APPLY_EFFECT_TO_ADJACENT_ALLIES"
+effectId = "venom-damage"
+
+[timing]
+type = "IMMEDIATELY"

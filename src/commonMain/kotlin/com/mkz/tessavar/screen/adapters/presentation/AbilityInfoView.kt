@@ -75,6 +75,7 @@ open class AbilityInfoView(
             ) : Effect
 
             data class DamageOnPlayerTurnStarted(
+                val effectId: String,
                 val damage: Int,
                 val turns: Int,
             ) : Effect
@@ -98,6 +99,29 @@ open class AbilityInfoView(
             data class OnDefeatedDamageAdjacentAllies(
                 val damage: Int,
                 val turns: Int,
+            ) : Effect
+
+            data class DamageAdjacentAllies(
+                val effectId: String,
+                val damage: Int,
+                val turns: Int,
+            ) : Effect
+
+            data class NegateActions(
+                val effectId: String,
+                val turns: Int,
+            ) : Effect
+
+            data class Resist(
+                val effectId: String,
+                val resistedEffectId: String,
+                val share: Int,
+                val turns: Int,
+            ) : Effect
+
+            data class IfOngoing(
+                val ongoingEffectId: String,
+                val effect: Effect,
             ) : Effect
         }
 
@@ -235,7 +259,14 @@ open class AbilityInfoView(
     private fun sentence(effect: AbilityInfo.Effect): String =
         when (effect) {
             is AbilityInfo.Effect.Damage -> messages[UiMessage.ABILITY_INFO_DAMAGE, "damage" to effect.damage]
-            is AbilityInfo.Effect.DamageOnPlayerTurnStarted -> messages.plural(UiMessage.ABILITY_INFO_DAMAGE_ON_PLAYER_TURN_STARTED, effect.turns, "damage" to effect.damage, "turns" to effect.turns)
+            is AbilityInfo.Effect.DamageOnPlayerTurnStarted ->
+                messages.plural(
+                    UiMessage.ABILITY_INFO_DAMAGE_ON_PLAYER_TURN_STARTED,
+                    effect.turns,
+                    "verb" to messages.effectVerb(effect.effectId),
+                    "damage" to effect.damage,
+                    "turns" to effect.turns,
+                )
             is AbilityInfo.Effect.HealCaster -> messages[UiMessage.ABILITY_INFO_HEAL_CASTER, "heal" to effect.healing]
             is AbilityInfo.Effect.HealAdjacentAllies -> messages[UiMessage.ABILITY_INFO_HEAL_ADJACENT_ALLIES, "heal" to effect.healing]
             is AbilityInfo.Effect.Summon ->
@@ -243,6 +274,30 @@ open class AbilityInfoView(
             is AbilityInfo.Effect.Teleport -> messages[UiMessage.ABILITY_INFO_TELEPORT]
             is AbilityInfo.Effect.OnDefeatedDamageAdjacentAllies ->
                 messages.plural(UiMessage.ABILITY_INFO_ON_DEFEATED_DAMAGE_ADJACENT_ALLIES, effect.turns, "damage" to effect.damage, "turns" to effect.turns)
+            is AbilityInfo.Effect.DamageAdjacentAllies ->
+                messages.plural(
+                    UiMessage.ABILITY_INFO_DAMAGE_ADJACENT_ALLIES,
+                    effect.turns,
+                    "verb" to messages.effectVerb(effect.effectId),
+                    "damage" to effect.damage,
+                    "turns" to effect.turns,
+                )
+            is AbilityInfo.Effect.NegateActions -> messages.plural(UiMessage.ABILITY_INFO_NEGATE_ACTIONS, effect.turns, "verb" to messages.effectVerb(effect.effectId), "turns" to effect.turns)
+            is AbilityInfo.Effect.Resist ->
+                messages.plural(
+                    UiMessage.ABILITY_INFO_RESIST,
+                    effect.turns,
+                    "verb" to messages.effectVerb(effect.effectId),
+                    "share" to effect.share,
+                    "effect" to messages.effectName(effect.resistedEffectId),
+                    "turns" to effect.turns,
+                )
+            is AbilityInfo.Effect.IfOngoing ->
+                messages[
+                    UiMessage.ABILITY_INFO_IF_ONGOING,
+                    "condition" to messages.effectCondition(effect.ongoingEffectId),
+                    "effect" to sentence(effect.effect).replaceFirstChar(Char::lowercaseChar),
+                ]
         }
 
     private fun wrappedWords(

@@ -1,0 +1,7 @@
+manaCost = 10
+cooldown = 1
+targeting = "ADJACENT_ENEMY"
+
+[[effects]]
+effectId = "soak"
+target = "TARGETED_BATTLE_UNIT"
