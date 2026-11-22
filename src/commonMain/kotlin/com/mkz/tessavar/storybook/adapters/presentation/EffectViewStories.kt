@@ -17,6 +17,7 @@ object EffectViewStories : StoryBinding {
     private const val REMAINING_DURATION = "remainingDuration"
     private const val STACKS = "stacks"
     private const val DURATION_LIMIT = 9
+    private const val NO_DURATION = -1
     private const val STACKS_LIMIT = 3
 
     private val applied =
@@ -38,7 +39,14 @@ object EffectViewStories : StoryBinding {
             id = "screen-effect--no-duration",
             name = "No duration",
             description = "An effect that lasts until it triggers, as venom burst does when the battle unit is defeated: no number.",
-            args = mapOf(REMAINING_DURATION to ValueDto.int(0)),
+            args = mapOf(REMAINING_DURATION to ValueDto.int(NO_DURATION)),
+        )
+    private val ending =
+        StoryDto(
+            id = "screen-effect--ending",
+            name = "Ending",
+            description = "A stack that triggered for the last time this turn, as a stun that took the actions away: it reads 0 until the battle unit's turn finishes.",
+            args = mapOf(EFFECT to ValueDto.text("stun"), REMAINING_DURATION to ValueDto.int(0)),
         )
     private val new =
         StoryDto(
@@ -55,16 +63,16 @@ object EffectViewStories : StoryBinding {
             title = "Effect",
             description =
                 "The icon of an effect a battle unit has, at 1x in a rounded chip, in its info and in the previews, with its remaining duration and, when stacked, its count. " +
-                    "An effect an ability would apply is outlined in gold and blinks. remainingDuration: 0 for none.",
+                    "An effect an ability would apply is outlined in gold and blinks. remainingDuration: -1 for none.",
             controls =
                 listOf(
                     ControlDto.pick(EFFECT, context.effectIds()),
                     ControlDto.boolean(IS_NEW),
-                    ControlDto.int(REMAINING_DURATION, minimum = 0, maximum = DURATION_LIMIT),
+                    ControlDto.int(REMAINING_DURATION, minimum = NO_DURATION, maximum = DURATION_LIMIT),
                     ControlDto.int(STACKS, minimum = 1, maximum = STACKS_LIMIT),
                 ),
             args = mapOf(EFFECT to ValueDto.text(context.effectIds().first()), IS_NEW to ValueDto.boolean(false), REMAINING_DURATION to ValueDto.int(3), STACKS to ValueDto.int(1)),
-            stories = listOf(applied, new, stacked, noDuration),
+            stories = listOf(applied, new, stacked, noDuration, ending),
         )
 
     override fun render(
@@ -76,7 +84,7 @@ object EffectViewStories : StoryBinding {
                 EffectsView.Effect(
                     effectId = args.text(EFFECT),
                     stacks = args.int(STACKS),
-                    remainingDuration = args.int(REMAINING_DURATION).takeIf { remainingDuration -> remainingDuration > 0 },
+                    remainingDuration = args.int(REMAINING_DURATION).takeIf { remainingDuration -> remainingDuration != NO_DURATION },
                     isNew = args.boolean(IS_NEW),
                 ),
             )

@@ -14,6 +14,7 @@ object EffectInfoViewStories : StoryBinding {
     private const val EFFECT = "effect"
     private const val STACKS = "stacks"
     private const val EXPLORING = "exploring"
+    private const val ENDING = "ending"
 
     private val venom =
         StoryDto(
@@ -43,6 +44,13 @@ object EffectInfoViewStories : StoryBinding {
             description = "A stun: the battle unit loses its actions at the start of each turn.",
             args = mapOf(EFFECT to ValueDto.text("stun")),
         )
+    private val stunEnding =
+        StoryDto(
+            id = "screen-effect-info--stun-ending",
+            name = "Stun ending",
+            description = "A stun on the turn it took the actions away: its stack is at 0 and ends when the battle unit's turn finishes.",
+            args = mapOf(EFFECT to ValueDto.text("stun"), ENDING to ValueDto.boolean(true)),
+        )
     private val venomBurst =
         StoryDto(
             id = "screen-effect-info--venom-burst",
@@ -65,15 +73,17 @@ object EffectInfoViewStories : StoryBinding {
             title = "Effect info",
             description =
                 "What an ongoing effect of the selected battle unit does and how long each of its stacks has left, shown in place of its abilities when the player taps its icon. " +
-                    "Tapping it closes it. stacks: how many times the battle unit received it. exploring: seconds instead of turns.",
+                    "Tapping it closes it. stacks: how many times the battle unit received it. exploring: seconds instead of turns. " +
+                    "ending: the shortest stack at 0, as on the turn it triggered for the last time.",
             controls =
                 listOf(
                     ControlDto.pick(EFFECT, context.effectIds()),
                     ControlDto.int(STACKS, minimum = 1, maximum = STACKS_LIMIT),
                     ControlDto.boolean(EXPLORING),
+                    ControlDto.boolean(ENDING),
                 ),
-            args = mapOf(EFFECT to ValueDto.text("venom-damage"), STACKS to ValueDto.int(1), EXPLORING to ValueDto.boolean(false)),
-            stories = listOf(venom, venomStacked, soak, stun, venomBurst, exploring),
+            args = mapOf(EFFECT to ValueDto.text("venom-damage"), STACKS to ValueDto.int(1), EXPLORING to ValueDto.boolean(false), ENDING to ValueDto.boolean(false)),
+            stories = listOf(venom, venomStacked, soak, stun, stunEnding, venomBurst, exploring),
         )
 
     override fun render(
@@ -82,6 +92,9 @@ object EffectInfoViewStories : StoryBinding {
     ): View =
         EffectInfoView(AbilityInfoView.WIDTH, context.resourcesLoader, context.messages).apply {
             setOnTapped { context.action("onTapped") }
-            display(context.effectInfo(effectId = args.text(EFFECT), stacks = args.int(STACKS), isExploring = args.boolean(EXPLORING)))
+            display(context.effectInfo(effectId = args.text(EFFECT), stacks = args.int(STACKS), isExploring = args.boolean(EXPLORING)).ending(args.boolean(ENDING)))
         }
+
+    private fun EffectInfoView.EffectInfo.ending(isEnding: Boolean): EffectInfoView.EffectInfo =
+        if (isEnding && remainingDurations.isNotEmpty()) copy(remainingDurations = remainingDurations.dropLast(1) + 0) else this
 }
