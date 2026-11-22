@@ -1012,6 +1012,45 @@ msgctxt "ui.abilityInfo.effect.ifOngoing"
 msgid "If {condition}: {effect}"
 msgstr "Si está {condition}: {effect}"
 
+#. A stacked effect, as the title of its effect info. {effect}: its name, e.g.: Venom. {stacks}: how many times the battle unit received it.
+msgctxt "ui.effectInfo.title"
+msgid "{effect} x{stacks}"
+msgstr "{effect} x{stacks}"
+
+#. What an ongoing effect does in a battle. {damage}: the health points the battle unit loses at the start of each of its turns.
+msgctxt "ui.effectInfo.damageOnPlayerTurnStarted"
+msgid "{damage} damage at the start of each turn."
+msgstr "{damage} de daño al empezar cada turno."
+
+#. What an ongoing effect does while exploring. {damage}: the health points the battle unit loses each second.
+msgctxt "ui.effectInfo.damageEachSecond"
+msgid "{damage} damage each second."
+msgstr "{damage} de daño cada segundo."
+
+#. What a stun does: the battle unit can not move nor cast in its turns.
+msgctxt "ui.effectInfo.negateActions"
+msgid "Loses its actions at the start of each turn."
+msgstr "Pierde sus acciones al empezar cada turno."
+
+#. What an ongoing resist does. {share}: the share of the damage the battle unit no longer takes. {effect}: the effect whose damage it takes less of, e.g.: burn.
+msgctxt "ui.effectInfo.resist"
+msgid "{share}% less damage from {effect}."
+msgstr "{share}% menos de daño por {effect}."
+
+#. How long a stack of an effect has left in a battle. {turns}: how many turns.
+msgctxt "ui.effectInfo.turnsLeft"
+msgid "{turns} turn left"
+msgid_plural "{turns} turns left"
+msgstr[0] "queda {turns} turno"
+msgstr[1] "quedan {turns} turnos"
+
+#. How long a stack of an effect has left while exploring. {seconds}: how many seconds.
+msgctxt "ui.effectInfo.secondsLeft"
+msgid "{seconds} second left"
+msgid_plural "{seconds} seconds left"
+msgstr[0] "queda {seconds} segundo"
+msgstr[1] "quedan {seconds} segundos"
+
 #. A caption of the steps a battle unit has left this turn, before its points.
 msgctxt "ui.hud.move"
 msgid "MOVE"
@@ -1133,15 +1172,20 @@ msgstr "MISIÓN COMPLETADA"
 
 # Game data: the names of resources/ability/<id>.toml, lootableItem, npc, player, terrain and unit, and the own lines of the npcs.
 
-#. The effect a resist lessens the damage of, e.g.: "50% less damage from {effect}".
+#. The name of the effect, as the title of its effect info, e.g.: "Burn x2", and the effect a resist lessens the damage of, e.g.: "50% less damage from {effect}".
 msgctxt "effect.burn.name"
 msgid "burn"
-msgstr "quemadura"
+msgstr "quemado"
 
 #. What the effect does to its target, e.g.: "{verb}: 4 damage each turn for 2 turns."
 msgctxt "effect.burn.verb"
 msgid "Burns"
 msgstr "Quema"
+
+#. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
+msgctxt "effect.soak.name"
+msgid "soak"
+msgstr "mojado"
 
 #. What a target with this effect is, e.g.: "If {condition}: stuns for 2 turns."
 msgctxt "effect.soak.condition"
@@ -1153,15 +1197,30 @@ msgctxt "effect.soak.verb"
 msgid "Soaks"
 msgstr "Empapa"
 
+#. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
+msgctxt "effect.stun.name"
+msgid "stun"
+msgstr "aturdido"
+
 #. What the effect does to its target, e.g.: "{verb} for 1 turn."
 msgctxt "effect.stun.verb"
 msgid "Stuns"
 msgstr "Aturde"
 
+#. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
+msgctxt "effect.stun-long.name"
+msgid "stun"
+msgstr "aturdido"
+
 #. What the effect does to its target, e.g.: "{verb} for 2 turns."
 msgctxt "effect.stun-long.verb"
 msgid "Stuns"
 msgstr "Aturde"
+
+#. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
+msgctxt "effect.venom-damage.name"
+msgid "venom"
+msgstr "veneno"
 
 #. What a target with this effect is, e.g.: "If {condition}: poisons its adjacent allies."
 msgctxt "effect.venom-damage.condition"
@@ -1172,6 +1231,11 @@ msgstr "envenenado"
 msgctxt "effect.venom-damage.verb"
 msgid "Poisons"
 msgstr "Envenena"
+
+#. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
+msgctxt "effect.venom-on-defeat.name"
+msgid "venom burst"
+msgstr "veneno explosivo"
 
 msgctxt "ability.bat.name"
 msgid "Bat"

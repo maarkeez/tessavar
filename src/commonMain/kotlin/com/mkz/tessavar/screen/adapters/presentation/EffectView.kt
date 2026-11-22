@@ -57,7 +57,7 @@ class EffectView(
             badge.xy(width - BADGE_INSET - badge.width, height - BADGE_INSET - badge.height)
         }
         if (effect.stacks > 1) {
-            val badge = badge(STACKS, "×${effect.stacks}")
+            val badge = badge(STACKS, "x${effect.stacks}")
             badge.xy(width - BADGE_INSET - badge.width, BADGE_INSET)
         }
         stopBlinking()

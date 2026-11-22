@@ -143,7 +143,7 @@ class EffectViewTest : ViewsForTesting() {
             // When
             effectView.displayEffect(EffectsView.Effect("venom-damage", stacks = 2, remainingDuration = 4))
             // Then
-            effectView.stacksText() shouldBe "×2"
+            effectView.stacksText() shouldBe "x2"
         }
 
     @Test
