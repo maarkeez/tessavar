@@ -139,6 +139,33 @@ class EffectInfoViewTest : ViewsForTesting() {
         }
 
     @Test
+    fun `Display should not display a time line when the effect is equipped`() =
+        sharedViewsTest {
+            // Given
+            val effectInfoView = effectInfoView()
+            val maximumHealth = EffectInfo("maximum-health-30", stacks = 1, sentence = EffectInfo.Sentence.IncreaseMaximumHealth(30), remainingDurations = emptyList(), isExploring = false)
+            // When
+            effectInfoView.display(maximumHealth)
+            // Then
+            effectInfoView.title() shouldBe "Maximum health"
+            effectInfoView.sentence() shouldBe "+30 maximum health while equipped."
+            effectInfoView.remainingDurations().shouldBeNull()
+        }
+
+    @Test
+    fun `Display should say what an equipped effect does in Spanish when the language is Spanish`() =
+        sharedViewsTest {
+            // Given
+            val effectInfoView = effectInfoView(languageCode = "es")
+            val maximumMana = EffectInfo("maximum-mana-40", stacks = 1, sentence = EffectInfo.Sentence.IncreaseMaximumMana(40), remainingDurations = emptyList(), isExploring = false)
+            // When
+            effectInfoView.display(maximumMana)
+            // Then
+            effectInfoView.title() shouldBe "Maná máximo"
+            effectInfoView.sentence() shouldBe "+40 de maná máximo mientras está equipado."
+        }
+
+    @Test
     fun `Display should display the effect info in Spanish when the language is Spanish`() =
         sharedViewsTest {
             // Given

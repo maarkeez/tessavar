@@ -52,6 +52,14 @@ open class EffectInfoView(
                 val damage: Int,
                 val turns: Int,
             ) : Sentence
+
+            data class IncreaseMaximumHealth(
+                val amount: Int,
+            ) : Sentence
+
+            data class IncreaseMaximumMana(
+                val amount: Int,
+            ) : Sentence
         }
     }
 
@@ -117,6 +125,8 @@ open class EffectInfoView(
             is EffectInfo.Sentence.Resist -> messages[UiMessage.EFFECT_INFO_RESIST, "share" to sentence.share, "effect" to messages.effectName(sentence.resistedEffectId)]
             is EffectInfo.Sentence.OnDefeatedDamageAdjacentAllies ->
                 messages.plural(UiMessage.ABILITY_INFO_ON_DEFEATED_DAMAGE_ADJACENT_ALLIES, sentence.turns, "damage" to sentence.damage, "turns" to sentence.turns)
+            is EffectInfo.Sentence.IncreaseMaximumHealth -> messages[UiMessage.EFFECT_INFO_INCREASE_MAXIMUM_HEALTH, "amount" to sentence.amount]
+            is EffectInfo.Sentence.IncreaseMaximumMana -> messages[UiMessage.EFFECT_INFO_INCREASE_MAXIMUM_MANA, "amount" to sentence.amount]
         }
 
     private fun remainingDurations(effectInfo: EffectInfo): String? =

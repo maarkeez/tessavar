@@ -2,6 +2,7 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.battleUnit.usecases.queries.PreviewCastOngoingEffects
 import com.mkz.tessavar.effect.adapters.resources.ResourcesEffectLoader
+import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.TimingTypeDto
 import com.mkz.tessavar.localization.adapters.resources.PoFile
 import com.mkz.tessavar.localization.adapters.resources.ResourcesLocalizationLoader.Companion.SOURCE_FILE_NAME
 import com.mkz.tessavar.localization.adapters.resources.TestCatalogs
@@ -24,7 +25,7 @@ class EffectNamesTest {
                     .mapNotNull { entry -> entry.context }
                     .toSet()
             // When
-            val ongoingEffectIds = effects.filter { effect -> effect.timing.type in PreviewCastOngoingEffects.ONGOING_TIMINGS }.map { effect -> effect.id }
+            val ongoingEffectIds = effects.filter { effect -> effect.timing.type in EFFECT_INFO_TIMINGS }.map { effect -> effect.id }
             val effectIdsWithoutName = ongoingEffectIds.filter { effectId -> "effect.$effectId.name" !in sourceKeys }
             // Then
             ongoingEffectIds.shouldNotBeEmpty()
@@ -40,9 +41,13 @@ class EffectNamesTest {
             // When
             val failures =
                 effects
-                    .filter { effect -> effect.timing.type in PreviewCastOngoingEffects.ONGOING_TIMINGS }
+                    .filter { effect -> effect.timing.type in EFFECT_INFO_TIMINGS }
                     .mapNotNull { effect -> runCatching { EffectInfoMapper.effectInfo(effect, listOf(1), isExploring = false, effectsById::get) }.exceptionOrNull()?.message }
             // Then
             withClue("Effects the effect info can not tell: $failures") { failures.shouldBeEmpty() }
         }
+
+    private companion object {
+        val EFFECT_INFO_TIMINGS = PreviewCastOngoingEffects.ONGOING_TIMINGS + TimingTypeDto.WHILE_EQUIPPED
+    }
 }

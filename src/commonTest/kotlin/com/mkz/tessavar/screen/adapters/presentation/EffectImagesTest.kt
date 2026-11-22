@@ -2,6 +2,7 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.battleUnit.usecases.queries.PreviewCastOngoingEffects
 import com.mkz.tessavar.effect.adapters.resources.ResourcesEffectLoader
+import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.TimingTypeDto
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneResourcesLoaderMother.loadedResourcesLoader
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.assertions.withClue
@@ -21,7 +22,7 @@ class EffectImagesTest : ViewsForTesting() {
             val ongoingEffectIds =
                 effectLoader
                     .loadEffects()
-                    .filter { effect -> effect.timing.type in PreviewCastOngoingEffects.ONGOING_TIMINGS }
+                    .filter { effect -> effect.timing.type in EFFECT_INFO_TIMINGS }
                     .map { effect -> effect.id }
             val effectIdsWithoutImage = ongoingEffectIds.filter { effectId -> resourcesLoader.bitmapOrNull("effect/$effectId.png") == null }
             // Then
@@ -30,4 +31,8 @@ class EffectImagesTest : ViewsForTesting() {
                 effectIdsWithoutImage.shouldBeEmpty()
             }
         }
+
+    private companion object {
+        val EFFECT_INFO_TIMINGS = PreviewCastOngoingEffects.ONGOING_TIMINGS + TimingTypeDto.WHILE_EQUIPPED
+    }
 }

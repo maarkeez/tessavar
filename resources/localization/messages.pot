@@ -1031,6 +1031,16 @@ msgctxt "ui.effectInfo.resist"
 msgid "{share}% less damage from {effect}."
 msgstr ""
 
+#. What an equipped effect does while its item is equipped. {amount}: how much maximum health it gives.
+msgctxt "ui.effectInfo.increaseMaximumHealth"
+msgid "+{amount} maximum health while equipped."
+msgstr ""
+
+#. What an equipped effect does while its item is equipped. {amount}: how much maximum mana it gives.
+msgctxt "ui.effectInfo.increaseMaximumMana"
+msgid "+{amount} maximum mana while equipped."
+msgstr ""
+
 #. How long a stack of an effect has left in a battle. {turns}: how many turns.
 msgctxt "ui.effectInfo.turnsLeft"
 msgid "{turns} turn left"
@@ -1234,6 +1244,31 @@ msgstr ""
 #. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
 msgctxt "effect.venom-on-defeat.name"
 msgid "venom burst"
+msgstr ""
+
+#. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
+msgctxt "effect.maximum-health-20.name"
+msgid "maximum health"
+msgstr ""
+
+#. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
+msgctxt "effect.maximum-health-30.name"
+msgid "maximum health"
+msgstr ""
+
+#. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
+msgctxt "effect.maximum-health-40.name"
+msgid "maximum health"
+msgstr ""
+
+#. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
+msgctxt "effect.maximum-mana-20.name"
+msgid "maximum mana"
+msgstr ""
+
+#. The name of the effect, as the title of its effect info, e.g.: "Venom x2".
+msgctxt "effect.maximum-mana-40.name"
+msgid "maximum mana"
 msgstr ""
 
 msgctxt "ability.bat.name"

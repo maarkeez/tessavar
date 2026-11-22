@@ -4,6 +4,8 @@ import com.mkz.tessavar.effect.domain.Effect
 import com.mkz.tessavar.effect.domain.EffectMother.applyEffectToAdjacentAlliesEffect
 import com.mkz.tessavar.effect.domain.EffectMother.damageEffect
 import com.mkz.tessavar.effect.domain.EffectMother.healEffect
+import com.mkz.tessavar.effect.domain.EffectMother.increaseMaximumHealthEffect
+import com.mkz.tessavar.effect.domain.EffectMother.increaseMaximumManaEffect
 import com.mkz.tessavar.effect.domain.EffectMother.negateActionsEffect
 import com.mkz.tessavar.effect.domain.EffectMother.resistEffect
 import com.mkz.tessavar.screen.adapters.presentation.EffectInfoView.EffectInfo
@@ -82,6 +84,27 @@ class EffectInfoMapperTest {
         // Then
         effectInfo.stacks shouldBe 3
         effectInfo.remainingDurations.shouldContainExactly(5, 4, 2)
+    }
+
+    @Test
+    fun `EffectInfo should say the maximum health while equipped when the effect increases the maximum health`() {
+        // Given
+        val maximumHealth = increaseMaximumHealthEffect(id = "maximum-health-30", maximumHealth = 30).toDto()
+        // When
+        val effectInfo = effectInfo(maximumHealth, remainingDurations = listOf(null))
+        // Then
+        effectInfo.sentence shouldBe EffectInfo.Sentence.IncreaseMaximumHealth(amount = 30)
+        effectInfo.remainingDurations.shouldBeEmpty()
+    }
+
+    @Test
+    fun `EffectInfo should say the maximum mana while equipped when the effect increases the maximum mana`() {
+        // Given
+        val maximumMana = increaseMaximumManaEffect(id = "maximum-mana-40", maximumMana = 40).toDto()
+        // When
+        val effectInfo = effectInfo(maximumMana, remainingDurations = listOf(null))
+        // Then
+        effectInfo.sentence shouldBe EffectInfo.Sentence.IncreaseMaximumMana(amount = 40)
     }
 
     @Test

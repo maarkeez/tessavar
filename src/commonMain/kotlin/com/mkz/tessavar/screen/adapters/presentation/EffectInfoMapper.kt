@@ -41,6 +41,10 @@ internal object EffectInfoMapper {
                 if (!isDamageOnPlayerTurnStarted) noSentence()
                 EffectInfo.Sentence.OnDefeatedDamageAdjacentAllies(damage = nestedEffect.outcome.damage!!.damage, turns = nestedEffect.timing.onPlayerTurnStarted!!.duration)
             }
+            outcome.type == EffectOutcomeDto.TypeDto.INCREASE_MAXIMUM_HEALTH && timing.type == TimingTypeDto.WHILE_EQUIPPED ->
+                EffectInfo.Sentence.IncreaseMaximumHealth(amount = outcome.increaseMaximumHealth!!.maximumHealth)
+            outcome.type == EffectOutcomeDto.TypeDto.INCREASE_MAXIMUM_MANA && timing.type == TimingTypeDto.WHILE_EQUIPPED ->
+                EffectInfo.Sentence.IncreaseMaximumMana(amount = outcome.increaseMaximumMana!!.maximumMana)
             else -> noSentence()
         }
     }

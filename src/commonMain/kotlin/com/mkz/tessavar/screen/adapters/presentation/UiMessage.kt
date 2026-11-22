@@ -210,6 +210,8 @@ enum class UiMessage(
     EFFECT_INFO_DAMAGE_EACH_SECOND("ui.effectInfo.damageEachSecond"),
     EFFECT_INFO_NEGATE_ACTIONS("ui.effectInfo.negateActions"),
     EFFECT_INFO_RESIST("ui.effectInfo.resist"),
+    EFFECT_INFO_INCREASE_MAXIMUM_HEALTH("ui.effectInfo.increaseMaximumHealth"),
+    EFFECT_INFO_INCREASE_MAXIMUM_MANA("ui.effectInfo.increaseMaximumMana"),
     EFFECT_INFO_TURNS_LEFT("ui.effectInfo.turnsLeft", isPlural = true),
     EFFECT_INFO_SECONDS_LEFT("ui.effectInfo.secondsLeft", isPlural = true),
     EFFECT_INFO_ENDS_THIS_TURN("ui.effectInfo.endsThisTurn"),
