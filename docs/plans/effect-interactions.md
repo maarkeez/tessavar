@@ -59,7 +59,7 @@ Each milestone is a few commits straight on `main`, green on CI, except M1, whic
 |----|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
 | M1 | Display prototype  | The four variants are Storybook stories on `prototype/effect-interactions-display`, their screenshots are on an Artifact page, and the user has picked one for the ability info and one for the cast preview. | ✅      | 46248f53 |
 | M2 | Effect blocks      | Negate actions, apply if ongoing, resist and while ongoing work through `ApplyEffect`, adjacent allies works immediately, the stubs are gone, and saves are at version 12.                                    | ✅      | 1dfd134c |
-| M3 | Exploring second   | Every second of exploring triggers and counts down the ongoing effects of every battle unit on the battlefield: a venom left from a battle runs out while exploring.                                          | ⬜      |          |
+| M3 | Exploring second   | Every second of exploring triggers and counts down the ongoing effects of every battle unit on the battlefield: a venom left from a battle runs out while exploring.                                          | ✅      | 30318a5c |
 | M4 | Terrain lists      | Water soaks and lava deals its damage and burns, in battles and while exploring.                                                                                                                              | ⬜      |          |
 | M5 | Bats and abilities | Splash, Fireball and Thunder, the water, fire and storm bats with their art, the new effect icons and the chosen display, in English and Spanish, can be placed in the world builder.                         | ⬜      |          |
 | M6 | CPU battle brain   | A CPU storm bat stuns a soaked enemy over a dry one, a CPU water bat soaks an enemy when it knows Thunder, and a CPU fire bat targets an enemy with an ongoing venom.                                         | ⬜      |          |
@@ -249,3 +249,8 @@ Each milestone is a few commits straight on `main`, green on CI, except M1, whic
   while ongoing, `ongoingEffectDefinitions`, so it can lessen the damage by their resists. `ApplyEffect` handles an
   immediate apply if ongoing or adjacent allies without the battle unit receiving it: it only publishes the further
   `RequestApplyEffect`s.
+- **M3**: `TriggerOnPlayerTurnStartedEffects` keeps one public `invoke`, as `CommandUseCaseArchitectureTest` requires, so
+  `RequestTriggerOngoingEffects` is handled by a new use case, `TriggerOngoingEffectsWhileExploring`, and both share an
+  `OngoingEffectsTrigger` service. As the event bus is first in, first out, the trigger runs before the effects the
+  terrain applies that second: a burn received on lava first triggers the next second, as at a player turn start. A
+  battle unit standing still on lava takes 5, 9 and 13 over its first 3 seconds, not 9, 13 and 13.
