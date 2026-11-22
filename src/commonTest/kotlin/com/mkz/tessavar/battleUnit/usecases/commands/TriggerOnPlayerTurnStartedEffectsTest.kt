@@ -1,5 +1,6 @@
 package com.mkz.tessavar.battleUnit.usecases.commands
 
+import com.mkz.tessavar.battleUnit.domain.BattleUnit
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent
 import com.mkz.tessavar.battleUnit.domain.BattleUnitMother.battleUnit
 import com.mkz.tessavar.battleUnit.usecases.services.OngoingEffectsTrigger
@@ -79,7 +80,7 @@ class TriggerOnPlayerTurnStartedEffectsTest {
     }
 
     @Test
-    fun `Trigger should count down the effects timed while ongoing when the player turn starts`() {
+    fun `Trigger should count down the effects timed while ongoing, keeping the ones at 0, when the player turn starts`() {
         // Given
         queries.effectRepository.create(resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2))
         val battleUnit =
@@ -96,8 +97,8 @@ class TriggerOnPlayerTurnStartedEffectsTest {
         battleUnitRepository
             .searchById("knight-1")!!
             .toDto()
-            .ongoingEffects.whileOngoing
-            .shouldContainExactly("soak")
+            .ongoingEffects.effects
+            .shouldContainExactly(BattleUnit.Dto.OngoingEffectDto("soak", remainingDuration = 1), BattleUnit.Dto.OngoingEffectDto("soak", remainingDuration = 0))
         eventBus.publishedEvents.shouldContainExactly(BattleUnitEvent.OngoingEffectsTriggered(battleUnitId = "knight-1"))
     }
 

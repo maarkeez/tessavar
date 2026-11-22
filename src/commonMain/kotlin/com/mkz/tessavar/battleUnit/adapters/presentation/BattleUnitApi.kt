@@ -26,6 +26,7 @@ import com.mkz.tessavar.battleUnit.domain.BattleUnitRepository
 import com.mkz.tessavar.battleUnit.usecases.commands.ApplyEffect
 import com.mkz.tessavar.battleUnit.usecases.commands.CastAbility
 import com.mkz.tessavar.battleUnit.usecases.commands.DeployBattleUnit
+import com.mkz.tessavar.battleUnit.usecases.commands.EndStacksAtZero
 import com.mkz.tessavar.battleUnit.usecases.commands.InitialiseBattleUnits
 import com.mkz.tessavar.battleUnit.usecases.commands.LoadBattleUnitsSnapshot
 import com.mkz.tessavar.battleUnit.usecases.commands.RecoverBattleUnits
@@ -222,12 +223,13 @@ class BattleUnitApi(
     val removeEquippedEffects = RemoveEquippedEffects(battleUnitRepository, eventBus)
     val reduceRemainingSummonDurations = ReduceRemainingSummonDurations(battleUnitRepository, battlefieldApi.searchPosition, eventBus)
     val vanishSummons = VanishSummons(battleUnitRepository, battlefieldApi.searchPosition, eventBus)
+    val endStacksAtZero = EndStacksAtZero(battleUnitRepository)
     val requestJoinBattle = RequestJoinBattle(eventBus)
     val requestLeaveBattle = RequestLeaveBattle(eventBus)
 
     private val onPlayerTurnStarted = OnPlayerTurnStarted(resetBattleUnitActionsAndReduceCooldowns, triggerOnPlayerTurnStartedEffects, replenishMana, eventBus)
-    private val onPlayerTurnFinished = OnPlayerTurnFinished(reduceRemainingSummonDurations, eventBus)
-    private val onBattleFinished = OnBattleFinished(vanishSummons, eventBus)
+    private val onPlayerTurnFinished = OnPlayerTurnFinished(reduceRemainingSummonDurations, endStacksAtZero, eventBus)
+    private val onBattleFinished = OnBattleFinished(vanishSummons, endStacksAtZero, eventBus)
     private val onAbilityCasted = OnAbilityCasted(requestEffectApplicationToCastTargets, eventBus)
     private val onBattleUnitDeployed = OnBattleUnitDeployed(requestJoinBattle, eventBus)
     private val onBattleUnitDefeated = OnBattleUnitDefeated(triggerOnDefeatedEffects, requestLeaveBattle, eventBus)

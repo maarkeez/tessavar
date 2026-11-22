@@ -684,8 +684,8 @@ class BattleUnitTest {
         remainingActions.remainingCasts shouldBe 0
         updatedBattleUnit
             .toDto()
-            .ongoingEffects.onPlayerTurnStarted
-            .shouldBeEmpty()
+            .ongoingEffects.effects
+            .shouldContainExactly(BattleUnit.Dto.OngoingEffectDto(effectId = "stun", remainingDuration = 0))
         updatedBattleUnit.pullEvents().first.shouldContainExactly(
             BattleUnitEvent.OnPlayerTurnStartedEffectTriggered(battleUnitId = updatedBattleUnit.toDto().id, effectId = "stun"),
             BattleUnitEvent.OngoingEffectsTriggered(battleUnitId = updatedBattleUnit.toDto().id),
@@ -775,6 +775,7 @@ class BattleUnitTest {
         val updatedBattleUnit =
             battleUnit
                 .triggerOnPlayerTurnStartedEffects(effects = listOf(burn, soak), currentRow = 0, currentColumn = 0)
+                .endStacksAtZero()
                 .triggerOnPlayerTurnStartedEffects(effects = listOf(burn, soak), currentRow = 0, currentColumn = 0)
         // Then
         updatedBattleUnit.toDto().remainingHealth shouldBe 20 - 2 - 4
@@ -819,6 +820,98 @@ class BattleUnitTest {
         loadedBattleUnit.toSnapshot() shouldBe battleUnit.toSnapshot()
     }
 
+    @Test
+    fun `TriggerOnPlayerTurnStartedEffects should keep a stack at 0 when its remaining duration runs out in a battle`() {
+        // Given
+        val stun = EffectMother.negateActionsEffect(id = "stun", duration = 2).toDto()
+        val battleUnit = BattleUnitMother.battleUnit().receiveOnPlayerTurnStartedEffect(effectId = "stun", remainingDuration = 1)
+        // When
+        val updatedBattleUnit = battleUnit.triggerOnPlayerTurnStartedEffects(effects = listOf(stun), currentRow = 0, currentColumn = 0, inBattle = true)
+        // Then
+        updatedBattleUnit
+            .toDto()
+            .ongoingEffects.effects
+            .shouldContainExactly(BattleUnit.Dto.OngoingEffectDto(effectId = "stun", remainingDuration = 0))
+    }
+
+    @Test
+    fun `TriggerOnPlayerTurnStartedEffects should remove a stack when its remaining duration runs out while exploring`() {
+        // Given
+        val venom = EffectMother.damageEffect(id = "venom-damage", damage = 3, timingType = "ON_PLAYER_TURN_STARTED").toDto()
+        val battleUnit = BattleUnitMother.battleUnit().receiveOnPlayerTurnStartedEffect(effectId = "venom-damage", remainingDuration = 1)
+        // When
+        val updatedBattleUnit = battleUnit.triggerOnPlayerTurnStartedEffects(effects = listOf(venom), currentRow = 0, currentColumn = 0, inBattle = false)
+        // Then
+        updatedBattleUnit
+            .toDto()
+            .ongoingEffects.effects
+            .shouldBeEmpty()
+    }
+
+    @Test
+    fun `TriggerOnPlayerTurnStartedEffects should keep a while ongoing stack at 0 when it counts down to 0 in a battle`() {
+        // Given
+        val soak = EffectMother.resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2).toDto()
+        val battleUnit = BattleUnitMother.battleUnit().receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 1)
+        // When
+        val updatedBattleUnit = battleUnit.triggerOnPlayerTurnStartedEffects(effects = listOf(soak), currentRow = 0, currentColumn = 0, inBattle = true)
+        // Then
+        updatedBattleUnit
+            .toDto()
+            .ongoingEffects.effects
+            .shouldContainExactly(BattleUnit.Dto.OngoingEffectDto(effectId = "soak", remainingDuration = 0))
+    }
+
+    @Test
+    fun `TriggerOnPlayerTurnStartedEffects should not trigger a stack at 0 when the next player turn starts before it ended`() {
+        // Given
+        val venom = EffectMother.damageEffect(id = "venom-damage", damage = 3, timingType = "ON_PLAYER_TURN_STARTED").toDto()
+        val battleUnit =
+            BattleUnitMother
+                .battleUnit(unit = UnitMother.unit(baseMaximumHealth = 20).toDto())
+                .receiveOnPlayerTurnStartedEffect(effectId = "venom-damage", remainingDuration = 1)
+                .triggerOnPlayerTurnStartedEffects(effects = listOf(venom), currentRow = 0, currentColumn = 0)
+        // When
+        val updatedBattleUnit = battleUnit.triggerOnPlayerTurnStartedEffects(effects = listOf(venom), currentRow = 0, currentColumn = 0)
+        // Then
+        updatedBattleUnit.toDto().remainingHealth shouldBe 17
+    }
+
+    @Test
+    fun `EndStacksAtZero should remove the stacks at 0 and keep the others when the battle unit has both`() {
+        // Given
+        val soak = EffectMother.resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2).toDto()
+        val stunLong = EffectMother.negateActionsEffect(id = "stun-long", duration = 2).toDto()
+        val battleUnit =
+            BattleUnitMother
+                .battleUnit()
+                .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 1)
+                .receiveOnPlayerTurnStartedEffect(effectId = "stun-long", remainingDuration = 2)
+                .triggerOnPlayerTurnStartedEffects(effects = listOf(soak, stunLong), currentRow = 0, currentColumn = 0)
+        // When
+        val updatedBattleUnit = battleUnit.endStacksAtZero()
+        // Then
+        updatedBattleUnit
+            .toDto()
+            .ongoingEffects.effects
+            .shouldContainExactly(BattleUnit.Dto.OngoingEffectDto(effectId = "stun-long", remainingDuration = 1))
+    }
+
+    @Test
+    fun `HasOngoingEffect should be true when the effect has a stack at 0`() {
+        // Given
+        val soak = EffectMother.resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2).toDto()
+        val battleUnit =
+            BattleUnitMother
+                .battleUnit()
+                .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 1)
+                .triggerOnPlayerTurnStartedEffects(effects = listOf(soak), currentRow = 0, currentColumn = 0)
+        // When
+        val result = battleUnit.hasOngoingEffect("soak")
+        // Then
+        result.shouldBeTrue()
+    }
+
     private fun soakedAndBurnt(soaks: Int): BattleUnit =
         (1..soaks)
             .fold(BattleUnitMother.battleUnit(unit = UnitMother.unit(baseMaximumHealth = 10).toDto())) { battleUnit, _ ->
@@ -828,7 +921,7 @@ class BattleUnitTest {
             .second
 
     @Test
-    fun `TriggerOnPlayerTurnStartedEffects should reduce the health and remove the on player turn started effect when the effect damages`() {
+    fun `TriggerOnPlayerTurnStartedEffects should reduce the health and keep the stack at 0 when the effect damages for its last player turn in a battle`() {
         // Given
         val unit = UnitMother.unit(baseMaximumHealth = 10).toDto()
         val onPlayerTurnStartedEffect = EffectMother.damageEffect(damage = 3, timingType = "ON_PLAYER_TURN_STARTED").toDto()
@@ -849,8 +942,8 @@ class BattleUnitTest {
         updatedBattleUnit.toDto().remainingHealth shouldBe 7
         updatedBattleUnit
             .toDto()
-            .ongoingEffects.onPlayerTurnStarted
-            .shouldBeEmpty()
+            .ongoingEffects.effects
+            .shouldContainExactly(BattleUnit.Dto.OngoingEffectDto(effectId = onPlayerTurnStartedEffect.id, remainingDuration = 0))
         val (events, _) = updatedBattleUnit.pullEvents()
         events.shouldContainExactly(
             BattleUnitEvent.OnPlayerTurnStartedEffectTriggered(battleUnitId = updatedBattleUnit.toDto().id, effectId = onPlayerTurnStartedEffect.id),
@@ -927,7 +1020,7 @@ class BattleUnitTest {
     }
 
     @Test
-    fun `TriggerOnPlayerTurnStartedEffects should remove the on player turn started effect when it is triggered for its last player turn`() {
+    fun `TriggerOnPlayerTurnStartedEffects should remove the on player turn started effect when its player turn finishes after its last trigger`() {
         // Given
         val unit = UnitMother.unit(baseMaximumHealth = 10).toDto()
         val onPlayerTurnStartedEffect = EffectMother.damageEffect(id = "effect-1", damage = 3, timingType = "ON_PLAYER_TURN_STARTED").toDto()
@@ -939,11 +1032,12 @@ class BattleUnitTest {
                     effects = listOf(onPlayerTurnStartedEffect),
                     currentRow = position().row,
                     currentColumn = position().column,
-                ).triggerOnPlayerTurnStartedEffects(
+                ).endStacksAtZero()
+                .triggerOnPlayerTurnStartedEffects(
                     effects = listOf(onPlayerTurnStartedEffect),
                     currentRow = position().row,
                     currentColumn = position().column,
-                )
+                ).endStacksAtZero()
         // Then
         updatedBattleUnit
             .toDto()
@@ -1071,7 +1165,7 @@ class BattleUnitTest {
             .toSnapshot()
             .ongoingEffects
             .map { effect -> effect.remainingDuration }
-            .shouldContainExactly(4, 1)
+            .shouldContainExactly(0, 4, 1)
     }
 
     @Test

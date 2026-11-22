@@ -524,10 +524,12 @@ data class BattleUnit private constructor(
             battleUnit = triggeredBattleUnit
         }
         return battleUnit.copy(
-            ongoingEffects = battleUnit.ongoingEffects.countDownWhileOngoing(),
+            ongoingEffects = battleUnit.ongoingEffects.countDownWhileOngoing(keepAtZero = inBattle),
             events = battleUnit.events + OngoingEffectsTriggered(battleUnitId = id.value),
         )
     }
+
+    fun endStacksAtZero(): BattleUnit = copy(ongoingEffects = ongoingEffects.endStacksAtZero())
 
     private fun triggerOnPlayerTurnStartedEffectAt(
         index: Int,
@@ -538,7 +540,7 @@ data class BattleUnit private constructor(
     ): BattleUnit {
         val effectId = ongoingEffects.effectIdAt(index)
         val effect = effects.firstOrNull { effect -> effect.id == effectId } ?: throw EffectNotFound()
-        val ongoingEffects = ongoingEffects.triggerOnPlayerTurnStarted(index)
+        val ongoingEffects = ongoingEffects.triggerOnPlayerTurnStarted(index, keepAtZero = inBattle)
         val appliedEvent = OnPlayerTurnStartedEffectTriggered(battleUnitId = id.value, effectId = effect.id)
         return when (effect.outcome.type) {
             DAMAGE -> copy(events = events + appliedEvent).applyDecreaseHealthEffect(effect, ongoingEffects, currentRow, currentColumn, effects)
@@ -907,18 +909,28 @@ data class BattleUnit private constructor(
 
         fun whileOngoingEffectIds(): List<String> = value.filter { it.isWhileOngoing() }.map { it.effectId() }
 
-        fun countDownWhileOngoing(): OngoingEffects = OngoingEffects(value.mapNotNull { effect -> if (effect.isWhileOngoing()) effect.countDownWhileOngoing() else effect })
+        fun countDownWhileOngoing(keepAtZero: Boolean): OngoingEffects =
+            OngoingEffects(
+                value.mapNotNull { effect ->
+                    if (effect.isWhileOngoing()) effect.countDownWhileOngoing().takeIf { counted -> keepAtZero || !counted.isAtZero() } else effect
+                },
+            )
+
+        fun endStacksAtZero(): OngoingEffects = OngoingEffects(value.filterNot { effect -> effect.isAtZero() })
 
         fun triggerImmediateEffect(effectId: String): OngoingEffects = OngoingEffects(value.filterNot { it.isImmediate() && it.hasEffectId(effectId) })
 
-        fun nextOnPlayerTurnStartedIndex(from: Int): Int? = (from until value.size).firstOrNull { index -> value[index].isOnPlayerTurnStarted() }
+        fun nextOnPlayerTurnStartedIndex(from: Int): Int? = (from until value.size).firstOrNull { index -> value[index].isOnPlayerTurnStarted() && !value[index].isAtZero() }
 
         fun effectIdAt(index: Int): String = value.getOrNull(index)?.effectId() ?: throw EffectNotFound()
 
-        fun triggerOnPlayerTurnStarted(index: Int): OngoingEffects {
+        fun triggerOnPlayerTurnStarted(
+            index: Int,
+            keepAtZero: Boolean,
+        ): OngoingEffects {
             val effect = value.getOrNull(index) ?: throw EffectNotFound()
             if (!effect.isOnPlayerTurnStarted()) throw NotOnPlayerTurnStarted()
-            val effectAfterTrigger = effect.triggerOnPlayerTurnStarted()
+            val effectAfterTrigger = effect.triggerOnPlayerTurnStarted().takeIf { triggered -> keepAtZero || !triggered.isAtZero() }
             val ongoingEffects =
                 if (effectAfterTrigger != null) {
                     value.mapIndexed { ongoingIndex, ongoingEffect -> if (ongoingIndex == index) effectAfterTrigger else ongoingEffect }
@@ -981,7 +993,14 @@ data class BattleUnit private constructor(
 
             fun isWhileOngoing() = timing is Timing.WhileOngoing
 
-            fun countDownWhileOngoing(): Effect? = (timing as Timing.WhileOngoing).countDown()?.let { updatedTiming -> copy(timing = updatedTiming) }
+            fun countDownWhileOngoing(): Effect = copy(timing = (timing as Timing.WhileOngoing).countDown())
+
+            fun isAtZero(): Boolean =
+                when (timing) {
+                    is Timing.OnPlayerTurnStarted -> timing.remainingDuration <= 0
+                    is Timing.WhileOngoing -> timing.remainingDuration <= 0
+                    Timing.Immediate, Timing.OnDefeated -> false
+                }
 
             fun isOnPlayerTurnStarted() = timing.isOnPlayerTurnStarted()
 
@@ -989,10 +1008,9 @@ data class BattleUnit private constructor(
 
             fun isImmediate() = timing.isImmediate()
 
-            fun triggerOnPlayerTurnStarted(): Effect? {
+            fun triggerOnPlayerTurnStarted(): Effect {
                 if (!isOnPlayerTurnStarted()) throw InvalidEffectTiming()
-                val updatedTiming = (timing as Timing.OnPlayerTurnStarted).trigger()
-                return updatedTiming?.let { copy(timing = updatedTiming) }
+                return copy(timing = (timing as Timing.OnPlayerTurnStarted).trigger())
             }
 
             fun hasEffectId(effectId: String) = effectId == this.effectId.value
@@ -1033,13 +1051,13 @@ data class BattleUnit private constructor(
             @JvmInline value class OnPlayerTurnStarted(
                 val remainingDuration: Int,
             ) : Timing {
-                fun trigger(): OnPlayerTurnStarted? = if (remainingDuration - 1 == 0) null else OnPlayerTurnStarted(remainingDuration - 1)
+                fun trigger(): OnPlayerTurnStarted = OnPlayerTurnStarted(max(0, remainingDuration - 1))
             }
 
             @JvmInline value class WhileOngoing(
                 val remainingDuration: Int,
             ) : Timing {
-                fun countDown(): WhileOngoing? = if (remainingDuration - 1 <= 0) null else WhileOngoing(remainingDuration - 1)
+                fun countDown(): WhileOngoing = WhileOngoing(max(0, remainingDuration - 1))
             }
 
             companion object {

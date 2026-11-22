@@ -4,8 +4,10 @@ import com.mkz.tessavar.ability.adapters.presentation.AbilityApi
 import com.mkz.tessavar.ability.adapters.resources.ResourcesAbilityLoader
 import com.mkz.tessavar.battle.adapters.presentation.BattleApi
 import com.mkz.tessavar.battle.adapters.presentation.startBattleWithEveryBattleUnit
+import com.mkz.tessavar.battle.domain.BattleEvent
 import com.mkz.tessavar.battleUnit.adapters.presentation.BattleUnitApi
 import com.mkz.tessavar.battleUnit.adapters.resources.ResourcesBattleUnitLoader
+import com.mkz.tessavar.battleUnit.domain.BattleUnit.Dto.OngoingEffectDto
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent
 import com.mkz.tessavar.battlefield.adapters.presentation.BattlefieldApi
 import com.mkz.tessavar.battlefield.adapters.resources.ResourcesBattlefieldLoader
@@ -25,6 +27,7 @@ import com.mkz.tessavar.player.usecases.commands.RequestPlayerCreation.PlayerTyp
 import com.mkz.tessavar.player.usecases.commands.RequestPlayerCreation.PlayerType.HUMAN
 import com.mkz.tessavar.shared.adapters.events.InMemoryEventBus
 import com.mkz.tessavar.shared.domain.FixedDoublesRandom
+import com.mkz.tessavar.shared.domain.subscribe
 import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.terrain.adapters.resources.ResourcesTerrainLoader
 import com.mkz.tessavar.unit.adapters.presentation.UnitApi
@@ -118,6 +121,34 @@ class EffectInteractionsAcceptanceTest {
     }
 
     private fun castsLeftAfterTheCpuTurn(battleUnitId: String): Int = battleUnitApi.searchBattleUnitById(battleUnitId)!!.remainingActions.remainingCasts
+
+    private fun effectsAtEachCpuPlayerTurnStart(battleUnitId: String): List<List<OngoingEffectDto>> =
+        mutableListOf<List<OngoingEffectDto>>().also { effects ->
+            eventBus.subscribe<BattleEvent.PlayerTurnStarted> { event ->
+                if (event.playerId == cpuPlayerId) effects += battleUnitApi.searchBattleUnitById(battleUnitId)!!.ongoingEffects.effects
+            }
+        }
+
+    @Test
+    fun `The soaked battle unit should show stun-long and soak at 0 through its second stunned player turn when Thunder is cast after splash`() =
+        scenarioTest(::setUp) {
+            // Given
+            val effectsAtEachTurnStart = effectsAtEachCpuPlayerTurnStart("dummy-1")
+            cast(casterId = "water-bat-1", abilityId = "splash", targetId = "dummy-1")
+            cast(casterId = "storm-bat-1", abilityId = "thunder", targetId = "dummy-1")
+            // When
+            playARound()
+            playARound()
+            // Then
+            effectsAtEachTurnStart.shouldContainExactly(
+                listOf(OngoingEffectDto("soak", 1), OngoingEffectDto("stun", 0), OngoingEffectDto("stun-long", 1)),
+                listOf(OngoingEffectDto("soak", 0), OngoingEffectDto("stun-long", 0)),
+            )
+            battleUnitApi
+                .searchBattleUnitById("dummy-1")!!
+                .ongoingEffects.effects
+                .shouldContainExactly()
+        }
 
     @Test
     fun `Thunder should stun the soaked enemy for 2 player turns when it is cast after splash`() =
