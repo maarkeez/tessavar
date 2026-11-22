@@ -5,6 +5,7 @@ import com.mkz.tessavar.ability.adapters.resources.ResourcesAbilityLoader
 import com.mkz.tessavar.battle.adapters.presentation.BattleApi
 import com.mkz.tessavar.battleUnit.adapters.presentation.BattleUnitApi
 import com.mkz.tessavar.battleUnit.adapters.resources.ResourcesBattleUnitLoader
+import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent
 import com.mkz.tessavar.battlefield.adapters.presentation.BattlefieldApi
 import com.mkz.tessavar.battlefield.adapters.resources.ResourcesBattlefieldLoader
 import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldDecoder
@@ -12,6 +13,9 @@ import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldEncoder
 import com.mkz.tessavar.cpuBattleBrain.adapters.presentation.CpuBattleBrainApi
 import com.mkz.tessavar.effect.adapters.presentation.EffectApi
 import com.mkz.tessavar.effect.adapters.resources.ResourcesEffectLoader
+import com.mkz.tessavar.effect.domain.Effect.Dto.EffectApplicationDto
+import com.mkz.tessavar.effect.domain.Effect.Dto.EffectApplicationDto.SourceDto
+import com.mkz.tessavar.effect.domain.Effect.Dto.RecipientDto
 import com.mkz.tessavar.party.adapters.presentation.PartyApi
 import com.mkz.tessavar.party.domain.Party.Dto.DirectionDto
 import com.mkz.tessavar.player.adapters.presentation.PlayerApi
@@ -23,6 +27,7 @@ import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.terrain.adapters.resources.ResourcesTerrainLoader
 import com.mkz.tessavar.unit.adapters.presentation.UnitApi
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import kotlin.random.Random
@@ -110,5 +115,25 @@ class ExploringTerrainEffectAcceptanceTest {
             battlefieldApi.searchPosition("rat-1").shouldBeNull()
             battleApi.searchBattle().shouldBeNull()
             partyApi.searchParty()!!.isExploring.shouldBeTrue()
+        }
+
+    @Test
+    fun `should finish the venom left from a battle when its duration runs out while exploring`() =
+        scenarioTest(::setUp) {
+            // Given
+            eventBus.publish(
+                BattleUnitEvent.RequestApplyEffect(
+                    EffectApplicationDto(source = SourceDto.battleUnit("rat-1"), recipient = RecipientDto.battleUnit("knight-2"), effectId = "venom-damage", destination = null),
+                ),
+            )
+            eventBus.dispatch()
+            // When
+            repeat(6) { waitASecond() }
+            // Then
+            healthOf("knight-2") shouldBe 85
+            battleUnitApi
+                .searchBattleUnitById("knight-2")!!
+                .ongoingEffects.onPlayerTurnStarted
+                .shouldBeEmpty()
         }
 }

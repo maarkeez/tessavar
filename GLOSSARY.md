@@ -527,7 +527,7 @@ _Avoid_: Apply, tick
 The timing of an effect whose outcome triggers as soon as it is applied.
 
 **On player turn started**:
-The timing of an effect whose outcome triggers each time its recipient's player turn starts, for its duration.
+The timing of an effect whose outcome triggers each time its recipient's player turn starts, or each second while exploring, for its duration.
 _Avoid_: On turn started
 
 **On defeated**:
@@ -540,7 +540,7 @@ The timing of an effect whose outcome lasts while the item that applied it is eq
 The timing of an effect whose outcome lasts for its duration.
 
 **Duration**:
-How many player turns an effect timed on player turn started or while ongoing lasts for.
+How many player turns, or seconds while exploring, an effect timed on player turn started or while ongoing lasts for.
 
 ### Inventory
 

@@ -1,5 +1,6 @@
 package com.mkz.tessavar.party.usecases.commands
 
+import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent
 import com.mkz.tessavar.battleUnit.domain.BattleUnitMother.battleUnit
 import com.mkz.tessavar.battlefield.domain.BattlefieldEvent
 import com.mkz.tessavar.battlefield.domain.BattlefieldMother.battlefield
@@ -10,6 +11,7 @@ import com.mkz.tessavar.shared.domain.FakeEventBus
 import com.mkz.tessavar.shared.domain.shouldHavePublishedEvents
 import com.mkz.tessavar.shared.domain.shouldNotHavePublishedEvents
 import com.mkz.tessavar.shared.usecases.InMemoryQueries
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
@@ -38,6 +40,7 @@ class ApplyStandingTerrainEffectsTest {
         // Then
         eventBus.shouldHavePublishedEvents(
             BattlefieldEvent.RequestTerrainEffects(occupantIds = setOf("knight-1", "knight-2", "rat-1")),
+            BattleUnitEvent.RequestTriggerOngoingEffects(battleUnitIds = setOf("knight-1", "knight-2", "rat-1")),
             PartyEvent.ExplorationSecondStarted(playerId = "human"),
         )
     }
@@ -52,6 +55,7 @@ class ApplyStandingTerrainEffectsTest {
         // Then
         eventBus.shouldHavePublishedEvents(
             BattlefieldEvent.RequestTerrainEffects(occupantIds = setOf("knight-2", "rat-1")),
+            BattleUnitEvent.RequestTriggerOngoingEffects(battleUnitIds = setOf("knight-1", "knight-2", "rat-1")),
             PartyEvent.ExplorationSecondStarted(playerId = "human"),
         )
     }
@@ -65,7 +69,7 @@ class ApplyStandingTerrainEffectsTest {
         // When
         applyStandingTerrainEffects()
         // Then
-        eventBus.publishedEvents.takeLast(2).first() shouldBe BattlefieldEvent.RequestTerrainEffects(occupantIds = setOf("knight-1", "knight-2", "rat-1"))
+        eventBus.publishedEvents.takeLast(3).first() shouldBe BattlefieldEvent.RequestTerrainEffects(occupantIds = setOf("knight-1", "knight-2", "rat-1"))
     }
 
     @Test
@@ -79,8 +83,20 @@ class ApplyStandingTerrainEffectsTest {
         // Then
         eventBus.shouldHavePublishedEvents(
             BattlefieldEvent.RequestTerrainEffects(occupantIds = setOf("knight-1", "knight-2")),
+            BattleUnitEvent.RequestTriggerOngoingEffects(battleUnitIds = setOf("knight-1", "knight-2")),
             PartyEvent.ExplorationSecondStarted(playerId = "human"),
         )
+    }
+
+    @Test
+    fun `Standing terrain effects should request the ongoing effects of every battle unit each second while exploring`() {
+        // Given
+        givenBattlefield()
+        partyRepository.save(party().markMoved("knight-1").markMoved("rat-1"))
+        // When
+        applyStandingTerrainEffects()
+        // Then
+        eventBus.publishedEvents shouldContain BattleUnitEvent.RequestTriggerOngoingEffects(battleUnitIds = setOf("knight-1", "knight-2", "rat-1"))
     }
 
     @Test
@@ -106,7 +122,7 @@ class ApplyStandingTerrainEffectsTest {
     }
 
     @Test
-    fun `should only start the next second when every battle unit moved during the second`() {
+    fun `should only trigger the ongoing effects and start the next second when every battle unit moved during the second`() {
         // Given
         givenBattleUnits("knight-1")
         queries.battlefieldRepository.create(battlefield("K .", occupants = mapOf('K' to "knight-1")))
@@ -114,7 +130,10 @@ class ApplyStandingTerrainEffectsTest {
         // When
         applyStandingTerrainEffects()
         // Then
-        eventBus.shouldHavePublishedEvents(PartyEvent.ExplorationSecondStarted(playerId = "human"))
+        eventBus.shouldHavePublishedEvents(
+            BattleUnitEvent.RequestTriggerOngoingEffects(battleUnitIds = setOf("knight-1")),
+            PartyEvent.ExplorationSecondStarted(playerId = "human"),
+        )
     }
 
     @Test

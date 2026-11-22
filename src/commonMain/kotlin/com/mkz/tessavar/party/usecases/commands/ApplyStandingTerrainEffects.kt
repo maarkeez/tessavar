@@ -1,5 +1,6 @@
 package com.mkz.tessavar.party.usecases.commands
 
+import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent
 import com.mkz.tessavar.battleUnit.usecases.queries.SearchBattleUnitById
 import com.mkz.tessavar.battlefield.domain.BattlefieldEvent
 import com.mkz.tessavar.battlefield.usecases.queries.SearchBattlefield
@@ -28,6 +29,9 @@ class ApplyStandingTerrainEffects(
         partyRepository.save(nextSecondParty)
         if (standingBattleUnitIds.isNotEmpty()) {
             eventBus.publish(BattlefieldEvent.RequestTerrainEffects(occupantIds = standingBattleUnitIds))
+        }
+        if (occupantIds.isNotEmpty()) {
+            eventBus.publish(BattleUnitEvent.RequestTriggerOngoingEffects(battleUnitIds = occupantIds))
         }
         eventBus.publish(events)
     }

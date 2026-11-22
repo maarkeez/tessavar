@@ -209,7 +209,7 @@ const DATA = {
   "subdomains": [
     {"name": "ability", "files": 14, "fanIn": 4, "fanOut": 2, "instability": 0.33, "importsIn": 29, "importsOut": 15},
     {"name": "battle", "files": 21, "fanIn": 8, "fanOut": 1, "instability": 0.11, "importsIn": 39, "importsOut": 22},
-    {"name": "battleUnit", "files": 65, "fanIn": 7, "fanOut": 7, "instability": 0.5, "importsIn": 69, "importsOut": 175},
+    {"name": "battleUnit", "files": 65, "fanIn": 7, "fanOut": 7, "instability": 0.5, "importsIn": 70, "importsOut": 175},
     {"name": "battlefield", "files": 44, "fanIn": 10, "fanOut": 4, "instability": 0.29, "importsIn": 110, "importsOut": 40},
     {"name": "building", "files": 10, "fanIn": 2, "fanOut": 2, "instability": 0.5, "importsIn": 4, "importsOut": 14},
     {"name": "cpuBattleBrain", "files": 35, "fanIn": 2, "fanOut": 10, "instability": 0.83, "importsIn": 7, "importsOut": 107},
@@ -221,7 +221,7 @@ const DATA = {
     {"name": "lootTable", "files": 11, "fanIn": 3, "fanOut": 2, "instability": 0.4, "importsIn": 7, "importsOut": 12},
     {"name": "lootableItem", "files": 12, "fanIn": 5, "fanOut": 2, "instability": 0.29, "importsIn": 28, "importsOut": 14},
     {"name": "npc", "files": 19, "fanIn": 3, "fanOut": 4, "instability": 0.57, "importsIn": 12, "importsOut": 31},
-    {"name": "party", "files": 43, "fanIn": 8, "fanOut": 6, "instability": 0.43, "importsIn": 60, "importsOut": 77},
+    {"name": "party", "files": 43, "fanIn": 8, "fanOut": 6, "instability": 0.43, "importsIn": 60, "importsOut": 78},
     {"name": "player", "files": 15, "fanIn": 6, "fanOut": 1, "instability": 0.14, "importsIn": 34, "importsOut": 12},
     {"name": "quest", "files": 28, "fanIn": 3, "fanOut": 5, "instability": 0.63, "importsIn": 23, "importsOut": 35},
     {"name": "save", "files": 11, "fanIn": 1, "fanOut": 1, "instability": 0.5, "importsIn": 12, "importsOut": 8},
@@ -949,11 +949,12 @@ const DATA = {
       {"file": "com/mkz/tessavar/party/adapters/events/OnBattleStarted.kt", "layer": "adapters", "name": "battle.domain.BattleEvent"},
       {"file": "com/mkz/tessavar/party/usecases/commands/LeaveParty.kt", "layer": "usecases", "name": "battle.domain.BattleEvent"}
     ]},
-    {"from": "party", "to": "battleUnit", "weight": 13, "files": 13, "imports": [
+    {"from": "party", "to": "battleUnit", "weight": 14, "files": 13, "imports": [
       {"file": "com/mkz/tessavar/party/adapters/events/OnBattleUnitDefeated.kt", "layer": "adapters", "name": "battleUnit.domain.BattleUnitEvent"},
       {"file": "com/mkz/tessavar/party/adapters/events/OnBattleUnitMoved.kt", "layer": "adapters", "name": "battleUnit.domain.BattleUnitEvent"},
       {"file": "com/mkz/tessavar/party/adapters/presentation/PartyApi.kt", "layer": "adapters", "name": "battleUnit.adapters.presentation.BattleUnitApi"},
       {"file": "com/mkz/tessavar/party/usecases/commands/ApplyMemberEffect.kt", "layer": "usecases", "name": "battleUnit.domain.BattleUnitEvent.RequestApplyEffect"},
+      {"file": "com/mkz/tessavar/party/usecases/commands/ApplyStandingTerrainEffects.kt", "layer": "usecases", "name": "battleUnit.domain.BattleUnitEvent"},
       {"file": "com/mkz/tessavar/party/usecases/commands/ApplyStandingTerrainEffects.kt", "layer": "usecases", "name": "battleUnit.usecases.queries.SearchBattleUnitById"},
       {"file": "com/mkz/tessavar/party/usecases/commands/JoinParty.kt", "layer": "usecases", "name": "battleUnit.usecases.queries.SearchBattleUnitById"},
       {"file": "com/mkz/tessavar/party/usecases/commands/LoadPartySnapshot.kt", "layer": "usecases", "name": "battleUnit.usecases.queries.SearchBattleUnitById"},
