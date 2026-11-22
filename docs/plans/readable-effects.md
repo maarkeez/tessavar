@@ -1,6 +1,6 @@
 # Plan: effects the player can read: grouped icons with their remaining duration, and an effect info on tap
 
-> **Status:** built on `main`, the screenshots of M1 still to be approved.
+> **Status:** built on `main`, the screenshots of M1 and M2 still to be approved.
 >
 > **Summary:** Today the battle unit info shows each ongoing effect as a bare 20×20 icon, up to ten and then a "+",
 > with no name, no description and no remaining duration, and tapping an icon does nothing. E.g.: a hero poisoned twice
@@ -50,10 +50,10 @@ soaked by the water bat's Splash:
 
 Each milestone is a few commits straight on `main`, green on CI.
 
-| #  | Milestone          | Done when                                                                                                                                                          | Status | Done in |
-|----|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
+| #  | Milestone          | Done when                                                                                                                                                          | Status | Done in  |
+|----|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
 | M1 | Grouped live icons | The battle unit info and the cast preview show one icon per effect with its count and remaining duration, live while exploring, approved on Storybook screenshots. | ✅      | c0b19a8b |
-| M2 | Effect info        | Tapping an effect icon shows its effect info, in English and Spanish, approved on Storybook screenshots.                                                           | ⬜      |         |
+| M2 | Effect info        | Tapping an effect icon shows its effect info, in English and Spanish, approved on Storybook screenshots.                                                           | ✅      | bb2eb376 |
 
 ### M1 commits
 
@@ -234,3 +234,20 @@ translator comment, as the ability info's do.
   their effects from the effect images, in order. **Screen / Effect** also gains `Stacked` (`screen-effect--stacked`)
   and `No duration` (`screen-effect--no-duration`), with `remainingDuration` (`int`, 0–9) and `stacks` (`int`, 1–3)
   controls.
+- M2's commits 1 and 2 are split otherwise: c78edd1a holds the catalog, `EffectInfoMapper` and `EffectInfoView`, as the
+  mapper builds the view's `EffectInfo`, and f5d4d9ee the taps in `BattleUnitInfoView` with the stories. bb2eb376 gives
+  the sample effect info of a story the remaining duration its icon shows.
+- The stack count reads x2, not ×2, on the icon and in `ui.effectInfo.title` ("{effect} x{stacks}"): the game's bitmap
+  font is built from `CharacterSet.LATIN_ALL`, which has no ×, as `LocalizationResourcesTest` checks.
+- `EffectInfoView.EffectInfo.sentence` is a sealed `Sentence` (`DamageOnPlayerTurnStarted`, `NegateActions`, `Resist`,
+  `OnDefeatedDamageAdjacentAllies`) that `EffectInfoView` words, as `AbilityInfoView` does, and
+  `EffectInfoMapper.effectInfo` also takes `searchEffect`, for the venom venom burst spreads. The title is 16 px, as the
+  ability info's name.
+- `BattleUnitInfo.battleUnitId` and `effectInfos` default to "" and none, so the stories and tests that do not need them
+  stay as they are. `BattleUnitInfoMapper` leaves out of `effectInfos` an effect it can not find.
+- The tapped effect's story is **Screen / HUD › Effect info** (`screen-hud--effect-info`), not **Screen / Battle unit
+  info › Effect info**: a `tappedEffect` control would make the battle unit info's controls cover its actions, which
+  `StorySmokeTest` checks. Tapping an icon in **Screen / Battle unit info › With effects** opens it too.
+- The effect info also closes when `BattleUnitInfoView.hide()` or `displayAbilityInfo` is called. Its view tests are
+  `TapEffect…`, `TapEffectInfo…`, `Display…`, `Refresh…` and `Hide…` in `BattleUnitInfoViewTest`, and `EffectNamesTest`
+  also checks that `EffectInfoMapper` describes every lasting effect of the game resources.
