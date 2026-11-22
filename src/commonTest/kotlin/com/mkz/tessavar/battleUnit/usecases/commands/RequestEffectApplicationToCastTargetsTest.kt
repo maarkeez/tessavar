@@ -156,7 +156,7 @@ class RequestEffectApplicationToCastTargetsTest {
         val effect =
             damageEffect(id = effectId, damage = 3)
                 .toDto()
-                .copy(timing = TimingDto(type = TimingTypeDto.ON_DEFEATED, onPlayerTurnStarted = null, beforeApplyingEffect = null))
+                .copy(timing = TimingDto(type = TimingTypeDto.ON_DEFEATED, onPlayerTurnStarted = null, whileOngoing = null))
         val unit = unit(baseMaximumHealth = 10).toDto()
         val player = player(id = "player-1").toDto()
         val battleUnit = battleUnit(unit = unit, player = player)

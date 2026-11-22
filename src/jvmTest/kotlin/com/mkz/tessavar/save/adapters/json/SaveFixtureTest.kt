@@ -1,9 +1,14 @@
 package com.mkz.tessavar.save.adapters.json
 
+import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.RequestApplyEffect
 import com.mkz.tessavar.battleUnit.usecases.services.BattleUnitLoader.Deployment
 import com.mkz.tessavar.cpuBattleBrain.adapters.presentation.CpuBattleBrainApi
 import com.mkz.tessavar.cpuWanderBrain.adapters.presentation.CpuWanderBrainApi
+import com.mkz.tessavar.effect.domain.Effect.Dto.EffectApplicationDto
+import com.mkz.tessavar.effect.domain.Effect.Dto.EffectApplicationDto.SourceDto
+import com.mkz.tessavar.effect.domain.Effect.Dto.RecipientDto
 import com.mkz.tessavar.effect.domain.EffectMother.healEffect
+import com.mkz.tessavar.effect.domain.EffectMother.resistEffect
 import com.mkz.tessavar.lootDrop.domain.LootDropMother.lootDrop
 import com.mkz.tessavar.lootTable.domain.LootTableMother.lootTable
 import com.mkz.tessavar.lootTable.domain.LootTableMother.lootableItemEntry
@@ -61,7 +66,7 @@ class SaveFixtureTest {
         val apis =
             SubdomainApis(
                 terrains = listOf(terrainThatCanBeOccupied(id = "sand", transitionsTo = setOf("void")).toDto(), terrainThatCanNotBeOccupied(id = "void").toDto()),
-                effects = listOf(healEffect(id = "cure").toDto()),
+                effects = listOf(healEffect(id = "cure").toDto(), resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2).toDto()),
                 lootableItems = listOf(consumableLootableItem(id = "health-potion", price = 10, consumable = consumable(effectIds = setOf("cure"))).toDto()),
                 lootTables = listOf(lootTable(id = "rat-loot", entries = listOf(lootableItemEntry(lootableItemId = "health-potion"), nothingEntry())).toDto()),
                 units =
@@ -140,6 +145,9 @@ class SaveFixtureTest {
         fun playAndSave(): String {
             apis.eventBus.publish(TelemetryEvent.RequestStartGame(World.CAMPAIGN_ID))
             apis.questApi.startMainQuest(battleUnitId = "knight-1", path = listOf(PositionDto(row = 0, column = 0)))
+            apis.eventBus.publish(
+                RequestApplyEffect(EffectApplicationDto(source = SourceDto.terrain("water"), recipient = RecipientDto.battleUnit("knight-1"), effectId = "soak", destination = null)),
+            )
             apis.lootDropApi.snapshottable.load("""[{"unitId":"rat","droppedItems":[{"row":1,"column":1,"lootableItemIds":["health-potion"]}]}]""")
             apis.partyApi.stepParty(DirectionDto.EAST)
             apis.eventBus.dispatch()

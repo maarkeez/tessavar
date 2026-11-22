@@ -4,12 +4,14 @@ import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent
 import com.mkz.tessavar.battleUnit.domain.BattleUnitMother.battleUnit
 import com.mkz.tessavar.battlefield.domain.BattlefieldMother.battlefield
 import com.mkz.tessavar.effect.domain.EffectMother.damageEffect
+import com.mkz.tessavar.effect.domain.EffectMother.resistEffect
 import com.mkz.tessavar.player.domain.PlayerMother.player
 import com.mkz.tessavar.shared.domain.FakeEventBus
 import com.mkz.tessavar.shared.domain.shouldHavePublishedEvents
 import com.mkz.tessavar.shared.usecases.InMemoryQueries
 import com.mkz.tessavar.unit.domain.UnitMother.unit
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
@@ -49,6 +51,48 @@ class TriggerOnPlayerTurnStartedEffectsTest {
             BattleUnitEvent.OnPlayerTurnStartedEffectTriggered(battleUnitId = battleUnit.toDto().id, effectId = effectId),
             BattleUnitEvent.BattleUnitDamaged(battleUnit.toDto().id),
         )
+    }
+
+    @Test
+    fun `Trigger should count down the effects timed while ongoing when the player turn starts`() {
+        // Given
+        queries.effectRepository.create(resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2))
+        val battleUnit =
+            battleUnit(id = "knight-1", player = player(id = "player-1").toDto())
+                .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+                .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 1)
+                .pullEvents()
+                .second
+        battleUnitRepository.create(battleUnit)
+        queries.battlefieldRepository.create(battlefield("K .", occupants = mapOf('K' to "knight-1")))
+        // When
+        triggerOnPlayerTurnStartedEffects("player-1", setOf("knight-1"))
+        // Then
+        battleUnitRepository
+            .searchById("knight-1")!!
+            .toDto()
+            .ongoingEffects.whileOngoing
+            .shouldContainExactly("soak")
+        eventBus.publishedEvents.shouldBeEmpty()
+    }
+
+    @Test
+    fun `Trigger should lessen the damage by the ongoing resists when the player turn starts`() {
+        // Given
+        queries.effectRepository.create(damageEffect(id = "burn", damage = 4, timingType = "ON_PLAYER_TURN_STARTED"))
+        queries.effectRepository.create(resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2))
+        val battleUnit =
+            battleUnit(id = "knight-1", unit = unit(baseMaximumHealth = 10).toDto(), player = player(id = "player-1").toDto())
+                .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+                .receiveOnPlayerTurnStartedEffect(effectId = "burn", remainingDuration = 2)
+                .pullEvents()
+                .second
+        battleUnitRepository.create(battleUnit)
+        queries.battlefieldRepository.create(battlefield("K .", occupants = mapOf('K' to "knight-1")))
+        // When
+        triggerOnPlayerTurnStartedEffects("player-1", setOf("knight-1"))
+        // Then
+        battleUnitRepository.searchById("knight-1")!!.toDto().remainingHealth shouldBe 8
     }
 
     @Test

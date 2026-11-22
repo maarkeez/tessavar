@@ -1,11 +1,14 @@
 package com.mkz.tessavar.effect.adapters.resources
 
 import com.mkz.tessavar.effect.domain.EffectMother.applyEffectToAdjacentAlliesEffect
+import com.mkz.tessavar.effect.domain.EffectMother.applyIfOngoingEffect
 import com.mkz.tessavar.effect.domain.EffectMother.damageEffect
 import com.mkz.tessavar.effect.domain.EffectMother.healEffect
 import com.mkz.tessavar.effect.domain.EffectMother.increaseMaximumHealthEffect
 import com.mkz.tessavar.effect.domain.EffectMother.increaseMaximumManaEffect
 import com.mkz.tessavar.effect.domain.EffectMother.learnAbilityEffect
+import com.mkz.tessavar.effect.domain.EffectMother.negateActionsEffect
+import com.mkz.tessavar.effect.domain.EffectMother.resistEffect
 import com.mkz.tessavar.effect.domain.EffectMother.restoreManaEffect
 import com.mkz.tessavar.effect.domain.EffectMother.summonEffect
 import com.mkz.tessavar.effect.domain.EffectMother.teleportEffect
@@ -48,6 +51,51 @@ class ResourcesEffectLoaderTest {
                 damageEffect(id = "venom", damage = 3).toDto(),
                 increaseMaximumManaEffect(id = "wise", maximumMana = 5).toDto(),
             )
+        }
+
+    @Test
+    fun `Loader should read a resist timed while ongoing when the effect file holds one`() =
+        runTest {
+            // Given
+            val effectRoot =
+                MemoryVfsMix(
+                    "effect/soak.toml" to "[outcome]\ntype = \"RESIST\"\neffectId = \"burn\"\nshare = 50\n\n[timing]\ntype = \"WHILE_ONGOING\"\nduration = 2\n",
+                )["effect"]
+            val loader = ResourcesEffectLoader(effectRoot = effectRoot)
+            // When
+            loader.initResources()
+            // Then
+            loader.loadEffects().shouldContainExactly(resistEffect(id = "soak", effectId = "burn", share = 50, duration = 2).toDto())
+        }
+
+    @Test
+    fun `Loader should read an apply if ongoing when the effect file holds one`() =
+        runTest {
+            // Given
+            val effectRoot =
+                MemoryVfsMix(
+                    "effect/stun-long-if-soaked.toml" to "[outcome]\ntype = \"APPLY_IF_ONGOING\"\neffectId = \"stun-long\"\nongoingEffectId = \"soak\"\n\n[timing]\ntype = \"IMMEDIATELY\"\n",
+                )["effect"]
+            val loader = ResourcesEffectLoader(effectRoot = effectRoot)
+            // When
+            loader.initResources()
+            // Then
+            loader.loadEffects().shouldContainExactly(applyIfOngoingEffect(id = "stun-long-if-soaked", effectId = "stun-long", ongoingEffectId = "soak").toDto())
+        }
+
+    @Test
+    fun `Loader should read a negate actions when the effect file holds one`() =
+        runTest {
+            // Given
+            val effectRoot =
+                MemoryVfsMix(
+                    "effect/stun.toml" to "[outcome]\ntype = \"NEGATE_ACTIONS\"\n\n[timing]\ntype = \"ON_PLAYER_TURN_STARTED\"\nduration = 1\n",
+                )["effect"]
+            val loader = ResourcesEffectLoader(effectRoot = effectRoot)
+            // When
+            loader.initResources()
+            // Then
+            loader.loadEffects().shouldContainExactly(negateActionsEffect(id = "stun", duration = 1).toDto())
         }
 
     @Test

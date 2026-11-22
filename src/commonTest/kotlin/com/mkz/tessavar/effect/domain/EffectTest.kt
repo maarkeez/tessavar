@@ -6,9 +6,9 @@ import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.DAMAGE
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.LEARN_ABILITY
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.SUMMON
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto
-import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.BeforeApplyingEffectDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.OnPlayerTurnStartedDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.TimingTypeDto
+import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.WhileOngoingDto
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
@@ -35,7 +35,7 @@ class EffectTest {
             EffectMother
                 .damageEffect()
                 .toDto()
-                .copy(timing = TimingDto(type = TimingTypeDto.ON_DEFEATED, onPlayerTurnStarted = null, beforeApplyingEffect = null))
+                .copy(timing = TimingDto(type = TimingTypeDto.ON_DEFEATED, onPlayerTurnStarted = null, whileOngoing = null))
         // When
         val createdEffect = Effect.create(effectDto)
         // Then
@@ -79,7 +79,7 @@ class EffectTest {
             EffectMother
                 .damageEffect()
                 .toDto()
-                .copy(timing = TimingDto(type = TimingTypeDto.ON_PLAYER_TURN_STARTED, onPlayerTurnStarted = null, beforeApplyingEffect = null))
+                .copy(timing = TimingDto(type = TimingTypeDto.ON_PLAYER_TURN_STARTED, onPlayerTurnStarted = null, whileOngoing = null))
         // When
         val result = runCatching { Effect.create(effectDto) }
         // Then
@@ -98,7 +98,7 @@ class EffectTest {
                         TimingDto(
                             type = TimingTypeDto.ON_PLAYER_TURN_STARTED,
                             onPlayerTurnStarted = OnPlayerTurnStartedDto(duration = -1),
-                            beforeApplyingEffect = null,
+                            whileOngoing = null,
                         ),
                 )
         // When
@@ -119,7 +119,7 @@ class EffectTest {
                         TimingDto(
                             type = TimingTypeDto.ON_PLAYER_TURN_STARTED,
                             onPlayerTurnStarted = OnPlayerTurnStartedDto(duration = 100),
-                            beforeApplyingEffect = null,
+                            whileOngoing = null,
                         ),
                 )
         // When
@@ -192,7 +192,7 @@ class EffectTest {
                         TimingDto(
                             type = TimingTypeDto.ON_PLAYER_TURN_STARTED,
                             onPlayerTurnStarted = OnPlayerTurnStartedDto(duration = 0),
-                            beforeApplyingEffect = null,
+                            whileOngoing = null,
                         ),
                 )
         // When
@@ -216,7 +216,7 @@ class EffectTest {
                         TimingDto(
                             type = TimingTypeDto.ON_PLAYER_TURN_STARTED,
                             onPlayerTurnStarted = OnPlayerTurnStartedDto(duration = 99),
-                            beforeApplyingEffect = null,
+                            whileOngoing = null,
                         ),
                 )
         // When
@@ -229,72 +229,149 @@ class EffectTest {
     }
 
     @Test
-    fun `Create should create effect when the before applying effect duration is zero`() {
+    fun `Create should create effect when the while ongoing duration is zero`() {
         // Given
-        val effectDto =
-            EffectMother
-                .damageEffect()
-                .toDto()
-                .copy(
-                    timing =
-                        TimingDto(
-                            type = TimingTypeDto.BEFORE_APPLYING_EFFECT,
-                            onPlayerTurnStarted = null,
-                            beforeApplyingEffect = BeforeApplyingEffectDto(duration = 0),
-                        ),
-                )
+        val effectDto = EffectMother.resistEffect().toDto().copy(timing = EffectMother.whileOngoingTiming(duration = 0))
         // When
         val createdEffect = Effect.create(effectDto)
         // Then
         createdEffect
             .toDto()
-            .timing.beforeApplyingEffect!!
+            .timing.whileOngoing!!
             .duration shouldBe 0
     }
 
     @Test
-    fun `Create should create effect when the before applying effect duration is at the limit`() {
+    fun `Create should create effect when the while ongoing duration is at the limit`() {
         // Given
-        val effectDto =
-            EffectMother
-                .damageEffect()
-                .toDto()
-                .copy(
-                    timing =
-                        TimingDto(
-                            type = TimingTypeDto.BEFORE_APPLYING_EFFECT,
-                            onPlayerTurnStarted = null,
-                            beforeApplyingEffect = BeforeApplyingEffectDto(duration = 99),
-                        ),
-                )
+        val effectDto = EffectMother.resistEffect().toDto().copy(timing = EffectMother.whileOngoingTiming(duration = 99))
         // When
         val createdEffect = Effect.create(effectDto)
         // Then
         createdEffect
             .toDto()
-            .timing.beforeApplyingEffect!!
+            .timing.whileOngoing!!
             .duration shouldBe 99
     }
 
     @Test
-    fun `Create should fail when the before applying effect is missing its details`() {
+    fun `Create should fail when the while ongoing timing is missing its details`() {
         // Given
         val effectDto =
             EffectMother
-                .damageEffect()
+                .resistEffect()
                 .toDto()
-                .copy(
-                    timing =
-                        TimingDto(
-                            type = TimingTypeDto.BEFORE_APPLYING_EFFECT,
-                            onPlayerTurnStarted = null,
-                            beforeApplyingEffect = null,
-                        ),
-                )
+                .copy(timing = TimingDto(type = TimingTypeDto.WHILE_ONGOING, onPlayerTurnStarted = null, whileOngoing = null))
         // When
         val result = runCatching { Effect.create(effectDto) }
         // Then
         result.exceptionOrNull().shouldBeTypeOf<EffectError.MissingEffectTimingDetails>()
+    }
+
+    @Test
+    fun `Effect should be created when the outcome negates actions on player turn started`() {
+        // Given
+        val effectDto = EffectMother.negateActionsEffect(duration = 2).toDto()
+        // When
+        val createdEffect = Effect.create(effectDto)
+        // Then
+        createdEffect.toDto() shouldBe effectDto
+    }
+
+    @Test
+    fun `Effect should fail to be created when negate actions is timed immediately`() {
+        // Given
+        val effectDto = EffectMother.negateActionsEffect().toDto().copy(timing = EffectMother.immediatelyTiming())
+        // When
+        val result = runCatching { Effect.create(effectDto) }
+        // Then
+        result.exceptionOrNull().shouldBeTypeOf<EffectError.InvalidEffectTiming>()
+    }
+
+    @Test
+    fun `Effect should be created when the outcome applies if ongoing immediately`() {
+        // Given
+        val effectDto = EffectMother.applyIfOngoingEffect(effectId = "stun-long", ongoingEffectId = "soak").toDto()
+        // When
+        val createdEffect = Effect.create(effectDto)
+        // Then
+        createdEffect.toDto() shouldBe effectDto
+    }
+
+    @Test
+    fun `Effect should fail to be created when apply if ongoing is not timed immediately`() {
+        // Given
+        val effectDto = EffectMother.applyIfOngoingEffect().toDto().copy(timing = EffectMother.onPlayerTurnStartedTiming(duration = 2))
+        // When
+        val result = runCatching { Effect.create(effectDto) }
+        // Then
+        result.exceptionOrNull().shouldBeTypeOf<EffectError.InvalidEffectTiming>()
+    }
+
+    @Test
+    fun `Effect should be created when the outcome resists while ongoing`() {
+        // Given
+        val effectDto = EffectMother.resistEffect(effectId = "burn", share = 50, duration = 2).toDto()
+        // When
+        val createdEffect = Effect.create(effectDto)
+        // Then
+        createdEffect.toDto() shouldBe effectDto
+    }
+
+    @Test
+    fun `Effect should fail to be created when resist is not timed while ongoing`() {
+        // Given
+        val effectDto = EffectMother.resistEffect().toDto().copy(timing = EffectMother.onPlayerTurnStartedTiming(duration = 2))
+        // When
+        val result = runCatching { Effect.create(effectDto) }
+        // Then
+        result.exceptionOrNull().shouldBeTypeOf<EffectError.InvalidEffectTiming>()
+    }
+
+    @Test
+    fun `Effect should fail to be created when a timing while ongoing has another outcome`() {
+        // Given
+        val effectDto = EffectMother.damageEffect().toDto().copy(timing = EffectMother.whileOngoingTiming(duration = 2))
+        // When
+        val result = runCatching { Effect.create(effectDto) }
+        // Then
+        result.exceptionOrNull().shouldBeTypeOf<EffectError.InvalidEffectTiming>()
+    }
+
+    @Test
+    fun `Effect should fail to be created when the resist share is above 100`() {
+        // When
+        val result = runCatching { EffectMother.resistEffect(share = 101) }
+        // Then
+        result.exceptionOrNull().shouldBeTypeOf<EffectError.AmountAboveLimit>()
+    }
+
+    @Test
+    fun `Effect should fail to be created when the resist share is below 1`() {
+        // When
+        val result = runCatching { EffectMother.resistEffect(share = 0) }
+        // Then
+        result.exceptionOrNull().shouldBeTypeOf<EffectError.NegativeAmount>()
+    }
+
+    @Test
+    fun `Effect should be created when adjacent allies is timed immediately`() {
+        // Given
+        val effectDto = EffectMother.applyEffectToAdjacentAlliesEffect().toDto().copy(timing = EffectMother.immediatelyTiming())
+        // When
+        val createdEffect = Effect.create(effectDto)
+        // Then
+        createdEffect.toDto() shouldBe effectDto
+    }
+
+    @Test
+    fun `Effect should fail to be created when adjacent allies is timed on player turn started`() {
+        // Given
+        val effectDto = EffectMother.applyEffectToAdjacentAlliesEffect().toDto().copy(timing = EffectMother.onPlayerTurnStartedTiming(duration = 2))
+        // When
+        val result = runCatching { Effect.create(effectDto) }
+        // Then
+        result.exceptionOrNull().shouldBeTypeOf<EffectError.InvalidEffectTiming>()
     }
 
     @Test
@@ -589,18 +666,13 @@ class EffectTest {
     }
 
     @Test
-    fun `ToDto should expose the before applying effect details when the timing is before applying effect`() {
+    fun `ToDto should expose the while ongoing details when the timing is while ongoing`() {
         // Given
-        val beforeApplyingEffect = BeforeApplyingEffectDto(duration = 3)
+        val whileOngoing = WhileOngoingDto(duration = 3)
         // When
-        val timing =
-            TimingDto(
-                type = TimingTypeDto.BEFORE_APPLYING_EFFECT,
-                onPlayerTurnStarted = null,
-                beforeApplyingEffect = beforeApplyingEffect,
-            )
+        val timing = TimingDto(type = TimingTypeDto.WHILE_ONGOING, onPlayerTurnStarted = null, whileOngoing = whileOngoing)
         // Then
-        timing.beforeApplyingEffect shouldBe beforeApplyingEffect
+        timing.whileOngoing shouldBe whileOngoing
         timing.onPlayerTurnStarted.shouldBeNull()
     }
 

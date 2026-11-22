@@ -54,6 +54,7 @@ import com.mkz.tessavar.battleUnit.usecases.queries.SearchBattleUnitsSnapshot
 import com.mkz.tessavar.battleUnit.usecases.queries.WhereCanCast
 import com.mkz.tessavar.battleUnit.usecases.queries.WhereCanWalk
 import com.mkz.tessavar.battleUnit.usecases.services.AdjacencyService
+import com.mkz.tessavar.battleUnit.usecases.services.AdjacentAllies
 import com.mkz.tessavar.battleUnit.usecases.services.BattleUnitDeployment
 import com.mkz.tessavar.battleUnit.usecases.services.BattleUnitLoader
 import com.mkz.tessavar.battleUnit.usecases.services.CastResolution
@@ -182,6 +183,7 @@ class BattleUnitApi(
             battleUnitRepository,
             eventBus,
         )
+    private val adjacentAllies = AdjacentAllies(battleUnitRepository, battlefieldApi.searchOccupant, adjacencyService)
     val applyEffect =
         ApplyEffect(
             battleUnitRepository,
@@ -190,13 +192,13 @@ class BattleUnitApi(
             battlefieldApi.searchPosition,
             battleUnitDeployment,
             abilityApi.searchAbilityById,
+            adjacentAllies,
         )
     val triggerOnDefeatedEffects =
         TriggerOnDefeatedEffects(
             battleUnitRepository,
             effectApi.searchEffectById,
-            battlefieldApi.searchOccupant,
-            adjacencyService,
+            adjacentAllies,
             eventBus,
         )
     val requestEffectApplicationToCastTargets =

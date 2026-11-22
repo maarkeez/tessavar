@@ -14,6 +14,7 @@ import com.mkz.tessavar.battleUnit.usecases.queries.SearchBattleUnitsByPlayerId
 import com.mkz.tessavar.battleUnit.usecases.queries.WhereCanCast
 import com.mkz.tessavar.battleUnit.usecases.queries.WhereCanWalk
 import com.mkz.tessavar.battleUnit.usecases.services.AdjacencyService
+import com.mkz.tessavar.battleUnit.usecases.services.AdjacentAllies
 import com.mkz.tessavar.battleUnit.usecases.services.CastResolution
 import com.mkz.tessavar.battlefield.adapters.storage.InMemoryBattlefieldRepository
 import com.mkz.tessavar.battlefield.usecases.queries.IsTileOccupiable
@@ -110,6 +111,7 @@ class InMemoryQueries(
     val searchWalkingDistance = SearchWalkingDistance(isTileVacant)
 
     val adjacencyService = AdjacencyService()
+    val adjacentAllies = AdjacentAllies(battleUnitRepository, searchOccupant, adjacencyService)
     val searchBattleUnitById = SearchBattleUnitById(battleUnitRepository)
     val searchBattleUnitsByPlayerId = SearchBattleUnitsByPlayerId(battleUnitRepository)
     val canWalkTo = CanWalkTo(battleUnitRepository, searchPosition, searchShortestPath)

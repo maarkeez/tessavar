@@ -30,12 +30,14 @@ import com.mkz.tessavar.battlefield.domain.BattlefieldEvent.RequestOccupyTile
 import com.mkz.tessavar.battlefield.domain.BattlefieldEvent.RequestRemoveOccupant
 import com.mkz.tessavar.effect.domain.Effect
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.APPLY_EFFECT_TO_ADJACENT_ALLIES
+import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.APPLY_IF_ONGOING
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.DAMAGE
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.HEAL
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.INCREASE_MAXIMUM_HEALTH
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.INCREASE_MAXIMUM_MANA
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.LEARN_ABILITY
-import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.NEGATE_INCREASE_HEALTH
+import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.NEGATE_ACTIONS
+import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.RESIST
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.RESTORE_MANA
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.SUMMON
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.TELEPORT
@@ -405,6 +407,24 @@ data class BattleUnit private constructor(
         )
     }
 
+    fun receiveWhileOngoingEffect(
+        effectId: String,
+        remainingDuration: Int,
+    ): BattleUnit {
+        val ongoingEffects = ongoingEffects.receiveWhileOngoingEffect(effectId, remainingDuration)
+        val effectReceivedEvent =
+            EffectReceived(
+                battleUnitId = id.value,
+                effectId = effectId,
+            )
+        return copy(
+            ongoingEffects = ongoingEffects,
+            events = events + effectReceivedEvent,
+        )
+    }
+
+    fun hasOngoingEffect(effectId: String): Boolean = ongoingEffects.hasOngoingEffect(effectId)
+
     fun receiveOnDefeatedEffect(effectId: String): BattleUnit {
         val ongoingEffects = ongoingEffects.receiveOnDefeatedEffect(effectId)
         val effectReceivedEvent =
@@ -429,11 +449,12 @@ data class BattleUnit private constructor(
         effect: Effect.Dto,
         currentRow: Int,
         currentColumn: Int,
+        ongoingEffectDefinitions: List<Effect.Dto> = emptyList(),
     ): BattleUnit {
         val ongoingEffects = ongoingEffects.triggerImmediateEffect(effect.id)
         return when (effect.outcome.type) {
             DAMAGE -> {
-                applyDecreaseHealthEffect(effect, ongoingEffects, currentRow, currentColumn)
+                applyDecreaseHealthEffect(effect, ongoingEffects, currentRow, currentColumn, ongoingEffectDefinitions)
             }
             HEAL -> {
                 val remainingHealth =
@@ -461,7 +482,9 @@ data class BattleUnit private constructor(
                 )
             }
             LEARN_ABILITY -> copy(ongoingEffects = ongoingEffects).learnAbility(effect.outcome.learnAbility!!.abilityId)
-            NEGATE_INCREASE_HEALTH,
+            NEGATE_ACTIONS,
+            APPLY_IF_ONGOING,
+            RESIST,
             APPLY_EFFECT_TO_ADJACENT_ALLIES,
             SUMMON,
             INCREASE_MAXIMUM_HEALTH,
@@ -482,21 +505,24 @@ data class BattleUnit private constructor(
 
     fun hasOnPlayerTurnStartedEffects(): Boolean = ongoingEffects.hasOnPlayerTurnStartedEffects()
 
+    fun hasEffectsCountedDownOnPlayerTurnStarted(): Boolean = ongoingEffects.hasOnPlayerTurnStartedEffects() || ongoingEffects.hasWhileOngoingEffects()
+
     fun triggerOnPlayerTurnStartedEffects(
         effects: List<Effect.Dto>,
         currentRow: Int,
         currentColumn: Int,
+        inBattle: Boolean = true,
     ): BattleUnit {
         var battleUnit = this
         var from = 0
         while (!battleUnit.isDefeated()) {
             val index = battleUnit.ongoingEffects.nextOnPlayerTurnStartedIndex(from) ?: break
-            val triggeredBattleUnit = battleUnit.triggerOnPlayerTurnStartedEffectAt(index, effects, currentRow, currentColumn)
+            val triggeredBattleUnit = battleUnit.triggerOnPlayerTurnStartedEffectAt(index, effects, currentRow, currentColumn, inBattle)
             val stackFinished = triggeredBattleUnit.ongoingEffects.value.size < battleUnit.ongoingEffects.value.size
             from = if (stackFinished) index else index + 1
             battleUnit = triggeredBattleUnit
         }
-        return battleUnit
+        return battleUnit.copy(ongoingEffects = battleUnit.ongoingEffects.countDownWhileOngoing())
     }
 
     private fun triggerOnPlayerTurnStartedEffectAt(
@@ -504,15 +530,21 @@ data class BattleUnit private constructor(
         effects: List<Effect.Dto>,
         currentRow: Int,
         currentColumn: Int,
+        inBattle: Boolean,
     ): BattleUnit {
         val effectId = ongoingEffects.effectIdAt(index)
         val effect = effects.firstOrNull { effect -> effect.id == effectId } ?: throw EffectNotFound()
         val ongoingEffects = ongoingEffects.triggerOnPlayerTurnStarted(index)
         val appliedEvent = OnPlayerTurnStartedEffectTriggered(battleUnitId = id.value, effectId = effect.id)
-        return if (effect.outcome.type == DAMAGE) {
-            copy(events = events + appliedEvent).applyDecreaseHealthEffect(effect, ongoingEffects, currentRow, currentColumn)
-        } else {
-            TODO("Not implemented yet")
+        return when (effect.outcome.type) {
+            DAMAGE -> copy(events = events + appliedEvent).applyDecreaseHealthEffect(effect, ongoingEffects, currentRow, currentColumn, effects)
+            NEGATE_ACTIONS ->
+                if (inBattle) {
+                    copy(ongoingEffects = ongoingEffects, remainingActions = remainingActions.negate(), events = events + appliedEvent)
+                } else {
+                    copy(ongoingEffects = ongoingEffects)
+                }
+            else -> TODO("Not implemented yet")
         }
     }
 
@@ -521,9 +553,11 @@ data class BattleUnit private constructor(
         ongoingEffects: OngoingEffects,
         currentRow: Int,
         currentColumn: Int,
+        ongoingEffectDefinitions: List<Effect.Dto>,
     ): BattleUnit {
         if (isDefeated()) return copy(ongoingEffects = ongoingEffects)
-        val remainingHealth = RemainingHealth(max(0, remainingHealth.value - effect.outcome.damage!!.damage))
+        val damage = damageAfterResists(effect, ongoingEffectDefinitions)
+        val remainingHealth = RemainingHealth(max(0, remainingHealth.value - damage))
         val newEvents =
             buildList {
                 add(BattleUnitDamaged(battleUnitId = id.value))
@@ -545,6 +579,25 @@ data class BattleUnit private constructor(
             remainingHealth = remainingHealth,
             events = events + newEvents,
         )
+    }
+
+    private fun damageAfterResists(
+        effect: Effect.Dto,
+        ongoingEffectDefinitions: List<Effect.Dto>,
+    ): Int {
+        val damage = effect.outcome.damage!!.damage
+        val share =
+            ongoingEffects
+                .whileOngoingEffectIds()
+                .sumOf { effectId ->
+                    ongoingEffectDefinitions
+                        .firstOrNull { definition -> definition.id == effectId }
+                        ?.outcome
+                        ?.resist
+                        ?.takeIf { resist -> resist.effectId == effect.id }
+                        ?.share ?: 0
+                }.coerceAtMost(100)
+        return (damage * (100 - share) + 99) / 100
     }
 
     @JvmInline private value class Id(
@@ -729,6 +782,8 @@ data class BattleUnit private constructor(
 
         fun canCastAbility(): Boolean = remainingCasts.value > 0
 
+        fun negate(): RemainingActions = copy(remainingSteps = RemainingSteps(0), remainingCasts = RemainingCasts(0))
+
         fun reduceRemainingCasts() = copy(remainingCasts = RemainingCasts(remainingCasts.value - 1))
 
         fun load(
@@ -834,6 +889,22 @@ data class BattleUnit private constructor(
             return OngoingEffects(value + newEffect)
         }
 
+        fun receiveWhileOngoingEffect(
+            effectId: String,
+            remainingDuration: Int,
+        ): OngoingEffects {
+            val newEffect = Effect.whileOngoing(effectId, remainingDuration)
+            return OngoingEffects(value + newEffect)
+        }
+
+        fun hasOngoingEffect(effectId: String): Boolean = value.any { effect -> !effect.isImmediate() && effect.hasEffectId(effectId) }
+
+        fun hasWhileOngoingEffects(): Boolean = value.any { it.isWhileOngoing() }
+
+        fun whileOngoingEffectIds(): List<String> = value.filter { it.isWhileOngoing() }.map { it.effectId() }
+
+        fun countDownWhileOngoing(): OngoingEffects = OngoingEffects(value.mapNotNull { effect -> if (effect.isWhileOngoing()) effect.countDownWhileOngoing() else effect })
+
         fun triggerImmediateEffect(effectId: String): OngoingEffects = OngoingEffects(value.filterNot { it.isImmediate() && it.hasEffectId(effectId) })
 
         fun nextOnPlayerTurnStartedIndex(from: Int): Int? = (from until value.size).firstOrNull { index -> value[index].isOnPlayerTurnStarted() }
@@ -861,6 +932,7 @@ data class BattleUnit private constructor(
             Dto.OngoingEffectsDto(
                 onPlayerTurnStarted = value.filter { it.isOnPlayerTurnStarted() }.map { it.effectId() },
                 onDefeatedEffects = value.filter { it.isOnDefeated() }.map { it.effectId() },
+                whileOngoing = whileOngoingEffectIds(),
             )
 
         constructor() : this(emptyList())
@@ -873,6 +945,7 @@ data class BattleUnit private constructor(
                             Dto.OngoingEffectSnapshotDto.TimingDto.IMMEDIATE -> Effect.immediate(snapshot.effectId)
                             Dto.OngoingEffectSnapshotDto.TimingDto.ON_DEFEATED -> Effect.onDefeated(snapshot.effectId)
                             Dto.OngoingEffectSnapshotDto.TimingDto.ON_PLAYER_TURN_STARTED -> Effect.onPlayerTurnStarted(snapshot.effectId, requireNotNull(snapshot.remainingDuration))
+                            Dto.OngoingEffectSnapshotDto.TimingDto.WHILE_ONGOING -> Effect.whileOngoing(snapshot.effectId, requireNotNull(snapshot.remainingDuration))
                         }
                     },
                 )
@@ -894,7 +967,16 @@ data class BattleUnit private constructor(
                 ) = Effect(EffectId(effectId), Timing.onPlayerTurnStarted(remainingDuration))
 
                 fun onDefeated(effectId: String) = Effect(EffectId(effectId), Timing.onDefeated())
+
+                fun whileOngoing(
+                    effectId: String,
+                    remainingDuration: Int,
+                ) = Effect(EffectId(effectId), Timing.WhileOngoing(remainingDuration))
             }
+
+            fun isWhileOngoing() = timing is Timing.WhileOngoing
+
+            fun countDownWhileOngoing(): Effect? = (timing as Timing.WhileOngoing).countDown()?.let { updatedTiming -> copy(timing = updatedTiming) }
 
             fun isOnPlayerTurnStarted() = timing.isOnPlayerTurnStarted()
 
@@ -918,6 +1000,8 @@ data class BattleUnit private constructor(
                     Timing.OnDefeated -> Dto.OngoingEffectSnapshotDto(effectId.value, Dto.OngoingEffectSnapshotDto.TimingDto.ON_DEFEATED, remainingDuration = null)
                     is Timing.OnPlayerTurnStarted ->
                         Dto.OngoingEffectSnapshotDto(effectId.value, Dto.OngoingEffectSnapshotDto.TimingDto.ON_PLAYER_TURN_STARTED, remainingDuration = timing.remainingDuration)
+                    is Timing.WhileOngoing ->
+                        Dto.OngoingEffectSnapshotDto(effectId.value, Dto.OngoingEffectSnapshotDto.TimingDto.WHILE_ONGOING, remainingDuration = timing.remainingDuration)
                 }
         }
 
@@ -934,6 +1018,12 @@ data class BattleUnit private constructor(
                 val remainingDuration: Int,
             ) : Timing {
                 fun trigger(): OnPlayerTurnStarted? = if (remainingDuration - 1 == 0) null else OnPlayerTurnStarted(remainingDuration - 1)
+            }
+
+            @JvmInline value class WhileOngoing(
+                val remainingDuration: Int,
+            ) : Timing {
+                fun countDown(): WhileOngoing? = if (remainingDuration - 1 <= 0) null else WhileOngoing(remainingDuration - 1)
             }
 
             companion object {
@@ -976,6 +1066,7 @@ data class BattleUnit private constructor(
         data class OngoingEffectsDto(
             val onPlayerTurnStarted: List<String>,
             val onDefeatedEffects: List<String>,
+            val whileOngoing: List<String>,
         )
 
         data class SnapshotDto(
@@ -1016,6 +1107,7 @@ data class BattleUnit private constructor(
                 IMMEDIATE,
                 ON_PLAYER_TURN_STARTED,
                 ON_DEFEATED,
+                WHILE_ONGOING,
             }
         }
     }

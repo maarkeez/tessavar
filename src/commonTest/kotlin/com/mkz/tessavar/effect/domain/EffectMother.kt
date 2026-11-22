@@ -3,6 +3,7 @@ package com.mkz.tessavar.effect.domain
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.OnPlayerTurnStartedDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.TimingTypeDto
+import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.WhileOngoingDto
 import korlibs.io.util.UUID
 
 object EffectMother {
@@ -20,7 +21,7 @@ object EffectMother {
                         TimingDto(
                             type = TimingTypeDto.IMMEDIATELY,
                             onPlayerTurnStarted = null,
-                            beforeApplyingEffect = null,
+                            whileOngoing = null,
                         )
                     } else {
                         TimingDto(
@@ -29,7 +30,7 @@ object EffectMother {
                                 OnPlayerTurnStartedDto(
                                     duration = 5,
                                 ),
-                            beforeApplyingEffect = null,
+                            whileOngoing = null,
                         )
                     },
             ),
@@ -48,7 +49,7 @@ object EffectMother {
                     TimingDto(
                         type = TimingTypeDto.IMMEDIATELY,
                         onPlayerTurnStarted = null,
-                        beforeApplyingEffect = null,
+                        whileOngoing = null,
                     ),
             ),
         ).pullEvents()
@@ -66,7 +67,7 @@ object EffectMother {
                     TimingDto(
                         type = TimingTypeDto.IMMEDIATELY,
                         onPlayerTurnStarted = null,
-                        beforeApplyingEffect = null,
+                        whileOngoing = null,
                     ),
             ),
         ).pullEvents()
@@ -102,7 +103,7 @@ object EffectMother {
         TimingDto(
             type = TimingTypeDto.WHILE_EQUIPPED,
             onPlayerTurnStarted = null,
-            beforeApplyingEffect = null,
+            whileOngoing = null,
         )
 
     fun teleportEffect(id: String = effectId()) =
@@ -115,7 +116,7 @@ object EffectMother {
                         TimingDto(
                             type = TimingTypeDto.IMMEDIATELY,
                             onPlayerTurnStarted = null,
-                            beforeApplyingEffect = null,
+                            whileOngoing = null,
                         ),
                 ),
             ).pullEvents()
@@ -133,7 +134,7 @@ object EffectMother {
                     TimingDto(
                         type = TimingTypeDto.ON_DEFEATED,
                         onPlayerTurnStarted = null,
-                        beforeApplyingEffect = null,
+                        whileOngoing = null,
                     ),
             ),
         ).pullEvents()
@@ -151,7 +152,7 @@ object EffectMother {
                     TimingDto(
                         type = TimingTypeDto.IMMEDIATELY,
                         onPlayerTurnStarted = null,
-                        beforeApplyingEffect = null,
+                        whileOngoing = null,
                     ),
             ),
         ).pullEvents()
@@ -169,11 +170,44 @@ object EffectMother {
                     TimingDto(
                         type = TimingTypeDto.IMMEDIATELY,
                         onPlayerTurnStarted = null,
-                        beforeApplyingEffect = null,
+                        whileOngoing = null,
                     ),
             ),
         ).pullEvents()
         .second
+
+    fun negateActionsEffect(
+        id: String = effectId(),
+        duration: Int = 1,
+    ) = Effect
+        .create(Effect.Dto(id = id, outcome = Effect.Dto.EffectOutcomeDto.negateActions(), timing = onPlayerTurnStartedTiming(duration)))
+        .pullEvents()
+        .second
+
+    fun applyIfOngoingEffect(
+        id: String = effectId(),
+        effectId: String = "effect-applied",
+        ongoingEffectId: String = "effect-ongoing",
+    ) = Effect
+        .create(Effect.Dto(id = id, outcome = Effect.Dto.EffectOutcomeDto.applyIfOngoing(effectId = effectId, ongoingEffectId = ongoingEffectId), timing = immediatelyTiming()))
+        .pullEvents()
+        .second
+
+    fun resistEffect(
+        id: String = effectId(),
+        effectId: String = "effect-resisted",
+        share: Int = 50,
+        duration: Int = 2,
+    ) = Effect
+        .create(Effect.Dto(id = id, outcome = Effect.Dto.EffectOutcomeDto.resist(effectId = effectId, share = share), timing = whileOngoingTiming(duration)))
+        .pullEvents()
+        .second
+
+    fun immediatelyTiming() = TimingDto(type = TimingTypeDto.IMMEDIATELY, onPlayerTurnStarted = null, whileOngoing = null)
+
+    fun onPlayerTurnStartedTiming(duration: Int) = TimingDto(type = TimingTypeDto.ON_PLAYER_TURN_STARTED, onPlayerTurnStarted = OnPlayerTurnStartedDto(duration = duration), whileOngoing = null)
+
+    fun whileOngoingTiming(duration: Int) = TimingDto(type = TimingTypeDto.WHILE_ONGOING, onPlayerTurnStarted = null, whileOngoing = WhileOngoingDto(duration = duration))
 
     fun effectId(): String = "effect-${UUID.randomUUID()}"
 }

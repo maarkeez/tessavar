@@ -1,19 +1,21 @@
 package com.mkz.tessavar.effect.domain
 
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.APPLY_EFFECT_TO_ADJACENT_ALLIES
+import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.APPLY_IF_ONGOING
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.DAMAGE
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.HEAL
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.INCREASE_MAXIMUM_HEALTH
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.INCREASE_MAXIMUM_MANA
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.LEARN_ABILITY
-import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.NEGATE_INCREASE_HEALTH
+import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.NEGATE_ACTIONS
+import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.RESIST
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.RESTORE_MANA
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.SUMMON
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto.TELEPORT
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto
-import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.BeforeApplyingEffectDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.OnPlayerTurnStartedDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.TimingTypeDto
+import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.WhileOngoingDto
 import com.mkz.tessavar.effect.domain.EffectError.AmountAboveLimit
 import com.mkz.tessavar.effect.domain.EffectError.DurationAboveLimit
 import com.mkz.tessavar.effect.domain.EffectError.EmptyEffectId
@@ -36,6 +38,10 @@ data class Effect private constructor(
             val timing = Timing(dto.timing)
             if (outcome.lastsWhileEquipped() != timing.isWhileEquipped()) throw InvalidEffectTiming()
             if (outcome.learnsAbility() && !timing.isImmediately()) throw InvalidEffectTiming()
+            if (outcome.negatesActions() && !timing.isOnPlayerTurnStarted()) throw InvalidEffectTiming()
+            if (outcome.appliesIfOngoing() && !timing.isImmediately()) throw InvalidEffectTiming()
+            if (outcome.resists() != timing.isWhileOngoing()) throw InvalidEffectTiming()
+            if (outcome.appliesToAdjacentAllies() && !timing.isImmediately() && !timing.isOnDefeated()) throw InvalidEffectTiming()
             return Effect(
                 id = Id(dto.id),
                 outcome = outcome,
@@ -68,7 +74,9 @@ data class Effect private constructor(
                 when (dto.type) {
                     DAMAGE -> Damage(dto.damage!!.damage)
                     HEAL -> Heal(dto.heal!!.healing)
-                    NEGATE_INCREASE_HEALTH -> NegateIncreaseHealth
+                    NEGATE_ACTIONS -> NegateActions
+                    APPLY_IF_ONGOING -> ApplyIfOngoing(effectId = dto.applyIfOngoing!!.effectId, ongoingEffectId = dto.applyIfOngoing.ongoingEffectId)
+                    RESIST -> Resist(effectId = dto.resist!!.effectId, share = dto.resist.share)
                     TELEPORT -> Teleport
                     APPLY_EFFECT_TO_ADJACENT_ALLIES -> ApplyEffectToAdjacentAllies(dto.applyEffectToAdjacentAllies!!.effectId)
                     SUMMON -> Summon(dto.summon!!.unitId)
@@ -83,11 +91,21 @@ data class Effect private constructor(
 
         fun learnsAbility() = this is LearnAbility
 
+        fun negatesActions() = this is NegateActions
+
+        fun appliesIfOngoing() = this is ApplyIfOngoing
+
+        fun resists() = this is Resist
+
+        fun appliesToAdjacentAllies() = this is ApplyEffectToAdjacentAllies
+
         fun toDto() =
             when (this) {
                 is Damage -> Dto.EffectOutcomeDto.damage(damage = damage)
                 is Heal -> Dto.EffectOutcomeDto.heal(healing = healing)
-                NegateIncreaseHealth -> Dto.EffectOutcomeDto.negateIncreaseHealth()
+                NegateActions -> Dto.EffectOutcomeDto.negateActions()
+                is ApplyIfOngoing -> Dto.EffectOutcomeDto.applyIfOngoing(effectId = effectId, ongoingEffectId = ongoingEffectId)
+                is Resist -> Dto.EffectOutcomeDto.resist(effectId = effectId, share = share)
                 Teleport -> Dto.EffectOutcomeDto.teleport()
                 is ApplyEffectToAdjacentAllies -> Dto.EffectOutcomeDto.applyEffectToAdjacentAllies(effectId = effectId)
                 is Summon -> Dto.EffectOutcomeDto.summon(unitId = unitId)
@@ -154,7 +172,22 @@ data class Effect private constructor(
             val abilityId: String,
         ) : Outcome
 
-        private object NegateIncreaseHealth : Outcome
+        private data class ApplyIfOngoing(
+            val effectId: String,
+            val ongoingEffectId: String,
+        ) : Outcome
+
+        private data class Resist(
+            val effectId: String,
+            val share: Int,
+        ) : Outcome {
+            init {
+                if (share < 1) throw NegativeAmount()
+                if (share > 100) throw AmountAboveLimit()
+            }
+        }
+
+        private object NegateActions : Outcome
 
         private object Teleport : Outcome
     }
@@ -165,7 +198,7 @@ data class Effect private constructor(
                 when (dto.type) {
                     TimingTypeDto.IMMEDIATELY -> Immediately
                     TimingTypeDto.ON_PLAYER_TURN_STARTED -> OnPlayerTurnStarted(dto.onPlayerTurnStarted ?: throw MissingEffectTimingDetails())
-                    TimingTypeDto.BEFORE_APPLYING_EFFECT -> BeforeApplyingEffect(dto.beforeApplyingEffect ?: throw MissingEffectTimingDetails())
+                    TimingTypeDto.WHILE_ONGOING -> WhileOngoing(dto.whileOngoing ?: throw MissingEffectTimingDetails())
                     TimingTypeDto.ON_DEFEATED -> OnDefeated
                     TimingTypeDto.WHILE_EQUIPPED -> WhileEquipped
                 }
@@ -175,18 +208,24 @@ data class Effect private constructor(
 
         fun isImmediately() = this is Immediately
 
+        fun isOnPlayerTurnStarted() = this is OnPlayerTurnStarted
+
+        fun isOnDefeated() = this is OnDefeated
+
+        fun isWhileOngoing() = this is WhileOngoing
+
         fun toDto() =
             TimingDto(
                 type =
                     when (this) {
                         is Immediately -> TimingTypeDto.IMMEDIATELY
                         is OnPlayerTurnStarted -> TimingTypeDto.ON_PLAYER_TURN_STARTED
-                        is BeforeApplyingEffect -> TimingTypeDto.BEFORE_APPLYING_EFFECT
+                        is WhileOngoing -> TimingTypeDto.WHILE_ONGOING
                         is OnDefeated -> TimingTypeDto.ON_DEFEATED
                         is WhileEquipped -> TimingTypeDto.WHILE_EQUIPPED
                     },
                 onPlayerTurnStarted = if (this is OnPlayerTurnStarted) toPlayerTurnStartedDto() else null,
-                beforeApplyingEffect = if (this is BeforeApplyingEffect) toBeforeApplyingEffectDto() else null,
+                whileOngoing = if (this is WhileOngoing) toWhileOngoingDto() else null,
             )
 
         private object Immediately : Timing
@@ -208,17 +247,17 @@ data class Effect private constructor(
             fun toPlayerTurnStartedDto() = OnPlayerTurnStartedDto(duration = duration)
         }
 
-        private data class BeforeApplyingEffect(
+        private data class WhileOngoing(
             val duration: Int,
         ) : Timing {
-            constructor(dto: BeforeApplyingEffectDto) : this(duration = dto.duration)
+            constructor(dto: WhileOngoingDto) : this(duration = dto.duration)
 
             init {
                 if (duration < 0) throw NegativeDuration()
                 if (duration > 99) throw DurationAboveLimit()
             }
 
-            fun toBeforeApplyingEffectDto() = BeforeApplyingEffectDto(duration = duration)
+            fun toWhileOngoingDto() = WhileOngoingDto(duration = duration)
         }
     }
 
@@ -314,13 +353,25 @@ data class Effect private constructor(
             val increaseMaximumHealth: IncreaseMaximumHealthDto?,
             val increaseMaximumMana: IncreaseMaximumManaDto?,
             val learnAbility: LearnAbilityDto?,
+            val applyIfOngoing: ApplyIfOngoingDto?,
+            val resist: ResistDto?,
         ) {
             companion object {
                 fun damage(damage: Int) = withoutDetails(TypeDto.DAMAGE).copy(damage = DamageDto(damage = damage))
 
                 fun heal(healing: Int) = withoutDetails(TypeDto.HEAL).copy(heal = HealDto(healing = healing))
 
-                fun negateIncreaseHealth() = withoutDetails(TypeDto.NEGATE_INCREASE_HEALTH)
+                fun negateActions() = withoutDetails(TypeDto.NEGATE_ACTIONS)
+
+                fun applyIfOngoing(
+                    effectId: String,
+                    ongoingEffectId: String,
+                ) = withoutDetails(TypeDto.APPLY_IF_ONGOING).copy(applyIfOngoing = ApplyIfOngoingDto(effectId = effectId, ongoingEffectId = ongoingEffectId))
+
+                fun resist(
+                    effectId: String,
+                    share: Int,
+                ) = withoutDetails(TypeDto.RESIST).copy(resist = ResistDto(effectId = effectId, share = share))
 
                 fun teleport() = withoutDetails(TypeDto.TELEPORT)
 
@@ -348,13 +399,15 @@ data class Effect private constructor(
                         increaseMaximumHealth = null,
                         increaseMaximumMana = null,
                         learnAbility = null,
+                        applyIfOngoing = null,
+                        resist = null,
                     )
             }
 
             enum class TypeDto {
                 DAMAGE,
                 HEAL,
-                NEGATE_INCREASE_HEALTH,
+                NEGATE_ACTIONS,
                 TELEPORT,
                 APPLY_EFFECT_TO_ADJACENT_ALLIES,
                 SUMMON,
@@ -362,6 +415,8 @@ data class Effect private constructor(
                 INCREASE_MAXIMUM_HEALTH,
                 INCREASE_MAXIMUM_MANA,
                 LEARN_ABILITY,
+                APPLY_IF_ONGOING,
+                RESIST,
             }
 
             data class DamageDto(
@@ -395,26 +450,36 @@ data class Effect private constructor(
             data class LearnAbilityDto(
                 val abilityId: String,
             )
+
+            data class ApplyIfOngoingDto(
+                val effectId: String,
+                val ongoingEffectId: String,
+            )
+
+            data class ResistDto(
+                val effectId: String,
+                val share: Int,
+            )
         }
 
         data class TimingDto(
             val type: TimingTypeDto,
             val onPlayerTurnStarted: OnPlayerTurnStartedDto?,
-            val beforeApplyingEffect: BeforeApplyingEffectDto?,
+            val whileOngoing: WhileOngoingDto?,
         ) {
             enum class TimingTypeDto {
                 IMMEDIATELY,
                 ON_PLAYER_TURN_STARTED,
-                BEFORE_APPLYING_EFFECT,
                 ON_DEFEATED,
                 WHILE_EQUIPPED,
+                WHILE_ONGOING,
             }
 
             data class OnPlayerTurnStartedDto(
                 val duration: Int,
             )
 
-            data class BeforeApplyingEffectDto(
+            data class WhileOngoingDto(
                 val duration: Int,
             )
         }

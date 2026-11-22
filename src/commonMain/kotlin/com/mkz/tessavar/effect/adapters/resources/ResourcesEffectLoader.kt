@@ -4,9 +4,9 @@ import com.mkz.tessavar.effect.domain.Effect
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.EffectOutcomeDto.TypeDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto
-import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.BeforeApplyingEffectDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.OnPlayerTurnStartedDto
 import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.TimingTypeDto
+import com.mkz.tessavar.effect.domain.Effect.Dto.TimingDto.WhileOngoingDto
 import com.mkz.tessavar.effect.usecases.services.EffectLoader
 import com.mkz.tessavar.shared.adapters.resources.ResourcesBundle
 import com.mkz.tessavar.shared.adapters.toml.enumOf
@@ -54,12 +54,17 @@ class ResourcesEffectLoader(
         val maximumHealth: Int? = null,
         val maximumMana: Int? = null,
         val abilityId: String? = null,
+        val ongoingEffectId: String? = null,
+        val share: Int? = null,
     ) {
         fun toDto(): EffectOutcomeDto =
             when (enumOf<TypeDto>("outcome.type", type)) {
                 TypeDto.DAMAGE -> EffectOutcomeDto.damage(damage = required("outcome.damage", damage))
                 TypeDto.HEAL -> EffectOutcomeDto.heal(healing = required("outcome.healing", healing))
-                TypeDto.NEGATE_INCREASE_HEALTH -> EffectOutcomeDto.negateIncreaseHealth()
+                TypeDto.NEGATE_ACTIONS -> EffectOutcomeDto.negateActions()
+                TypeDto.APPLY_IF_ONGOING ->
+                    EffectOutcomeDto.applyIfOngoing(effectId = required("outcome.effectId", effectId), ongoingEffectId = required("outcome.ongoingEffectId", ongoingEffectId))
+                TypeDto.RESIST -> EffectOutcomeDto.resist(effectId = required("outcome.effectId", effectId), share = required("outcome.share", share))
                 TypeDto.TELEPORT -> EffectOutcomeDto.teleport()
                 TypeDto.APPLY_EFFECT_TO_ADJACENT_ALLIES -> EffectOutcomeDto.applyEffectToAdjacentAllies(effectId = required("outcome.effectId", effectId))
                 TypeDto.SUMMON -> EffectOutcomeDto.summon(unitId = required("outcome.unitId", unitId))
@@ -85,9 +90,9 @@ class ResourcesEffectLoader(
                     } else {
                         null
                     },
-                beforeApplyingEffect =
-                    if (timingType == TimingTypeDto.BEFORE_APPLYING_EFFECT) {
-                        BeforeApplyingEffectDto(required("timing.duration", duration))
+                whileOngoing =
+                    if (timingType == TimingTypeDto.WHILE_ONGOING) {
+                        WhileOngoingDto(required("timing.duration", duration))
                     } else {
                         null
                     },

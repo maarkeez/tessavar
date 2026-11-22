@@ -637,6 +637,166 @@ class BattleUnitTest {
     }
 
     @Test
+    fun `Battle unit should have no steps and no casts left when negate actions triggers at its player turn start`() {
+        // Given
+        val stun = EffectMother.negateActionsEffect(id = "stun", duration = 1).toDto()
+        val battleUnit =
+            BattleUnitMother
+                .battleUnit()
+                .receiveOnPlayerTurnStartedEffect(effectId = "stun", remainingDuration = 1)
+                .pullEvents()
+                .second
+        // When
+        val updatedBattleUnit = battleUnit.triggerOnPlayerTurnStartedEffects(effects = listOf(stun), currentRow = 0, currentColumn = 0, inBattle = true)
+        // Then
+        val remainingActions = updatedBattleUnit.toDto().remainingActions
+        remainingActions.remainingSteps shouldBe 0
+        remainingActions.remainingCasts shouldBe 0
+        updatedBattleUnit
+            .toDto()
+            .ongoingEffects.onPlayerTurnStarted
+            .shouldBeEmpty()
+        updatedBattleUnit.pullEvents().first.shouldContainExactly(
+            BattleUnitEvent.OnPlayerTurnStartedEffectTriggered(battleUnitId = updatedBattleUnit.toDto().id, effectId = "stun"),
+        )
+    }
+
+    @Test
+    fun `Battle unit should keep its actions when negate actions triggers outside a battle`() {
+        // Given
+        val stun = EffectMother.negateActionsEffect(id = "stun", duration = 1).toDto()
+        val battleUnit =
+            BattleUnitMother
+                .battleUnit()
+                .receiveOnPlayerTurnStartedEffect(effectId = "stun", remainingDuration = 1)
+                .pullEvents()
+                .second
+        // When
+        val updatedBattleUnit = battleUnit.triggerOnPlayerTurnStartedEffects(effects = listOf(stun), currentRow = 0, currentColumn = 0, inBattle = false)
+        // Then
+        updatedBattleUnit.toDto().remainingActions shouldBe battleUnit.toDto().remainingActions
+        updatedBattleUnit
+            .toDto()
+            .ongoingEffects.onPlayerTurnStarted
+            .shouldBeEmpty()
+        updatedBattleUnit.pullEvents().first.shouldBeEmpty()
+    }
+
+    @Test
+    fun `Battle unit should take half the burn damage when it has an ongoing soak`() {
+        // Given
+        val burn = EffectMother.damageEffect(id = "burn", damage = 4, timingType = "ON_PLAYER_TURN_STARTED").toDto()
+        val soak = EffectMother.resistEffect(id = "soak", effectId = "burn", share = 50).toDto()
+        val battleUnit = soakedAndBurnt(soaks = 1).toDto()
+        // When
+        val updatedBattleUnit = soakedAndBurnt(soaks = 1).triggerOnPlayerTurnStartedEffects(effects = listOf(burn, soak), currentRow = 0, currentColumn = 0)
+        // Then
+        updatedBattleUnit.toDto().remainingHealth shouldBe battleUnit.remainingHealth - 2
+    }
+
+    @Test
+    fun `Battle unit should take no burn damage when it has two ongoing soaks`() {
+        // Given
+        val burn = EffectMother.damageEffect(id = "burn", damage = 4, timingType = "ON_PLAYER_TURN_STARTED").toDto()
+        val soak = EffectMother.resistEffect(id = "soak", effectId = "burn", share = 50).toDto()
+        val battleUnit = soakedAndBurnt(soaks = 2)
+        // When
+        val updatedBattleUnit = battleUnit.triggerOnPlayerTurnStartedEffects(effects = listOf(burn, soak), currentRow = 0, currentColumn = 0)
+        // Then
+        updatedBattleUnit.toDto().remainingHealth shouldBe battleUnit.toDto().remainingHealth
+    }
+
+    @Test
+    fun `Battle unit should take 3 when a 5 damage burn hits it with an ongoing soak`() {
+        // Given
+        val burn = EffectMother.damageEffect(id = "burn", damage = 5, timingType = "IMMEDIATELY").toDto()
+        val soak = EffectMother.resistEffect(id = "soak", effectId = "burn", share = 50).toDto()
+        val battleUnit = BattleUnitMother.battleUnit(unit = UnitMother.unit(baseMaximumHealth = 10).toDto()).receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+        // When
+        val updatedBattleUnit = battleUnit.triggerImmediateEffect(effect = burn, currentRow = 0, currentColumn = 0, ongoingEffectDefinitions = listOf(soak))
+        // Then
+        updatedBattleUnit.toDto().remainingHealth shouldBe 7
+    }
+
+    @Test
+    fun `Battle unit should take the whole damage when its resist is for another effect`() {
+        // Given
+        val venom = EffectMother.damageEffect(id = "venom-damage", damage = 4, timingType = "IMMEDIATELY").toDto()
+        val soak = EffectMother.resistEffect(id = "soak", effectId = "burn", share = 50).toDto()
+        val battleUnit = BattleUnitMother.battleUnit(unit = UnitMother.unit(baseMaximumHealth = 10).toDto()).receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+        // When
+        val updatedBattleUnit = battleUnit.triggerImmediateEffect(effect = venom, currentRow = 0, currentColumn = 0, ongoingEffectDefinitions = listOf(soak))
+        // Then
+        updatedBattleUnit.toDto().remainingHealth shouldBe 6
+    }
+
+    @Test
+    fun `Battle unit should stop resisting when the soak's duration runs out`() {
+        // Given
+        val burn = EffectMother.damageEffect(id = "burn", damage = 4, timingType = "ON_PLAYER_TURN_STARTED").toDto()
+        val soak = EffectMother.resistEffect(id = "soak", effectId = "burn", share = 50).toDto()
+        val battleUnit =
+            BattleUnitMother
+                .battleUnit(unit = UnitMother.unit(baseMaximumHealth = 20).toDto())
+                .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 1)
+                .receiveOnPlayerTurnStartedEffect(effectId = "burn", remainingDuration = 2)
+        // When
+        val updatedBattleUnit =
+            battleUnit
+                .triggerOnPlayerTurnStartedEffects(effects = listOf(burn, soak), currentRow = 0, currentColumn = 0)
+                .triggerOnPlayerTurnStartedEffects(effects = listOf(burn, soak), currentRow = 0, currentColumn = 0)
+        // Then
+        updatedBattleUnit.toDto().remainingHealth shouldBe 20 - 2 - 4
+        updatedBattleUnit
+            .toDto()
+            .ongoingEffects.whileOngoing
+            .shouldBeEmpty()
+    }
+
+    @Test
+    fun `HasOngoingEffect should be true when the battle unit has the effect timed while ongoing`() {
+        // Given
+        val battleUnit = BattleUnitMother.battleUnit().receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+        // When
+        val result = battleUnit.hasOngoingEffect("soak")
+        // Then
+        result.shouldBeTrue()
+    }
+
+    @Test
+    fun `HasOngoingEffect should be false when the battle unit has another effect`() {
+        // Given
+        val battleUnit = BattleUnitMother.battleUnit().receiveOnPlayerTurnStartedEffect(effectId = "venom-damage", remainingDuration = 2)
+        // When
+        val result = battleUnit.hasOngoingEffect("soak")
+        // Then
+        result.shouldBeFalse()
+    }
+
+    @Test
+    fun `Load should restore an effect timed while ongoing when the snapshot holds one`() {
+        // Given
+        val battleUnit =
+            BattleUnitMother
+                .battleUnit()
+                .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+                .pullEvents()
+                .second
+        // When
+        val loadedBattleUnit = BattleUnit.load(battleUnit.toSnapshot())
+        // Then
+        loadedBattleUnit.toSnapshot() shouldBe battleUnit.toSnapshot()
+    }
+
+    private fun soakedAndBurnt(soaks: Int): BattleUnit =
+        (1..soaks)
+            .fold(BattleUnitMother.battleUnit(unit = UnitMother.unit(baseMaximumHealth = 10).toDto())) { battleUnit, _ ->
+                battleUnit.receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+            }.receiveOnPlayerTurnStartedEffect(effectId = "burn", remainingDuration = 2)
+            .pullEvents()
+            .second
+
+    @Test
     fun `TriggerOnPlayerTurnStartedEffects should reduce the health and remove the on player turn started effect when the effect damages`() {
         // Given
         val unit = UnitMother.unit(baseMaximumHealth = 10).toDto()

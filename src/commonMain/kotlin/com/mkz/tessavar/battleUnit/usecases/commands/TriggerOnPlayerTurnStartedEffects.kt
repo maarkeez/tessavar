@@ -22,12 +22,11 @@ class TriggerOnPlayerTurnStartedEffects(
                 .filter { battleUnit -> battleUnit.id in battleUnitIds }
                 .map { battleUnit -> battleUnitRepository.searchById(battleUnit.id)!! }
         battleUnits
-            .filter { battleUnit -> battleUnit.hasOnPlayerTurnStartedEffects() }
+            .filter { battleUnit -> battleUnit.hasEffectsCountedDownOnPlayerTurnStarted() }
             .forEach { battleUnit ->
+                val ongoingEffects = battleUnit.toDto().ongoingEffects
                 val effects =
-                    battleUnit
-                        .toDto()
-                        .ongoingEffects.onPlayerTurnStarted
+                    (ongoingEffects.onPlayerTurnStarted + ongoingEffects.whileOngoing)
                         .distinct()
                         .map { effectId -> searchEffectById(effectId)!! }
                 val position = searchPosition(occupantId = battleUnit.toDto().id)!!
