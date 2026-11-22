@@ -1123,8 +1123,13 @@ The part of the HUD showing the selected battle unit: its portrait, name, health
 effects and abilities.
 _Avoid_: Unit info
 
+**Effect icon**:
+One icon per effect a battle unit has ongoing or equipped, with its stack count and longest remaining duration, in the
+battle unit info, and in the cast preview for an ongoing one.
+_Avoid_: Effect indicator, status icon, buff icon
+
 **Effect info**:
-What an ongoing effect of the selected battle unit does and how long each of its stacks has left, shown when the
+What an ongoing or equipped effect of the selected battle unit does and how long each of its stacks has left, shown when the
 player taps its icon in the battle unit info.
 _Avoid_: Effect tooltip, effect description
 
