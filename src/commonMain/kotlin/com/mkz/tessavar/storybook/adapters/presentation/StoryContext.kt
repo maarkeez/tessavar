@@ -65,12 +65,18 @@ class StoryContext(
         effectId: String,
         stacks: Int = 1,
         isExploring: Boolean = false,
+        longestRemainingDuration: Int? = LONGEST_SAMPLE_DURATION,
     ): EffectInfoView.EffectInfo =
         EffectInfoView.EffectInfo(
             effectId = effectId,
             stacks = stacks,
             sentence = sampleSentence(effectId),
-            remainingDurations = if (effectId == ON_DEFEATED_EFFECT_ID) emptyList() else List(stacks) { index -> LONGEST_SAMPLE_DURATION - 2 * index }.filter { duration -> duration > 0 },
+            remainingDurations =
+                if (effectId == ON_DEFEATED_EFFECT_ID || longestRemainingDuration == null) {
+                    emptyList()
+                } else {
+                    List(stacks) { index -> maxOf(longestRemainingDuration - 2 * index, 1) }
+                },
             isExploring = isExploring,
         )
 

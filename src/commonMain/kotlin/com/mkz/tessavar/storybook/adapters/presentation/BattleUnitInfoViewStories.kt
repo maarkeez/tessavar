@@ -136,7 +136,7 @@ object BattleUnitInfoViewStories : StoryBinding {
                 maximumMana = MAXIMUM_MANA,
                 effects = effects,
                 isHumanPlayers = true,
-                effectInfos = effects.associate { effect -> effect.effectId to context.effectInfo(effect.effectId) },
+                effectInfos = effects.associate { effect -> effect.effectId to context.effectInfo(effect.effectId, longestRemainingDuration = effect.remainingDuration) },
             )
         val abilities =
             List(args.int(ABILITIES)) { index ->
