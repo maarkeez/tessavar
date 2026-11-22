@@ -29,6 +29,7 @@ class StoryContext(
         const val PORTRAIT_SUFFIX = "_portrait"
         const val IMAGE_EXTENSION = ".png"
         const val ON_DEFEATED_EFFECT_ID = "venom-on-defeat"
+        const val EQUIPPED_EFFECT_PREFIX = "maximum-"
         const val LONGEST_SAMPLE_DURATION = 5
     }
 
@@ -46,11 +47,13 @@ class StoryContext(
 
     fun effectIds(): List<String> = imageIds(EFFECTS_DIRECTORY)
 
+    private fun ongoingEffectIds(): List<String> = effectIds().filterNot { effectId -> effectId.startsWith(EQUIPPED_EFFECT_PREFIX) }
+
     fun effects(
         count: Int,
         newCount: Int = 0,
     ): List<EffectsView.Effect> {
-        val effectIds = effectIds()
+        val effectIds = ongoingEffectIds()
         return List(count + newCount) { index ->
             val effectId = effectIds[index % effectIds.size]
             EffectsView.Effect(
