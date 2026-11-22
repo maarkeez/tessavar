@@ -129,7 +129,9 @@ An effect's outcome does not necessarily trigger as soon as it is applied.
 
 - `IMMEDIATELY`
 - `ON_PLAYER_TURN_STARTED`
-- `BEFORE_APPLYING_EFFECT`
+- `ON_DEFEATED`
+- `WHILE_EQUIPPED`
+- `WHILE_ONGOING`
 
 The timing is part of the effect itself. [Effect](../../src/commonMain/kotlin/com/mkz/tessavar/effect/domain/Effect.kt)
 
