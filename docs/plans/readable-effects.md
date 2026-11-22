@@ -1,6 +1,6 @@
 # Plan: effects the player can read: grouped icons with their remaining duration, and an effect info on tap
 
-> **Status:** built on `main`, the screenshots of M1 and M2 still to be approved.
+> **Status:** done.
 >
 > **Summary:** Today the battle unit info shows each ongoing effect as a bare 20×20 icon, up to ten and then a "+",
 > with no name, no description and no remaining duration, and tapping an icon does nothing. E.g.: a hero poisoned twice
