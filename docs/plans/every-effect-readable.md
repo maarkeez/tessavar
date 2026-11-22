@@ -1,6 +1,6 @@
 # Plan: every effect readable: stacks at 0 through their last player turn, and equipped effect icons
 
-> **Status:** built on `main`, the screenshots of M1 and M2 still to be approved.
+> **Status:** done.
 >
 > **Summary:** Today a stack ends the moment its remaining duration counts down to 0, at the start of its recipient's
 > player turn, so the effect icon is gone for the whole last turn the effect shapes. E.g.: a CPU water bat soaks the hero
