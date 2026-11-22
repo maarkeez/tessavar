@@ -75,7 +75,7 @@ class StoryContext(
             stacks = stacks,
             sentence = sampleSentence(effectId),
             remainingDurations =
-                if (effectId == ON_DEFEATED_EFFECT_ID || longestRemainingDuration == null) {
+                if (effectId == ON_DEFEATED_EFFECT_ID || effectId.startsWith(EQUIPPED_EFFECT_PREFIX) || longestRemainingDuration == null) {
                     emptyList()
                 } else {
                     List(stacks) { index -> maxOf(longestRemainingDuration - 2 * index, 1) }
@@ -89,6 +89,8 @@ class StoryContext(
             "soak" -> EffectInfoView.EffectInfo.Sentence.Resist(resistedEffectId = "burn", share = 50)
             "stun", "stun-long" -> EffectInfoView.EffectInfo.Sentence.NegateActions
             ON_DEFEATED_EFFECT_ID -> EffectInfoView.EffectInfo.Sentence.OnDefeatedDamageAdjacentAllies(damage = 3, turns = 5)
+            "maximum-health-20", "maximum-health-30", "maximum-health-40" -> EffectInfoView.EffectInfo.Sentence.IncreaseMaximumHealth(amount = effectId.substringAfterLast('-').toInt())
+            "maximum-mana-20", "maximum-mana-40" -> EffectInfoView.EffectInfo.Sentence.IncreaseMaximumMana(amount = effectId.substringAfterLast('-').toInt())
             else -> EffectInfoView.EffectInfo.Sentence.DamageOnPlayerTurnStarted(damage = 3)
         }
 

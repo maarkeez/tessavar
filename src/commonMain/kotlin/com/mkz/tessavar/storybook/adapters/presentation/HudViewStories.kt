@@ -4,6 +4,7 @@ import com.mkz.tessavar.screen.adapters.presentation.AbilityButtonView
 import com.mkz.tessavar.screen.adapters.presentation.BattleUnitInfo
 import com.mkz.tessavar.screen.adapters.presentation.BattleUnitInfoView
 import com.mkz.tessavar.screen.adapters.presentation.CastPreviewView
+import com.mkz.tessavar.screen.adapters.presentation.EffectsView
 import com.mkz.tessavar.screen.adapters.presentation.GiveGoldView
 import com.mkz.tessavar.screen.adapters.presentation.HudView
 import com.mkz.tessavar.screen.adapters.presentation.InventoryView
@@ -30,10 +31,11 @@ object HudViewStories : StoryBinding {
 
     private const val DISPLAY = "display"
 
-    private enum class Display { BATTLE_UNIT_INFO, EFFECT_INFO, ATTACK_PREVIEW, INVENTORY, GIVE_GOLD, HIDDEN }
+    private enum class Display { BATTLE_UNIT_INFO, EFFECT_INFO, EQUIPPED_EFFECT_INFO, ATTACK_PREVIEW, INVENTORY, GIVE_GOLD, HIDDEN }
 
     private const val EFFECTS = 5
     private const val VENOM_SAMPLE_INDEX = 4
+    private val RUNE_HAMMER_EFFECT_IDS = listOf("maximum-health-30", "maximum-mana-40")
 
     private val battleUnitInfo =
         StoryDto(id = "screen-hud--battle-unit-info", name = "Battle unit info", description = "A battle unit selected: its info, with its abilities and its inventory button.", args = emptyMap())
@@ -43,6 +45,15 @@ object HudViewStories : StoryBinding {
             name = "Effect info",
             description = "A battle unit under a few effects, its venom tapped: the venom is ringed in gold, and its effect info takes the place of the abilities. Tapping it again brings them back.",
             args = mapOf(DISPLAY to ValueDto.text(Display.EFFECT_INFO.name)),
+        )
+    private val equippedEffectInfo =
+        StoryDto(
+            id = "screen-hud--equipped-effect-info",
+            name = "Equipped effect info",
+            description =
+                "A battle unit under a few effects with a rune hammer equipped: its ongoing effects, then the maximum health and maximum mana the hammer gives, with no number. " +
+                    "Its maximum health is tapped, and its effect info takes the place of the abilities.",
+            args = mapOf(DISPLAY to ValueDto.text(Display.EQUIPPED_EFFECT_INFO.name)),
         )
     private val attackPreview =
         StoryDto(
@@ -81,7 +92,7 @@ object HudViewStories : StoryBinding {
             description = "Under the battlefield, in a battle: it displays one of the battle unit info, the cast preview, the inventory and the panel to give gold at a time, or none.",
             controls = listOf(ControlDto.enum(DISPLAY, Display.entries.map { display -> display.name })),
             args = mapOf(DISPLAY to ValueDto.text(Display.BATTLE_UNIT_INFO.name)),
-            stories = listOf(battleUnitInfo, effectInfo, attackPreview, inventory, giveGold, hidden),
+            stories = listOf(battleUnitInfo, effectInfo, equippedEffectInfo, attackPreview, inventory, giveGold, hidden),
         )
 
     override fun render(
@@ -89,7 +100,8 @@ object HudViewStories : StoryBinding {
         context: StoryContext,
     ): View {
         val display = Display.valueOf(args.text(DISPLAY))
-        val effects = if (display == Display.EFFECT_INFO) context.effects(EFFECTS) else emptyList()
+        val effects = if (display == Display.EFFECT_INFO || display == Display.EQUIPPED_EFFECT_INFO) context.effects(EFFECTS) else emptyList()
+        val equippedEffects = if (display == Display.EQUIPPED_EFFECT_INFO) RUNE_HAMMER_EFFECT_IDS.map { effectId -> EffectsView.Effect(effectId = effectId) } else emptyList()
         val heroInfo =
             BattleUnitInfo(
                 unitId = UNIT,
@@ -99,7 +111,8 @@ object HudViewStories : StoryBinding {
                 maximumMana = MAXIMUM_MANA,
                 effects = effects,
                 isHumanPlayers = true,
-                effectInfos = effects.associate { effect -> effect.effectId to context.effectInfo(effect.effectId, longestRemainingDuration = effect.remainingDuration) },
+                effectInfos = (effects + equippedEffects).associate { effect -> effect.effectId to context.effectInfo(effect.effectId, longestRemainingDuration = effect.remainingDuration) },
+                equippedEffects = equippedEffects,
             )
         val battleUnitInfoView =
             BattleUnitInfoView(context.resourcesLoader, context.messages).apply {
@@ -171,6 +184,10 @@ object HudViewStories : StoryBinding {
                 Display.EFFECT_INFO -> {
                     displayBattleUnitInfoView()
                     battleUnitInfoView.effectTapped(effects[VENOM_SAMPLE_INDEX].effectId)
+                }
+                Display.EQUIPPED_EFFECT_INFO -> {
+                    displayBattleUnitInfoView()
+                    battleUnitInfoView.effectTapped(RUNE_HAMMER_EFFECT_IDS.first())
                 }
                 Display.ATTACK_PREVIEW -> displayCastPreviewView()
                 Display.INVENTORY -> displayInventoryView()

@@ -51,6 +51,13 @@ object EffectInfoViewStories : StoryBinding {
             description = "A stun on the turn it took the actions away: its stack is at 0 and ends when the battle unit's turn finishes.",
             args = mapOf(EFFECT to ValueDto.text("stun"), ENDING to ValueDto.boolean(true)),
         )
+    private val maximumHealth =
+        StoryDto(
+            id = "screen-effect-info--maximum-health",
+            name = "Maximum health",
+            description = "An equipped effect, the rune hammer's: the maximum health it gives while equipped, and no time left.",
+            args = mapOf(EFFECT to ValueDto.text("maximum-health-30")),
+        )
     private val venomBurst =
         StoryDto(
             id = "screen-effect-info--venom-burst",
@@ -83,7 +90,7 @@ object EffectInfoViewStories : StoryBinding {
                     ControlDto.boolean(ENDING),
                 ),
             args = mapOf(EFFECT to ValueDto.text("venom-damage"), STACKS to ValueDto.int(1), EXPLORING to ValueDto.boolean(false), ENDING to ValueDto.boolean(false)),
-            stories = listOf(venom, venomStacked, soak, stun, stunEnding, venomBurst, exploring),
+            stories = listOf(venom, venomStacked, soak, stun, stunEnding, venomBurst, maximumHealth, exploring),
         )
 
     override fun render(
