@@ -16,7 +16,7 @@ class EffectsViewTest : ViewsForTesting() {
             // Given
             val effectsView = EffectsView(loadedResourcesLoader())
             // When
-            effectsView.display(effectIds = listOf("venom-damage"))
+            effectsView.display(listOf(EffectsView.Effect("venom-damage")))
             // Then
             effectsView.isVisibleToUser().shouldBeTrue()
         }
@@ -27,7 +27,7 @@ class EffectsViewTest : ViewsForTesting() {
             // Given
             val effectsView = EffectsView(loadedResourcesLoader())
             // When
-            effectsView.display(effectIds = listOf("venom-damage", "venom-on-defeat"))
+            effectsView.display(listOf(EffectsView.Effect("venom-damage"), EffectsView.Effect("venom-on-defeat")))
             // Then
             effectsView.displayedEffectCount() shouldBe 2
         }
@@ -37,9 +37,9 @@ class EffectsViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val effectsView = EffectsView(loadedResourcesLoader())
-            effectsView.display(effectIds = listOf("venom-damage", "venom-on-defeat", "venom-damage"))
+            effectsView.display(listOf(EffectsView.Effect("venom-damage"), EffectsView.Effect("venom-on-defeat"), EffectsView.Effect("burn")))
             // When
-            effectsView.display(effectIds = listOf("venom-damage"))
+            effectsView.display(listOf(EffectsView.Effect("venom-damage")))
             // Then
             effectsView.displayedEffectCount() shouldBe 1
         }
@@ -49,22 +49,22 @@ class EffectsViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val effectsView = EffectsView(loadedResourcesLoader())
-            val effectIds = List(effectsView.effectSlotCount() + 2) { "venom-damage" }
+            val effects = List(effectsView.effectSlotCount() + 2) { EffectsView.Effect("venom-damage") }
             // When
-            effectsView.display(effectIds = effectIds)
+            effectsView.display(effects)
             // Then
             effectsView.displayedEffectCount() shouldBe effectsView.effectSlotCount()
         }
 
     @Test
-    fun `Display should display the new effects blinking after the current ones when new effects are displayed`() =
+    fun `Display should blink the effects marked new when new effects are displayed`() =
         sharedViewsTest {
             // Given
             val effectsView = EffectsView(loadedResourcesLoader())
             // When
-            effectsView.display(effectIds = listOf("venom-damage"), newEffectIds = listOf("venom-on-defeat", "venom-damage"))
+            effectsView.display(listOf(EffectsView.Effect("venom-damage", stacks = 2, isNew = true), EffectsView.Effect("soak"), EffectsView.Effect("venom-on-defeat", isNew = true)))
             // Then
-            effectsView.blinkingEffects().shouldContainExactly(false, true, true)
+            effectsView.blinkingEffects().shouldContainExactly(true, false, true)
         }
 
     @Test
@@ -72,9 +72,9 @@ class EffectsViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val effectsView = EffectsView(loadedResourcesLoader())
-            effectsView.display(effectIds = emptyList(), newEffectIds = listOf("venom-damage"))
+            effectsView.display(listOf(EffectsView.Effect("venom-damage", isNew = true)))
             // When
-            effectsView.display(effectIds = listOf("venom-damage"))
+            effectsView.display(listOf(EffectsView.Effect("venom-damage")))
             // Then
             effectsView.blinkingEffects().shouldContainExactly(false)
         }
@@ -84,9 +84,9 @@ class EffectsViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val effectsView = EffectsView(loadedResourcesLoader())
-            val effectIds = List(effectsView.effectSlotCount()) { "venom-damage" }
+            val effects = List(effectsView.effectSlotCount()) { EffectsView.Effect("venom-damage") }
             // When
-            effectsView.display(effectIds = effectIds, newEffectIds = listOf("venom-on-defeat"))
+            effectsView.display(effects + EffectsView.Effect("venom-on-defeat", isNew = true))
             // Then
             effectsView.isOverflowDisplayed().shouldBeTrue()
         }
@@ -96,9 +96,9 @@ class EffectsViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val effectsView = EffectsView(loadedResourcesLoader())
-            val effectIds = List(effectsView.effectSlotCount()) { "venom-damage" }
+            val effects = List(effectsView.effectSlotCount()) { EffectsView.Effect("venom-damage") }
             // When
-            effectsView.display(effectIds = effectIds)
+            effectsView.display(effects)
             // Then
             effectsView.isOverflowDisplayed().shouldBeFalse()
         }
@@ -108,7 +108,7 @@ class EffectsViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val effectsView = EffectsView(loadedResourcesLoader())
-            effectsView.display(effectIds = listOf("venom-damage"))
+            effectsView.display(listOf(EffectsView.Effect("venom-damage")))
             // When
             effectsView.hide()
             // Then

@@ -7,7 +7,7 @@ object BattleUnitInfoMother {
         maximumHealth: Int = 20,
         remainingMana: Int = 10,
         maximumMana: Int = 10,
-        effectIds: List<String> = emptyList(),
+        effects: List<EffectsView.Effect> = emptyList(),
         isHumanPlayers: Boolean = true,
     ) = BattleUnitInfo(
         unitId = unitId,
@@ -15,7 +15,7 @@ object BattleUnitInfoMother {
         maximumHealth = maximumHealth,
         remainingMana = remainingMana,
         maximumMana = maximumMana,
-        effectIds = effectIds,
+        effects = effects,
         isHumanPlayers = isHumanPlayers,
     )
 

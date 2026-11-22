@@ -86,7 +86,7 @@ object HudViewStories : StoryBinding {
                 maximumHealth = MAXIMUM_HEALTH,
                 remainingMana = MAXIMUM_MANA,
                 maximumMana = MAXIMUM_MANA,
-                effectIds = emptyList(),
+                effects = emptyList(),
                 isHumanPlayers = true,
             )
         val battleUnitInfoView =
@@ -115,7 +115,6 @@ object HudViewStories : StoryBinding {
                             CastPreviewView.Recipient(
                                 battleUnit = heroInfo.copy(unitId = OTHER_UNIT),
                                 remainingHealth = 18,
-                                newEffectIds = emptyList(),
                             ),
                         ),
                 )

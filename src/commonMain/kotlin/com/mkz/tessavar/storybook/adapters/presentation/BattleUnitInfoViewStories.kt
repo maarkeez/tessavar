@@ -125,7 +125,6 @@ object BattleUnitInfoViewStories : StoryBinding {
         args: Args,
         context: StoryContext,
     ): View {
-        val effectIds = context.effectIds()
         val abilityIds = context.abilityIds()
         val battleUnit =
             BattleUnitInfo(
@@ -134,7 +133,7 @@ object BattleUnitInfoViewStories : StoryBinding {
                 maximumHealth = MAXIMUM_HEALTH,
                 remainingMana = args.int(MANA),
                 maximumMana = MAXIMUM_MANA,
-                effectIds = List(args.int(EFFECTS)) { index -> effectIds[index % effectIds.size] },
+                effects = context.effects(args.int(EFFECTS)),
                 isHumanPlayers = true,
             )
         val abilities =

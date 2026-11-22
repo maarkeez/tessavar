@@ -349,7 +349,7 @@ class BattlefieldPresenter(
             if (isBattling) battlefieldView.scrollToTile(row = battleUnitSelectedEvent.tile.row, column = battleUnitSelectedEvent.tile.column)
             battlefieldView.resetTiles()
             battleUnitInfoView.display(
-                battleUnit = BattleUnitInfoMapper.battleUnitInfo(battleUnit, isHumanPlayers = !isCpuBattleUnit(battleUnit)),
+                battleUnit = battleUnitInfo(battleUnit),
                 turnActions = BattleUnitInfoMapper.turnActions(battleUnit),
                 remainingTurns = battleUnit.remainingSummonDuration,
                 abilities = BattleUnitInfoMapper.abilities(abilityAvailabilities),
@@ -425,6 +425,17 @@ class BattlefieldPresenter(
         }
     }
 
+    private fun battleUnitInfo(
+        battleUnit: BattleUnit.Dto,
+        newEffectIds: List<String> = emptyList(),
+    ): BattleUnitInfo =
+        BattleUnitInfoMapper.battleUnitInfo(
+            battleUnit = battleUnit,
+            isHumanPlayers = !isCpuBattleUnit(battleUnit),
+            searchEffect = { effectId -> effectApi.searchEffectById(effectId) },
+            newEffectIds = newEffectIds,
+        )
+
     private fun abilityInfo(
         abilityId: String,
         reason: AbilityInfoView.AbilityInfo.Reason? = null,
@@ -445,11 +456,10 @@ class BattlefieldPresenter(
         return {
             castPreviewView.display(
                 abilityId = event.abilityId,
-                casterBattleUnit = BattleUnitInfoMapper.battleUnitInfo(casterBattleUnit, isHumanPlayers = !isCpuBattleUnit(casterBattleUnit)),
+                casterBattleUnit = battleUnitInfo(casterBattleUnit, newEffectIds = newEffectIds[casterBattleUnit.id].orEmpty()),
                 manaCost = ability.manaCost,
                 recipients = emptyList(),
                 casterRemainingHealth = remainingHealth[casterBattleUnit.id] ?: casterBattleUnit.remainingHealth,
-                casterNewEffectIds = newEffectIds[casterBattleUnit.id].orEmpty(),
             )
             displayCastGroup(castGroupTiles)
             displayCastPreview()
@@ -466,19 +476,17 @@ class BattlefieldPresenter(
             event.recipientBattleUnitIds.map { enemyBattleUnitId ->
                 val enemyBattleUnit = battleUnitApi.searchBattleUnitById(enemyBattleUnitId)!!
                 CastPreviewView.Recipient(
-                    battleUnit = BattleUnitInfoMapper.battleUnitInfo(enemyBattleUnit, isHumanPlayers = !isCpuBattleUnit(enemyBattleUnit)),
+                    battleUnit = battleUnitInfo(enemyBattleUnit, newEffectIds = newEffectIds[enemyBattleUnitId].orEmpty()),
                     remainingHealth = remainingHealth[enemyBattleUnitId] ?: enemyBattleUnit.remainingHealth,
-                    newEffectIds = newEffectIds[enemyBattleUnitId].orEmpty(),
                 )
             }
         return {
             castPreviewView.display(
                 abilityId = event.abilityId,
-                casterBattleUnit = BattleUnitInfoMapper.battleUnitInfo(casterBattleUnit, isHumanPlayers = !isCpuBattleUnit(casterBattleUnit)),
+                casterBattleUnit = battleUnitInfo(casterBattleUnit, newEffectIds = newEffectIds[casterBattleUnit.id].orEmpty()),
                 manaCost = ability.manaCost,
                 recipients = recipients,
                 casterRemainingHealth = remainingHealth[casterBattleUnit.id] ?: casterBattleUnit.remainingHealth,
-                casterNewEffectIds = newEffectIds[casterBattleUnit.id].orEmpty(),
             )
             displayCastGroup(castGroupTiles)
             displayCastPreview()

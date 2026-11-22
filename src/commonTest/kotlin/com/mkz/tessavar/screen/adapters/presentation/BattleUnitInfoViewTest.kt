@@ -240,7 +240,12 @@ class BattleUnitInfoViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
-            battleUnitInfoView.display(battleUnit = battleUnitInfo(effectIds = listOf("venom-damage")), turnActions = turnActions(), remainingTurns = null, abilities = emptyList())
+            battleUnitInfoView.display(
+                battleUnit = battleUnitInfo(effects = listOf(EffectsView.Effect("venom-damage", remainingDuration = 5))),
+                turnActions = turnActions(),
+                remainingTurns = null,
+                abilities = emptyList(),
+            )
             battleUnitInfoView.displayInventoryButton(onInventoryButtonSelected = {})
             // When
             battleUnitInfoView.displayAbilityInfo(sword)

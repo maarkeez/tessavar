@@ -1,5 +1,6 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
+import com.mkz.tessavar.screen.adapters.presentation.EffectsView
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneResourcesLoader
 import com.mkz.tessavar.screen.adapters.presentation.Messages
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ValueDto
@@ -26,6 +27,8 @@ class StoryContext(
         const val TRANSITION_NAME_SEPARATOR = "_to_"
         const val PORTRAIT_SUFFIX = "_portrait"
         const val IMAGE_EXTENSION = ".png"
+        const val ON_DEFEATED_EFFECT_ID = "venom-on-defeat"
+        const val LONGEST_SAMPLE_DURATION = 5
     }
 
     private var delegate: Delegate? = null
@@ -41,6 +44,21 @@ class StoryContext(
     fun npcIds(): List<String> = imageIds(NPCS_DIRECTORY).filter { id -> id.endsWith(PORTRAIT_SUFFIX) }.map { id -> id.removeSuffix(PORTRAIT_SUFFIX) }
 
     fun effectIds(): List<String> = imageIds(EFFECTS_DIRECTORY)
+
+    fun effects(
+        count: Int,
+        newCount: Int = 0,
+    ): List<EffectsView.Effect> {
+        val effectIds = effectIds()
+        return List(count + newCount) { index ->
+            val effectId = effectIds[index % effectIds.size]
+            EffectsView.Effect(
+                effectId = effectId,
+                remainingDuration = if (effectId == ON_DEFEATED_EFFECT_ID) null else LONGEST_SAMPLE_DURATION - index % LONGEST_SAMPLE_DURATION,
+                isNew = index >= count,
+            )
+        }
+    }
 
     fun abilityIds(): List<String> = imageIds(ABILITIES_DIRECTORY)
 

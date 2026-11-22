@@ -1124,7 +1124,7 @@ class BattlefieldPresenterTest {
                 maximumHealth = 30,
                 remainingMana = knight.remainingMana,
                 maximumMana = knight.maximumMana,
-                effectIds = emptyList(),
+                effects = emptyList(),
                 isHumanPlayers = true,
             )
     }
@@ -1141,20 +1141,32 @@ class BattlefieldPresenterTest {
     }
 
     @Test
-    fun `SelectBattleUnit should display the effects applied when the turn starts followed by the ones applied when defeated of the selected battle unit when it is selected`() {
+    fun `SelectBattleUnit should display the ongoing effects of the selected battle unit with their remaining duration when it is selected`() {
         // Given
         val venom = EffectApplicationDto(source = SourceDto.battleUnit("rat-1"), recipient = RecipientDto.battleUnit("knight-1"), effectId = "venom", destination = null)
         apis.battleUnitApi.applyEffect(venom)
-        val ongoingEffects = apis.battleUnitApi.searchBattleUnitById("knight-1")!!.ongoingEffects
         // When
         selectKnight()
         // Then
-        val effectIds =
-            battleUnitInfoView.displayedBattleUnits
-                .last()
-                .battleUnit.effectIds
-        effectIds shouldBe ongoingEffects.onPlayerTurnStarted + ongoingEffects.onDefeatedEffects
-        effectIds.shouldContain("venom")
+        battleUnitInfoView.displayedBattleUnits
+            .last()
+            .battleUnit.effects
+            .shouldContainExactly(EffectsView.Effect(effectId = "venom", stacks = 1, remainingDuration = 5))
+    }
+
+    @Test
+    fun `SelectBattleUnit should display one icon for an effect received twice when it is selected`() {
+        // Given
+        val venom = EffectApplicationDto(source = SourceDto.battleUnit("rat-1"), recipient = RecipientDto.battleUnit("knight-1"), effectId = "venom", destination = null)
+        apis.battleUnitApi.applyEffect(venom)
+        apis.battleUnitApi.applyEffect(venom)
+        // When
+        selectKnight()
+        // Then
+        battleUnitInfoView.displayedBattleUnits
+            .last()
+            .battleUnit.effects
+            .shouldContainExactly(EffectsView.Effect(effectId = "venom", stacks = 2, remainingDuration = 5))
     }
 
     @Test
@@ -1386,8 +1398,10 @@ class BattlefieldPresenterTest {
         eventBus.dispatch()
         // Then
         val preview = castPreviewView.displayedCastPreviews.single()
-        preview.recipients.map { recipient -> recipient.newEffectIds }.shouldContainExactly(listOf("venom"), listOf("venom"))
-        preview.casterNewEffectIds.shouldBeEmpty()
+        preview.recipients.map { recipient -> recipient.battleUnit.effects }.shouldContainExactly(
+            List(2) { listOf(EffectsView.Effect(effectId = "venom", stacks = 1, remainingDuration = 5, isNew = true)) },
+        )
+        preview.casterBattleUnit.effects.shouldBeEmpty()
     }
 
     @Test
@@ -1431,7 +1445,7 @@ class BattlefieldPresenterTest {
                 maximumHealth = 30,
                 remainingMana = knight.remainingMana,
                 maximumMana = knight.maximumMana,
-                effectIds = emptyList(),
+                effects = emptyList(),
                 isHumanPlayers = true,
             )
         preview.recipients.map { recipient -> recipient.battleUnit }.shouldContainExactly(
@@ -1442,7 +1456,7 @@ class BattlefieldPresenterTest {
                     maximumHealth = 21,
                     remainingMana = rat.remainingMana,
                     maximumMana = rat.maximumMana,
-                    effectIds = emptyList(),
+                    effects = listOf(EffectsView.Effect(effectId = "venom", stacks = 1, remainingDuration = 5, isNew = true)),
                     isHumanPlayers = false,
                 )
             },

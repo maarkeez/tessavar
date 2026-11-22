@@ -5,6 +5,7 @@ import com.mkz.tessavar.battleUnit.adapters.presentation.BattleUnitApi
 import com.mkz.tessavar.battleUnit.domain.BattleUnitEvent.BattleUnitDefeated
 import com.mkz.tessavar.battlefield.adapters.presentation.BattlefieldApi
 import com.mkz.tessavar.battlefield.domain.Battlefield.Dto.PositionDto
+import com.mkz.tessavar.effect.adapters.presentation.EffectApi
 import com.mkz.tessavar.inventory.adapters.presentation.InventoryApi
 import com.mkz.tessavar.inventory.domain.Inventory.Dto.GiveGoldRefusalDto
 import com.mkz.tessavar.inventory.domain.Inventory.Dto.GiveItemRefusalDto
@@ -37,6 +38,7 @@ class InventoryPresenter(
     private val inventoryApi: InventoryApi,
     private val lootableItemApi: LootableItemApi,
     private val battleUnitApi: BattleUnitApi,
+    private val effectApi: EffectApi,
     private val playerApi: PlayerApi,
     private val battleApi: BattleApi,
     private val partyApi: PartyApi,
@@ -676,7 +678,7 @@ class InventoryPresenter(
             timeline.play {
                 clearDisplayedInventory()
                 battleUnitInfoView.display(
-                    battleUnit = BattleUnitInfoMapper.battleUnitInfo(battleUnit, isHumanPlayers = true),
+                    battleUnit = BattleUnitInfoMapper.battleUnitInfo(battleUnit, isHumanPlayers = true, searchEffect = { effectId -> effectApi.searchEffectById(effectId) }),
                     turnActions = BattleUnitInfoMapper.turnActions(battleUnit),
                     remainingTurns = battleUnit.remainingSummonDuration,
                     abilities = BattleUnitInfoMapper.abilities(abilityAvailabilities),

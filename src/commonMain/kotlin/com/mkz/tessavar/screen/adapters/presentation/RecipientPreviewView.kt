@@ -43,7 +43,6 @@ class RecipientPreviewView(
     fun display(
         battleUnit: BattleUnitInfo,
         remainingHealth: Int,
-        newEffectIds: List<String>,
     ) {
         val remainingAfter = remainingHealth.coerceAtLeast(0)
         val isDefeated = remainingAfter == 0
@@ -66,7 +65,7 @@ class RecipientPreviewView(
         } else {
             koPill.hide()
         }
-        effectsView.display(effectIds = battleUnit.effectIds, newEffectIds = newEffectIds)
+        effectsView.display(battleUnit.effects)
         effectsView.xy(x, 2.0)
         healthBarView.display(remainingBefore = battleUnit.remainingHealth, remainingAfter = remainingAfter, maximum = battleUnit.maximumHealth)
         manaBarView.size = Size(healthBarView.barWidth, MANA_BAR_HEIGHT)

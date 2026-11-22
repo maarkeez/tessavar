@@ -9,6 +9,7 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.doubles.shouldBeGreaterThan
 import io.kotest.matchers.doubles.shouldBeLessThan
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import korlibs.korge.tests.ViewsForTesting
@@ -28,7 +29,7 @@ class EffectViewTest : ViewsForTesting() {
             // Given
             val effectView = EffectView(size, loadedResourcesLoader())
             // When
-            effectView.displayEffect("venom-damage")
+            effectView.displayEffect(EffectsView.Effect("venom-damage"))
             // Then
             effectView.isEffectIconDisplayed().shouldBeTrue()
         }
@@ -38,9 +39,9 @@ class EffectViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val effectView = EffectView(size, loadedResourcesLoader())
-            effectView.displayEffect("venom-damage")
+            effectView.displayEffect(EffectsView.Effect("venom-damage"))
             // When
-            effectView.displayEffect("venom-on-defeat")
+            effectView.displayEffect(EffectsView.Effect("venom-on-defeat"))
             // Then
             effectView.effectIconCount() shouldBe 1
         }
@@ -52,7 +53,7 @@ class EffectViewTest : ViewsForTesting() {
             val effectView = EffectView(size, loadedResourcesLoader())
             addChild(effectView)
             // When
-            effectView.displayEffect("venom-damage", isNew = true)
+            effectView.displayEffect(EffectsView.Effect("venom-damage", isNew = true))
             // Then
             val alphas = List(BLINK_FRAMES) { effectView.iconAlpha().also { nextFrame() } }
             effectView.isBlinking().shouldBeTrue()
@@ -67,7 +68,7 @@ class EffectViewTest : ViewsForTesting() {
             val effectView = EffectView(size, loadedResourcesLoader())
             addChild(effectView)
             // When
-            effectView.displayEffect("venom-damage")
+            effectView.displayEffect(EffectsView.Effect("venom-damage"))
             // Then
             val alphas = List(BLINK_FRAMES) { effectView.iconAlpha().also { nextFrame() } }
             effectView.isBlinking().shouldBeFalse()
@@ -80,7 +81,7 @@ class EffectViewTest : ViewsForTesting() {
             // Given
             val effectView = EffectView(size, loadedResourcesLoader())
             addChild(effectView)
-            effectView.displayEffect("venom-damage", isNew = true)
+            effectView.displayEffect(EffectsView.Effect("venom-damage", isNew = true))
             // When
             effectView.hide()
             // Then
@@ -94,7 +95,7 @@ class EffectViewTest : ViewsForTesting() {
             // Given
             val effectView = EffectView(size, loadedResourcesLoader())
             // When
-            val effectDisplay = { effectView.displayEffect("unknown-effect") }
+            val effectDisplay = { effectView.displayEffect(EffectsView.Effect("unknown-effect")) }
             // Then
             shouldThrow<IllegalStateException> { effectDisplay() }.message.shouldContain("effect/unknown-effect.png")
         }
@@ -104,10 +105,80 @@ class EffectViewTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             val effectView = EffectView(size, loadedResourcesLoader())
-            effectView.displayEffect("venom-damage")
+            effectView.displayEffect(EffectsView.Effect("venom-damage"))
             // When
             effectView.hide()
             // Then
             effectView.isEffectIconDisplayed().shouldBeFalse()
+        }
+
+    @Test
+    fun `DisplayEffect should display the remaining duration when the effect has one`() =
+        sharedViewsTest {
+            // Given
+            val effectView = EffectView(size, loadedResourcesLoader())
+            // When
+            effectView.displayEffect(EffectsView.Effect("venom-damage", remainingDuration = 4))
+            // Then
+            effectView.remainingDurationText() shouldBe "4"
+        }
+
+    @Test
+    fun `DisplayEffect should not display a remaining duration when the effect is on defeated`() =
+        sharedViewsTest {
+            // Given
+            val effectView = EffectView(size, loadedResourcesLoader())
+            effectView.displayEffect(EffectsView.Effect("venom-damage", remainingDuration = 4))
+            // When
+            effectView.displayEffect(EffectsView.Effect("venom-on-defeat", remainingDuration = null))
+            // Then
+            effectView.remainingDurationText().shouldBeNull()
+        }
+
+    @Test
+    fun `DisplayEffect should display the count when the effect is stacked`() =
+        sharedViewsTest {
+            // Given
+            val effectView = EffectView(size, loadedResourcesLoader())
+            // When
+            effectView.displayEffect(EffectsView.Effect("venom-damage", stacks = 2, remainingDuration = 4))
+            // Then
+            effectView.stacksText() shouldBe "×2"
+        }
+
+    @Test
+    fun `DisplayEffect should not display a count when the effect is received once`() =
+        sharedViewsTest {
+            // Given
+            val effectView = EffectView(size, loadedResourcesLoader())
+            // When
+            effectView.displayEffect(EffectsView.Effect("venom-damage", remainingDuration = 4))
+            // Then
+            effectView.stacksText().shouldBeNull()
+        }
+
+    @Test
+    fun `Select should ring the icon when it is selected`() =
+        sharedViewsTest {
+            // Given
+            val effectView = EffectView(size, loadedResourcesLoader())
+            effectView.displayEffect(EffectsView.Effect("venom-damage", remainingDuration = 4))
+            // When
+            effectView.select()
+            // Then
+            effectView.chipStroke() shouldBe HudStyle.SELECTION
+        }
+
+    @Test
+    fun `Unselect should ring the icon as usual when it is unselected`() =
+        sharedViewsTest {
+            // Given
+            val effectView = EffectView(size, loadedResourcesLoader())
+            effectView.displayEffect(EffectsView.Effect("venom-damage", remainingDuration = 4))
+            effectView.select()
+            // When
+            effectView.unselect()
+            // Then
+            effectView.chipStroke() shouldBe HudStyle.STROKE
         }
 }

@@ -16,7 +16,7 @@ class RecipientPreviewViewTest : ViewsForTesting() {
             // Given
             val recipientPreviewView = RecipientPreviewView(loadedResourcesLoader(), MessagesMother.messages())
             // When
-            recipientPreviewView.display(battleUnit = battleUnitInfo(unitId = "rat", isHumanPlayers = false), remainingHealth = -5, newEffectIds = emptyList())
+            recipientPreviewView.display(battleUnit = battleUnitInfo(unitId = "rat", isHumanPlayers = false), remainingHealth = -5)
             // Then
             recipientPreviewView.isKnockedOut().shouldBeTrue()
             recipientPreviewView.portraitRingColor() shouldBe HudStyle.DEFEATED
@@ -28,7 +28,7 @@ class RecipientPreviewViewTest : ViewsForTesting() {
             // Given
             val recipientPreviewView = RecipientPreviewView(loadedResourcesLoader(), MessagesMother.messages())
             // When
-            recipientPreviewView.display(battleUnit = battleUnitInfo(unitId = "rat", remainingHealth = 20, isHumanPlayers = false), remainingHealth = 8, newEffectIds = emptyList())
+            recipientPreviewView.display(battleUnit = battleUnitInfo(unitId = "rat", remainingHealth = 20, isHumanPlayers = false), remainingHealth = 8)
             // Then
             recipientPreviewView.unitName() shouldBe "Rat"
             recipientPreviewView.healthChange() shouldBe "-12"

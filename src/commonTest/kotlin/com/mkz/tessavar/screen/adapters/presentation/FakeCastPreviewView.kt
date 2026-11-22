@@ -7,7 +7,6 @@ class FakeCastPreviewView : CastPreviewView(GameSceneResourcesLoader(), Messages
         val manaCost: Int,
         val recipients: List<Recipient>,
         val casterRemainingHealth: Int,
-        val casterNewEffectIds: List<String>,
     )
 
     val displayedCastPreviews = mutableListOf<DisplayedCastPreview>()
@@ -20,9 +19,8 @@ class FakeCastPreviewView : CastPreviewView(GameSceneResourcesLoader(), Messages
         manaCost: Int,
         recipients: List<Recipient>,
         casterRemainingHealth: Int,
-        casterNewEffectIds: List<String>,
     ) {
-        displayedCastPreviews += DisplayedCastPreview(abilityId, casterBattleUnit, manaCost, recipients, casterRemainingHealth, casterNewEffectIds)
+        displayedCastPreviews += DisplayedCastPreview(abilityId, casterBattleUnit, manaCost, recipients, casterRemainingHealth)
     }
 
     override fun hide() {

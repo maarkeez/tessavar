@@ -71,11 +71,8 @@ object RecipientPreviewViewStories : StoryBinding {
     override fun render(
         args: Args,
         context: StoryContext,
-    ): View {
-        val effectIds = context.effectIds()
-        val effects = List(args.int(EFFECTS)) { index -> effectIds[index % effectIds.size] }
-        val newEffects = List(args.int(NEW_EFFECTS)) { index -> effectIds[index % effectIds.size] }
-        return RecipientPreviewView(context.resourcesLoader, context.messages).apply {
+    ): View =
+        RecipientPreviewView(context.resourcesLoader, context.messages).apply {
             display(
                 battleUnit =
                     BattleUnitInfo(
@@ -84,12 +81,10 @@ object RecipientPreviewViewStories : StoryBinding {
                         maximumHealth = MAXIMUM_HEALTH,
                         remainingMana = REMAINING_MANA,
                         maximumMana = MAXIMUM_MANA,
-                        effectIds = effects,
+                        effects = context.effects(args.int(EFFECTS), args.int(NEW_EFFECTS)),
                         isHumanPlayers = false,
                     ),
                 remainingHealth = args.int(HEALTH_AFTER),
-                newEffectIds = newEffects,
             )
         }
-    }
 }

@@ -100,10 +100,9 @@ class CastPreviewViewTest : ViewsForTesting() {
             // When
             castPreviewView.display(
                 abilityId = "cleave",
-                casterBattleUnit = casterBattleUnit,
                 manaCost = 10,
+                casterBattleUnit = casterBattleUnit.copy(effects = listOf(EffectsView.Effect("venom-damage", remainingDuration = 5, isNew = true))),
                 recipients = recipients(4),
-                casterNewEffectIds = listOf("venom-damage"),
             )
             // Then
             castPreviewView.rows().size shouldBe 5

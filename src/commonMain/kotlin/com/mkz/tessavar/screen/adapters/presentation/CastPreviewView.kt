@@ -32,7 +32,6 @@ open class CastPreviewView(
     data class Recipient(
         val battleUnit: BattleUnitInfo,
         val remainingHealth: Int,
-        val newEffectIds: List<String> = emptyList(),
     )
 
     private val header: Container =
@@ -59,14 +58,13 @@ open class CastPreviewView(
         manaCost: Int,
         recipients: List<Recipient>,
         casterRemainingHealth: Int = casterBattleUnit.remainingHealth,
-        casterNewEffectIds: List<String> = emptyList(),
     ) {
         displayHeader(abilityId, casterBattleUnit, manaCost)
 
-        val isCasterChanged = casterRemainingHealth != casterBattleUnit.remainingHealth || casterNewEffectIds.isNotEmpty()
+        val isCasterChanged = casterRemainingHealth != casterBattleUnit.remainingHealth || casterBattleUnit.effects.any { effect -> effect.isNew }
         val rows =
             buildList {
-                if (isCasterChanged) add(Recipient(casterBattleUnit, casterRemainingHealth, casterNewEffectIds))
+                if (isCasterChanged) add(Recipient(casterBattleUnit, casterRemainingHealth))
                 addAll(recipients)
             }
         while (rowViews.size < rows.size) {
@@ -80,7 +78,7 @@ open class CastPreviewView(
             if (row == null) {
                 rowView.hide()
             } else {
-                rowView.display(battleUnit = row.battleUnit, remainingHealth = row.remainingHealth, newEffectIds = row.newEffectIds)
+                rowView.display(battleUnit = row.battleUnit, remainingHealth = row.remainingHealth)
             }
         }
         casterRowView = if (isCasterChanged) rowViews.first() else null

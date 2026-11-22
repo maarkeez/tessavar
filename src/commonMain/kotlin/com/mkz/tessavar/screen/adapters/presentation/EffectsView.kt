@@ -10,6 +10,13 @@ import korlibs.math.geom.Size
 class EffectsView(
     resourcesLoader: GameSceneResourcesLoader,
 ) : Container() {
+    data class Effect(
+        val effectId: String,
+        val stacks: Int = 1,
+        val remainingDuration: Int? = null,
+        val isNew: Boolean = false,
+    )
+
     internal lateinit var effectViews: Array<EffectView>
 
     internal lateinit var overflowLabel: Text
@@ -27,13 +34,9 @@ class EffectsView(
         addChild(effectViewsLayout)
     }
 
-    fun display(
-        effectIds: Collection<String>,
-        newEffectIds: Collection<String> = emptyList(),
-    ) {
+    fun display(effects: List<Effect>) {
         effectViews.forEach { effectView -> effectView.hide() }
-        val effects = effectIds.map { effectId -> effectId to false } + newEffectIds.map { effectId -> effectId to true }
-        effects.take(effectViews.size).forEachIndexed { index, (effectId, isNew) -> effectViews[index].displayEffect(effectId, isNew) }
+        effects.take(effectViews.size).forEachIndexed { index, effect -> effectViews[index].displayEffect(effect) }
         overflowLabel.visible = effects.size > effectViews.size
         visible = true
     }

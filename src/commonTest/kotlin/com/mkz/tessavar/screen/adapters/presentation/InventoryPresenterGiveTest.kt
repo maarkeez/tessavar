@@ -75,6 +75,7 @@ class InventoryPresenterGiveTest {
             inventoryApi = apis.inventoryApi,
             lootableItemApi = apis.lootableItemApi,
             battleUnitApi = apis.battleUnitApi,
+            effectApi = apis.effectApi,
             playerApi = apis.playerApi,
             battleApi = apis.battleApi,
             partyApi = apis.partyApi,

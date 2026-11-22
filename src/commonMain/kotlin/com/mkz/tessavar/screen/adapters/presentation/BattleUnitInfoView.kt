@@ -147,7 +147,7 @@ open class BattleUnitInfoView(
                 manaCost = ability.manaCost,
             )
         }
-        effectsView.display(effectIds = battleUnit.effectIds)
+        effectsView.display(battleUnit.effects)
         visible = true
     }
 

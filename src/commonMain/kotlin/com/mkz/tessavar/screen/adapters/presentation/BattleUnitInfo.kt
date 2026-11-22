@@ -6,6 +6,6 @@ data class BattleUnitInfo(
     val maximumHealth: Int,
     val remainingMana: Int,
     val maximumMana: Int,
-    val effectIds: List<String>,
+    val effects: List<EffectsView.Effect>,
     val isHumanPlayers: Boolean,
 )

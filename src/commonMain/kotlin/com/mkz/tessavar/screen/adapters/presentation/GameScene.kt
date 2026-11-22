@@ -210,6 +210,7 @@ class GameScene(
                 inventoryApi,
                 lootableItemApi,
                 battleUnitApi,
+                effectApi,
                 playerApi,
                 battleApi,
                 partyApi,

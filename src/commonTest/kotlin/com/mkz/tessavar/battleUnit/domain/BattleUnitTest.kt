@@ -348,6 +348,36 @@ class BattleUnitTest {
     }
 
     @Test
+    fun `ToDto should list the ongoing effects with their remaining duration when the battle unit has some`() {
+        // Given
+        val battleUnit =
+            BattleUnitMother
+                .battleUnit()
+                .receiveOnPlayerTurnStartedEffect(effectId = "venom", remainingDuration = 4)
+                .receiveWhileOngoingEffect(effectId = "soak", remainingDuration = 2)
+                .receiveOnPlayerTurnStartedEffect(effectId = "venom", remainingDuration = 5)
+                .receiveImmediateEffect(effectId = "cleave")
+        // When
+        val ongoingEffects = battleUnit.toDto().ongoingEffects.effects
+        // Then
+        ongoingEffects.shouldContainExactly(
+            BattleUnit.Dto.OngoingEffectDto(effectId = "venom", remainingDuration = 4),
+            BattleUnit.Dto.OngoingEffectDto(effectId = "soak", remainingDuration = 2),
+            BattleUnit.Dto.OngoingEffectDto(effectId = "venom", remainingDuration = 5),
+        )
+    }
+
+    @Test
+    fun `ToDto should list an on defeated effect without remaining duration when the battle unit has one`() {
+        // Given
+        val battleUnit = BattleUnitMother.battleUnit().receiveOnDefeatedEffect(effectId = "venom-on-defeat")
+        // When
+        val ongoingEffects = battleUnit.toDto().ongoingEffects.effects
+        // Then
+        ongoingEffects.shouldContainExactly(BattleUnit.Dto.OngoingEffectDto(effectId = "venom-on-defeat", remainingDuration = null))
+    }
+
+    @Test
     fun `ReceiveOnDefeatedEffect should add the on defeated effect and publish the received event when the battle unit receives it`() {
         // Given
         val battleUnit = BattleUnitMother.battleUnit()

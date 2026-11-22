@@ -2,6 +2,7 @@ package com.mkz.tessavar.storybook.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.BattleUnitInfo
 import com.mkz.tessavar.screen.adapters.presentation.CastPreviewView
+import com.mkz.tessavar.screen.adapters.presentation.EffectsView
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ComponentDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ControlDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.StoryDto
@@ -29,6 +30,9 @@ object CastPreviewViewStories : StoryBinding {
     private const val EFFECTS = "effects"
     private const val NEW_EFFECTS = "newEffects"
     private const val CONDITIONAL_ABILITY = "thunder"
+    private const val SOAK_REMAINING_DURATION = 2
+    private const val STUN_DURATION = 1
+    private const val STUN_LONG_DURATION = 2
 
     private val oneEnemy =
         StoryDto(
@@ -113,9 +117,9 @@ object CastPreviewViewStories : StoryBinding {
         args: Args,
         context: StoryContext,
     ): View {
-        val effectIds = context.effectIds()
-        val effects = List(args.int(EFFECTS)) { index -> effectIds[index % effectIds.size] }
-        val newEffects = List(args.int(NEW_EFFECTS)) { index -> effectIds[index % effectIds.size] }
+        val isConditional = args.text(ABILITY) == CONDITIONAL_ABILITY
+        val effects = context.effects(args.int(EFFECTS), args.int(NEW_EFFECTS))
+        val currentEffects = effects.filterNot { effect -> effect.isNew }
         val caster =
             BattleUnitInfo(
                 unitId = args.text(CASTER),
@@ -123,7 +127,7 @@ object CastPreviewViewStories : StoryBinding {
                 maximumHealth = MAXIMUM_HEALTH,
                 remainingMana = CASTER_MANA,
                 maximumMana = CASTER_MANA,
-                effectIds = effects,
+                effects = effects,
                 isHumanPlayers = true,
             )
         val recipient =
@@ -135,11 +139,18 @@ object CastPreviewViewStories : StoryBinding {
                         maximumHealth = MAXIMUM_HEALTH,
                         remainingMana = RECIPIENT_MANA,
                         maximumMana = RECIPIENT_MANA,
-                        effectIds = if (args.text(ABILITY) == CONDITIONAL_ABILITY) effects + "soak" else effects,
+                        effects =
+                            if (isConditional) {
+                                currentEffects + EffectsView.Effect("soak", remainingDuration = SOAK_REMAINING_DURATION) +
+                                    listOf("stun" to STUN_DURATION, "stun-long" to STUN_LONG_DURATION).map { (effectId, duration) ->
+                                        EffectsView.Effect(effectId, remainingDuration = duration, isNew = true)
+                                    }
+                            } else {
+                                effects
+                            },
                         isHumanPlayers = false,
                     ),
                 remainingHealth = args.int(RECIPIENT_HEALTH_AFTER),
-                newEffectIds = if (args.text(ABILITY) == CONDITIONAL_ABILITY) listOf("stun", "stun-long") else newEffects,
             )
         return CastPreviewView(context.resourcesLoader, context.messages).apply {
             display(
@@ -148,7 +159,6 @@ object CastPreviewViewStories : StoryBinding {
                 manaCost = args.int(MANA_COST),
                 recipients = List(args.int(RECIPIENTS)) { recipient },
                 casterRemainingHealth = args.int(CASTER_HEALTH_AFTER),
-                casterNewEffectIds = newEffects,
             )
         }
     }

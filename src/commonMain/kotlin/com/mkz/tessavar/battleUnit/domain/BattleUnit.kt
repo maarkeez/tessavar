@@ -933,6 +933,7 @@ data class BattleUnit private constructor(
                 onPlayerTurnStarted = value.filter { it.isOnPlayerTurnStarted() }.map { it.effectId() },
                 onDefeatedEffects = value.filter { it.isOnDefeated() }.map { it.effectId() },
                 whileOngoing = whileOngoingEffectIds(),
+                effects = value.filterNot { it.isImmediate() }.map { it.toDto() },
             )
 
         constructor() : this(emptyList())
@@ -993,6 +994,17 @@ data class BattleUnit private constructor(
             fun hasEffectId(effectId: String) = effectId == this.effectId.value
 
             fun effectId() = effectId.value
+
+            fun toDto() =
+                Dto.OngoingEffectDto(
+                    effectId = effectId.value,
+                    remainingDuration =
+                        when (timing) {
+                            is Timing.OnPlayerTurnStarted -> timing.remainingDuration
+                            is Timing.WhileOngoing -> timing.remainingDuration
+                            Timing.Immediate, Timing.OnDefeated -> null
+                        },
+                )
 
             fun toSnapshot() =
                 when (timing) {
@@ -1067,6 +1079,12 @@ data class BattleUnit private constructor(
             val onPlayerTurnStarted: List<String>,
             val onDefeatedEffects: List<String>,
             val whileOngoing: List<String>,
+            val effects: List<OngoingEffectDto>,
+        )
+
+        data class OngoingEffectDto(
+            val effectId: String,
+            val remainingDuration: Int?,
         )
 
         data class SnapshotDto(
