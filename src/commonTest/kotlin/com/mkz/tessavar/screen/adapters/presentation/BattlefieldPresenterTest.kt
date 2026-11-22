@@ -653,6 +653,21 @@ class BattlefieldPresenterTest {
     }
 
     @Test
+    fun `BlinkUnit should blink the battle unit alongside the timeline when an ongoing effect triggers on it while exploring`() {
+        // Given
+        val exploringApis = exploringApis()
+        val exploringBattlefieldView = FakeBattlefieldView().apply { blinking = CompletableDeferred() }
+        val exploringTimeline = gameSceneTimeline()
+        exploringPresenter(exploringApis, exploringBattlefieldView, exploringTimeline)
+        exploringApis.eventBus.publish(OnPlayerTurnStartedEffectTriggered(battleUnitId = "knight-1", effectId = "burn"))
+        // When
+        exploringApis.eventBus.dispatch()
+        // Then
+        exploringBattlefieldView.blinkedBattleUnits.shouldContainExactly(BattleUnitAt(row = 1, column = 1, unitId = "knight"))
+        withClue("The party can walk while it blinks") { exploringTimeline.isPlaying.shouldBeFalse() }
+    }
+
+    @Test
     fun `BlinkHealth should blink the health left of the battle unit alongside the timeline when it is damaged while exploring`() {
         // Given
         val exploringApis = exploringApis(effects = listOf(damageEffect(id = "lava-damage", damage = 15, timingType = "IMMEDIATELY").toDto()))

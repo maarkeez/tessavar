@@ -104,7 +104,7 @@ class BattlefieldPresenter(
                 blinkUnit(event.battleUnitId, isAlongside = !isBattling())
             },
             eventBus.subscribe<BattleUnitEvent.OnPlayerTurnStartedEffectTriggered> { event ->
-                blinkUnit(event.battleUnitId)
+                blinkUnit(event.battleUnitId, isAlongside = !isBattling())
             },
             eventBus.subscribe<BattleUnitEvent.BattleUnitDamaged> { event ->
                 if (!isBattling()) blinkHealth(event.battleUnitId)
