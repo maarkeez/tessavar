@@ -1,6 +1,6 @@
 # Plan: effects that interact: soak, burn, stun and venom
 
-> **Status:** built on `main` up to M5, the screenshots of M5 still to be approved.
+> **Status:** built on `main`, the screenshots of M5 still to be approved.
 >
 > **Summary:** Today an effect only does its own outcome, and no effect knows about another. E.g.: venom-strike's
 > `venom-damage` deals 3 damage on each of the target's next 5 player turns, whatever else the target has, and water
@@ -62,7 +62,7 @@ Each milestone is a few commits straight on `main`, green on CI, except M1, whic
 | M3 | Exploring second   | Every second of exploring triggers and counts down the ongoing effects of every battle unit on the battlefield: a venom left from a battle runs out while exploring.                                          | ✅      | 30318a5c |
 | M4 | Terrain lists      | Water soaks and lava deals its damage and burns, in battles and while exploring.                                                                                                                              | ✅      | 36bcec74 |
 | M5 | Bats and abilities | Splash, Fireball and Thunder, the water, fire and storm bats with their art, the new effect icons and the chosen display, in English and Spanish, can be placed in the world builder.                         | ✅      | af8014b4 |
-| M6 | CPU battle brain   | A CPU storm bat stuns a soaked enemy over a dry one, a CPU water bat soaks an enemy when it knows Thunder, and a CPU fire bat targets an enemy with an ongoing venom.                                         | ⬜      |          |
+| M6 | CPU battle brain   | A CPU storm bat stuns a soaked enemy over a dry one, a CPU water bat soaks an enemy when it knows Thunder, and a CPU fire bat targets an enemy with an ongoing venom.                                         | ✅      | a248681f |
 
 ### M1 commits
 
@@ -269,3 +269,6 @@ Each milestone is a few commits straight on `main`, green on CI, except M1, whic
   per target, and keys the soaked enemy on the Thunder ability, as one more control would cover the actions. The cast
   preview shows no row for the adjacent allies Fireball spreads the venom to. `EffectInteractionsAcceptanceTest` plays
   them on CPU battle units with no ability, so a stunned one is the one with no cast left after the CPU's turn.
+- **M6**: one commit instead of three, as the three values share how `WhatShouldCast` weighs a cast on each target. A
+  soak is worth what the best of the caster's follow-ups would gain, not the sum of all of them. Adjacent allies counts
+  the damage it spreads to the target's living allies on the four adjacent tiles.
