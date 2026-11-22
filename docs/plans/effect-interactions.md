@@ -55,14 +55,14 @@ For example, the storm bat casts Thunder on a hero the water bat soaked last pla
 
 Each milestone is a few commits straight on `main`, green on CI, except M1, which stays on its local branch.
 
-| #   | Milestone          | Done when                                                                                                                                                                                                     | Status | Done in |
-|-----|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
-| M1  | Display prototype  | The four variants are Storybook stories on `prototype/effect-interactions-display`, their screenshots are on an Artifact page, and the user has picked one for the ability info and one for the cast preview. | ⬜      |         |
-| M2  | Effect blocks      | Negate actions, apply if ongoing, resist and while ongoing work through `ApplyEffect`, adjacent allies works immediately, the stubs are gone, and saves are at version 12.                                    | ⬜      |         |
-| M3  | Exploring second   | Every second of exploring triggers and counts down the ongoing effects of every battle unit on the battlefield: a venom left from a battle runs out while exploring.                                          | ⬜      |         |
-| M4  | Terrain lists      | Water soaks and lava deals its damage and burns, in battles and while exploring.                                                                                                                              | ⬜      |         |
-| M5  | Bats and abilities | Splash, Fireball and Thunder, the water, fire and storm bats with their art, the new effect icons and the chosen display, in English and Spanish, can be placed in the world builder.                         | ⬜      |         |
-| M6  | CPU battle brain   | A CPU storm bat stuns a soaked enemy over a dry one, a CPU water bat soaks an enemy when it knows Thunder, and a CPU fire bat targets an enemy with an ongoing venom.                                         | ⬜      |         |
+| #  | Milestone          | Done when                                                                                                                                                                                                     | Status | Done in  |
+|----|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
+| M1 | Display prototype  | The four variants are Storybook stories on `prototype/effect-interactions-display`, their screenshots are on an Artifact page, and the user has picked one for the ability info and one for the cast preview. | ✅      | 46248f53 |
+| M2 | Effect blocks      | Negate actions, apply if ongoing, resist and while ongoing work through `ApplyEffect`, adjacent allies works immediately, the stubs are gone, and saves are at version 12.                                    | ⬜      |          |
+| M3 | Exploring second   | Every second of exploring triggers and counts down the ongoing effects of every battle unit on the battlefield: a venom left from a battle runs out while exploring.                                          | ⬜      |          |
+| M4 | Terrain lists      | Water soaks and lava deals its damage and burns, in battles and while exploring.                                                                                                                              | ⬜      |          |
+| M5 | Bats and abilities | Splash, Fireball and Thunder, the water, fire and storm bats with their art, the new effect icons and the chosen display, in English and Spanish, can be placed in the world builder.                         | ⬜      |          |
+| M6 | CPU battle brain   | A CPU storm bat stuns a soaked enemy over a dry one, a CPU water bat soaks an enemy when it knows Thunder, and a CPU fire bat targets an enemy with an ongoing venom.                                         | ⬜      |          |
 
 ### M1 commits
 
