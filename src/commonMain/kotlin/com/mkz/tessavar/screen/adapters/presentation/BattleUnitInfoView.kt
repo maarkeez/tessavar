@@ -224,7 +224,7 @@ open class BattleUnitInfoView(
         manaBarView.display(remaining = battleUnit.remainingMana, maximum = battleUnit.maximumMana)
         stripHealthBarView.display(remaining = battleUnit.remainingHealth, maximum = battleUnit.maximumHealth)
         stripManaBarView.display(remaining = battleUnit.remainingMana, maximum = battleUnit.maximumMana)
-        effectsView.display(battleUnit.effects)
+        effectsView.display(battleUnit.effects + battleUnit.equippedEffects)
         displayedBattleUnit = battleUnit
     }
 

@@ -23,6 +23,18 @@ class RecipientPreviewViewTest : ViewsForTesting() {
         }
 
     @Test
+    fun `Display should not draw the equipped effects`() =
+        sharedViewsTest {
+            // Given
+            val recipientPreviewView = RecipientPreviewView(loadedResourcesLoader(), MessagesMother.messages())
+            val battleUnit = battleUnitInfo(effects = listOf(EffectsView.Effect("venom-damage", remainingDuration = 3))).copy(equippedEffects = listOf(EffectsView.Effect("maximum-health-30")))
+            // When
+            recipientPreviewView.display(battleUnit = battleUnit, remainingHealth = 10)
+            // Then
+            recipientPreviewView.effectsView.displayedEffectCount() shouldBe 1
+        }
+
+    @Test
     fun `Display should display the change of health when it is displayed`() =
         sharedViewsTest {
             // Given

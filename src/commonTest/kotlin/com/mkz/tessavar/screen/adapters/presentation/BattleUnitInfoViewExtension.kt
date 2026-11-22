@@ -39,6 +39,8 @@ fun BattleUnitInfoView.isNameDisplayed(): Boolean = header.visible && nameText.v
 
 fun BattleUnitInfoView.areEffectsDisplayed(): Boolean = header.visible && effectsView.visible
 
+fun BattleUnitInfoView.displayedEffectIds(): List<String> = effectsView.effectViews.filter { effectView -> effectView.visible }.mapNotNull { effectView -> effectView.effect?.effectId }
+
 fun BattleUnitInfoView.areAbilityButtonsUnderHeader(): Boolean = body.y == if (isFocused) BattleUnitInfoView.FOCUSED_ABILITIES_Y else BattleUnitInfoView.ABILITIES_Y
 
 suspend fun ViewsForTesting.clickInventoryButton(battleUnitInfoView: BattleUnitInfoView) = clickOn(battleUnitInfoView.inventoryButton)

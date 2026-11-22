@@ -48,6 +48,17 @@ class BattleUnitInfoViewTest : ViewsForTesting() {
             ),
     ).copy(battleUnitId = battleUnitId, effectInfos = listOfNotNull(("venom-damage" to venomInfo).takeIf { withVenom }, "soak" to soak).toMap())
 
+    private val maximumHealth =
+        EffectInfoView.EffectInfo("maximum-health-30", stacks = 1, sentence = EffectInfoView.EffectInfo.Sentence.IncreaseMaximumHealth(30), remainingDurations = emptyList(), isExploring = false)
+
+    private fun poisonedAndSoakedWithARuneHammer() =
+        poisonedAndSoaked().let { battleUnit ->
+            battleUnit.copy(
+                equippedEffects = listOf(EffectsView.Effect("maximum-health-30"), EffectsView.Effect("maximum-mana-40")),
+                effectInfos = battleUnit.effectInfos + ("maximum-health-30" to maximumHealth),
+            )
+        }
+
     private fun BattleUnitInfoView.displayBattleUnit(battleUnit: BattleUnitInfo) = display(battleUnit = battleUnit, turnActions = turnActions(), remainingTurns = null, abilities = emptyList())
 
     private fun BattleUnitInfoView.display(
@@ -366,6 +377,31 @@ class BattleUnitInfoViewTest : ViewsForTesting() {
             battleUnitInfoView.displayedEffectInfo() shouldBe venom
             battleUnitInfoView.areAbilityButtonsDisplayed().shouldBeFalse()
             battleUnitInfoView.selectedEffectIds().shouldContainExactly("venom-damage")
+        }
+
+    @Test
+    fun `Display should draw the equipped effects after the ongoing ones when the battle unit has both`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            // When
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoakedWithARuneHammer())
+            // Then
+            battleUnitInfoView.displayedEffectIds().shouldContainExactly("venom-damage", "soak", "maximum-health-30", "maximum-mana-40")
+        }
+
+    @Test
+    fun `TapEffect should display the effect info of an equipped effect when its icon is tapped`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            battleUnitInfoView.displayBattleUnit(poisonedAndSoakedWithARuneHammer())
+            addChild(battleUnitInfoView)
+            // When
+            clickEffect(battleUnitInfoView, 2)
+            // Then
+            battleUnitInfoView.displayedEffectInfo() shouldBe maximumHealth
+            battleUnitInfoView.selectedEffectIds().shouldContainExactly("maximum-health-30")
         }
 
     @Test

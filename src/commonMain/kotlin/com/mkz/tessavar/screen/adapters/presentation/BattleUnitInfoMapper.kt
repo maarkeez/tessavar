@@ -21,8 +21,30 @@ internal object BattleUnitInfoMapper {
             effects = effects(battleUnit.ongoingEffects.effects, newEffectIds, searchEffect),
             isHumanPlayers = isHumanPlayers,
             battleUnitId = battleUnit.id,
-            effectInfos = effectInfos(battleUnit.ongoingEffects.effects, isExploring, searchEffect),
+            effectInfos = effectInfos(battleUnit.ongoingEffects.effects, isExploring, searchEffect) + equippedEffectInfos(battleUnit.equippedEffects, searchEffect),
+            equippedEffects = equippedEffects(battleUnit.equippedEffects),
         )
+
+    private fun equippedEffectIds(equippedEffects: Map<String, List<String>>): List<String> = equippedEffects.values.flatten()
+
+    private fun equippedEffects(equippedEffects: Map<String, List<String>>): List<EffectsView.Effect> =
+        equippedEffectIds(equippedEffects)
+            .groupingBy { effectId -> effectId }
+            .eachCount()
+            .map { (effectId, stacks) -> EffectsView.Effect(effectId = effectId, stacks = stacks) }
+
+    private fun equippedEffectInfos(
+        equippedEffects: Map<String, List<String>>,
+        searchEffect: (String) -> Effect.Dto?,
+    ): Map<String, EffectInfoView.EffectInfo> =
+        equippedEffectIds(equippedEffects)
+            .groupingBy { effectId -> effectId }
+            .eachCount()
+            .mapNotNull { (effectId, stacks) ->
+                searchEffect(effectId)?.let { effect ->
+                    effectId to EffectInfoMapper.effectInfo(effect, List(stacks) { null }, isExploring = false, searchEffect)
+                }
+            }.toMap()
 
     private fun effectInfos(
         ongoingEffects: List<BattleUnit.Dto.OngoingEffectDto>,

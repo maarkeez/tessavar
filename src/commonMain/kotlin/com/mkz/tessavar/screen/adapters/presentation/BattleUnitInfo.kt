@@ -10,4 +10,5 @@ data class BattleUnitInfo(
     val isHumanPlayers: Boolean,
     val battleUnitId: String = "",
     val effectInfos: Map<String, EffectInfoView.EffectInfo> = emptyMap(),
+    val equippedEffects: List<EffectsView.Effect> = emptyList(),
 )
