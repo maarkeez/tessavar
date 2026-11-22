@@ -58,7 +58,7 @@ Each milestone is a few commits straight on `main`, green on CI, except M1, whic
 | #  | Milestone          | Done when                                                                                                                                                                                                     | Status | Done in  |
 |----|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
 | M1 | Display prototype  | The four variants are Storybook stories on `prototype/effect-interactions-display`, their screenshots are on an Artifact page, and the user has picked one for the ability info and one for the cast preview. | ✅      | 46248f53 |
-| M2 | Effect blocks      | Negate actions, apply if ongoing, resist and while ongoing work through `ApplyEffect`, adjacent allies works immediately, the stubs are gone, and saves are at version 12.                                    | ⬜      |          |
+| M2 | Effect blocks      | Negate actions, apply if ongoing, resist and while ongoing work through `ApplyEffect`, adjacent allies works immediately, the stubs are gone, and saves are at version 12.                                    | ✅      | 1dfd134c |
 | M3 | Exploring second   | Every second of exploring triggers and counts down the ongoing effects of every battle unit on the battlefield: a venom left from a battle runs out while exploring.                                          | ⬜      |          |
 | M4 | Terrain lists      | Water soaks and lava deals its damage and burns, in battles and while exploring.                                                                                                                              | ⬜      |          |
 | M5 | Bats and abilities | Splash, Fireball and Thunder, the water, fire and storm bats with their art, the new effect icons and the chosen display, in English and Spanish, can be placed in the world builder.                         | ⬜      |          |
@@ -241,3 +241,11 @@ Each milestone is a few commits straight on `main`, green on CI, except M1, whic
 - Water no longer heals, in the campaign too.
 - A second venom or burn added later must be named in every apply if ongoing and resist that names the first.
 - Durations mean player turns in a battle and seconds while exploring.
+
+## Changes while building
+
+- **M2**: the first three commits are one, as `Effect`, `BattleUnit` and `ApplyEffect` only compile together once the
+  stubs are deleted. `BattleUnit.triggerImmediateEffect` takes the definitions of the recipient's ongoing effects timed
+  while ongoing, `ongoingEffectDefinitions`, so it can lessen the damage by their resists. `ApplyEffect` handles an
+  immediate apply if ongoing or adjacent allies without the battle unit receiving it: it only publishes the further
+  `RequestApplyEffect`s.
