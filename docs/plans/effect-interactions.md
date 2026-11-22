@@ -60,7 +60,7 @@ Each milestone is a few commits straight on `main`, green on CI, except M1, whic
 | M1 | Display prototype  | The four variants are Storybook stories on `prototype/effect-interactions-display`, their screenshots are on an Artifact page, and the user has picked one for the ability info and one for the cast preview. | ✅      | 46248f53 |
 | M2 | Effect blocks      | Negate actions, apply if ongoing, resist and while ongoing work through `ApplyEffect`, adjacent allies works immediately, the stubs are gone, and saves are at version 12.                                    | ✅      | 1dfd134c |
 | M3 | Exploring second   | Every second of exploring triggers and counts down the ongoing effects of every battle unit on the battlefield: a venom left from a battle runs out while exploring.                                          | ✅      | 30318a5c |
-| M4 | Terrain lists      | Water soaks and lava deals its damage and burns, in battles and while exploring.                                                                                                                              | ⬜      |          |
+| M4 | Terrain lists      | Water soaks and lava deals its damage and burns, in battles and while exploring.                                                                                                                              | ✅      | 36bcec74 |
 | M5 | Bats and abilities | Splash, Fireball and Thunder, the water, fire and storm bats with their art, the new effect icons and the chosen display, in English and Spanish, can be placed in the world builder.                         | ⬜      |          |
 | M6 | CPU battle brain   | A CPU storm bat stuns a soaked enemy over a dry one, a CPU water bat soaks an enemy when it knows Thunder, and a CPU fire bat targets an enemy with an ongoing venom.                                         | ⬜      |          |
 
@@ -254,3 +254,8 @@ Each milestone is a few commits straight on `main`, green on CI, except M1, whic
   `OngoingEffectsTrigger` service. As the event bus is first in, first out, the trigger runs before the effects the
   terrain applies that second: a burn received on lava first triggers the next second, as at a player turn start. A
   battle unit standing still on lava takes 5, 9 and 13 over its first 3 seconds, not 9, 13 and 13.
+- **M4**: the soak and burn icons are drawn here rather than in M5, as a battle unit burnt by lava shows the burn icon
+  and `GameSceneResourcesLoader.bitmap` fails on a missing one. `SearchTerrainHealthEffect` sums the health every effect
+  of a terrain changes. `TerrainEffectAcceptanceTest` keeps its stub terrains and gives sand two effects, a damage and
+  a burn; the real water and lava are covered by `ExploringTerrainEffectAcceptanceTest` and, in a battle, by
+  `EffectInteractionsAcceptanceTest` in M5.
