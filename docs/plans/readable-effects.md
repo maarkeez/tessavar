@@ -1,6 +1,6 @@
 # Plan: effects the player can read: grouped icons with their remaining duration, and an effect info on tap
 
-> **Status:** to do.
+> **Status:** built on `main`, the screenshots of M1 still to be approved.
 >
 > **Summary:** Today the battle unit info shows each ongoing effect as a bare 20×20 icon, up to ten and then a "+",
 > with no name, no description and no remaining duration, and tapping an icon does nothing. E.g.: a hero poisoned twice
@@ -52,7 +52,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 
 | #  | Milestone          | Done when                                                                                                                                                          | Status | Done in |
 |----|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
-| M1 | Grouped live icons | The battle unit info and the cast preview show one icon per effect with its count and remaining duration, live while exploring, approved on Storybook screenshots. | ⬜      |         |
+| M1 | Grouped live icons | The battle unit info and the cast preview show one icon per effect with its count and remaining duration, live while exploring, approved on Storybook screenshots. | ✅      | c0b19a8b |
 | M2 | Effect info        | Tapping an effect icon shows its effect info, in English and Spanish, approved on Storybook screenshots.                                                           | ⬜      |         |
 
 ### M1 commits
@@ -218,3 +218,19 @@ translator comment, as the ability info's do.
   lasting effects exist.
 - The effect info's sentences cover the outcome and timing pairs the game uses. A community world adding another pair
   fails in `EffectInfoMapper` until a sentence is written for it.
+
+## Changes while building
+
+- M1's commits 1, 2 and 4 are one commit (bbd677b7): replacing `BattleUnitInfo.effectIds` with `effects` changes the cast
+  preview and every story that builds a `BattleUnitInfo`, so they could not compile apart.
+- The live refresh redraws only the health, the mana and the effect icons, with a new `BattleUnitInfoView.refresh`, not
+  `display` again: `display` closes the ability info, which the player can open while exploring, and would close it each
+  second. `BattlefieldPresenter` remembers the battle unit its battle unit info shows, `displayedBattleUnitId`, set when
+  it displays it and cleared with the selection.
+- The use case test of the event is `Trigger should publish ongoing effects triggered for each battle unit when
+  exploring` in `TriggerOnPlayerTurnStartedEffectsTest`, which already tests the trigger while exploring: there is no
+  `OngoingEffectsTriggerTest`.
+- **Screen / Effects › Stacked** and **With new stack** stack the first sample effect, burn, not venom: the stories take
+  their effects from the effect images, in order. **Screen / Effect** also gains `Stacked` (`screen-effect--stacked`)
+  and `No duration` (`screen-effect--no-duration`), with `remainingDuration` (`int`, 0–9) and `stacks` (`int`, 1–3)
+  controls.
