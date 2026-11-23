@@ -1,6 +1,6 @@
 # Plan: five steps in the strip of the battle unit info
 
-> **Status:** to do.
+> **Status:** done.
 >
 > **Summary:** When a battle unit with 5 steps selects an ability, its Move points run past the strip that the battle
 > unit info collapses to. E.g.: a bat selects Bat. The strip's points start at x 332, the panel ends at x 386, and 5 points
