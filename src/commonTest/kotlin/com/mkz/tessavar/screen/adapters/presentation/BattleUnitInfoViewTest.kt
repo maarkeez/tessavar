@@ -272,6 +272,21 @@ class BattleUnitInfoViewTest : ViewsForTesting() {
         }
 
     @Test
+    fun `BattleUnitInfoView should draw five steps inside the strip when it displays the ability info`() =
+        sharedViewsTest {
+            // Given
+            val battleUnitInfoView = BattleUnitInfoView(loadedResourcesLoader(), MessagesMother.messages())
+            addChild(battleUnitInfoView)
+            battleUnitInfoView.display(turnActions = turnActions(remainingSteps = 2, maximumSteps = 5))
+            // When
+            battleUnitInfoView.displayAbilityInfo(sword)
+            repeat(FOCUS_ANIMATION_FRAMES) { delayFrame() }
+            // Then
+            battleUnitInfoView.stripMaximumSteps() shouldBe 5
+            battleUnitInfoView.areStripStepsInsideItsPanel().shouldBeTrue()
+        }
+
+    @Test
     fun `BattleUnitInfoView should hide the name, the effects and the inventory button when it displays the ability info`() =
         sharedViewsTest {
             // Given

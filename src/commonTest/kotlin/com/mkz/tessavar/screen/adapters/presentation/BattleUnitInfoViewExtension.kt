@@ -33,6 +33,10 @@ fun BattleUnitInfoView.isAbilityInfoUnderAbilityButtons(): Boolean = abilityInfo
 
 fun BattleUnitInfoView.isInventoryButtonDisplayed(): Boolean = header.visible && inventoryButton.visible && inventoryButton.findViewByName(InventoryButtonView.CHEST) != null
 
+fun BattleUnitInfoView.areStripStepsInsideItsPanel(): Boolean = stripMovementPointsView.getGlobalBounds().right <= stripPanel.getGlobalBounds().right - BattleUnitInfoView.STRIP_PADDING
+
+fun BattleUnitInfoView.stripMaximumSteps(): Int = stripMovementPointsView.filledPoints() + stripMovementPointsView.hollowPoints()
+
 fun BattleUnitInfoView.isHeaderCollapsed(): Boolean = isFocused && strip.visible && !header.visible
 
 fun BattleUnitInfoView.isNameDisplayed(): Boolean = header.visible && nameText.visible && nameText.text.isNotEmpty()

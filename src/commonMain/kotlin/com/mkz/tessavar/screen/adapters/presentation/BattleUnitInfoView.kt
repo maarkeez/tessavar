@@ -41,9 +41,12 @@ open class BattleUnitInfoView(
         private const val STRIP_HEIGHT = 52.0
         private const val STRIP_PORTRAIT_SIZE = 40.0
         private const val STRIP_CONTENT_X = MARGIN + 58
-        private const val STRIP_BARS_RIGHT = WIDTH - MARGIN - 112
-        private const val STRIP_ACTIONS_X = STRIP_BARS_RIGHT + 14
-        private const val STRIP_POINTS_X = STRIP_ACTIONS_X + 44
+        private const val STRIP_FITTED_STEPS = 5
+        internal const val STRIP_PADDING = 6.0
+        private const val STRIP_POINTS_X =
+            MARGIN + PANEL_WIDTH - STRIP_PADDING - STRIP_FITTED_STEPS * PointsView.POINT_WIDTH - (STRIP_FITTED_STEPS - 1) * PointsView.POINT_SPACING
+        private const val STRIP_ACTIONS_X = STRIP_POINTS_X - 44
+        private const val STRIP_BARS_RIGHT = STRIP_ACTIONS_X - 14
 
         const val ABILITY_BUTTON_SIZE = 54.0
         private const val ABILITIES = 6
@@ -82,11 +85,8 @@ open class BattleUnitInfoView(
     private val manaBarView = ManaBarView(Size(CONTENT_RIGHT - CONTENT_X - CAPTION_WIDTH, 14)).addTo(header, CONTENT_X + CAPTION_WIDTH, 74.0)
     internal val effectsView = EffectsView(resourcesLoader).addTo(header, CONTENT_X, 94.0)
 
-    internal val strip: Container =
-        container {
-            panel(Size(PANEL_WIDTH, STRIP_HEIGHT)).xy(MARGIN, 0.0)
-            visible = false
-        }
+    internal val strip: Container = container { visible = false }
+    internal val stripPanel = strip.panel(Size(PANEL_WIDTH, STRIP_HEIGHT)).xy(MARGIN, 0.0)
     internal val stripPortraitView = UnitPortraitView(Size(STRIP_PORTRAIT_SIZE, STRIP_PORTRAIT_SIZE), resourcesLoader, portraitScale = 1.0).addTo(strip, MARGIN + 6, 6.0)
     private val stripHealthBarView = HealthBarView(Size(STRIP_BARS_RIGHT - STRIP_CONTENT_X - CAPTION_WIDTH, 14)).addTo(strip, STRIP_CONTENT_X + CAPTION_WIDTH, 9.0)
     private val stripManaBarView = ManaBarView(Size(STRIP_BARS_RIGHT - STRIP_CONTENT_X - CAPTION_WIDTH, 14)).addTo(strip, STRIP_CONTENT_X + CAPTION_WIDTH, 27.0)
