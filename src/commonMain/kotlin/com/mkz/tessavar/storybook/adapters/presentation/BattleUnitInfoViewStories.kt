@@ -13,7 +13,7 @@ object BattleUnitInfoViewStories : StoryBinding {
     private const val DEFAULT_UNIT = "hero"
     private const val MAXIMUM_HEALTH = 30
     private const val MAXIMUM_MANA = 20
-    private const val MAXIMUM_STEPS = 3
+    private const val MAXIMUM_STEPS = 5
     private const val MAXIMUM_CASTS = 1
     private const val REMAINING_SUMMON_DURATION_LIMIT = 9
     private const val EFFECTS_LIMIT = 12
@@ -84,6 +84,14 @@ object BattleUnitInfoViewStories : StoryBinding {
             args = mapOf(SELECTED_ABILITY to ValueDto.int(2)),
         )
 
+    private val abilitySelectedBat =
+        StoryDto(
+            id = "screen-battle-unit-info--ability-selected-bat",
+            name = "Ability selected, bat",
+            description = "A bat, with 5 steps, has selected an ability: its Move points fit in the strip, 2 of them left.",
+            args = mapOf(UNIT to ValueDto.text("bat"), STEPS to ValueDto.int(2), SELECTED_ABILITY to ValueDto.int(1)),
+        )
+
     override fun component(context: StoryContext) =
         ComponentDto(
             id = "screen-battle-unit-info",
@@ -118,7 +126,7 @@ object BattleUnitInfoViewStories : StoryBinding {
                     ABILITIES to ValueDto.int(4),
                     SELECTED_ABILITY to ValueDto.int(0),
                 ),
-            stories = listOf(ready, hurt, turnSpent, withEffects, summon, sixAbilities, abilitySelected, abilitySelectedBlocked),
+            stories = listOf(ready, hurt, turnSpent, withEffects, summon, sixAbilities, abilitySelected, abilitySelectedBlocked, abilitySelectedBat),
         )
 
     override fun render(

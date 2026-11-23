@@ -262,6 +262,7 @@ class StorySmokeTest : ViewsForTesting() {
                     "screen-battle-unit-info--six-abilities",
                     "screen-battle-unit-info--ability-selected",
                     "screen-battle-unit-info--ability-selected-blocked",
+                    "screen-battle-unit-info--ability-selected-bat",
                     "screen-cast-preview",
                     "screen-cast-preview--one-enemy",
                     "screen-cast-preview--self-cast",
