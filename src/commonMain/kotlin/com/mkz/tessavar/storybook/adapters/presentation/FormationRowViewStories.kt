@@ -30,7 +30,7 @@ object FormationRowViewStories : StoryBinding {
         StoryDto(
             id = "screen-formation-row--selected",
             name = "Selected",
-            description = "The row tapped last, in blue, to be swapped with the next one tapped.",
+            description = "The row tapped last, in gold, to be swapped with the next one tapped.",
             args =
                 mapOf(
                     SELECTED to ValueDto.boolean(true),

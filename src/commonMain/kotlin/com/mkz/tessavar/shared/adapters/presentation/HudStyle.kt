@@ -63,7 +63,9 @@ object HudStyle {
 
     val GAIN = RGBA(0x25, 0x6B, 0x2A)
 
-    val TEXT_COLORS = listOf(TEXT, MUTED, FAINT, SELECTION, GAIN, MANA_INK, TALK_NAME)
+    val LOSS = ACCENT
+
+    val TEXT_COLORS = listOf(TEXT, MUTED, FAINT, SELECTION, GAIN, LOSS, MANA_INK, TALK_NAME)
 
     val PANELS = listOf(PANEL, PANEL_RAISED)
 

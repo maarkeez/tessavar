@@ -164,7 +164,7 @@ class FormationRowView(
                 }
             }
         portraitView.display(row.unitId)
-        nameText.text = row.name
+        nameText.text = QuestViewParts.fitted(row.name, HudStyle.BODY, NAME_WIDTH)
         healthBarView.display(remaining = row.remainingHealth, maximum = row.maximumHealth)
         manaBarView.display(remaining = row.remainingMana, maximum = row.maximumMana)
         visible = true

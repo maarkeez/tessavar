@@ -26,13 +26,15 @@ class QuestDetailView(
 ) : Container() {
     companion object {
         const val WIDTH = 378.0
-        const val HEIGHT = 300.0
+        private const val DESCRIPTION_GROWTH = 12.0
+        const val HEIGHT = 300.0 + DESCRIPTION_GROWTH
 
         private const val PADDING = 12.0
         private const val CONTENT_WIDTH = WIDTH - 2 * PADDING
         private const val TARGET_SIZE = 104.0
         private const val TARGET_BOTTOM = PADDING + TARGET_SIZE
         private const val TARGET_TICK_SIZE = 26.0
+        private const val DESCRIPTION_BOTTOM = TARGET_BOTTOM + DESCRIPTION_GROWTH
         private const val TEXT_X = 128.0
         private const val TEXT_WIDTH = WIDTH - PADDING - TEXT_X
         private const val NAME_Y = 26.0
@@ -42,8 +44,8 @@ class QuestDetailView(
         private const val DESCRIPTION_SPACING = 5.0
         private const val PILL_SPACING = 8.0
         private const val PILL_Y = 7.0
-        private const val BANNER_Y = 141.0
-        private const val BANNER_Y_WITHOUT_TASKS_DONE = 160.0
+        private const val BANNER_Y = 141.0 + DESCRIPTION_GROWTH
+        private const val BANNER_Y_WITHOUT_TASKS_DONE = 160.0 + DESCRIPTION_GROWTH
         private const val BANNER_HEIGHT = 52.0
         private const val TASK_X = 24.0
         private const val TASK_TEXT_X = 48.0
@@ -55,10 +57,10 @@ class QuestDetailView(
         private const val BAR_OFFSET = 34.0
         private const val BAR_WIDTH = 330.0
         private const val BAR_HEIGHT = 7.0
-        private const val TASKS_DONE_Y = 217.0
+        private const val TASKS_DONE_Y = 217.0 + DESCRIPTION_GROWTH
         private const val TASKS_DONE_SIZE = HudStyle.BODY
-        private const val REWARD_ROW_Y = 256.0
-        private const val REWARD_CAPTION_Y = 263.0
+        private const val REWARD_ROW_Y = 256.0 + DESCRIPTION_GROWTH
+        private const val REWARD_CAPTION_Y = 263.0 + DESCRIPTION_GROWTH
         private const val REWARD_SPACING = 8.0
     }
 
@@ -104,7 +106,7 @@ class QuestDetailView(
         var nameHeight = 0.0
         nameView = container { nameHeight = wrappedText(quest.name, TEXT_X, NAME_Y, TEXT_WIDTH, NAME_SIZE, HudStyle.TEXT, maximumLines = NAME_MAXIMUM_LINES) }
         val descriptionY = NAME_Y + nameHeight + DESCRIPTION_SPACING
-        val descriptionLines = ((TARGET_BOTTOM - descriptionY + QuestViewParts.LINE_SPACING) / (DESCRIPTION_SIZE + QuestViewParts.LINE_SPACING)).toInt()
+        val descriptionLines = ((DESCRIPTION_BOTTOM - descriptionY + QuestViewParts.LINE_SPACING) / (DESCRIPTION_SIZE + QuestViewParts.LINE_SPACING)).toInt()
         descriptionView = container { wrappedText(quest.description, TEXT_X, descriptionY, TEXT_WIDTH, DESCRIPTION_SIZE, HudStyle.MUTED, maximumLines = descriptionLines, font = HudFonts.BODY) }
     }
 

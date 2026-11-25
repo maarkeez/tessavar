@@ -47,7 +47,7 @@ object ConfirmButtonStories : StoryBinding {
             id = "screen-confirm-button",
             group = "Screen",
             title = "Confirm button",
-            description = "A primary action button in blue, e.g.: Confirm in the dialogs, and Play new game in the menu, or in gold, as Wishlist in the menu.",
+            description = "A primary action button in red, e.g.: Confirm in the dialogs, and Play new game in the menu, or in gold, as Wishlist in the menu.",
             controls = listOf(ControlDto.text(LABEL), ControlDto.int(BUTTON_WIDTH, minimum = MINIMUM_WIDTH, maximum = MAXIMUM_WIDTH), ControlDto.boolean(GOLD)),
             args = mapOf(LABEL to ValueDto.text("Confirm"), BUTTON_WIDTH to ValueDto.int(190), GOLD to ValueDto.boolean(false)),
             stories = listOf(default, wide, longLabel, gold),
@@ -63,7 +63,7 @@ object ConfirmButtonStories : StoryBinding {
                 buttonWidth = args.int(BUTTON_WIDTH).toDouble(),
                 color = HudStyle.COIN_MIDDLE,
                 pressedColor = HudStyle.COIN_PRESSED,
-                textColor = HudStyle.PANEL,
+                textColor = HudStyle.TEXT,
                 onConfirmed = { context.action("onConfirmed") },
             )
         } else {

@@ -24,7 +24,7 @@ object InventorySlotViewStories : StoryBinding {
     private val equipped =
         StoryDto(id = "screen-inventory-slot--equipped", name = "Equipped", description = "An item the battle unit wears, framed in gold.", args = mapOf(EQUIPPED to ValueDto.boolean(true)))
     private val selected =
-        StoryDto(id = "screen-inventory-slot--selected", name = "Selected", description = "The slot tapped last, framed in white.", args = mapOf(SELECTED to ValueDto.boolean(true)))
+        StoryDto(id = "screen-inventory-slot--selected", name = "Selected", description = "The slot tapped last, framed in dark gold.", args = mapOf(SELECTED to ValueDto.boolean(true)))
     private val dimmed =
         StoryDto(
             id = "screen-inventory-slot--dimmed",

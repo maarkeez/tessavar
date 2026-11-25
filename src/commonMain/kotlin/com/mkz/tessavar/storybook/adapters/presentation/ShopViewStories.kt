@@ -33,7 +33,7 @@ object ShopViewStories : StoryBinding {
         StoryDto(
             id = "screen-shop--buy-item-selected",
             name = "Buy, item selected",
-            description = "An item tapped, framed in white, with its name and its price.",
+            description = "An item tapped, framed in dark gold, with its name and its price.",
             args = mapOf(SELECTED_SLOT to ValueDto.text("1")),
         )
     private val buyNotEnoughGold =

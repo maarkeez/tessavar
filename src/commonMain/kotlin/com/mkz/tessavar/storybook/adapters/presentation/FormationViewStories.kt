@@ -23,7 +23,7 @@ object FormationViewStories : StoryBinding {
         StoryDto(
             id = "screen-formation--row-selected",
             name = "Row selected",
-            description = "A row tapped, in blue: the hint asks to tap another one to reorder them.",
+            description = "A row tapped, in gold: the hint asks to tap another one to reorder them.",
             args =
                 mapOf(
                     SELECTED_ROW to ValueDto.text("1"),

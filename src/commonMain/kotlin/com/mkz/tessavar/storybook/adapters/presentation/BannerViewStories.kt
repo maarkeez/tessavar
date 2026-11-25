@@ -26,7 +26,7 @@ object BannerViewStories : StoryBinding {
     }
 
     private val exploring = StoryDto(id = "screen-banner--exploring", name = "Exploring", description = "Out of the battles.", args = mapOf(STATE to ValueDto.text(State.EXPLORING.name)))
-    private val humanTurn = StoryDto(id = "screen-banner--human-turn", name = "Human turn", description = "The round, and the turn of the human player, in blue.", args = emptyMap())
+    private val humanTurn = StoryDto(id = "screen-banner--human-turn", name = "Human turn", description = "The round, and the turn of the human player, in red.", args = emptyMap())
     private val cpuTurn =
         StoryDto(
             id = "screen-banner--cpu-turn",

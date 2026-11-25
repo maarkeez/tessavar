@@ -1,10 +1,13 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
+import com.mkz.tessavar.screen.adapters.presentation.AbilityInfoView
 import com.mkz.tessavar.screen.adapters.presentation.PillView
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ComponentDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ControlDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.StoryDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ValueDto
+import korlibs.image.color.RGBA
 import korlibs.korge.view.View
 
 object PillViewStories : StoryBinding {
@@ -16,7 +19,7 @@ object PillViewStories : StoryBinding {
     private const val MANA_COLOR = "0091FF"
     private const val COOLDOWN_COLOR = "FFBB31"
     private const val DEFEATED_COLOR = "FF375F"
-    private const val GOLD_COLOR = "FFD84A"
+    private const val GOLD_COLOR = "8A5300"
 
     private val manaCost = StoryDto(id = "screen-pill--mana-cost", name = "Mana cost", description = "The mana an ability costs, after the orb of mana.", args = emptyMap())
     private val cooldown =
@@ -62,7 +65,14 @@ object PillViewStories : StoryBinding {
         args: Args,
         context: StoryContext,
     ): View =
-        PillView(color = args.color(COLOR), glyph = PillView.Glyph.valueOf(args.text(GLYPH)), solid = args.boolean(SOLID)).apply {
+        PillView(color = args.color(COLOR), ink = ink(args.color(COLOR)), glyph = PillView.Glyph.valueOf(args.text(GLYPH)), solid = args.boolean(SOLID)).apply {
             display(args.text(TEXT))
+        }
+
+    private fun ink(color: RGBA): RGBA =
+        when (color) {
+            HudStyle.MANA -> HudStyle.MANA_INK
+            AbilityInfoView.COOLDOWN_COLOR -> AbilityInfoView.COOLDOWN_INK
+            else -> color
         }
 }

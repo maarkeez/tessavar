@@ -76,7 +76,7 @@ class RecipientPreviewView(
         changeText.color =
             when {
                 change > 0 -> HudStyle.GAIN
-                change < 0 -> HudStyle.ENEMY
+                change < 0 -> HudStyle.LOSS
                 else -> HudStyle.MUTED
             }
         changeText.x = RIGHT - changeText.width

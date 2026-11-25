@@ -38,7 +38,7 @@ object CancelButtonStories : StoryBinding {
             id = "screen-cancel-button",
             group = "Screen",
             title = "Cancel button",
-            description = "A secondary action button in gray, e.g.: Cancel in the dialogs, and the options of the menu other than playing.",
+            description = "A secondary action button in brown, e.g.: Cancel in the dialogs, and the options of the menu other than playing.",
             controls = listOf(ControlDto.text(LABEL), ControlDto.int(BUTTON_WIDTH, minimum = MINIMUM_WIDTH, maximum = MAXIMUM_WIDTH)),
             args = mapOf(LABEL to ValueDto.text("Cancel"), BUTTON_WIDTH to ValueDto.int(190)),
             stories = listOf(default, wide, longLabel),

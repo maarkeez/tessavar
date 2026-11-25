@@ -28,7 +28,7 @@ class UnitNameView(
     }
 
     fun display(unitName: String) {
-        unitNameLabel.setText(unitName)
+        unitNameLabel.setText(QuestViewParts.fitted(unitName, HudStyle.BODY, width))
         visible = true
     }
 

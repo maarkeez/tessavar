@@ -45,7 +45,7 @@ class RecipientPreviewViewTest : ViewsForTesting() {
             // Then
             recipientPreviewView.unitName() shouldBe "Rat"
             recipientPreviewView.healthChange() shouldBe "-12"
-            recipientPreviewView.healthChangeColor() shouldBe HudStyle.ENEMY
+            recipientPreviewView.healthChangeColor() shouldBe HudStyle.LOSS
             recipientPreviewView.isKnockedOut().shouldBeFalse()
             recipientPreviewView.portraitRingColor() shouldBe HudStyle.ENEMY
         }

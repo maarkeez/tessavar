@@ -16,23 +16,23 @@ object GameButtonStories : StoryBinding {
     private const val ENABLED = "enabled"
     private const val COLOR = "color"
 
-    private const val GREY = "696969"
-    private const val FINISH_TURN_BLUE = "0088FF"
+    private const val BROWN = "8B5E34"
+    private const val FINISH_TURN_RED = "A8322D"
 
-    private val enabled = StoryDto(id = "shared-game-button--enabled", name = "Enabled", description = "A button that can be tapped: grey, with a white label.", args = emptyMap())
+    private val enabled = StoryDto(id = "shared-game-button--enabled", name = "Enabled", description = "A button that can be tapped: brown, with a cream label.", args = emptyMap())
     private val disabled =
         StoryDto(
             id = "shared-game-button--disabled",
             name = "Disabled",
-            description = "A button that can not be tapped, faded: its background dark, its label grey and its border dim.",
+            description = "A button that can not be tapped, faded: its background pale, its label faded and its border dim.",
             args = mapOf(ENABLED to ValueDto.boolean(false)),
         )
     private val otherColor =
         StoryDto(
             id = "shared-game-button--other-color",
             name = "Other color",
-            description = "The blue of Finish turn instead of the grey: a button of any color fades the same once disabled.",
-            args = mapOf(LABEL to ValueDto.text("Finish turn"), COLOR to ValueDto.text(FINISH_TURN_BLUE)),
+            description = "The red of Finish turn instead of the brown: a button of any color fades the same once disabled.",
+            args = mapOf(LABEL to ValueDto.text("Finish turn"), COLOR to ValueDto.text(FINISH_TURN_RED)),
         )
 
     override fun component(context: StoryContext) =
@@ -42,7 +42,7 @@ object GameButtonStories : StoryBinding {
             title = "Game button",
             description = "The button of the game, e.g.: the arrows, Close and the item buttons. A disabled one is still displayed, but faded, so the player tells it can not be tapped.",
             controls = listOf(ControlDto.text(LABEL), ControlDto.boolean(ENABLED), ControlDto.color(COLOR)),
-            args = mapOf(LABEL to ValueDto.text("Close"), ENABLED to ValueDto.boolean(true), COLOR to ValueDto.text(GREY)),
+            args = mapOf(LABEL to ValueDto.text("Close"), ENABLED to ValueDto.boolean(true), COLOR to ValueDto.text(BROWN)),
             stories = listOf(enabled, disabled, otherColor),
         )
 

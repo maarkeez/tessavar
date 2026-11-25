@@ -27,7 +27,7 @@ object InventoryViewStories : StoryBinding {
     private val full = StoryDto(id = "screen-inventory--full", name = "Full", description = "All the storage spaces taken.", args = mapOf(ITEMS to ValueDto.int(InventoryView.SLOTS)))
     private val equipped =
         StoryDto(id = "screen-inventory--equipped", name = "Equipped", description = "An item the battle unit wears, framed in gold.", args = mapOf(EQUIPPED_SLOT to ValueDto.text("0")))
-    private val selected = StoryDto(id = "screen-inventory--selected", name = "Selected", description = "The slot tapped last, framed in white.", args = mapOf(SELECTED_SLOT to ValueDto.text("1")))
+    private val selected = StoryDto(id = "screen-inventory--selected", name = "Selected", description = "The slot tapped last, framed in dark gold.", args = mapOf(SELECTED_SLOT to ValueDto.text("1")))
     private val exploring =
         StoryDto(
             id = "screen-inventory--exploring",

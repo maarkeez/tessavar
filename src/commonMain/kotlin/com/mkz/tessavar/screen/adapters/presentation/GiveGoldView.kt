@@ -187,8 +187,7 @@ open class GiveGoldView(
         size: Double,
     ) {
         textSize = size
-        text = value
-        if (width > COLUMN_WIDTH) textSize = size * COLUMN_WIDTH / width
+        text = QuestViewParts.fitted(value, size, COLUMN_WIDTH)
         x = centerX - width / 2
     }
 
