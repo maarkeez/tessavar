@@ -1,6 +1,5 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.fitted
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.progressBar
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.repeatablePill
@@ -11,6 +10,8 @@ import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.taskGlyph
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.tickDisc
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.widthOf
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.wrappedText
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import korlibs.image.color.Colors
 import korlibs.korge.view.Container
 import korlibs.korge.view.Text

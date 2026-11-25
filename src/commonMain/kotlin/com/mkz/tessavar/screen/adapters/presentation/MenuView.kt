@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.GAME_TITLE
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.uiVerticalStack
 import korlibs.korge.view.text

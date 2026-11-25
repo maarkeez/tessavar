@@ -1,6 +1,5 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.chevron
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.fitted
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.pinGlyph
@@ -10,6 +9,8 @@ import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.ringOf
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.targetSlot
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.tickDisc
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.widthOf
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import korlibs.image.color.Colors
 import korlibs.korge.input.onClick
 import korlibs.korge.input.onMouseDrag

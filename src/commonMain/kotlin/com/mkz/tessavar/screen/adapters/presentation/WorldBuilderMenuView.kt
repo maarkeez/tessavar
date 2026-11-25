@@ -2,6 +2,7 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.GAME_WINDOW_SIZE
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.bitmap.Bitmap
 import korlibs.image.bitmap.Bitmaps
@@ -77,7 +78,7 @@ open class WorldBuilderMenuView : Container() {
     internal val menuButton =
         uiButton(label = "", size = Size(BUTTON_WIDTH, BUTTON_HEIGHT)) {
             bgColorOut = Colors.TRANSPARENT
-            bgColorOver = Colors.DIMGRAY
+            bgColorOver = HudStyle.BUTTON
             background.borderColor = Colors.TRANSPARENT
             repeat(3) { bar ->
                 solidRect(Size(BAR_WIDTH, BAR_HEIGHT), Colors.WHITE) {
@@ -143,8 +144,8 @@ open class WorldBuilderMenuView : Container() {
                     options.forEach { option ->
                         optionButtons +=
                             uiButton(label = option.label, size = Size(OPTION_WIDTH, OPTION_HEIGHT)) {
-                                bgColorOut = Colors.DIMGRAY
-                                background.borderColor = Colors.LIGHTGRAY
+                                bgColorOut = HudStyle.BUTTON
+                                background.borderColor = HudStyle.BUTTON_BORDER
                                 onClick {
                                     close()
                                     option.onSelected()

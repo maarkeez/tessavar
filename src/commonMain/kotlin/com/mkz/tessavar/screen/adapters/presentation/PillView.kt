@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.view.Container

@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.view.Container
@@ -31,7 +32,7 @@ open class AbilityInfoView(
         internal val ENEMY_COLOR = HudStyle.ENEMY
         internal val ALLY_COLOR = HudStyle.ALLY
         internal val EMPTY_TILE_COLOR = Colors.WHITE
-        private val UNMARKED_COLOR = RGBA(0x2A, 0x2A, 0x40)
+        private val UNMARKED_COLOR = HudStyle.UNMARKED
 
         private const val PADDING = 10.0
         private const val SPACING = 8.0

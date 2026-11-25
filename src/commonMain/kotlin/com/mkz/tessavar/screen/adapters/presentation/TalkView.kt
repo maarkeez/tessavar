@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.RGBA
 import korlibs.image.font.DefaultTtfFontAsBitmap
 import korlibs.image.text.RichTextData
@@ -27,8 +28,8 @@ open class TalkView(
         const val NAME_HEIGHT = 28.0
         const val LINE_TEXT_SIZE = 18.0
 
-        private val BACKGROUND_COLOR = RGBA(33, 22, 64)
-        private val NAME_COLOR = RGBA(255, 231, 55)
+        private val BACKGROUND_COLOR = HudStyle.TALK_BACKGROUND
+        private val NAME_COLOR = HudStyle.TALK_NAME
         private val LINE_COLOR = RGBA(255, 255, 255)
     }
 

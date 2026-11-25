@@ -1,7 +1,8 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.color.Colors
 import korlibs.korge.input.onClick

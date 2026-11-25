@@ -22,8 +22,8 @@ open class BarView(
         const val TEXT_SIZE = 12.0
         private const val VALUE_SPACING = 6.0
 
-        val TRACK = RGBA(0x0E, 0x0E, 0x18)
-        val TRACK_STROKE = RGBA(0x36, 0x36, 0x50)
+        val TRACK = HudStyle.TRACK
+        val TRACK_STROKE = HudStyle.STROKE
     }
 
     internal var track: RoundRect? = null

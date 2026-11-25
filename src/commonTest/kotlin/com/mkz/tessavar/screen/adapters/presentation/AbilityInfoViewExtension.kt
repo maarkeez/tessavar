@@ -1,5 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+
 fun AbilityInfoView.abilityName(): String = nameText.text
 
 fun AbilityInfoView.manaCost(): String? = manaCostPill.labelText()

@@ -31,7 +31,7 @@ open class PreviewBarView(
         private const val ARROW_LENGTH = 8.0
         private const val ARROW_HEAD = 4.5
 
-        val GAIN = RGBA(0x5A, 0xD2, 0x5A)
+        val GAIN = HudStyle.GAIN
     }
 
     internal var track: RoundRect? = null

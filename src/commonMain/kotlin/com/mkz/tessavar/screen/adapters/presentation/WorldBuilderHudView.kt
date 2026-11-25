@@ -1,7 +1,8 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.GAME_WINDOW_SIZE
-import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import korlibs.image.bitmap.Bitmap
 import korlibs.image.bitmap.Bitmaps
 import korlibs.image.bitmap.slice

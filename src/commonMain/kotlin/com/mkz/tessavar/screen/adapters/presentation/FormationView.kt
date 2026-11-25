@@ -1,6 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import korlibs.image.color.RGBA
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
@@ -88,8 +88,8 @@ class FormationRowView(
     private val resourcesLoader: GameSceneResourcesLoader,
 ) : Container() {
     companion object {
-        val ROW_COLOR = RGBA(0x34, 0x34, 0x34)
-        val SELECTED_ROW_COLOR = RGBA(0x00, 0x52, 0x80)
+        val ROW_COLOR = HudStyle.ROW
+        val SELECTED_ROW_COLOR = HudStyle.SELECTED_ROW
 
         private const val CROWN_SIZE = 32.0
         private const val CROWN_SCALE = 2.0

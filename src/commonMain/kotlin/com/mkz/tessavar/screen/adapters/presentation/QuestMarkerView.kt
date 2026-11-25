@@ -2,6 +2,7 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.exclamationGlyph
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.taskGlyph
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.Colors
 import korlibs.korge.view.Container
 import korlibs.korge.view.roundRect

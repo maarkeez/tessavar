@@ -4,6 +4,7 @@ import com.mkz.tessavar.localization.adapters.presentation.LocalizationApi
 import com.mkz.tessavar.localization.adapters.resources.ResourcesLocalizationLoader
 import com.mkz.tessavar.screen.adapters.presentation.MenuScene
 import com.mkz.tessavar.shared.adapters.events.InMemoryEventBus
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.resources.ResourcesBundle
 import com.mkz.tessavar.storybook.adapters.location.isStorybookRequested
 import com.mkz.tessavar.storybook.adapters.location.platformStoryLocation
@@ -42,7 +43,7 @@ suspend fun main() =
             startStorybook()
         }
     } else {
-        Korge(title = GAME_TITLE, windowSize = GAME_WINDOW_SIZE, backgroundColor = Colors["#2b2b2b"]) {
+        Korge(title = GAME_TITLE, windowSize = GAME_WINDOW_SIZE, backgroundColor = HudStyle.BACKGROUND) {
             startApp()
         }
     }

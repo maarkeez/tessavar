@@ -1,9 +1,9 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.bitmap.Bitmap
-import korlibs.image.color.Colors
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
@@ -60,7 +60,7 @@ open class WorldBuilderStockView(
     internal val doneButton: GameButton
 
     init {
-        solidRect(size, Colors["#2b2b2b"])
+        solidRect(size, HudStyle.BACKGROUND)
         titleText =
             uiText(text = "", size = Size(width = width, height = TITLE_HEIGHT)) {
                 styles.textSize = 18.0

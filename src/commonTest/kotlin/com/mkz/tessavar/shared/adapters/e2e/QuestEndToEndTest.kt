@@ -1,7 +1,6 @@
 package com.mkz.tessavar.shared.adapters.e2e
 
 import com.mkz.tessavar.GAME_WINDOW_SIZE
-import com.mkz.tessavar.screen.adapters.presentation.HudStyle
 import com.mkz.tessavar.screen.adapters.presentation.VirtualPadView.Direction
 import com.mkz.tessavar.screen.adapters.presentation.bannerView
 import com.mkz.tessavar.screen.adapters.presentation.battleUnitInfoView
@@ -59,6 +58,7 @@ import com.mkz.tessavar.screen.adapters.presentation.roundText
 import com.mkz.tessavar.screen.adapters.presentation.saveSlotsView
 import com.mkz.tessavar.screen.adapters.presentation.talkView
 import com.mkz.tessavar.screen.adapters.presentation.virtualPadView
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.isShown
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.assertions.withClue

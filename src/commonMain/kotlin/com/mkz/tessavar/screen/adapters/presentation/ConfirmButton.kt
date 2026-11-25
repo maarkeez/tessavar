@@ -1,6 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import korlibs.image.color.Colors
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.RGBA
 import korlibs.image.color.RGBA.Companion.invoke
 import korlibs.korge.input.onClick
@@ -13,12 +13,12 @@ class ConfirmButton(
     buttonWidth: Double = 190.0,
     color: RGBA = COLOR,
     pressedColor: RGBA = PRESSED_COLOR,
-    textColor: RGBA = Colors.WHITE,
+    textColor: RGBA = HudStyle.BUTTON_LABEL,
     val onConfirmed: () -> Unit,
 ) : Container() {
     companion object {
-        val COLOR = RGBA(0, 136, 255)
-        val PRESSED_COLOR = RGBA(30, 110, 244)
+        val COLOR = HudStyle.ACCENT
+        val PRESSED_COLOR = HudStyle.ACCENT_PRESSED
     }
 
     internal val confirmButton: UIButton =
@@ -28,7 +28,7 @@ class ConfirmButton(
             width = buttonWidth
             bgColorOut = color
             bgColorOver = pressedColor
-            background.borderColor = Colors.LIGHTGRAY
+            background.borderColor = HudStyle.BUTTON_BORDER
             onClick {
                 onConfirmed()
             }

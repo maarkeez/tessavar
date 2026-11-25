@@ -1,7 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import korlibs.image.color.Colors
-import korlibs.image.color.RGBA
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.RGBA.Companion.invoke
 import korlibs.korge.input.onClick
 import korlibs.korge.ui.UIButton
@@ -17,9 +16,9 @@ class CancelButton(
         uiButton {
             text = label
             width = buttonWidth
-            bgColorOut = Colors.DIMGRAY
-            bgColorOver = RGBA(85, 85, 85)
-            background.borderColor = Colors.LIGHTGRAY
+            bgColorOut = HudStyle.BUTTON
+            bgColorOver = HudStyle.BUTTON_PRESSED
+            background.borderColor = HudStyle.BUTTON_BORDER
             onClick {
                 onCancelled()
             }

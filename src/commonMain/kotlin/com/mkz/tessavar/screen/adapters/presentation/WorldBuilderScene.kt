@@ -6,8 +6,9 @@ import com.mkz.tessavar.battlefield.adapters.resources.ResourcesBattlefieldLoade
 import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldDecoder
 import com.mkz.tessavar.battlefield.adapters.resources.TomlBattlefieldEncoder
 import com.mkz.tessavar.localization.adapters.presentation.LocalizationApi
-import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.shared.adapters.events.InMemoryEventBus
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.telemetry.adapters.presentation.TelemetryApi
 import com.mkz.tessavar.terrain.adapters.presentation.TerrainApi
 import com.mkz.tessavar.terrain.adapters.resources.ResourcesTerrainLoader

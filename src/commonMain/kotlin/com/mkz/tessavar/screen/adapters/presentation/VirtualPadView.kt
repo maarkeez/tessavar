@@ -1,7 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.Colors
-import korlibs.image.color.RGBA
 import korlibs.korge.input.onClick
 import korlibs.korge.input.onDown
 import korlibs.korge.input.onUp
@@ -25,14 +25,14 @@ open class VirtualPadView(
         const val ARROW_SIZE = 64.0
 
         private const val ARROW_HALF_SIDE = 16.0
-        private val ARROW_COLOR = RGBA(76, 76, 76)
-        private val ARROW_HELD_COLOR = RGBA(110, 110, 110)
+        private val ARROW_COLOR = HudStyle.PAD_ARROW
+        private val ARROW_HELD_COLOR = HudStyle.PAD_ARROW_HELD
 
         const val BUTTON_SIZE = 64.0
 
-        private val BUTTON_COLOR = RGBA(135, 22, 70)
-        private val BUTTON_PRESSED_COLOR = RGBA(207, 60, 113)
-        private val BUTTON_BORDER_COLOR = RGBA(79, 21, 7)
+        private val BUTTON_COLOR = HudStyle.PAD_BUTTON
+        private val BUTTON_PRESSED_COLOR = HudStyle.PAD_BUTTON_PRESSED
+        private val BUTTON_BORDER_COLOR = HudStyle.PAD_BUTTON_BORDER
 
         private const val ARROWS_LEFT_MARGIN = 8.0
         private const val CONTROLS_CENTER_FROM_BOTTOM = 150.0
@@ -86,7 +86,7 @@ open class VirtualPadView(
             radiusRatio = Ratio.ONE
             bgColorOut = START_COLOR
             bgColorOver = START_PRESSED_COLOR
-            background.borderColor = Colors.LIGHTGRAY
+            background.borderColor = HudStyle.BUTTON_BORDER
             onClick { pressStart() }
         }
 
@@ -145,7 +145,7 @@ open class VirtualPadView(
             position(x, y)
             bgColorOut = ARROW_COLOR
             bgColorOver = ARROW_HELD_COLOR
-            background.borderColor = Colors.LIGHTGRAY
+            background.borderColor = HudStyle.BUTTON_BORDER
             graphics {
                 fill(Colors.WHITE) {
                     val (tip, firstCorner, secondCorner) = triangle(direction)

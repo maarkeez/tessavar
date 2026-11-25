@@ -1,7 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import korlibs.image.color.Colors
-import korlibs.image.color.RGBA
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.korge.input.onClick
 import korlibs.korge.ui.UIButton
 import korlibs.korge.ui.UIContainer
@@ -52,9 +51,9 @@ class InventoryFullView(
             leaveButton =
                 uiButton(messages[UiMessage.INVENTORY_FULL_LEAVE]) {
                     width = WIDTH
-                    bgColorOut = Colors.DIMGRAY
-                    bgColorOver = RGBA(85, 85, 85)
-                    background.borderColor = Colors.LIGHTGRAY
+                    bgColorOut = HudStyle.BUTTON
+                    bgColorOver = HudStyle.BUTTON_PRESSED
+                    background.borderColor = HudStyle.BUTTON_BORDER
                     onClick { onLeft() }
                 }
         }

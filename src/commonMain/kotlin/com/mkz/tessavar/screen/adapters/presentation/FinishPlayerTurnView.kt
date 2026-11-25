@@ -1,7 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
-import korlibs.image.color.RGBA
 import korlibs.korge.input.onClick
 import korlibs.korge.ui.UIButton
 import korlibs.korge.view.Container
@@ -12,7 +12,7 @@ class FinishPlayerTurnView(
     onPlayerTurnFinished: () -> Unit,
 ) : Container() {
     internal val button =
-        gameButton(messages[UiMessage.FINISH_PLAYER_TURN], Size(390.0, UIButton.DEFAULT_SIZE.height), color = RGBA(0, 136, 255), overColor = RGBA(30, 110, 244)) {
+        gameButton(messages[UiMessage.FINISH_PLAYER_TURN], Size(390.0, UIButton.DEFAULT_SIZE.height), color = HudStyle.ACCENT, overColor = HudStyle.ACCENT_PRESSED) {
             onClick {
                 onPlayerTurnFinished()
             }

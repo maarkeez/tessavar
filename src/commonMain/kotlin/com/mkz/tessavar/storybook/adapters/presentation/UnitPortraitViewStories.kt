@@ -1,7 +1,7 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
-import com.mkz.tessavar.screen.adapters.presentation.HudStyle
 import com.mkz.tessavar.screen.adapters.presentation.UnitPortraitView
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ComponentDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ControlDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.StoryDto
