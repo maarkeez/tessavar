@@ -1,5 +1,6 @@
 package com.mkz.tessavar.shared.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.resources.ResourcesBundle
 import korlibs.io.async.launchImmediately
 import korlibs.korge.KorgeConfig
 import korlibs.korge.KorgeRunner
@@ -22,6 +23,7 @@ fun ViewsForTesting.sharedViewsTest(block: suspend Stage.() -> Unit): TestResult
     runTest(timeout = 60.seconds) {
         viewsLog.init()
         KorgeRunner.prepareViewsBase(views, gameWindow, fixedSizeStep = frameTime.fast, forceRenderEveryFrame = true)
+        HudFonts.load(ResourcesBundle.root)
         injector.mapInstance(KorgeConfig(title = "SharedViewsTest", windowSize = windowSize, virtualSize = virtualSize))
         var completed = false
         var failure: Throwable? = null

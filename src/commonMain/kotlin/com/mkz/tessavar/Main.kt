@@ -4,6 +4,7 @@ import com.mkz.tessavar.localization.adapters.presentation.LocalizationApi
 import com.mkz.tessavar.localization.adapters.resources.ResourcesLocalizationLoader
 import com.mkz.tessavar.screen.adapters.presentation.MenuScene
 import com.mkz.tessavar.shared.adapters.events.InMemoryEventBus
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.resources.ResourcesBundle
 import com.mkz.tessavar.storybook.adapters.location.isStorybookRequested
@@ -53,6 +54,7 @@ suspend fun Stage.startApp(
     storage: IStorage? = null,
 ) {
     ResourcesBundle.prefetch(views)
+    HudFonts.load(ResourcesBundle.root)
     val sceneContainer = sceneContainer()
 
     val eventBus = InMemoryEventBus()
@@ -75,6 +77,8 @@ suspend fun Stage.startStorybook(
     storyLocation: StoryLocation = platformStoryLocation(),
     storybookPage: StorybookPage = platformStorybookPage(),
 ) {
+    ResourcesBundle.prefetch(views)
+    HudFonts.load(ResourcesBundle.root)
     val sceneContainer = sceneContainer()
 
     val eventBus = InMemoryEventBus()

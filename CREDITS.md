@@ -10,6 +10,12 @@
 
 Want to see your name here? See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Fonts
+
+- **[Alegreya](https://github.com/huertatipografica/Alegreya)** and **Alegreya SC**, by Juan Pablo del Peral and
+  Huerta Tipográfica, released under the [SIL Open Font License 1.1](resources/ui/fonts/OFL.txt): Alegreya SC Bold for
+  the titles, names and buttons, and Alegreya Medium for the running text.
+
 ## Code
 
 - **maarkeez**, and the [contributors](https://github.com/maarkeez/tessavar/graphs/contributors) of this repository.
