@@ -1,6 +1,6 @@
 # Plan: the parchment HUD
 
-> **Status:** in progress: M1 to M3 built on `main`, their screenshots still to be approved.
+> **Status:** built on `main`, its screenshots still to be approved.
 >
 > **Summary:** Today the HUD is dark: its panels are a dark navy (`HudStyle.PANEL`, `#171725`), the game's background a
 > dark grey (`#2b2b2b`), and its text is KorGE's default sans-serif, which doesn't look like a game. Some text is too
@@ -67,7 +67,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 | M1 | Palette    | Every screen is parchment with dark text, in the default font, and `HudStyleTest` checks the contrast.      | ✅      | 9a1559e |
 | M2 | Fonts      | Every text of the game is in Alegreya SC Bold or Alegreya Medium, and the fonts are credited.               | ✅      | d9ed51b |
 | M3 | Text sizes | Every text uses the type scale, none is under 12 px, and no story clips or overlaps text on its screenshot. | ✅      | cc3ece2 |
-| M4 | Docs       | The ADR is written, and the prototype branch is deleted.                                                    | ⬜      |         |
+| M4 | Docs       | The ADR is written, and the prototype branch is deleted.                                                    | ✅      | 8afe85b |
 
 ### M1 commits
 
@@ -169,4 +169,4 @@ Each milestone is a few commits straight on `main`, green on CI.
 - **M3, the quest detail grows by 12 px**, for its description to keep four lines at the larger size.
 - **M3, long names are cut with an ellipsis** (`QuestViewParts.fitted`) in give gold, the formation and the unit name,
   where they overlapped their neighbours at the larger sizes. Give gold no longer shrinks a name to fit.
-- **M3, losses in `LOSS`** (`ACCENT`): the pink of a recipient's damage was 2.9:1 on the panel.
+- **M3, losses in `LOSS`** (`ACCENT`), as the pink of a recipient's damage was too light on parchment.
