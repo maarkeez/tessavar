@@ -2,6 +2,7 @@ package com.mkz.tessavar.shared.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.resources.ResourcesBundle
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.matchers.types.shouldBeSameInstanceAs
@@ -38,5 +39,16 @@ class HudFontsTest : ViewsForTesting() {
             } finally {
                 HudFonts.load(ResourcesBundle.root)
             }
+        }
+
+    @Test
+    fun `HudFonts should draw the ellipsis of a cut text when it reads the game resources`() =
+        sharedViewsTest {
+            // Given
+            HudFonts.load(ResourcesBundle.root)
+            // When
+            val fonts = listOf(HudFonts.TITLE, HudFonts.BODY).map { font -> font as BitmapFont }
+            // Then
+            fonts.forEach { font -> font.glyphs[HudFonts.ELLIPSIS.single().code].shouldNotBeNull() }
         }
 }

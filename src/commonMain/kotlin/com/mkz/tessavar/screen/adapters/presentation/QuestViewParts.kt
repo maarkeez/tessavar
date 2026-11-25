@@ -28,7 +28,7 @@ internal object QuestViewParts {
     private const val SEGMENT_GAP = 2.0
     private const val REWARD_GAP = 5.0
     private const val RING_THICKNESS = 2.0
-    private const val ELLIPSIS = "…"
+    private const val ELLIPSIS = HudFonts.ELLIPSIS
     private const val PILL_TEXT_SIZE = 10.0
 
     fun widthOf(
