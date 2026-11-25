@@ -20,7 +20,7 @@ open class BannerView(
     private val messages: Messages,
 ) : UIContainer(Size(width = 390, height = 33)) {
     companion object {
-        val HUMAN_TURN_COLOR = RGBA(0x00, 0x84, 0xFF)
+        val HUMAN_TURN_COLOR = HudStyle.ACCENT
         val CPU_TURN_COLOR = RGBA(0xE0, 0x3C, 0x28)
 
         const val POP_SCALE = 1.3

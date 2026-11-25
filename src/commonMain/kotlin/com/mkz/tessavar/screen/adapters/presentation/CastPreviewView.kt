@@ -42,7 +42,7 @@ open class CastPreviewView(
     internal var abilityIcon: Image? = null
     internal val abilityNameText: Text = header.text("", textSize = NAME_TEXT_SIZE, color = HudStyle.TEXT) { xy(NAME_X, 8.0) }
     internal val casterText: Text = header.text("", textSize = CASTER_TEXT_SIZE, color = HudStyle.MUTED) { xy(NAME_X, 28.0) }
-    internal val manaPill = PillView(color = HudStyle.MANA, glyph = PillView.Glyph.MANA, textSize = MANA_TEXT_SIZE).also(header::addChild)
+    internal val manaPill = PillView(color = HudStyle.MANA, ink = HudStyle.MANA_INK, glyph = PillView.Glyph.MANA, textSize = MANA_TEXT_SIZE).also(header::addChild)
 
     internal val rowViews = mutableListOf<RecipientPreviewView>()
 

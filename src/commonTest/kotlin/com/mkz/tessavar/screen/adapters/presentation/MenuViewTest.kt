@@ -47,7 +47,7 @@ class MenuViewTest : ViewsForTesting() {
             val menuView = newMenuView()
             // Then
             menuView.titleText() shouldBe "Tessavar"
-            menuView.titleColor() shouldBe HudStyle.COIN_MIDDLE
+            menuView.titleColor() shouldBe HudStyle.SELECTION
             menuView.isTitleAboveTheOptions() shouldBe true
             menuView.isTitleCentred() shouldBe true
         }

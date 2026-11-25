@@ -7,58 +7,49 @@ import korlibs.korge.view.roundRect
 import korlibs.math.geom.RectCorners
 import korlibs.math.geom.Size
 
-/**
- * The colours of the chrome of the game: its background, panels, buttons and text (see ADR 0007). The pixel art keeps
- * its own palette.
- */
 object HudStyle {
-    val BACKGROUND = RGBA(0x2B, 0x2B, 0x2B)
+    val BACKGROUND = RGBA(0xD9, 0xC9, 0xA3)
 
-    val PANEL = RGBA(0x17, 0x17, 0x25)
+    val PANEL = RGBA(0xF3, 0xE7, 0xC9)
 
-    val PANEL_RAISED = RGBA(0x22, 0x22, 0x36)
+    val PANEL_RAISED = RGBA(0xFF, 0xF7, 0xE3)
 
-    val STROKE = RGBA(0x36, 0x36, 0x50)
+    val STROKE = RGBA(0x8B, 0x6A, 0x43)
 
-    val TRACK = RGBA(0x0E, 0x0E, 0x18)
+    val TRACK = RGBA(0xC9, 0xB5, 0x8C)
 
-    val TEXT = RGBA(0xFF, 0xFF, 0xFF)
+    val TEXT = RGBA(0x2E, 0x22, 0x16)
 
-    val MUTED = RGBA(0xA4, 0xA4, 0xBE)
+    val MUTED = RGBA(0x5C, 0x48, 0x33)
 
-    val FAINT = RGBA(0x6C, 0x6C, 0x88)
+    val FAINT = RGBA(0x73, 0x5E, 0x48)
 
-    val SELECTION = RGBA(0xFF, 0xD8, 0x4A)
+    val SELECTION = RGBA(0x8A, 0x53, 0x00)
 
-    val BUTTON = RGBA(0x69, 0x69, 0x69)
-    val BUTTON_PRESSED = RGBA(85, 85, 85)
-    val BUTTON_BORDER = RGBA(0xD3, 0xD3, 0xD3)
-    val BUTTON_LABEL = RGBA(0xFF, 0xFF, 0xFF)
-    val DISABLED = RGBA(58, 58, 58)
-    val DISABLED_LABEL = RGBA(138, 138, 138)
-    val DISABLED_BORDER = RGBA(85, 85, 85)
+    val BUTTON = RGBA(0x8B, 0x5E, 0x34)
+    val BUTTON_PRESSED = RGBA(0xA2, 0x70, 0x40)
+    val BUTTON_BORDER = RGBA(0x5A, 0x3B, 0x1E)
+    val BUTTON_LABEL = RGBA(0xFF, 0xF7, 0xE3)
+    val DISABLED = RGBA(0xCF, 0xC0, 0x9E)
+    val DISABLED_LABEL = RGBA(0x8A, 0x7A, 0x62)
+    val DISABLED_BORDER = RGBA(0xB0, 0x9C, 0x7A)
 
-    val ACCENT = RGBA(0, 136, 255)
-    val ACCENT_PRESSED = RGBA(30, 110, 244)
+    val ACCENT = RGBA(0xA8, 0x32, 0x2D)
+    val ACCENT_PRESSED = RGBA(0x8E, 0x29, 0x24)
 
-    val PAD_ARROW = RGBA(76, 76, 76)
-    val PAD_ARROW_HELD = RGBA(110, 110, 110)
-    val PAD_BUTTON = RGBA(135, 22, 70)
-    val PAD_BUTTON_PRESSED = RGBA(207, 60, 113)
-    val PAD_BUTTON_BORDER = RGBA(79, 21, 7)
+    val ROW = RGBA(0xE6, 0xD6, 0xB2)
+    val SELECTED_ROW = RGBA(0xF2, 0xCF, 0x7E)
+    val EMPTY_SLOT = RGBA(0xDD, 0xCB, 0xA4)
+    val UNMARKED = RGBA(0xD8, 0xC6, 0x9E)
 
-    val ROW = RGBA(0x34, 0x34, 0x34)
-    val SELECTED_ROW = RGBA(0x00, 0x52, 0x80)
-    val EMPTY_SLOT = RGBA(0x34, 0x34, 0x34)
-    val UNMARKED = RGBA(0x2A, 0x2A, 0x40)
-
-    val TALK_BACKGROUND = RGBA(33, 22, 64)
-    val TALK_NAME = RGBA(255, 231, 55)
+    val TALK_BACKGROUND = PANEL
+    val TALK_NAME = RGBA(0x9A, 0x3B, 0x1E)
 
     val ALLY = RGBA(0x5A, 0xD2, 0x5A)
     val ENEMY = RGBA(0xFF, 0x37, 0x5F)
     val DEFEATED = RGBA(0x8A, 0x8A, 0xA0)
 
+    val COIN = RGBA(0xFF, 0xD8, 0x4A)
     val COIN_MIDDLE = RGBA(0xC7, 0x8A, 0x1E)
     val COIN_PRESSED = RGBA(0xA6, 0x73, 0x1A)
 
@@ -68,7 +59,15 @@ object HudStyle {
     val HEALTH = RGBA(255, 55, 95)
     val MANA = RGBA(0, 145, 255)
 
-    val GAIN = ALLY
+    val MANA_INK = RGBA(0x1F, 0x5C, 0x99)
+
+    val GAIN = RGBA(0x25, 0x6B, 0x2A)
+
+    val TEXT_COLORS = listOf(TEXT, MUTED, FAINT, SELECTION, GAIN, MANA_INK, TALK_NAME)
+
+    val PANELS = listOf(PANEL, PANEL_RAISED)
+
+    val BUTTON_LABELS = listOf(BUTTON to BUTTON_LABEL, ACCENT to BUTTON_LABEL, DANGER to BUTTON_LABEL, COIN_MIDDLE to TEXT)
 
     const val PANEL_RADIUS = 10.0
     const val SLOT_RADIUS = 8.0

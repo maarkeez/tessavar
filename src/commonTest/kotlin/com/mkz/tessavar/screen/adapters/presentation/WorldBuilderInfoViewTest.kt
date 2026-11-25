@@ -1,11 +1,11 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.nextFrame
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.doubles.plusOrMinus
 import io.kotest.matchers.shouldBe
-import korlibs.image.color.Colors
 import korlibs.korge.tests.ViewsForTesting
 import kotlin.test.Test
 
@@ -57,7 +57,7 @@ class WorldBuilderInfoViewTest : ViewsForTesting() {
             scales.max() shouldBe (WorldBuilderInfoView.POP_SCALE plusOrMinus 0.05)
             infoView.isDisplayingMessage().shouldBeFalse()
             infoView.subtitleText() shouldBe "16 x 16"
-            infoView.subtitleColor() shouldBe Colors.WHITE
+            infoView.subtitleColor() shouldBe HudStyle.TEXT
             infoView.subtitleScale() shouldBe 1.0
         }
 

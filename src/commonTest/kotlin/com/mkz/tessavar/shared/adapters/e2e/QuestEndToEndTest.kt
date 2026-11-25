@@ -295,7 +295,7 @@ class QuestEndToEndTest : ViewsForTesting(windowSize = GAME_WINDOW_SIZE) {
         sharedViewsTest {
             // Given
             startWithTheFarmerNextToTheKnight()
-            withClue("Expected the gold marker over the farmer") { battlefieldView()?.questMarkerColorAt(FARMER_ROW, FARMER_COLUMN) shouldBe HudStyle.SELECTION }
+            withClue("Expected the gold marker over the farmer") { battlefieldView()?.questMarkerColorAt(FARMER_ROW, FARMER_COLUMN) shouldBe HudStyle.COIN }
             // When
             talkToTheNpcNextToTheLeader()
             // Then
@@ -387,7 +387,7 @@ class QuestEndToEndTest : ViewsForTesting(windowSize = GAME_WINDOW_SIZE) {
             clickConfirmation(requireNotNull(stage.callToActionView()))
             waitUntil { virtualPadView()?.isPadShown() == true }
             // Then
-            withClue("Expected the gold marker back over the farmer") { battlefieldView()?.questMarkerColorAt(FARMER_ROW, FARMER_COLUMN) shouldBe HudStyle.SELECTION }
+            withClue("Expected the gold marker back over the farmer") { battlefieldView()?.questMarkerColorAt(FARMER_ROW, FARMER_COLUMN) shouldBe HudStyle.COIN }
             withClue("Expected no tracker, as no quest is active") { questTrackerView()?.displayedTask() shouldBe null }
         }
 
@@ -413,7 +413,7 @@ class QuestEndToEndTest : ViewsForTesting(windowSize = GAME_WINDOW_SIZE) {
             loadedTrackerView.displayedTask() shouldBe "Defeat 3 Bats"
             withClue("Expected the pin on the tracker") { loadedTrackerView.isPinShown().shouldBeTrue() }
             withClue("Expected no marker over the farmer, whose quest is under way") { battlefieldView()?.hasQuestMarkerAt(FARMER_ROW, FARMER_COLUMN)?.shouldBeFalse() }
-            withClue("Expected the gold marker over the blacksmith") { battlefieldView()?.questMarkerColorAt(BLACKSMITH_ROW, BLACKSMITH_COLUMN) shouldBe HudStyle.SELECTION }
+            withClue("Expected the gold marker over the blacksmith") { battlefieldView()?.questMarkerColorAt(BLACKSMITH_ROW, BLACKSMITH_COLUMN) shouldBe HudStyle.COIN }
             withClue("Expected no announcement in a loaded game") { questAnnouncementView()?.isAnnouncementShown()?.shouldBeFalse() }
         }
 }

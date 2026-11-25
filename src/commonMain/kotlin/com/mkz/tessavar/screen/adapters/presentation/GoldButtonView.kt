@@ -50,7 +50,7 @@ class GoldButtonView(
         roundRect(Size(buttonWidth - 2, HEIGHT - 2), RectCorners(RADIUS - 1), fill = if (isFaded) GameButton.DISABLED else GameButton.GREY) { xy(1.0, 1.0) }
         container {
             alpha = if (isFaded) FADED_COIN_ALPHA else 1.0
-            circle(radius = COIN / 2, fill = HudStyle.SELECTION)
+            circle(radius = COIN / 2, fill = HudStyle.COIN)
             circle(radius = COIN / 4, fill = HudStyle.COIN_MIDDLE) { xy(COIN / 4, COIN / 4) }
             xy(PADDING, (HEIGHT - COIN) / 2)
         }

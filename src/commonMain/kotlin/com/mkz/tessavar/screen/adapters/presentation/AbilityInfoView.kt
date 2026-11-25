@@ -27,6 +27,7 @@ open class AbilityInfoView(
 
         internal val MANA_COLOR = HudStyle.MANA
         internal val COOLDOWN_COLOR = BattleUnitInfoView.CAST_POINTS_COLOR
+        internal val COOLDOWN_INK = HudStyle.SELECTION
 
         internal val CASTER_COLOR = Colors.WHITE
         internal val ENEMY_COLOR = HudStyle.ENEMY
@@ -222,7 +223,7 @@ open class AbilityInfoView(
         var right = panelWidth - PADDING
         cooldownPill =
             if (abilityInfo.cooldown > 0) {
-                PillView(color = COOLDOWN_COLOR, glyph = PillView.Glyph.COOLDOWN).also { pill ->
+                PillView(color = COOLDOWN_COLOR, ink = COOLDOWN_INK, glyph = PillView.Glyph.COOLDOWN).also { pill ->
                     pill.display("${abilityInfo.cooldown}")
                     content.addChild(pill)
                     pill.xy(right - pill.width, PADDING + 2)
@@ -232,7 +233,7 @@ open class AbilityInfoView(
                 null
             }
         manaCostPill =
-            PillView(color = MANA_COLOR, glyph = PillView.Glyph.MANA).also { pill ->
+            PillView(color = MANA_COLOR, ink = HudStyle.MANA_INK, glyph = PillView.Glyph.MANA).also { pill ->
                 pill.display("${abilityInfo.manaCost}")
                 content.addChild(pill)
                 pill.xy(right - pill.width, PADDING + 2)
@@ -241,8 +242,8 @@ open class AbilityInfoView(
 
     private fun reason(reason: AbilityInfo.Reason?): Pair<String, RGBA>? =
         when (reason) {
-            is AbilityInfo.Reason.Cooldown -> messages.plural(UiMessage.ABILITY_INFO_READY_IN, reason.turnsLeft, "turns" to reason.turnsLeft) to COOLDOWN_COLOR
-            is AbilityInfo.Reason.NotEnoughMana -> messages[UiMessage.ABILITY_INFO_NOT_ENOUGH_MANA, "manaCost" to reason.manaCost, "mana" to reason.remainingMana] to MANA_COLOR
+            is AbilityInfo.Reason.Cooldown -> messages.plural(UiMessage.ABILITY_INFO_READY_IN, reason.turnsLeft, "turns" to reason.turnsLeft) to COOLDOWN_INK
+            is AbilityInfo.Reason.NotEnoughMana -> messages[UiMessage.ABILITY_INFO_NOT_ENOUGH_MANA, "manaCost" to reason.manaCost, "mana" to reason.remainingMana] to HudStyle.MANA_INK
             null -> null
         }
 

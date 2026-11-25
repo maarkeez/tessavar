@@ -24,14 +24,14 @@ open class VirtualPadView(
         const val ARROW_SIZE = 64.0
 
         private const val ARROW_HALF_SIDE = 16.0
-        private val ARROW_COLOR = HudStyle.PAD_ARROW
-        private val ARROW_HELD_COLOR = HudStyle.PAD_ARROW_HELD
+        private val ARROW_COLOR = HudStyle.BUTTON
+        private val ARROW_HELD_COLOR = HudStyle.BUTTON_PRESSED
 
         const val BUTTON_SIZE = 64.0
 
-        private val BUTTON_COLOR = HudStyle.PAD_BUTTON
-        private val BUTTON_PRESSED_COLOR = HudStyle.PAD_BUTTON_PRESSED
-        private val BUTTON_BORDER_COLOR = HudStyle.PAD_BUTTON_BORDER
+        private val BUTTON_COLOR = HudStyle.ACCENT
+        private val BUTTON_PRESSED_COLOR = HudStyle.ACCENT_PRESSED
+        private val BUTTON_BORDER_COLOR = HudStyle.BUTTON_BORDER
 
         private const val ARROWS_LEFT_MARGIN = 8.0
         private const val CONTROLS_CENTER_FROM_BOTTOM = 150.0

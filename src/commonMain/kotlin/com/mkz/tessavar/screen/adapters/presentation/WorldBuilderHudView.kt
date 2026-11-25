@@ -7,7 +7,6 @@ import korlibs.image.bitmap.Bitmap
 import korlibs.image.bitmap.Bitmaps
 import korlibs.image.bitmap.slice
 import korlibs.image.color.Colors
-import korlibs.image.color.RGBA
 import korlibs.korge.input.onClick
 import korlibs.korge.ui.UIButton
 import korlibs.korge.ui.UIContainer
@@ -91,8 +90,8 @@ open class WorldBuilderHudView(
                 .mapNotNull { icon -> resourcesLoader.bitmapOrNull("ui/tool-${icon.name.lowercase()}.png")?.let { bitmap -> icon to bitmap } }
                 .toMap()
 
-        val SELECTED_TOOL_COLOR = RGBA(0x00, 0x6A, 0xCC)
-        val SELECTED_TOOL_OVER_COLOR = RGBA(0x00, 0x84, 0xFF)
+        val SELECTED_TOOL_COLOR = HudStyle.ACCENT
+        val SELECTED_TOOL_OVER_COLOR = HudStyle.ACCENT_PRESSED
 
         internal fun RoundRect.clippable(): RoundRect = apply { renderer = GraphicsRenderer.SYSTEM }
 

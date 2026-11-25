@@ -10,7 +10,7 @@ class QuestMarkerViewTest : ViewsForTesting() {
     @Test
     fun `QuestMarkerView should draw the sign of a quest to start in gold`() =
         sharedViewsTest {
-            QuestMarkerView(QuestMarkerView.Sign.QUEST_TO_START).displayedColor() shouldBe HudStyle.SELECTION
+            QuestMarkerView(QuestMarkerView.Sign.QUEST_TO_START).displayedColor() shouldBe HudStyle.COIN
         }
 
     @Test

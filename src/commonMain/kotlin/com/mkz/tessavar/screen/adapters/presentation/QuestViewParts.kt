@@ -234,7 +234,7 @@ internal object QuestViewParts {
         y: Double,
         messages: Messages,
     ): PillView {
-        val pill = PillView(color = HudStyle.MANA, textSize = PILL_TEXT_SIZE)
+        val pill = PillView(color = HudStyle.MANA, ink = HudStyle.MANA_INK, textSize = PILL_TEXT_SIZE)
         pill.display(messages[UiMessage.QUEST_REPEATABLE])
         addChild(pill)
         pill.xy(x, y)

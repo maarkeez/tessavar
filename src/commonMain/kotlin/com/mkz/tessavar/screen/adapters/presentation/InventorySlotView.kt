@@ -22,7 +22,7 @@ class InventorySlotView(
         const val SELECTION_FRAME = "SELECTION_FRAME"
 
         val EQUIPPED_COLOR = RGBA(0xFF, 0xBB, 0x31)
-        val SELECTION_COLOR = Colors.WHITE
+        val SELECTION_COLOR = HudStyle.SELECTION
         val EMPTY_COLOR = HudStyle.EMPTY_SLOT
 
         private const val FRAME_THICKNESS = 3.0

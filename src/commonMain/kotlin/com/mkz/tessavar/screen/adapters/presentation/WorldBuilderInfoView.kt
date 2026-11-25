@@ -23,8 +23,8 @@ open class WorldBuilderInfoView(
     private val messages: Messages,
 ) : UIContainer(Size(width = 390, height = 33)) {
     companion object {
-        val ERROR_COLOR = RGBA(0xE0, 0x3C, 0x28)
-        val INFO_COLOR = RGBA(0x00, 0x84, 0xFF)
+        val ERROR_COLOR = HudStyle.ACCENT_PRESSED
+        val INFO_COLOR = HudStyle.MUTED
 
         const val POP_SCALE = 1.3
         val POP_DURATION = 400.milliseconds

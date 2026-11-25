@@ -17,6 +17,7 @@ import korlibs.math.geom.Size
 
 class PillView(
     private val color: RGBA,
+    private val ink: RGBA = color,
     private val glyph: Glyph = Glyph.NONE,
     private val solid: Boolean = false,
     private val textSize: Double = TEXT_SIZE,
@@ -54,7 +55,7 @@ class PillView(
         val pill = this
         val height = pillHeight
         val glyphWidth = if (glyph == Glyph.NONE) 0.0 else textSize + GLYPH_SPACING
-        val label = Text(text, textSize = textSize, color = if (solid) Colors.WHITE else color).apply { name = LABEL }
+        val label = Text(text, textSize = textSize, color = if (solid) Colors.WHITE else ink).apply { name = LABEL }
         val width = label.width + PADDING * 2 + glyphWidth
         capsule =
             roundRect(
@@ -86,7 +87,7 @@ class PillView(
 
     private fun Container.drawGlyph(side: Double) {
         val radius = side / 2 - 1
-        val ink = if (solid) Colors.WHITE else color
+        val glyphInk = if (solid) Colors.WHITE else ink
         when (glyph) {
             Glyph.MANA -> {
                 val orb = if (solid) Colors.WHITE else HudStyle.MANA
@@ -95,12 +96,12 @@ class PillView(
                 circle(radius = radius * 0.32, fill = highlight) { xy(1.0 + radius * 0.45, 1.0 + radius * 0.4) }
             }
             Glyph.COOLDOWN -> {
-                circle(radius = radius, fill = Colors.TRANSPARENT, stroke = ink, strokeThickness = 1.5) { xy(1.0, 1.0) }
-                solidRect(Size(1.5, side * 0.32), ink) { xy(side / 2 - 0.75, side / 2 - side * 0.3) }
-                solidRect(Size(side * 0.26, 1.5), ink) { xy(side / 2 - 0.75, side / 2 - 0.75) }
+                circle(radius = radius, fill = Colors.TRANSPARENT, stroke = glyphInk, strokeThickness = 1.5) { xy(1.0, 1.0) }
+                solidRect(Size(1.5, side * 0.32), glyphInk) { xy(side / 2 - 0.75, side / 2 - side * 0.3) }
+                solidRect(Size(side * 0.26, 1.5), glyphInk) { xy(side / 2 - 0.75, side / 2 - 0.75) }
             }
             Glyph.GOLD -> {
-                circle(radius = radius, fill = HudStyle.SELECTION) { xy(1.0, 1.0) }
+                circle(radius = radius, fill = HudStyle.COIN) { xy(1.0, 1.0) }
                 circle(radius = radius * 0.5, fill = HudStyle.COIN_MIDDLE) { xy(1.0 + radius * 0.5, 1.0 + radius * 0.5) }
             }
             Glyph.NONE -> Unit

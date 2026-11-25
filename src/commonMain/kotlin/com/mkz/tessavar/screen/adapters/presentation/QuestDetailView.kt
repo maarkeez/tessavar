@@ -98,7 +98,7 @@ class QuestDetailView(
                     else -> UiMessage.QUEST_DETAIL_SIDE_QUEST
                 },
             ]
-        captionText = text(caption, textSize = QuestViewParts.CAPTION_SIZE, color = if (quest.isCompleted) HudStyle.ALLY else HudStyle.FAINT) { xy(TEXT_X, PADDING - 2) }
+        captionText = text(caption, textSize = QuestViewParts.CAPTION_SIZE, color = if (quest.isCompleted) HudStyle.GAIN else HudStyle.FAINT) { xy(TEXT_X, PADDING - 2) }
         repeatablePillView = if (quest.isRepeatable) repeatablePill(TEXT_X + widthOf(caption, QuestViewParts.CAPTION_SIZE) + PILL_SPACING, PILL_Y, messages) else null
         var nameHeight = 0.0
         nameView = container { nameHeight = wrappedText(quest.name, TEXT_X, NAME_Y, TEXT_WIDTH, NAME_SIZE, HudStyle.TEXT, maximumLines = NAME_MAXIMUM_LINES) }

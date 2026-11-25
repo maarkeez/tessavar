@@ -29,7 +29,7 @@ class QuestMarkerView(
         const val SIGN_INSET = (DISC_SIZE - SIGN_SIZE) / 2
     }
 
-    internal val color = if (sign == Sign.QUEST_TO_START) HudStyle.SELECTION else HudStyle.ALLY
+    internal val color = if (sign == Sign.QUEST_TO_START) HudStyle.COIN else HudStyle.ALLY
 
     init {
         solidRect(Size(POINTER_SIZE, POINTER_SIZE), color) {

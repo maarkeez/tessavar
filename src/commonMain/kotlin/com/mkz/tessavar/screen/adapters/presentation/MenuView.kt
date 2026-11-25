@@ -25,7 +25,7 @@ class MenuView(
     }
 
     internal val title =
-        text(text = GAME_TITLE, textSize = TITLE_HEIGHT, color = HudStyle.COIN_MIDDLE) {
+        text(text = GAME_TITLE, textSize = TITLE_HEIGHT, color = HudStyle.SELECTION) {
             x = (BUTTON_WIDTH - width) / 2
         }
 
@@ -47,7 +47,7 @@ class MenuView(
             buttonWidth = BUTTON_WIDTH,
             color = HudStyle.COIN_MIDDLE,
             pressedColor = HudStyle.COIN_PRESSED,
-            textColor = HudStyle.PANEL,
+            textColor = HudStyle.TEXT,
             onConfirmed = onWishlistSelected,
         )
 
