@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.korge.input.onClick
 import korlibs.korge.view.Container
@@ -44,7 +45,7 @@ class GoldButtonView(
         amountText = text
         this.isFaded = isFaded
         removeChildren()
-        val label = Text(text, textSize = TEXT_SIZE, color = if (isFaded) GameButton.DISABLED_LABEL else GameButton.LABEL)
+        val label = Text(text, font = HudFonts.TITLE, textSize = TEXT_SIZE, color = if (isFaded) GameButton.DISABLED_LABEL else GameButton.LABEL)
         buttonWidth = PADDING * 2 + COIN + SPACING + label.width
         roundRect(Size(buttonWidth, HEIGHT), RectCorners(RADIUS), fill = if (isFaded) GameButton.DISABLED_BORDER else GameButton.BORDER)
         roundRect(Size(buttonWidth - 2, HEIGHT - 2), RectCorners(RADIUS - 1), fill = if (isFaded) GameButton.DISABLED else GameButton.GREY) { xy(1.0, 1.0) }

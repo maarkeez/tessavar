@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.text.TextAlignment
@@ -8,6 +9,7 @@ import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -59,6 +61,7 @@ open class WorldBuilderResizeView(
             title =
                 uiText(text = messages[UiMessage.WORLD_BUILDER_RESIZE_TITLE], size = Size(width = width, height = 20)) {
                     styles.textColor = HudStyle.TEXT
+                    styles.textFont = HudFonts.TITLE
                     styles.textSize = 18.0
                     styles.textAlignment = TextAlignment.MIDDLE_LEFT
                 }
@@ -116,6 +119,7 @@ open class WorldBuilderResizeView(
         uiHorizontalStack(padding = 4.0) {
             uiText(text = label, size = Size(width = LABEL_WIDTH, height = ROW_HEIGHT)) {
                 styles.textColor = HudStyle.TEXT
+                styles.textFont = HudFonts.TITLE
                 styles.textSize = 15.0
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
             }
@@ -123,6 +127,7 @@ open class WorldBuilderResizeView(
             value =
                 uiText(text = "", size = Size(width = VALUE_WIDTH, height = ROW_HEIGHT)) {
                     styles.textColor = HudStyle.TEXT
+                    styles.textFont = HudFonts.TITLE
                     styles.textSize = 15.0
                     styles.textAlignment = TextAlignment.MIDDLE_CENTER
                 }

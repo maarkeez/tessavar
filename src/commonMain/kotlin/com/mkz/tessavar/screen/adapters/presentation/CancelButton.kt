@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+import com.mkz.tessavar.shared.adapters.presentation.applyHudFont
 import korlibs.image.color.RGBA.Companion.invoke
 import korlibs.korge.input.onClick
 import korlibs.korge.ui.UIButton
@@ -15,6 +16,7 @@ class CancelButton(
     internal val cancelButton: UIButton =
         uiButton {
             textColor = HudStyle.BUTTON_LABEL
+            applyHudFont()
             text = label
             width = buttonWidth
             bgColorOut = HudStyle.BUTTON

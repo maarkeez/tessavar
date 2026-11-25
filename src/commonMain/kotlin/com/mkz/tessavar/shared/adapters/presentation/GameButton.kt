@@ -28,6 +28,7 @@ class GameButton(
         bgColorOver = overColor
         bgColorDisabled = DISABLED
         background.borderColor = BORDER
+        applyHudFont()
     }
 
     override fun updatedUIButton(

@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
@@ -82,12 +83,12 @@ open class GiveGoldView(
         private set
     private val giverPortrait = UnitPortraitView(Size(PORTRAIT, PORTRAIT), resourcesLoader, PORTRAIT_SCALE)
     private val receiverPortrait = UnitPortraitView(Size(PORTRAIT, PORTRAIT), resourcesLoader, PORTRAIT_SCALE)
-    internal val giverNameText = Text("", textSize = NAME_SIZE, color = HudStyle.TEXT)
-    internal val receiverNameText = Text("", textSize = NAME_SIZE, color = HudStyle.TEXT)
-    internal val giverGoldText = Text("", textSize = GOLD_SIZE, color = HudStyle.MUTED)
-    internal val receiverGoldText = Text("", textSize = GOLD_SIZE, color = HudStyle.MUTED)
-    internal val amountText = Text("", textSize = AMOUNT_SIZE, color = HudStyle.SELECTION)
-    private val pointer = Text(POINTER, textSize = POINTER_SIZE, color = HudStyle.SELECTION)
+    internal val giverNameText = Text("", font = HudFonts.TITLE, textSize = NAME_SIZE, color = HudStyle.TEXT)
+    internal val receiverNameText = Text("", font = HudFonts.TITLE, textSize = NAME_SIZE, color = HudStyle.TEXT)
+    internal val giverGoldText = Text("", font = HudFonts.TITLE, textSize = GOLD_SIZE, color = HudStyle.MUTED)
+    internal val receiverGoldText = Text("", font = HudFonts.TITLE, textSize = GOLD_SIZE, color = HudStyle.MUTED)
+    internal val amountText = Text("", font = HudFonts.TITLE, textSize = AMOUNT_SIZE, color = HudStyle.SELECTION)
+    private val pointer = Text(POINTER, font = HudFonts.TITLE, textSize = POINTER_SIZE, color = HudStyle.SELECTION)
     internal val previousReceiverButton: GameButton
     internal val nextReceiverButton: GameButton
     internal val minusButton: GameButton
@@ -98,7 +99,7 @@ open class GiveGoldView(
 
     init {
         panel(Size(WIDTH, HEIGHT))
-        addChild(Text(messages[UiMessage.GIVE_GOLD_TITLE], textSize = TITLE_SIZE, color = HudStyle.TEXT).xy(MARGIN, MARGIN - 2))
+        addChild(Text(messages[UiMessage.GIVE_GOLD_TITLE], font = HudFonts.TITLE, textSize = TITLE_SIZE, color = HudStyle.TEXT).xy(MARGIN, MARGIN - 2))
         addChild(giverPortrait.xy(GIVER_CENTER - PORTRAIT / 2, PORTRAIT_Y))
         addChild(receiverPortrait.xy(RECEIVER_CENTER - PORTRAIT / 2, PORTRAIT_Y))
         addChild(pointer.xy(0.0, PORTRAIT_Y + (PORTRAIT - POINTER_SIZE) / 2))

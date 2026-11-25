@@ -92,7 +92,7 @@ open class PreviewBarView(
         value.removeChildren()
         value.visible = showValue
         val color = HudStyle.TEXT
-        val from = value.text("$before", textSize = TEXT_SIZE, color = color.withAd(0.7))
+        val from = value.text("$before", font = HudFonts.TITLE, textSize = TEXT_SIZE, color = color.withAd(0.7))
         val arrowX = from.width + 4
         val middle = TEXT_SIZE * 0.62
         value.solidRect(Size(ARROW_LENGTH, 1.5), color.withAd(0.7)) { xy(arrowX, middle - 0.75) }
@@ -100,7 +100,7 @@ open class PreviewBarView(
             rotation = 45.degrees
             xy(arrowX + ARROW_LENGTH, middle - 3.2)
         }
-        val to = value.text("$after", textSize = TEXT_SIZE, color = color) { xy(arrowX + ARROW_LENGTH + 7, 0.0) }
+        val to = value.text("$after", font = HudFonts.TITLE, textSize = TEXT_SIZE, color = color) { xy(arrowX + ARROW_LENGTH + 7, 0.0) }
         beforeText = from
         afterText = to
     }

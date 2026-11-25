@@ -1,8 +1,9 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.RGBA
-import korlibs.image.font.DefaultTtfFontAsBitmap
+import korlibs.image.font.Font
 import korlibs.image.text.RichTextData
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
@@ -75,13 +76,14 @@ open class TalkView(
                     position(PADDING, PADDING)
                 }
             }
-        nameText.text = text(npc.name, textSize = NAME_TEXT_SIZE, color = NAME_COLOR)
-        lineText.text = text(npc.line, textSize = LINE_TEXT_SIZE, color = LINE_COLOR)
+        nameText.text = text(npc.name, font = HudFonts.TITLE, textSize = NAME_TEXT_SIZE, color = NAME_COLOR)
+        lineText.text = text(npc.line, font = HudFonts.BODY, textSize = LINE_TEXT_SIZE, color = LINE_COLOR)
     }
 
     private fun text(
         value: String,
+        font: Font = HudFonts.BODY,
         textSize: Double = LINE_TEXT_SIZE,
         color: RGBA = LINE_COLOR,
-    ): RichTextData = RichTextData(value, font = DefaultTtfFontAsBitmap, textSize = textSize, color = color)
+    ): RichTextData = RichTextData(value, font = font, textSize = textSize, color = color)
 }

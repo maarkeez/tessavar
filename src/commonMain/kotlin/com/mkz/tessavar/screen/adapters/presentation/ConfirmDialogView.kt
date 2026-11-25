@@ -1,7 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
-import korlibs.image.font.DefaultTtfFontAsBitmap
 import korlibs.image.text.RichTextData
 import korlibs.image.text.TextAlignment
 import korlibs.korge.view.Container
@@ -26,6 +26,6 @@ open class ConfirmDialogView : Container() {
         }
 
     open fun display(message: String) {
-        messageText.text = RichTextData(message, font = DefaultTtfFontAsBitmap, textSize = MESSAGE_TEXT_SIZE, color = HudStyle.TEXT)
+        messageText.text = RichTextData(message, font = HudFonts.BODY, textSize = MESSAGE_TEXT_SIZE, color = HudStyle.TEXT)
     }
 }

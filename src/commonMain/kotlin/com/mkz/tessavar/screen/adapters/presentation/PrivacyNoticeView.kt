@@ -1,10 +1,10 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
-import korlibs.image.font.DefaultTtfFontAsBitmap
 import korlibs.image.text.RichTextData
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
@@ -52,7 +52,7 @@ class PrivacyNoticeView(
 
     private val buttonY = PANEL_HEIGHT - PADDING - UIButton.DEFAULT_SIZE.height
 
-    internal val titleText: Text = content.text("", textSize = TITLE_SIZE, color = HudStyle.TEXT) { xy(PADDING, PADDING) }
+    internal val titleText: Text = content.text("", font = HudFonts.TITLE, textSize = TITLE_SIZE, color = HudStyle.TEXT) { xy(PADDING, PADDING) }
 
     internal val bodyText: TextBlock =
         content.textBlock(RichTextData(""), align = TextAlignment.TOP_LEFT, size = Size(PANEL_WIDTH - 2 * PADDING, buttonY - BODY_Y - PADDING)) {
@@ -72,7 +72,7 @@ class PrivacyNoticeView(
 
     fun display() {
         titleText.text = messages[UiMessage.PRIVACY_NOTICE_TITLE]
-        bodyText.text = RichTextData(messages[UiMessage.PRIVACY_NOTICE_BODY], font = DefaultTtfFontAsBitmap, textSize = TEXT_SIZE, color = HudStyle.MUTED)
+        bodyText.text = RichTextData(messages[UiMessage.PRIVACY_NOTICE_BODY], font = HudFonts.BODY, textSize = TEXT_SIZE, color = HudStyle.MUTED)
         backButton.text = messages[UiMessage.PRIVACY_NOTICE_BACK]
         visible = true
     }

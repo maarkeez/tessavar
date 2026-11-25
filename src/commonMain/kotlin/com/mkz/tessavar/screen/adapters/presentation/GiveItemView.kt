@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+import com.mkz.tessavar.shared.adapters.presentation.applyHudFont
 import korlibs.korge.input.onClick
 import korlibs.korge.ui.UIButton
 import korlibs.korge.ui.uiButton
@@ -26,6 +27,7 @@ class GiveItemView(
             cancelButton =
                 uiButton(messages[UiMessage.GIVE_ITEM_CANCEL]) {
                     textColor = HudStyle.BUTTON_LABEL
+                    applyHudFont()
                     width = WIDTH
                     bgColorOut = HudStyle.BUTTON
                     bgColorOver = HudStyle.BUTTON_PRESSED

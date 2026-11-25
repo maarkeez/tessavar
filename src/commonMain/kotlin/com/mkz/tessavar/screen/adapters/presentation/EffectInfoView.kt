@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import korlibs.korge.input.onClick
@@ -95,13 +96,13 @@ open class EffectInfoView(
                 xy(PADDING + (ICON_SLOT_SIZE - bitmap.width * ICON_SCALE) / 2, PADDING + (ICON_SLOT_SIZE - bitmap.height * ICON_SCALE) / 2)
             }
         }
-        nameText = content.text(title(effectInfo), textSize = NAME_TEXT_SIZE, color = HudStyle.TEXT) { xy(TEXT_X, PADDING + 2) }
+        nameText = content.text(title(effectInfo), font = HudFonts.TITLE, textSize = NAME_TEXT_SIZE, color = HudStyle.TEXT) { xy(TEXT_X, PADDING + 2) }
         val (words, sentenceHeight) = wrappedWords(sentence(effectInfo), top = SENTENCE_Y)
         sentenceWords = words
         var bottom = SENTENCE_Y + sentenceHeight
         remainingDurationsText =
             remainingDurations(effectInfo)?.let { line ->
-                content.text(line, textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(TEXT_X, bottom + LINE_SPACING) }.also { bottom += LINE_SPACING + TEXT_SIZE }
+                content.text(line, font = HudFonts.BODY, textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(TEXT_X, bottom + LINE_SPACING) }.also { bottom += LINE_SPACING + TEXT_SIZE }
             }
         background.size = Size(panelWidth, maxOf(bottom, PADDING + ICON_SLOT_SIZE) + PADDING)
         visible = true
@@ -147,13 +148,13 @@ open class EffectInfoView(
         top: Double,
     ): Pair<List<Text>, Double> {
         val right = panelWidth - PADDING
-        val space = Text(" ", textSize = TEXT_SIZE).width
+        val space = Text(" ", font = HudFonts.BODY, textSize = TEXT_SIZE).width
         var x = TEXT_X
         var y = top
         val words =
             sentence.split(" ").map { word ->
                 val isNumber = word.any(Char::isDigit)
-                content.text(word, textSize = TEXT_SIZE, color = if (isNumber) HudStyle.SELECTION else HudStyle.TEXT).also { text ->
+                content.text(word, font = HudFonts.BODY, textSize = TEXT_SIZE, color = if (isNumber) HudStyle.SELECTION else HudStyle.TEXT).also { text ->
                     if (x > TEXT_X && x + text.width > right) {
                         x = TEXT_X
                         y += TEXT_SIZE + LINE_SPACING

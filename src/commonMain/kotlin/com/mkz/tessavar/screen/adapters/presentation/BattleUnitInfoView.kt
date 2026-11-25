@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import korlibs.image.color.RGBA
@@ -74,7 +75,7 @@ open class BattleUnitInfoView(
 
     internal val header: Container = container { panel(Size(PANEL_WIDTH, HEADER_HEIGHT)).xy(MARGIN, 0.0) }
     internal val unitPortraitView = UnitPortraitView(Size(PORTRAIT_SIZE, PORTRAIT_SIZE), resourcesLoader).addTo(header, MARGIN + 8, 8.0)
-    internal val nameText: Text = header.text("", textSize = NAME_TEXT_SIZE, color = HudStyle.TEXT) { xy(CONTENT_X, 9.0) }
+    internal val nameText: Text = header.text("", font = HudFonts.TITLE, textSize = NAME_TEXT_SIZE, color = HudStyle.TEXT) { xy(CONTENT_X, 9.0) }
     internal val remainingSummonDurationView = RemainingSummonDurationView(Size(160, 18), messages).addTo(header, CONTENT_X, 8.0)
     internal val inventoryButton = InventoryButtonView(Size(INVENTORY_BUTTON_SIZE, INVENTORY_BUTTON_SIZE), resourcesLoader).addTo(header, CONTENT_RIGHT - INVENTORY_BUTTON_SIZE, 8.0)
     private val moveCaption: Text = header.caption(UiMessage.HUD_MOVE, CONTENT_X, 39.0)
@@ -262,7 +263,7 @@ open class BattleUnitInfoView(
         text: UiMessage,
         x: Double,
         y: Double,
-    ): Text = text(messages[text], textSize = CAPTION_TEXT_SIZE, color = HudStyle.FAINT) { xy(x, y) }
+    ): Text = text(messages[text], font = HudFonts.TITLE, textSize = CAPTION_TEXT_SIZE, color = HudStyle.FAINT) { xy(x, y) }
 
     private fun <T : korlibs.korge.view.View> T.addTo(
         parent: Container,

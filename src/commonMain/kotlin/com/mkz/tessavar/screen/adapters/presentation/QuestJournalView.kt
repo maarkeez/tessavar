@@ -9,6 +9,7 @@ import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.ringOf
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.targetSlot
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.tickDisc
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.widthOf
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import korlibs.image.color.Colors
@@ -118,8 +119,8 @@ class QuestJournalView(
             xy(PADDING - 1, FOOTER_Y)
             mouseEnabled = true
         }
-        text(messages[UiMessage.QUEST_JOURNAL_TITLE], textSize = TITLE_SIZE, color = HudStyle.TEXT) { xy(PADDING, TITLE_Y) }
-        activeText = text("", textSize = ACTIVE_SIZE, color = HudStyle.FAINT)
+        text(messages[UiMessage.QUEST_JOURNAL_TITLE], font = HudFonts.TITLE, textSize = TITLE_SIZE, color = HudStyle.TEXT) { xy(PADDING, TITLE_Y) }
+        activeText = text("", font = HudFonts.TITLE, textSize = ACTIVE_SIZE, color = HudStyle.FAINT)
         var draggedY = 0.0
         onMouseDrag { event ->
             if (event.start) {
@@ -191,7 +192,7 @@ class QuestJournalView(
                         val count = "${task.defeatsCounted}/${task.requiredDefeats}"
                         right -= END_SPACING + widthOf(count, COUNT_SIZE)
                         val countX = right
-                        text(count, textSize = COUNT_SIZE, color = HudStyle.SELECTION) { xy(countX, (ROW_HEIGHT - COUNT_SIZE) / 2 - 1) }
+                        text(count, font = HudFonts.TITLE, textSize = COUNT_SIZE, color = HudStyle.SELECTION) { xy(countX, (ROW_HEIGHT - COUNT_SIZE) / 2 - 1) }
                     } else {
                         null
                     }
@@ -212,10 +213,11 @@ class QuestJournalView(
                         rowView.drawPin(quest, right)
                     }
                 val textWidth = right - END_SPACING - TEXT_X
-                val sectionText = text(sectionOf(quest), textSize = SECTION_SIZE, color = HudStyle.FAINT) { xy(TEXT_X, SECTION_Y) }
-                val nameText = text(fitted(quest.name, NAME_SIZE, textWidth), textSize = NAME_SIZE, color = if (quest.isCompleted) HudStyle.MUTED else HudStyle.TEXT) { xy(TEXT_X, NAME_Y) }
+                val sectionText = text(sectionOf(quest), font = HudFonts.TITLE, textSize = SECTION_SIZE, color = HudStyle.FAINT) { xy(TEXT_X, SECTION_Y) }
+                val nameText =
+                    text(fitted(quest.name, NAME_SIZE, textWidth), font = HudFonts.TITLE, textSize = NAME_SIZE, color = if (quest.isCompleted) HudStyle.MUTED else HudStyle.TEXT) { xy(TEXT_X, NAME_Y) }
                 val taskLine = if (quest.isCompleted) messages[UiMessage.QUEST_TRACKER_COMPLETED] else task.text
-                val taskText = text(fitted(taskLine, TASK_SIZE, textWidth), textSize = TASK_SIZE, color = HudStyle.MUTED) { xy(TEXT_X, TASK_Y) }
+                val taskText = text(fitted(taskLine, TASK_SIZE, textWidth), font = HudFonts.TITLE, textSize = TASK_SIZE, color = HudStyle.MUTED) { xy(TEXT_X, TASK_Y) }
                 val bar = if (isCounted) container { progressBar(TEXT_X, BAR_Y, textWidth, BAR_HEIGHT, task.defeatsCounted, task.requiredDefeats) } else null
                 onClick { if (!hasDragged) delegate?.questJournalSelected(quest.id) }
                 row = Row(quest.id, rowView, body, pin, quest.isPinned, sectionText, nameText, taskText, countText, pill, bar)

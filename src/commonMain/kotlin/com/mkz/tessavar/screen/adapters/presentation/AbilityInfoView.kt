@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import korlibs.image.color.Colors
@@ -178,8 +179,8 @@ open class AbilityInfoView(
                 xy(PADDING + (ICON_SLOT_SIZE - bitmap.width * ICON_SCALE) / 2, PADDING + (ICON_SLOT_SIZE - bitmap.height * ICON_SCALE) / 2)
             }
         }
-        nameText = content.text(messages.abilityName(abilityInfo.abilityId), textSize = NAME_TEXT_SIZE, color = HudStyle.TEXT) { xy(NAME_X, PADDING + 2) }
-        targetingText = content.text(targeting(abilityInfo.targeting), textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(NAME_X, PADDING + 24) }
+        nameText = content.text(messages.abilityName(abilityInfo.abilityId), font = HudFonts.TITLE, textSize = NAME_TEXT_SIZE, color = HudStyle.TEXT) { xy(NAME_X, PADDING + 2) }
+        targetingText = content.text(targeting(abilityInfo.targeting), font = HudFonts.BODY, textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(NAME_X, PADDING + 24) }
         displayCosts(abilityInfo)
         var cursorY = PADDING + ICON_SLOT_SIZE + SPACING
 
@@ -190,7 +191,7 @@ open class AbilityInfoView(
                 content.roundRect(Size(panelWidth - 2 * PADDING, BANNER_HEIGHT), RectCorners(BANNER_RADIUS), fill = color.withAd(0.16), stroke = color.withAd(0.6), strokeThickness = 1.0) {
                     xy(PADDING, cursorY)
                 }
-            reasonText = content.text(reason, textSize = TEXT_SIZE, color = color) { xy(PADDING + 10, cursorY + (BANNER_HEIGHT - TEXT_SIZE) / 2 - 1) }
+            reasonText = content.text(reason, font = HudFonts.BODY, textSize = TEXT_SIZE, color = color) { xy(PADDING + 10, cursorY + (BANNER_HEIGHT - TEXT_SIZE) / 2 - 1) }
             cursorY += BANNER_HEIGHT + SPACING
         }
 
@@ -308,13 +309,13 @@ open class AbilityInfoView(
     ): Pair<List<Text>, Double> {
         val left = PADDING + BULLET_INDENT
         val right = panelWidth - PADDING - DIAGRAM_SIZE - DIAGRAM_MARGIN
-        val space = Text(" ", textSize = TEXT_SIZE).width
+        val space = Text(" ", font = HudFonts.BODY, textSize = TEXT_SIZE).width
         var x = left
         var y = top
         val words =
             sentence.split(" ").map { word ->
                 val isNumber = word.any(Char::isDigit)
-                content.text(word, textSize = TEXT_SIZE, color = if (isNumber) HudStyle.SELECTION else HudStyle.TEXT).also { text ->
+                content.text(word, font = HudFonts.BODY, textSize = TEXT_SIZE, color = if (isNumber) HudStyle.SELECTION else HudStyle.TEXT).also { text ->
                     if (x > left && x + text.width > right) {
                         x = left
                         y += TEXT_SIZE + LINE_SPACING

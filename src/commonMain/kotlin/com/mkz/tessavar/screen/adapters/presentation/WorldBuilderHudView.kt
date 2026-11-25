@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.GAME_WINDOW_SIZE
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import korlibs.image.bitmap.Bitmap
@@ -254,7 +255,7 @@ open class WorldBuilderHudView(
                     visible = false
                     enabled = false
                     stockText =
-                        text(messages[UiMessage.WORLD_BUILDER_HUD_STOCK], textSize = STOCK_LABEL_SIZE, color = HudStyle.TEXT).also { label ->
+                        text(messages[UiMessage.WORLD_BUILDER_HUD_STOCK], font = HudFonts.TITLE, textSize = STOCK_LABEL_SIZE, color = HudStyle.TEXT).also { label ->
                             label.xy(floor((PILL_BUTTON_SIZE - label.width) / 2), floor((PILL_BUTTON_SIZE - label.height) / 2))
                         }
                     onClick { if (enabled) delegate?.stockSelected() }
@@ -334,7 +335,7 @@ open class WorldBuilderHudView(
         val palette = resetPalette(Tab.UNITS)
         rows.forEachIndexed { index, row ->
             val top = index * (PLAYER_TITLE_HEIGHT + SLOT_SIZE + SLOT_GAP)
-            palette.text(row.title, textSize = PLAYER_TITLE_SIZE, color = HudStyle.MUTED).xy(0.0, top)
+            palette.text(row.title, font = HudFonts.TITLE, textSize = PLAYER_TITLE_SIZE, color = HudStyle.MUTED).xy(0.0, top)
             val slots = row.units.map { unit -> unitKey(row.playerId, unit.id) to unit.bitmap }
             slots.forEach { (key, bitmap) -> options.getValue(Tab.UNITS)[key] = bitmap }
             palette.paletteRow(Tab.UNITS, slots, OCCUPANT_IMAGE, top + PLAYER_TITLE_HEIGHT) { key ->
@@ -446,7 +447,7 @@ open class WorldBuilderHudView(
         width: Double,
     ): UIButton =
         SlotButton(Size(width, TAB_HEIGHT)).addTo(this).apply {
-            text(tabLabel(tab), textSize = TAB_LABEL_SIZE, color = HudStyle.TEXT).also { label ->
+            text(tabLabel(tab), font = HudFonts.TITLE, textSize = TAB_LABEL_SIZE, color = HudStyle.TEXT).also { label ->
                 label.xy(floor((width - label.width) / 2), TAB_HEIGHT - TAB_LABEL_BOTTOM)
             }
             solidRect(Size(width - 2 * UNDERLINE_INSET, UNDERLINE_HEIGHT), HudStyle.SELECTION) {

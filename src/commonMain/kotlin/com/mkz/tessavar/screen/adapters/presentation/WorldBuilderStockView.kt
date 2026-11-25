@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.bitmap.Bitmap
@@ -9,6 +10,7 @@ import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -65,6 +67,7 @@ open class WorldBuilderStockView(
         titleText =
             uiText(text = "", size = Size(width = width, height = TITLE_HEIGHT)) {
                 styles.textColor = HudStyle.TEXT
+                styles.textFont = HudFonts.TITLE
                 styles.textSize = 18.0
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
             }

@@ -3,6 +3,7 @@ package com.mkz.tessavar.screen.adapters.presentation
 import com.mkz.tessavar.GAME_WINDOW_SIZE
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+import com.mkz.tessavar.shared.adapters.presentation.applyHudFont
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.bitmap.Bitmap
 import korlibs.image.bitmap.Bitmaps
@@ -145,6 +146,7 @@ open class WorldBuilderMenuView : Container() {
                         optionButtons +=
                             uiButton(label = option.label, size = Size(OPTION_WIDTH, OPTION_HEIGHT)) {
                                 textColor = HudStyle.BUTTON_LABEL
+                                applyHudFont()
                                 bgColorOut = HudStyle.BUTTON
                                 background.borderColor = HudStyle.BUTTON_BORDER
                                 onClick {

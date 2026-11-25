@@ -1,11 +1,13 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiText
 import korlibs.korge.view.Container
@@ -59,6 +61,7 @@ open class FormationView(
         hintText =
             uiText("", size = Size(WIDTH - 2 * PADDING, BAR_HEIGHT)) {
                 styles.textColor = HudStyle.TEXT
+                styles.textFont = HudFonts.TITLE
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
                 position(PADDING, footerY)
             }
@@ -130,6 +133,7 @@ class FormationRowView(
         nameText =
             uiText("", size = Size(NAME_WIDTH, size.height)) {
                 styles.textColor = HudStyle.TEXT
+                styles.textFont = HudFonts.TITLE
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
                 position(nameX, 0.0)
             }

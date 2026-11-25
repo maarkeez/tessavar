@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.text.TextAlignment
@@ -9,6 +10,7 @@ import korlibs.korge.input.onMouseDrag
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -114,6 +116,7 @@ open class WorldBuilderFormView(
         titleText =
             uiText(text = "", size = Size(width - DONE_WIDTH - 2 * MARGIN, HEADER_HEIGHT - MARGIN)) {
                 styles.textColor = HudStyle.TEXT
+                styles.textFont = HudFonts.TITLE
                 x = MARGIN
                 styles.textSize = 18.0
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
@@ -206,6 +209,7 @@ open class WorldBuilderFormView(
                     }
                     uiText(text = row.value, size = Size(fieldWidth - 2 * STEP_WIDTH, ROW_HEIGHT)) {
                         styles.textColor = HudStyle.TEXT
+                        styles.textFont = HudFonts.TITLE
                         x = fieldX - MARGIN + STEP_WIDTH
                         styles.textSize = 15.0
                         styles.textAlignment = TextAlignment.MIDDLE_CENTER
@@ -232,6 +236,7 @@ open class WorldBuilderFormView(
                     }
                     uiText(text = "${row.value}", size = Size(fieldWidth - 2 * STEP_WIDTH, ROW_HEIGHT)) {
                         styles.textColor = HudStyle.TEXT
+                        styles.textFont = HudFonts.TITLE
                         x = fieldX - MARGIN + STEP_WIDTH
                         styles.textSize = 15.0
                         styles.textAlignment = TextAlignment.MIDDLE_CENTER
@@ -257,6 +262,7 @@ open class WorldBuilderFormView(
         textSize: Double = 14.0,
     ) = uiText(text = text, size = Size(width, ROW_HEIGHT)) {
         styles.textColor = HudStyle.TEXT
+        styles.textFont = HudFonts.TITLE
         styles.textSize = textSize
         styles.textAlignment = TextAlignment.MIDDLE_LEFT
     }

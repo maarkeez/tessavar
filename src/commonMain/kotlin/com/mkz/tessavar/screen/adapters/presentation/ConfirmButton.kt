@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
+import com.mkz.tessavar.shared.adapters.presentation.applyHudFont
 import korlibs.image.color.RGBA
 import korlibs.image.color.RGBA.Companion.invoke
 import korlibs.korge.input.onClick
@@ -25,6 +26,7 @@ class ConfirmButton(
         uiButton {
             text = label
             this.textColor = textColor
+            applyHudFont()
             width = buttonWidth
             bgColorOut = color
             bgColorOver = pressedColor

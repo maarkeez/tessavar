@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.korge.input.onClick
 import korlibs.korge.ui.uiHorizontalStack
@@ -29,7 +30,7 @@ class EffectsView(
             val effectViewSize = Size(width = 20, height = 20)
             effectViews = Array(10) { EffectView(effectViewSize, resourcesLoader) }
             effectViews.forEach(::addChild)
-            overflowLabel = text("+", textSize = 14.0, color = HudStyle.TEXT)
+            overflowLabel = text("+", font = HudFonts.TITLE, textSize = 14.0, color = HudStyle.TEXT)
         }
 
     init {

@@ -1,9 +1,11 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
+import korlibs.image.font.Font
 import korlibs.korge.view.Container
 import korlibs.korge.view.Text
 import korlibs.korge.view.circle
@@ -32,16 +34,18 @@ internal object QuestViewParts {
     fun widthOf(
         content: String,
         textSize: Double,
-    ): Double = Text(content, textSize = textSize).width
+        font: Font = HudFonts.TITLE,
+    ): Double = Text(content, font = font, textSize = textSize).width
 
     fun fitted(
         content: String,
         textSize: Double,
         width: Double,
+        font: Font = HudFonts.TITLE,
     ): String {
-        if (widthOf(content, textSize) <= width) return content
+        if (widthOf(content, textSize, font) <= width) return content
         var cut = content
-        while (cut.isNotEmpty() && widthOf(cut + ELLIPSIS, textSize) > width) cut = cut.dropLast(1)
+        while (cut.isNotEmpty() && widthOf(cut + ELLIPSIS, textSize, font) > width) cut = cut.dropLast(1)
         return cut.trimEnd() + ELLIPSIS
     }
 
@@ -54,22 +58,23 @@ internal object QuestViewParts {
         color: RGBA,
         isCentered: Boolean = false,
         maximumLines: Int = Int.MAX_VALUE,
+        font: Font = HudFonts.TITLE,
     ): Double {
         val lines = mutableListOf<String>()
         content.split(" ").forEach { word ->
             val line = lines.lastOrNull()
-            if (line != null && widthOf("$line $word", textSize) <= width) {
+            if (line != null && widthOf("$line $word", textSize, font) <= width) {
                 lines[lines.lastIndex] = "$line $word"
             } else {
                 lines += word
             }
         }
         if (lines.size > maximumLines) {
-            lines[maximumLines - 1] = fitted("${lines[maximumLines - 1]} ${lines[maximumLines]}", textSize, width)
+            lines[maximumLines - 1] = fitted("${lines[maximumLines - 1]} ${lines[maximumLines]}", textSize, width, font)
             lines.subList(maximumLines, lines.size).clear()
         }
         lines.forEachIndexed { index, line ->
-            text(line, textSize = textSize, color = color) {
+            text(line, font = font, textSize = textSize, color = color) {
                 xy(if (isCentered) x + (width - this.width) / 2 else x, y + index * (textSize + LINE_SPACING))
             }
         }

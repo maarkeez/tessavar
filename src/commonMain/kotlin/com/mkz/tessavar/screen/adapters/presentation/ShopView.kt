@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.color.Colors
@@ -11,6 +12,7 @@ import korlibs.korge.input.onSwipe
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiText
@@ -83,12 +85,14 @@ open class ShopView(
         itemNameText =
             uiText("", size = Size(WIDTH, BAR_HEIGHT)) {
                 styles.textColor = HudStyle.TEXT
+                styles.textFont = HudFonts.TITLE
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
                 position(0.0, ITEM_Y)
             }
         itemPriceText =
             uiText("", size = Size(WIDTH, BAR_HEIGHT)) {
                 styles.textColor = HudStyle.TEXT
+                styles.textFont = HudFonts.TITLE
                 styles.textAlignment = TextAlignment.MIDDLE_RIGHT
                 position(0.0, ITEM_Y)
             }
@@ -153,6 +157,7 @@ open class ShopView(
             buyerText =
                 uiText("", size = Size(WIDTH - 2 * ARROW_WIDTH, BAR_HEIGHT)) {
                     styles.textColor = HudStyle.TEXT
+                    styles.textFont = HudFonts.TITLE
                     styles.textAlignment = TextAlignment.MIDDLE_CENTER
                     position(ARROW_WIDTH, 0.0)
                 }

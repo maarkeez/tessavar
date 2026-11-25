@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
@@ -55,7 +56,7 @@ class PillView(
         val pill = this
         val height = pillHeight
         val glyphWidth = if (glyph == Glyph.NONE) 0.0 else textSize + GLYPH_SPACING
-        val label = Text(text, textSize = textSize, color = if (solid) Colors.WHITE else ink).apply { name = LABEL }
+        val label = Text(text, font = HudFonts.TITLE, textSize = textSize, color = if (solid) Colors.WHITE else ink).apply { name = LABEL }
         val width = label.width + PADDING * 2 + glyphWidth
         capsule =
             roundRect(

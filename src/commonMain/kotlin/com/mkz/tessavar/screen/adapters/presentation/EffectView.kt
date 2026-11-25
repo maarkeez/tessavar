@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.shared.adapters.presentation.blink
@@ -102,7 +103,7 @@ class EffectView(
     ): Container =
         container {
             this.name = name
-            val label = Text(value, textSize = BADGE_TEXT_SIZE, color = HudStyle.TEXT)
+            val label = Text(value, font = HudFonts.TITLE, textSize = BADGE_TEXT_SIZE, color = HudStyle.TEXT)
             roundRect(Size(label.width + 2 * BADGE_PADDING, BADGE_TEXT_SIZE + 1), RectCorners(BADGE_RADIUS), fill = HudStyle.PANEL)
             addChild(label.apply { xy(BADGE_PADDING, 0.0) })
         }

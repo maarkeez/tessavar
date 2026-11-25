@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudFonts
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.RGBA
 import korlibs.image.text.TextAlignment
@@ -8,6 +9,7 @@ import korlibs.korge.animate.scaleTo
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -35,6 +37,7 @@ open class BannerView(
             this.styles.textAlignment = TextAlignment.MIDDLE_LEFT
             this.styles.textSize = 18.0
             this.styles.textColor = HudStyle.TEXT
+            this.styles.textFont = HudFonts.TITLE
         }
     internal val playerTurn =
         uiText(
@@ -44,6 +47,7 @@ open class BannerView(
             this.styles.textAlignment = TextAlignment.MIDDLE_LEFT
             this.styles.textSize = 15.0
             this.styles.textColor = HUMAN_TURN_COLOR
+            this.styles.textFont = HudFonts.TITLE
         }
     internal var gameOver: UIText? = null
     internal val layout =
@@ -120,6 +124,7 @@ open class BannerView(
                 this.styles.textAlignment = TextAlignment.MIDDLE_CENTER
                 this.styles.textSize = 30.0
                 this.styles.textColor = HudStyle.TEXT
+                this.styles.textFont = HudFonts.TITLE
             }
     }
 }

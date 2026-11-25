@@ -27,7 +27,7 @@ open class BarView(
 
     internal var track: RoundRect? = null
     internal var fill: RoundRect? = null
-    internal val label: Text = text(text = "", textSize = TEXT_SIZE, color = HudStyle.TEXT)
+    internal val label: Text = text(text = "", font = HudFonts.TITLE, textSize = TEXT_SIZE, color = HudStyle.TEXT)
 
     internal var ratio: Double = 1.0
 
@@ -44,7 +44,7 @@ open class BarView(
         fill?.removeFromParent()
         label.text = "$remaining/$maximum"
         label.visible = showValue
-        val widestValueWidth = if (showValue) Text("$maximum/$maximum", textSize = TEXT_SIZE).width + VALUE_SPACING else 0.0
+        val widestValueWidth = if (showValue) Text("$maximum/$maximum", font = HudFonts.TITLE, textSize = TEXT_SIZE).width + VALUE_SPACING else 0.0
         val barWidth = width - widestValueWidth
         val barHeight = min(height, BAR_HEIGHT)
         val barY = (height - barHeight) / 2
