@@ -72,14 +72,14 @@ class AbilityButtonView(
         const val SLOT = "SLOT"
         const val COST = "COST"
 
-        private const val COOLDOWN_TEXT_SIZE = 23.0
+        private const val COOLDOWN_TEXT_SIZE = HudStyle.TITLE
         private val COOLDOWN_OVERLAY_COLOR = RGBA(0, 0, 0, 0x70)
 
         private const val SELECTION_THICKNESS = 2.0
         private const val GLOW_THICKNESS = 3.0
         private const val GLOW_ALPHA = 0.3
 
-        private const val COST_TEXT_SIZE = 10.0
+        private const val COST_TEXT_SIZE = HudStyle.CAPTION
         private const val COST_MARGIN = 2.0
     }
 

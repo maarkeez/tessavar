@@ -33,9 +33,9 @@ class PrivacyNoticeView(
         private const val PANEL_HEIGHT = 640.0
         private const val PANEL_RADIUS = 12.0
         private const val PADDING = 20.0
-        private const val TITLE_SIZE = 20.0
+        private const val TITLE_SIZE = HudStyle.TITLE
         private const val BODY_Y = 56.0
-        private const val TEXT_SIZE = 15.0
+        private const val TEXT_SIZE = HudStyle.BODY
     }
 
     private var delegate: Delegate? = null

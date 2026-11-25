@@ -52,11 +52,11 @@ open class GiveGoldView(
         private const val PREVIOUS_ARROW_X = RECEIVER_CENTER - PORTRAIT / 2 - ARROW_SPACING - ARROW_WIDTH
         private const val GIVER_RIGHT = GIVER_CENTER + PORTRAIT / 2
         private const val RECEIVER_LEFT = RECEIVER_CENTER - PORTRAIT / 2
-        private const val TITLE_SIZE = 16.0
-        private const val NAME_SIZE = 16.0
-        private const val GOLD_SIZE = 14.0
-        private const val AMOUNT_SIZE = 20.0
-        private const val POINTER_SIZE = 24.0
+        private const val TITLE_SIZE = HudStyle.BODY
+        private const val NAME_SIZE = HudStyle.BODY
+        private const val GOLD_SIZE = HudStyle.BODY
+        private const val AMOUNT_SIZE = HudStyle.NAME
+        private const val POINTER_SIZE = HudStyle.TITLE
         private const val POINTER = ">"
     }
 

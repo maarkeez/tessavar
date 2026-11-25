@@ -60,7 +60,7 @@ open class WorldBuilderDetailsView(
                 uiText(text = messages[UiMessage.WORLD_BUILDER_DETAILS_TITLE], size = Size(width = width, height = 20)) {
                     styles.textColor = HudStyle.TEXT
                     styles.textFont = HudFonts.TITLE
-                    styles.textSize = 18.0
+                    styles.textSize = HudStyle.NAME
                     styles.textAlignment = TextAlignment.MIDDLE_LEFT
                 }
             uiHorizontalStack(padding = 4.0) {
@@ -120,7 +120,7 @@ open class WorldBuilderDetailsView(
         uiText(text = text, size = Size(width = LABEL_WIDTH, height = ROW_HEIGHT)) {
             styles.textColor = HudStyle.TEXT
             styles.textFont = HudFonts.TITLE
-            styles.textSize = 15.0
+            styles.textSize = HudStyle.BODY
             styles.textAlignment = TextAlignment.MIDDLE_LEFT
         }
 }

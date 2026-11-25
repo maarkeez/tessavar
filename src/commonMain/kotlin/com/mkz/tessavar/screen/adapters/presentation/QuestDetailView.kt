@@ -36,9 +36,9 @@ class QuestDetailView(
         private const val TEXT_X = 128.0
         private const val TEXT_WIDTH = WIDTH - PADDING - TEXT_X
         private const val NAME_Y = 26.0
-        private const val NAME_SIZE = 17.0
+        private const val NAME_SIZE = HudStyle.NAME
         private const val NAME_MAXIMUM_LINES = 2
-        private const val DESCRIPTION_SIZE = 13.0
+        private const val DESCRIPTION_SIZE = HudStyle.BODY
         private const val DESCRIPTION_SPACING = 5.0
         private const val PILL_SPACING = 8.0
         private const val PILL_Y = 7.0
@@ -48,7 +48,7 @@ class QuestDetailView(
         private const val TASK_X = 24.0
         private const val TASK_TEXT_X = 48.0
         private const val TASK_RIGHT = WIDTH - 2 * PADDING
-        private const val TASK_SIZE = 16.0
+        private const val TASK_SIZE = HudStyle.BODY
         private const val SINGLE_TASK_OFFSET = 18.0
         private const val COUNTED_TASK_OFFSET = 10.0
         private const val COUNT_SPACING = 8.0
@@ -56,7 +56,7 @@ class QuestDetailView(
         private const val BAR_WIDTH = 330.0
         private const val BAR_HEIGHT = 7.0
         private const val TASKS_DONE_Y = 217.0
-        private const val TASKS_DONE_SIZE = 14.0
+        private const val TASKS_DONE_SIZE = HudStyle.BODY
         private const val REWARD_ROW_Y = 256.0
         private const val REWARD_CAPTION_Y = 263.0
         private const val REWARD_SPACING = 8.0

@@ -20,7 +20,7 @@ import korlibs.math.geom.Size
 import korlibs.math.geom.degrees
 
 internal object QuestViewParts {
-    const val CAPTION_SIZE = 11.0
+    const val CAPTION_SIZE = HudStyle.CAPTION
     const val REWARD_ROW_HEIGHT = 28.0
     const val LINE_SPACING = 3.0
 
@@ -29,7 +29,7 @@ internal object QuestViewParts {
     private const val REWARD_GAP = 5.0
     private const val RING_THICKNESS = 2.0
     private const val ELLIPSIS = HudFonts.ELLIPSIS
-    private const val PILL_TEXT_SIZE = 10.0
+    private const val PILL_TEXT_SIZE = HudStyle.CAPTION
 
     fun widthOf(
         content: String,

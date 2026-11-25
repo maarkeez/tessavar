@@ -25,7 +25,7 @@ open class PreviewBarView(
 ) : UIContainer(size) {
     companion object {
         const val BAR_HEIGHT = 12.0
-        const val TEXT_SIZE = 10.0
+        const val TEXT_SIZE = HudStyle.CAPTION
         private const val VALUE_SPACING = 6.0
         private const val ARROW_LENGTH = 8.0
         private const val ARROW_HEAD = 4.5

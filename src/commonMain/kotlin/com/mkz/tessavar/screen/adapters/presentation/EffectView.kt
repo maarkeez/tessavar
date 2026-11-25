@@ -27,7 +27,7 @@ class EffectView(
         const val STACKS = "STACKS"
 
         private const val CHIP_RADIUS = 5.0
-        private const val BADGE_TEXT_SIZE = 9.0
+        private const val BADGE_TEXT_SIZE = HudStyle.CAPTION
         private const val BADGE_INSET = 0.0
         private const val BADGE_PADDING = 1.5
         private const val BADGE_RADIUS = 3.0

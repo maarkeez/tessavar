@@ -25,9 +25,9 @@ open class TalkView(
         const val PORTRAIT_SCALE = 3.0
         const val PORTRAIT_SIZE = 32 * PORTRAIT_SCALE
         const val PADDING = 12.0
-        const val NAME_TEXT_SIZE = 20.0
+        const val NAME_TEXT_SIZE = HudStyle.NAME
         const val NAME_HEIGHT = 28.0
-        const val LINE_TEXT_SIZE = 18.0
+        const val LINE_TEXT_SIZE = HudStyle.NAME
 
         private val BACKGROUND_COLOR = HudStyle.TALK_BACKGROUND
         private val NAME_COLOR = HudStyle.TALK_NAME

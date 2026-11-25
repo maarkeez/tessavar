@@ -18,7 +18,7 @@ open class BarView(
 ) : UIContainer(size) {
     companion object {
         const val BAR_HEIGHT = 12.0
-        const val TEXT_SIZE = 12.0
+        const val TEXT_SIZE = HudStyle.CAPTION
         private const val VALUE_SPACING = 6.0
 
         val TRACK = HudStyle.TRACK

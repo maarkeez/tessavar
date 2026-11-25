@@ -32,8 +32,8 @@ open class BattleUnitInfoView(
         private const val PORTRAIT_SIZE = 104.0
         private const val CONTENT_X = MARGIN + 122
         private const val CONTENT_RIGHT = WIDTH - MARGIN - 8
-        private const val NAME_TEXT_SIZE = 18.0
-        private const val CAPTION_TEXT_SIZE = 10.0
+        private const val NAME_TEXT_SIZE = HudStyle.NAME
+        private const val CAPTION_TEXT_SIZE = HudStyle.CAPTION
         private const val CAPTION_WIDTH = 24.0
         private const val CAPTION_SPACING = 6.0
         private const val TURN_ACTIONS_SPACING = 14.0

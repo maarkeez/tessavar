@@ -7,6 +7,7 @@ import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
 import korlibs.korge.style.textFont
+import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiText
 import korlibs.korge.ui.uiVerticalStack
@@ -51,6 +52,7 @@ open class PauseView(
         uiText(messages[UiMessage.PAUSE_SAVED], size = Size(WIDTH, SAVED_HEIGHT)) {
             styles.textColor = HudStyle.TEXT
             styles.textFont = HudFonts.TITLE
+            styles.textSize = HudStyle.BODY
             styles.textAlignment = TextAlignment.MIDDLE_CENTER
             position(0.0, buttonsY + 3 * BUTTON_HEIGHT + 3 * BUTTON_GAP)
             visible = false

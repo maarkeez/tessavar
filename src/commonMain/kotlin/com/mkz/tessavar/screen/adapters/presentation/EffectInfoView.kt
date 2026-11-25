@@ -20,8 +20,8 @@ open class EffectInfoView(
 ) : Container() {
     companion object {
         private const val PADDING = 10.0
-        private const val TEXT_SIZE = 12.0
-        private const val NAME_TEXT_SIZE = 16.0
+        private const val TEXT_SIZE = HudStyle.CAPTION
+        private const val NAME_TEXT_SIZE = HudStyle.BODY
         private const val LINE_SPACING = 3.0
         private const val ICON_SCALE = 2.0
         private const val ICON_SLOT_SIZE = 40.0

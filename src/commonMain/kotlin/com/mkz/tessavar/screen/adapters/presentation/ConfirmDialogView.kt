@@ -16,7 +16,7 @@ open class ConfirmDialogView : Container() {
         private const val PADDING = 20.0
         private const val MESSAGE_Y = 95.0
         private const val MESSAGE_HEIGHT = 110.0
-        private const val MESSAGE_TEXT_SIZE = 18.0
+        private const val MESSAGE_TEXT_SIZE = HudStyle.NAME
     }
 
     internal val messageText: TextBlock =

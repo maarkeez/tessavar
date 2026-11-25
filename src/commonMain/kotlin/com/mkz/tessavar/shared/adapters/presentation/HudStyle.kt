@@ -69,6 +69,12 @@ object HudStyle {
 
     val BUTTON_LABELS = listOf(BUTTON to BUTTON_LABEL, ACCENT to BUTTON_LABEL, DANGER to BUTTON_LABEL, COIN_MIDDLE to TEXT)
 
+    const val CAPTION = 12.0
+    const val BODY = 15.0
+    const val NAME = 18.0
+    const val TITLE = 22.0
+    const val DISPLAY = 40.0
+
     const val PANEL_RADIUS = 10.0
     const val SLOT_RADIUS = 8.0
 

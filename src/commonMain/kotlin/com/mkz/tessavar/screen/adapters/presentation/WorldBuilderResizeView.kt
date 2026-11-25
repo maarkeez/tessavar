@@ -62,7 +62,7 @@ open class WorldBuilderResizeView(
                 uiText(text = messages[UiMessage.WORLD_BUILDER_RESIZE_TITLE], size = Size(width = width, height = 20)) {
                     styles.textColor = HudStyle.TEXT
                     styles.textFont = HudFonts.TITLE
-                    styles.textSize = 18.0
+                    styles.textSize = HudStyle.NAME
                     styles.textAlignment = TextAlignment.MIDDLE_LEFT
                 }
             rowsStepper = stepper(label = messages[UiMessage.WORLD_BUILDER_RESIZE_ROWS]) { step -> delegate?.sizeChanged(rows = rows + step, columns = columns) }
@@ -120,7 +120,7 @@ open class WorldBuilderResizeView(
             uiText(text = label, size = Size(width = LABEL_WIDTH, height = ROW_HEIGHT)) {
                 styles.textColor = HudStyle.TEXT
                 styles.textFont = HudFonts.TITLE
-                styles.textSize = 15.0
+                styles.textSize = HudStyle.BODY
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
             }
             SIZE_STEPS.filter { step -> step < 0 }.forEach { step -> stepButtons[step] = stepButton(step, onStep) }
@@ -128,7 +128,7 @@ open class WorldBuilderResizeView(
                 uiText(text = "", size = Size(width = VALUE_WIDTH, height = ROW_HEIGHT)) {
                     styles.textColor = HudStyle.TEXT
                     styles.textFont = HudFonts.TITLE
-                    styles.textSize = 15.0
+                    styles.textSize = HudStyle.BODY
                     styles.textAlignment = TextAlignment.MIDDLE_CENTER
                 }
             SIZE_STEPS.filter { step -> step > 0 }.forEach { step -> stepButtons[step] = stepButton(step, onStep) }

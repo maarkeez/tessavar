@@ -68,7 +68,7 @@ open class WorldBuilderStockView(
             uiText(text = "", size = Size(width = width, height = TITLE_HEIGHT)) {
                 styles.textColor = HudStyle.TEXT
                 styles.textFont = HudFonts.TITLE
-                styles.textSize = 18.0
+                styles.textSize = HudStyle.NAME
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
             }
         itemList = container { y = TITLE_HEIGHT + SECTION_GAP }

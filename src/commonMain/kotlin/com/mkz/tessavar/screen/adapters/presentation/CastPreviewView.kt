@@ -23,9 +23,9 @@ open class CastPreviewView(
         private const val ICON_SLOT_SIZE = 40.0
         private const val ICON_SCALE = 2.0
         private const val NAME_X = MARGIN + 54
-        private const val NAME_TEXT_SIZE = 15.0
-        private const val CASTER_TEXT_SIZE = 11.0
-        private const val MANA_TEXT_SIZE = 11.0
+        private const val NAME_TEXT_SIZE = HudStyle.BODY
+        private const val CASTER_TEXT_SIZE = HudStyle.CAPTION
+        private const val MANA_TEXT_SIZE = HudStyle.CAPTION
         internal const val ROWS_Y = HEADER_HEIGHT + 8
         internal const val ROW_PITCH = RecipientPreviewView.HEIGHT + 4
     }

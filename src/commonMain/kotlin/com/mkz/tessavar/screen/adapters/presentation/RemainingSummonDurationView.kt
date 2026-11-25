@@ -9,7 +9,7 @@ class RemainingSummonDurationView(
     private val messages: Messages,
 ) : UIContainer(size) {
     private companion object {
-        const val TEXT_SIZE = 10.0
+        const val TEXT_SIZE = HudStyle.CAPTION
     }
 
     internal val pill = PillView(color = HudStyle.MUTED, textSize = TEXT_SIZE)

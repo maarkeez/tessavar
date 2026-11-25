@@ -38,6 +38,6 @@ object HudFonts {
     }
 }
 
-fun UIButton.applyHudFont() {
+fun UIButton.applyHudFont(textSize: Double = HudStyle.BODY) {
     richText = RichTextData(text, font = HudFonts.TITLE, textSize = textSize, color = textColor)
 }

@@ -118,7 +118,7 @@ open class WorldBuilderFormView(
                 styles.textColor = HudStyle.TEXT
                 styles.textFont = HudFonts.TITLE
                 x = MARGIN
-                styles.textSize = 18.0
+                styles.textSize = HudStyle.NAME
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
             }
         doneButton =
@@ -189,7 +189,7 @@ open class WorldBuilderFormView(
             this.y = y
             x = MARGIN
             when (row) {
-                is Row.Heading -> label(row.text, width = this@WorldBuilderFormView.width - 2 * MARGIN, textSize = 16.0)
+                is Row.Heading -> label(row.text, width = this@WorldBuilderFormView.width - 2 * MARGIN, textSize = HudStyle.BODY)
                 is Row.Text -> {
                     label(row.label)
                     val input =
@@ -211,7 +211,7 @@ open class WorldBuilderFormView(
                         styles.textColor = HudStyle.TEXT
                         styles.textFont = HudFonts.TITLE
                         x = fieldX - MARGIN + STEP_WIDTH
-                        styles.textSize = 15.0
+                        styles.textSize = HudStyle.BODY
                         styles.textAlignment = TextAlignment.MIDDLE_CENTER
                     }
                     gameButton(label = ">", size = Size(STEP_WIDTH, ROW_HEIGHT)) {
@@ -238,7 +238,7 @@ open class WorldBuilderFormView(
                         styles.textColor = HudStyle.TEXT
                         styles.textFont = HudFonts.TITLE
                         x = fieldX - MARGIN + STEP_WIDTH
-                        styles.textSize = 15.0
+                        styles.textSize = HudStyle.BODY
                         styles.textAlignment = TextAlignment.MIDDLE_CENTER
                     }
                     gameButton(label = "+", size = Size(STEP_WIDTH, ROW_HEIGHT)) {

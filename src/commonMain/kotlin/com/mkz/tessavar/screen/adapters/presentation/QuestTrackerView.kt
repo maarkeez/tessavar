@@ -34,7 +34,7 @@ open class QuestTrackerView(
         private const val RIGHT_EDGE = 384.0
         private const val TOP = 1.0
         private const val HEIGHT = 30.0
-        private const val TEXT_SIZE = 13.0
+        private const val TEXT_SIZE = HudStyle.CAPTION
         private const val GLYPH_SIZE = 14.0
         private const val PIN_SIZE = 13.0
         private const val PIN_SPACING = 3.0

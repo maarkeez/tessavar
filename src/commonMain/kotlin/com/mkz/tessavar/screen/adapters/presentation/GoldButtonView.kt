@@ -22,7 +22,7 @@ class GoldButtonView(
         private const val COIN = 14.0
         private const val SPACING = 5.0
         private const val RADIUS = 7.0
-        private const val TEXT_SIZE = 15.0
+        private const val TEXT_SIZE = HudStyle.BODY
         private const val FADED_COIN_ALPHA = 0.45
     }
 

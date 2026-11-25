@@ -38,14 +38,14 @@ open class WorldBuilderInfoView(
             styles.textColor = HudStyle.TEXT
             styles.textFont = HudFonts.TITLE
             styles.textAlignment = TextAlignment.MIDDLE_LEFT
-            styles.textSize = 18.0
+            styles.textSize = HudStyle.NAME
         }
     internal val subtitle =
         uiText(text = "", size = Size(width = width, height = 15)) {
             styles.textColor = HudStyle.TEXT
             styles.textFont = HudFonts.TITLE
             styles.textAlignment = TextAlignment.MIDDLE_LEFT
-            styles.textSize = 15.0
+            styles.textSize = HudStyle.BODY
         }
 
     init {

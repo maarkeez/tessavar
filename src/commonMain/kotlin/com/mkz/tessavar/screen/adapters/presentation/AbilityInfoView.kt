@@ -38,8 +38,8 @@ open class AbilityInfoView(
 
         private const val PADDING = 10.0
         private const val SPACING = 8.0
-        private const val TEXT_SIZE = 12.0
-        private const val NAME_TEXT_SIZE = 16.0
+        private const val TEXT_SIZE = HudStyle.CAPTION
+        private const val NAME_TEXT_SIZE = HudStyle.BODY
         private const val LINE_SPACING = 3.0
         private const val EFFECT_SPACING = 4.0
         private const val ICON_SCALE = 2.0

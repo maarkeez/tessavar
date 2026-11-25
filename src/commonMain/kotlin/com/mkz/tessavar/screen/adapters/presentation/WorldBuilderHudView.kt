@@ -55,7 +55,7 @@ open class WorldBuilderHudView(
         const val TAB_GAP = 6.0
         const val TAB_ICON_SIZE = 32.0
         const val TAB_ICON_CENTER = 20.0
-        const val TAB_LABEL_SIZE = 12.0
+        const val TAB_LABEL_SIZE = HudStyle.CAPTION
         const val TAB_LABEL_BOTTOM = 18.0
         const val UNDERLINE_HEIGHT = 3.0
         const val UNDERLINE_INSET = 10.0
@@ -66,8 +66,8 @@ open class WorldBuilderHudView(
         const val SELECTION_BORDER = 3.0
         const val ROW_SLOTS = 4
         const val PLAYER_TITLE_HEIGHT = 18.0
-        const val PLAYER_TITLE_SIZE = 12.0
-        const val STOCK_LABEL_SIZE = 13.0
+        const val PLAYER_TITLE_SIZE = HudStyle.CAPTION
+        const val STOCK_LABEL_SIZE = HudStyle.CAPTION
         const val DISABLED_ALPHA = 0.5
 
         const val ICON_SCALE = 2.0

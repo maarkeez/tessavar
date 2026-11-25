@@ -28,7 +28,7 @@ class PillView(
         const val LABEL = "LABEL"
         const val GLYPH = "GLYPH"
 
-        const val TEXT_SIZE = 12.0
+        const val TEXT_SIZE = HudStyle.CAPTION
         private const val PADDING = 7.0
         private const val TINT_ALPHA = 0.16
         private const val STROKE_ALPHA = 0.45

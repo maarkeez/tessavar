@@ -21,7 +21,7 @@ class MenuView(
         const val BUTTON_WIDTH = 250.0
         const val BUTTON_HEIGHT = 32.0
         const val BUTTON_GAP = 15.0
-        const val TITLE_HEIGHT = 40.0
+        const val TITLE_HEIGHT = HudStyle.DISPLAY
         const val TITLE_GAP = 30.0
     }
 

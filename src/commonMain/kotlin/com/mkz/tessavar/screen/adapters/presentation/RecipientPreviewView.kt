@@ -19,9 +19,9 @@ class RecipientPreviewView(
         private const val ROW_RADIUS = 8.0
         private const val PORTRAIT_SIZE = 40.0
         private const val CONTENT_X = 50.0
-        private const val NAME_TEXT_SIZE = 13.0
-        private const val CHANGE_TEXT_SIZE = 18.0
-        private const val KO_TEXT_SIZE = 10.0
+        private const val NAME_TEXT_SIZE = HudStyle.CAPTION
+        private const val CHANGE_TEXT_SIZE = HudStyle.NAME
+        private const val KO_TEXT_SIZE = HudStyle.CAPTION
         private const val SPACING = 6.0
         private const val RIGHT = WIDTH - 10
         private const val HEALTH_BAR_WIDTH = 262.0

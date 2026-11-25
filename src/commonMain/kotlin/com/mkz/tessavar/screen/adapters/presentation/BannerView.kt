@@ -35,7 +35,7 @@ open class BannerView(
             size = Size(width = width, height = 18),
         ) {
             this.styles.textAlignment = TextAlignment.MIDDLE_LEFT
-            this.styles.textSize = 18.0
+            this.styles.textSize = HudStyle.NAME
             this.styles.textColor = HudStyle.TEXT
             this.styles.textFont = HudFonts.TITLE
         }
@@ -45,7 +45,7 @@ open class BannerView(
             size = Size(width = width, height = 15),
         ) {
             this.styles.textAlignment = TextAlignment.MIDDLE_LEFT
-            this.styles.textSize = 15.0
+            this.styles.textSize = HudStyle.BODY
             this.styles.textColor = HUMAN_TURN_COLOR
             this.styles.textFont = HudFonts.TITLE
         }
@@ -122,7 +122,7 @@ open class BannerView(
                 size = Size(width = width, height = 33),
             ) {
                 this.styles.textAlignment = TextAlignment.MIDDLE_CENTER
-                this.styles.textSize = 30.0
+                this.styles.textSize = HudStyle.TITLE
                 this.styles.textColor = HudStyle.TEXT
                 this.styles.textFont = HudFonts.TITLE
             }

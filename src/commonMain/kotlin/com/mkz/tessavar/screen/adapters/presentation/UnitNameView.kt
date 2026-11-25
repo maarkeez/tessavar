@@ -7,6 +7,7 @@ import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
 import korlibs.korge.style.textFont
+import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.uiText
 import korlibs.korge.view.setText
@@ -19,6 +20,7 @@ class UnitNameView(
         uiText("", size = size) {
             styles.textColor = HudStyle.TEXT
             styles.textFont = HudFonts.TITLE
+            styles.textSize = HudStyle.BODY
         }
 
     init {

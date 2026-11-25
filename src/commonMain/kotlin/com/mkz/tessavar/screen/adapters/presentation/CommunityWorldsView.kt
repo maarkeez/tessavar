@@ -12,6 +12,7 @@ import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
 import korlibs.korge.style.textFont
+import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiText
@@ -34,7 +35,7 @@ open class CommunityWorldsView(
         const val TITLE_HEIGHT = 30.0
         const val ROW_HEIGHT = 48.0
         const val ROW_GAP = 12.0
-        const val EMPTY_TEXT_SIZE = 16.0
+        const val EMPTY_TEXT_SIZE = HudStyle.BODY
     }
 
     data class Entry(
@@ -55,6 +56,7 @@ open class CommunityWorldsView(
         uiText(messages[UiMessage.COMMUNITY_WORLDS_TITLE], size = Size(WIDTH - 2 * PADDING, TITLE_HEIGHT)) {
             styles.textColor = HudStyle.TEXT
             styles.textFont = HudFonts.TITLE
+            styles.textSize = HudStyle.BODY
             styles.textAlignment = TextAlignment.MIDDLE_CENTER
             position(PADDING, 0.0)
         }

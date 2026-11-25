@@ -47,12 +47,12 @@ open class QuestAnnouncementView(
         private const val TEXT_X = 76.0
         private const val TITLE_Y = 8.0
         private const val NAME_Y = 22.0
-        private const val NAME_SIZE = 15.0
+        private const val NAME_SIZE = HudStyle.BODY
         private const val RIGHT_PADDING = 10.0
         private const val GOAL_Y = 49.0
         private const val GOAL_GLYPH_SIZE = 14.0
         private const val GOAL_TEXT_X = 96.0
-        private const val GOAL_TEXT_SIZE = 13.0
+        private const val GOAL_TEXT_SIZE = HudStyle.CAPTION
         private const val REWARD_Y = 42.0
     }
 

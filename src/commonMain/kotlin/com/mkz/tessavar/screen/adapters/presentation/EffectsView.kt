@@ -30,7 +30,7 @@ class EffectsView(
             val effectViewSize = Size(width = 20, height = 20)
             effectViews = Array(10) { EffectView(effectViewSize, resourcesLoader) }
             effectViews.forEach(::addChild)
-            overflowLabel = text("+", font = HudFonts.TITLE, textSize = 14.0, color = HudStyle.TEXT)
+            overflowLabel = text("+", font = HudFonts.TITLE, textSize = HudStyle.BODY, color = HudStyle.TEXT)
         }
 
     init {
