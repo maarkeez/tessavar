@@ -48,7 +48,7 @@ class StorybookScene(
         zoomView.dragOwners = listOf(sidebarView, phoneFrameView.screen)
         val panelsX = SidebarView.WIDTH + margin * 4 + PhoneFrameView.SIZE.width
         storybook.addChild(toolbarView.position(panelsX, margin * 2))
-        storybook.addChild(storyInfoView.position(panelsX, toolbarView.y + ToolbarView.HEIGHT + margin * 2))
+        storybook.addChild(storyInfoView.position(panelsX, toolbarView.y + ToolbarView.TOTAL_HEIGHT + margin))
         storybook.addChild(controlsView.position(panelsX, storyInfoView.y + StoryInfoView.HEIGHT + margin))
         storybook.addChild(actionsView.position(panelsX, controlsView.y + ControlsView.MAXIMUM_HEIGHT + margin))
 

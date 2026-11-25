@@ -7,7 +7,8 @@ import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.ringOf
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.targetSlot
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.taskGlyph
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.tickDisc
-import korlibs.image.color.Colors
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.korge.animate.alpha
 import korlibs.korge.animate.animator
 import korlibs.korge.animate.wait
@@ -109,14 +110,20 @@ open class QuestAnnouncementView(
         targetSlot(task, resourcesLoader, TARGET_X, TARGET_Y, TARGET_SIZE, portraitScale = 1.0, ring = if (isCompleted) HudStyle.ALLY else ringOf(task))
         targetTick = if (isCompleted) container { tickDisc(TARGET_TICK_AT, TARGET_TICK_AT, TARGET_TICK_SIZE) } else null
         val title = messages[if (isCompleted) UiMessage.QUEST_ANNOUNCEMENT_COMPLETED else UiMessage.QUEST_ANNOUNCEMENT_STARTED]
-        titleText = text(title, textSize = QuestViewParts.CAPTION_SIZE, color = if (isCompleted) HudStyle.ALLY else HudStyle.SELECTION) { xy(TEXT_X, TITLE_Y) }
-        nameText = text(fitted(quest.name, NAME_SIZE, ANNOUNCEMENT_WIDTH - TEXT_X - RIGHT_PADDING), textSize = NAME_SIZE, color = Colors.WHITE) { xy(TEXT_X, NAME_Y) }
+        titleText = text(title, font = UiFont.current, textSize = QuestViewParts.CAPTION_SIZE, color = if (isCompleted) HudStyle.ALLY else HudStyle.SELECTION) { xy(TEXT_X, TITLE_Y) }
+        nameText = text(fitted(quest.name, NAME_SIZE, ANNOUNCEMENT_WIDTH - TEXT_X - RIGHT_PADDING), font = UiFont.current, textSize = NAME_SIZE, color = UiTheme.current.text) { xy(TEXT_X, NAME_Y) }
     }
 
     private fun Container.drawGoal(quest: QuestInfo) {
         val task = quest.currentTask
         taskGlyph(task.kind, TEXT_X, GOAL_Y, GOAL_GLYPH_SIZE, HudStyle.SELECTION)
-        taskText = text(fitted(task.text, GOAL_TEXT_SIZE, ANNOUNCEMENT_WIDTH - GOAL_TEXT_X - RIGHT_PADDING), textSize = GOAL_TEXT_SIZE, color = HudStyle.MUTED) { xy(GOAL_TEXT_X, GOAL_Y - 1) }
+        taskText =
+            text(fitted(task.text, GOAL_TEXT_SIZE, ANNOUNCEMENT_WIDTH - GOAL_TEXT_X - RIGHT_PADDING), font = UiFont.current, textSize = GOAL_TEXT_SIZE, color = HudStyle.MUTED) {
+                xy(
+                    GOAL_TEXT_X,
+                    GOAL_Y - 1,
+                )
+            }
         rewardView = null
     }
 

@@ -2,10 +2,10 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
-import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
-import korlibs.image.font.DefaultTtfFontAsBitmap
 import korlibs.image.text.RichTextData
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
@@ -60,7 +60,7 @@ class ConsentView(
             panel(Size(PANEL_WIDTH, PANEL_HEIGHT), radius = PANEL_RADIUS, stroke = HudStyle.SELECTION)
         }
 
-    internal val titleText: Text = content.text("", textSize = TITLE_SIZE, color = Colors.WHITE) { xy(PADDING, PADDING) }
+    internal val titleText: Text = content.text("", font = UiFont.current, textSize = TITLE_SIZE, color = UiTheme.current.text) { xy(PADDING, PADDING) }
 
     internal val bodyText: TextBlock =
         content.textBlock(RichTextData(""), align = TextAlignment.TOP_LEFT, size = Size(PANEL_WIDTH - 2 * PADDING, BODY_HEIGHT)) {
@@ -69,7 +69,7 @@ class ConsentView(
         }
 
     internal val readMoreText: Text =
-        content.text("", textSize = TEXT_SIZE, color = HudStyle.SELECTION) {
+        content.text("", font = UiFont.current, textSize = TEXT_SIZE, color = HudStyle.SELECTION) {
             xy(PADDING, READ_MORE_Y)
             onClick { delegate?.consentReadMoreSelected() }
         }
@@ -95,7 +95,7 @@ class ConsentView(
 
     fun display() {
         titleText.text = messages[UiMessage.CONSENT_TITLE]
-        bodyText.text = RichTextData(messages[UiMessage.CONSENT_BODY], font = DefaultTtfFontAsBitmap, textSize = TEXT_SIZE, color = HudStyle.MUTED)
+        bodyText.text = RichTextData(messages[UiMessage.CONSENT_BODY], font = UiFont.current, textSize = TEXT_SIZE, color = HudStyle.MUTED)
         readMoreText.text = messages[UiMessage.CONSENT_READ_MORE]
         declineButton.text = messages[UiMessage.CONSENT_DECLINE]
         acceptButton.text = messages[UiMessage.CONSENT_ACCEPT]

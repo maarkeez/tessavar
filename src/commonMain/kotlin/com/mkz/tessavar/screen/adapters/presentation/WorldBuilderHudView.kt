@@ -2,6 +2,8 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.GAME_WINDOW_SIZE
 import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.bitmap.Bitmap
 import korlibs.image.bitmap.Bitmaps
 import korlibs.image.bitmap.slice
@@ -254,7 +256,7 @@ open class WorldBuilderHudView(
                     visible = false
                     enabled = false
                     stockText =
-                        text(messages[UiMessage.WORLD_BUILDER_HUD_STOCK], textSize = STOCK_LABEL_SIZE, color = Colors.WHITE).also { label ->
+                        text(messages[UiMessage.WORLD_BUILDER_HUD_STOCK], font = UiFont.current, textSize = STOCK_LABEL_SIZE, color = UiTheme.current.text).also { label ->
                             label.xy(floor((PILL_BUTTON_SIZE - label.width) / 2), floor((PILL_BUTTON_SIZE - label.height) / 2))
                         }
                     onClick { if (enabled) delegate?.stockSelected() }
@@ -334,7 +336,7 @@ open class WorldBuilderHudView(
         val palette = resetPalette(Tab.UNITS)
         rows.forEachIndexed { index, row ->
             val top = index * (PLAYER_TITLE_HEIGHT + SLOT_SIZE + SLOT_GAP)
-            palette.text(row.title, textSize = PLAYER_TITLE_SIZE, color = HudStyle.MUTED).xy(0.0, top)
+            palette.text(row.title, font = UiFont.current, textSize = PLAYER_TITLE_SIZE, color = HudStyle.MUTED).xy(0.0, top)
             val slots = row.units.map { unit -> unitKey(row.playerId, unit.id) to unit.bitmap }
             slots.forEach { (key, bitmap) -> options.getValue(Tab.UNITS)[key] = bitmap }
             palette.paletteRow(Tab.UNITS, slots, OCCUPANT_IMAGE, top + PLAYER_TITLE_HEIGHT) { key ->
@@ -356,7 +358,7 @@ open class WorldBuilderHudView(
     open fun displayStock(isEnabled: Boolean) {
         stockButton.enabled = isEnabled
         stockButton.alpha = if (isEnabled) 1.0 else DISABLED_ALPHA
-        stockLabel.color = if (isEnabled) Colors.WHITE else HudStyle.MUTED
+        stockLabel.color = if (isEnabled) UiTheme.current.text else HudStyle.MUTED
     }
 
     private fun displayPalette(
@@ -446,7 +448,7 @@ open class WorldBuilderHudView(
         width: Double,
     ): UIButton =
         SlotButton(Size(width, TAB_HEIGHT)).addTo(this).apply {
-            text(tabLabel(tab), textSize = TAB_LABEL_SIZE, color = Colors.WHITE).also { label ->
+            text(tabLabel(tab), font = UiFont.current, textSize = TAB_LABEL_SIZE, color = UiTheme.current.text).also { label ->
                 label.xy(floor((width - label.width) / 2), TAB_HEIGHT - TAB_LABEL_BOTTOM)
             }
             solidRect(Size(width - 2 * UNDERLINE_INSET, UNDERLINE_HEIGHT), HudStyle.SELECTION) {

@@ -1,6 +1,5 @@
 package com.mkz.tessavar.shared.adapters.presentation
 
-import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.ui.UIButton
 import korlibs.korge.view.Container
@@ -15,13 +14,13 @@ class GameButton(
     overColor: RGBA = GREY_OVER,
 ) : UIButton(size, label) {
     companion object {
-        val GREY: RGBA = Colors.DIMGRAY
-        val GREY_OVER = RGBA(85, 85, 85)
-        val LABEL: RGBA = Colors.WHITE
-        val BORDER: RGBA = Colors.LIGHTGRAY
-        val DISABLED = RGBA(58, 58, 58)
-        val DISABLED_LABEL = RGBA(138, 138, 138)
-        val DISABLED_BORDER = RGBA(85, 85, 85)
+        val GREY: RGBA get() = UiTheme.current.button
+        val GREY_OVER get() = UiTheme.current.buttonOver
+        val LABEL: RGBA get() = UiTheme.current.buttonLabel
+        val BORDER: RGBA get() = UiTheme.current.buttonBorder
+        val DISABLED get() = UiTheme.current.disabled
+        val DISABLED_LABEL get() = UiTheme.current.disabledLabel
+        val DISABLED_BORDER get() = UiTheme.current.disabledBorder
     }
 
     init {
@@ -29,6 +28,7 @@ class GameButton(
         bgColorOver = overColor
         bgColorDisabled = DISABLED
         background.borderColor = BORDER
+        applyUiFont()
     }
 
     override fun updatedUIButton(

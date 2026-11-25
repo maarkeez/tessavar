@@ -1,11 +1,15 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiText
 import korlibs.korge.view.Container
@@ -48,12 +52,16 @@ open class SaveSlotsView(
     internal val titleText: UIText =
         uiText("", size = Size(WIDTH - 2 * PADDING, TITLE_HEIGHT)) {
             styles.textAlignment = TextAlignment.MIDDLE_CENTER
+            styles.textFont = UiFont.current
+            styles.textColor = UiTheme.current.text
             position(PADDING, PADDING)
         }
     internal val numberTexts: List<UIText> =
         List(ROWS) { index ->
             uiText("${index + 1}", size = Size(NUMBER_WIDTH, ROW_HEIGHT)) {
                 styles.textAlignment = TextAlignment.MIDDLE_CENTER
+                styles.textFont = UiFont.current
+                styles.textColor = UiTheme.current.text
                 position(PADDING, rowY(index))
             }
         }

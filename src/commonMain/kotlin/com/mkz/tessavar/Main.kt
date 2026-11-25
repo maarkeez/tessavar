@@ -4,6 +4,9 @@ import com.mkz.tessavar.localization.adapters.presentation.LocalizationApi
 import com.mkz.tessavar.localization.adapters.resources.ResourcesLocalizationLoader
 import com.mkz.tessavar.screen.adapters.presentation.MenuScene
 import com.mkz.tessavar.shared.adapters.events.InMemoryEventBus
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
+import com.mkz.tessavar.shared.adapters.presentation.requestedUiTheme
 import com.mkz.tessavar.shared.adapters.resources.ResourcesBundle
 import com.mkz.tessavar.storybook.adapters.location.isStorybookRequested
 import com.mkz.tessavar.storybook.adapters.location.platformStoryLocation
@@ -52,6 +55,11 @@ suspend fun Stage.startApp(
     storage: IStorage? = null,
 ) {
     ResourcesBundle.prefetch(views)
+    requestedUiTheme()?.let { theme ->
+        UiTheme.select(theme)
+        if (UiTheme.current.fontFile != null) UiFont.load(ResourcesBundle.root)
+        views.clearColor = UiTheme.current.background
+    }
     val sceneContainer = sceneContainer()
 
     val eventBus = InMemoryEventBus()
@@ -74,6 +82,8 @@ suspend fun Stage.startStorybook(
     storyLocation: StoryLocation = platformStoryLocation(),
     storybookPage: StorybookPage = platformStorybookPage(),
 ) {
+    ResourcesBundle.prefetch(views)
+    UiFont.load(ResourcesBundle.root)
     val sceneContainer = sceneContainer()
 
     val eventBus = InMemoryEventBus()

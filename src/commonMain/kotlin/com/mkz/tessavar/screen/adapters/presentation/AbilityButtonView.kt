@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.input.onClick
@@ -146,7 +147,7 @@ class AbilityButtonView(
                 RectCorners(HudStyle.SLOT_RADIUS - SELECTION_THICKNESS),
                 fill = COOLDOWN_OVERLAY_COLOR,
             ) { xy(SELECTION_THICKNESS, SELECTION_THICKNESS) }
-            text(text = "$remainingCooldown", textSize = COOLDOWN_TEXT_SIZE, color = Colors.WHITE) {
+            text(text = "$remainingCooldown", font = UiFont.current, textSize = COOLDOWN_TEXT_SIZE, color = Colors.WHITE) {
                 centerOn(abilityButton)
             }
         }

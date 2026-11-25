@@ -1,5 +1,8 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
+import com.mkz.tessavar.shared.adapters.presentation.applyUiFont
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.image.color.RGBA.Companion.invoke
@@ -17,18 +20,19 @@ class ConfirmButton(
     val onConfirmed: () -> Unit,
 ) : Container() {
     companion object {
-        val COLOR = RGBA(0, 136, 255)
-        val PRESSED_COLOR = RGBA(30, 110, 244)
+        val COLOR get() = UiTheme.current.accent
+        val PRESSED_COLOR get() = UiTheme.current.accentPressed
     }
 
     internal val confirmButton: UIButton =
         uiButton {
             text = label
             this.textColor = textColor
+            applyUiFont()
             width = buttonWidth
             bgColorOut = color
             bgColorOver = pressedColor
-            background.borderColor = Colors.LIGHTGRAY
+            background.borderColor = GameButton.BORDER
             onClick {
                 onConfirmed()
             }

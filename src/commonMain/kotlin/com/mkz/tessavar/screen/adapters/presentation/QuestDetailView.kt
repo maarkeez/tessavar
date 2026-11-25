@@ -11,7 +11,8 @@ import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.taskGlyph
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.tickDisc
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.widthOf
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.wrappedText
-import korlibs.image.color.Colors
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.korge.view.Container
 import korlibs.korge.view.Text
 import korlibs.korge.view.container
@@ -98,10 +99,10 @@ class QuestDetailView(
                     else -> UiMessage.QUEST_DETAIL_SIDE_QUEST
                 },
             ]
-        captionText = text(caption, textSize = QuestViewParts.CAPTION_SIZE, color = if (quest.isCompleted) HudStyle.ALLY else HudStyle.FAINT) { xy(TEXT_X, PADDING - 2) }
+        captionText = text(caption, font = UiFont.current, textSize = QuestViewParts.CAPTION_SIZE, color = if (quest.isCompleted) HudStyle.ALLY else HudStyle.FAINT) { xy(TEXT_X, PADDING - 2) }
         repeatablePillView = if (quest.isRepeatable) repeatablePill(TEXT_X + widthOf(caption, QuestViewParts.CAPTION_SIZE) + PILL_SPACING, PILL_Y, messages) else null
         var nameHeight = 0.0
-        nameView = container { nameHeight = wrappedText(quest.name, TEXT_X, NAME_Y, TEXT_WIDTH, NAME_SIZE, Colors.WHITE, maximumLines = NAME_MAXIMUM_LINES) }
+        nameView = container { nameHeight = wrappedText(quest.name, TEXT_X, NAME_Y, TEXT_WIDTH, NAME_SIZE, UiTheme.current.text, maximumLines = NAME_MAXIMUM_LINES) }
         val descriptionY = NAME_Y + nameHeight + DESCRIPTION_SPACING
         val descriptionLines = ((TARGET_BOTTOM - descriptionY + QuestViewParts.LINE_SPACING) / (DESCRIPTION_SIZE + QuestViewParts.LINE_SPACING)).toInt()
         descriptionView = container { wrappedText(quest.description, TEXT_X, descriptionY, TEXT_WIDTH, DESCRIPTION_SIZE, HudStyle.MUTED, maximumLines = descriptionLines) }
@@ -117,8 +118,14 @@ class QuestDetailView(
         val count = if (isCounted) "${task.defeatsCounted}/${task.requiredDefeats}" else null
         val countWidth = count?.let { value -> widthOf(value, TASK_SIZE) } ?: 0.0
         val taskWidth = TASK_RIGHT - TASK_TEXT_X - if (isCounted) countWidth + COUNT_SPACING else 0.0
-        taskText = text(fitted(task.text, TASK_SIZE, taskWidth), textSize = TASK_SIZE, color = if (quest.isCompleted) HudStyle.MUTED else Colors.WHITE) { xy(TASK_TEXT_X, taskY) }
-        countText = count?.let { value -> text(value, textSize = TASK_SIZE, color = HudStyle.SELECTION) { xy(TASK_RIGHT - countWidth, taskY) } }
+        taskText =
+            text(
+                fitted(task.text, TASK_SIZE, taskWidth),
+                font = UiFont.current,
+                textSize = TASK_SIZE,
+                color = if (quest.isCompleted) HudStyle.MUTED else UiTheme.current.text,
+            ) { xy(TASK_TEXT_X, taskY) }
+        countText = count?.let { value -> text(value, font = UiFont.current, textSize = TASK_SIZE, color = HudStyle.SELECTION) { xy(TASK_RIGHT - countWidth, taskY) } }
         progressBarView = if (isCounted) container { progressBar(TASK_X, bannerY + BAR_OFFSET, BAR_WIDTH, BAR_HEIGHT, task.defeatsCounted, task.requiredDefeats) } else null
     }
 
@@ -129,12 +136,18 @@ class QuestDetailView(
         }
         val tasksDone = quest.doneTasks.size
         tickDisc(PADDING + 2, TASKS_DONE_Y + 1, 12.0)
-        tasksDoneText = text(messages.plural(UiMessage.QUEST_DETAIL_TASKS_DONE, tasksDone, "tasks" to tasksDone), textSize = TASKS_DONE_SIZE, color = HudStyle.MUTED) { xy(PADDING + 20, TASKS_DONE_Y) }
+        tasksDoneText =
+            text(
+                messages.plural(UiMessage.QUEST_DETAIL_TASKS_DONE, tasksDone, "tasks" to tasksDone),
+                font = UiFont.current,
+                textSize = TASKS_DONE_SIZE,
+                color = HudStyle.MUTED,
+            ) { xy(PADDING + 20, TASKS_DONE_Y) }
     }
 
     private fun drawReward(quest: QuestInfo) {
         val caption = messages[UiMessage.QUEST_DETAIL_REWARD]
-        text(caption, textSize = QuestViewParts.CAPTION_SIZE, color = HudStyle.FAINT) { xy(PADDING, REWARD_CAPTION_Y) }
+        text(caption, font = UiFont.current, textSize = QuestViewParts.CAPTION_SIZE, color = HudStyle.FAINT) { xy(PADDING, REWARD_CAPTION_Y) }
         rewardView = container { rewardRow(quest, PADDING + widthOf(caption, QuestViewParts.CAPTION_SIZE) + REWARD_SPACING, REWARD_ROW_Y, resourcesLoader, messages) }
     }
 

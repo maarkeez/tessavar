@@ -1,6 +1,5 @@
 package com.mkz.tessavar.shared.adapters.presentation
 
-import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.view.RoundRect
@@ -22,13 +21,13 @@ open class BarView(
         const val TEXT_SIZE = 12.0
         private const val VALUE_SPACING = 6.0
 
-        val TRACK = RGBA(0x0E, 0x0E, 0x18)
-        val TRACK_STROKE = RGBA(0x36, 0x36, 0x50)
+        val TRACK get() = UiTheme.current.track
+        val TRACK_STROKE get() = UiTheme.current.stroke
     }
 
     internal var track: RoundRect? = null
     internal var fill: RoundRect? = null
-    internal val label: Text = text(text = "", textSize = TEXT_SIZE, color = Colors.WHITE)
+    internal val label: Text = text(text = "", font = UiFont.current, textSize = TEXT_SIZE, color = UiTheme.current.text)
 
     internal var ratio: Double = 1.0
 
@@ -45,7 +44,7 @@ open class BarView(
         fill?.removeFromParent()
         label.text = "$remaining/$maximum"
         label.visible = showValue
-        val widestValueWidth = if (showValue) Text("$maximum/$maximum", textSize = TEXT_SIZE).width + VALUE_SPACING else 0.0
+        val widestValueWidth = if (showValue) Text("$maximum/$maximum", font = UiFont.current, textSize = TEXT_SIZE).width + VALUE_SPACING else 0.0
         val barWidth = width - widestValueWidth
         val barHeight = min(height, BAR_HEIGHT)
         val barY = (height - barHeight) / 2

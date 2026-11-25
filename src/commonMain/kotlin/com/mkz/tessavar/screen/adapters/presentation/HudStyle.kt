@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.BarView
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.color.RGBA
 import korlibs.korge.view.Container
 import korlibs.korge.view.RoundRect
@@ -9,19 +10,19 @@ import korlibs.math.geom.RectCorners
 import korlibs.math.geom.Size
 
 object HudStyle {
-    val PANEL = RGBA(0x17, 0x17, 0x25)
+    val PANEL get() = UiTheme.current.panel
 
-    val PANEL_RAISED = RGBA(0x22, 0x22, 0x36)
+    val PANEL_RAISED get() = UiTheme.current.panelRaised
 
-    val STROKE = RGBA(0x36, 0x36, 0x50)
+    val STROKE get() = UiTheme.current.stroke
 
-    val TRACK = BarView.TRACK
+    val TRACK get() = BarView.TRACK
 
-    val MUTED = RGBA(0xA4, 0xA4, 0xBE)
+    val MUTED get() = UiTheme.current.muted
 
-    val FAINT = RGBA(0x6C, 0x6C, 0x88)
+    val FAINT get() = UiTheme.current.faint
 
-    val SELECTION = RGBA(0xFF, 0xD8, 0x4A)
+    val SELECTION get() = UiTheme.current.selection
 
     val ALLY = RGBA(0x5A, 0xD2, 0x5A)
     val ENEMY = RGBA(0xFF, 0x37, 0x5F)

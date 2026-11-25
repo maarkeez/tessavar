@@ -1,10 +1,13 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import korlibs.image.color.RGBA
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiText
 import korlibs.korge.view.Container
@@ -58,6 +61,8 @@ open class FormationView(
         hintText =
             uiText("", size = Size(WIDTH - 2 * PADDING, BAR_HEIGHT)) {
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
+                styles.textFont = UiFont.current
+                styles.textColor = UiTheme.current.text
                 position(PADDING, footerY)
             }
     }
@@ -88,8 +93,8 @@ class FormationRowView(
     private val resourcesLoader: GameSceneResourcesLoader,
 ) : Container() {
     companion object {
-        val ROW_COLOR = RGBA(0x34, 0x34, 0x34)
-        val SELECTED_ROW_COLOR = RGBA(0x00, 0x52, 0x80)
+        val ROW_COLOR get() = UiTheme.current.row
+        val SELECTED_ROW_COLOR get() = UiTheme.current.selectedRow
 
         private const val CROWN_SIZE = 32.0
         private const val CROWN_SCALE = 2.0
@@ -128,6 +133,8 @@ class FormationRowView(
         nameText =
             uiText("", size = Size(NAME_WIDTH, size.height)) {
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
+                styles.textFont = UiFont.current
+                styles.textColor = UiTheme.current.text
                 position(nameX, 0.0)
             }
         val barsY = (size.height - 2 * BAR_HEIGHT - SPACING / 2) / 2

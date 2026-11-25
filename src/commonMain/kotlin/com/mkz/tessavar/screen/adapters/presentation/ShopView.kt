@@ -1,6 +1,8 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.color.Colors
 import korlibs.image.text.TextAlignment
@@ -9,6 +11,8 @@ import korlibs.korge.input.onClick
 import korlibs.korge.input.onSwipe
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiText
@@ -81,11 +85,15 @@ open class ShopView(
         itemNameText =
             uiText("", size = Size(WIDTH, BAR_HEIGHT)) {
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
+                styles.textFont = UiFont.current
+                styles.textColor = UiTheme.current.text
                 position(0.0, ITEM_Y)
             }
         itemPriceText =
             uiText("", size = Size(WIDTH, BAR_HEIGHT)) {
                 styles.textAlignment = TextAlignment.MIDDLE_RIGHT
+                styles.textFont = UiFont.current
+                styles.textColor = UiTheme.current.text
                 position(0.0, ITEM_Y)
             }
         slotViews.forEachIndexed { index, slotView -> slotView.setOnSelected { delegate?.shopSlotSelected(index) } }
@@ -149,6 +157,8 @@ open class ShopView(
             buyerText =
                 uiText("", size = Size(WIDTH - 2 * ARROW_WIDTH, BAR_HEIGHT)) {
                     styles.textAlignment = TextAlignment.MIDDLE_CENTER
+                    styles.textFont = UiFont.current
+                    styles.textColor = UiTheme.current.text
                     position(ARROW_WIDTH, 0.0)
                 }
             nextBuyerButton = button(">", ARROW_WIDTH) { delegate?.shopBuyerStepped(1) }.position(WIDTH - ARROW_WIDTH, 0.0)

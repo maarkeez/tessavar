@@ -1,7 +1,8 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.applyUiFont
 import korlibs.image.color.Colors
-import korlibs.image.color.RGBA
 import korlibs.korge.input.onClick
 import korlibs.korge.ui.UIButton
 import korlibs.korge.ui.UIContainer
@@ -51,9 +52,10 @@ class InventoryFullView(
             }
             leaveButton =
                 uiButton(messages[UiMessage.INVENTORY_FULL_LEAVE]) {
+                    applyUiFont()
                     width = WIDTH
-                    bgColorOut = Colors.DIMGRAY
-                    bgColorOver = RGBA(85, 85, 85)
+                    bgColorOut = GameButton.GREY
+                    bgColorOver = GameButton.GREY_OVER
                     background.borderColor = Colors.LIGHTGRAY
                     onClick { onLeft() }
                 }

@@ -1,7 +1,8 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.color.RGBA
-import korlibs.image.font.DefaultTtfFontAsBitmap
 import korlibs.image.text.RichTextData
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
@@ -27,9 +28,9 @@ open class TalkView(
         const val NAME_HEIGHT = 28.0
         const val LINE_TEXT_SIZE = 18.0
 
-        private val BACKGROUND_COLOR = RGBA(33, 22, 64)
-        private val NAME_COLOR = RGBA(255, 231, 55)
-        private val LINE_COLOR = RGBA(255, 255, 255)
+        private val BACKGROUND_COLOR get() = UiTheme.current.talkBackground
+        private val NAME_COLOR get() = UiTheme.current.talkName
+        private val LINE_COLOR get() = UiTheme.current.text
     }
 
     private var onTapped: (() -> Unit)? = null
@@ -82,5 +83,5 @@ open class TalkView(
         value: String,
         textSize: Double = LINE_TEXT_SIZE,
         color: RGBA = LINE_COLOR,
-    ): RichTextData = RichTextData(value, font = DefaultTtfFontAsBitmap, textSize = textSize, color = color)
+    ): RichTextData = RichTextData(value, font = UiFont.current, textSize = textSize, color = color)
 }

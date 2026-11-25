@@ -1,5 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.color.RGBA
 import korlibs.image.text.TextAlignment
 import korlibs.korge.animate.animator
@@ -7,6 +9,7 @@ import korlibs.korge.animate.scaleTo
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -19,7 +22,7 @@ open class BannerView(
     private val messages: Messages,
 ) : UIContainer(Size(width = 390, height = 33)) {
     companion object {
-        val HUMAN_TURN_COLOR = RGBA(0x00, 0x84, 0xFF)
+        val HUMAN_TURN_COLOR get() = UiTheme.current.accent
         val CPU_TURN_COLOR = RGBA(0xE0, 0x3C, 0x28)
 
         const val POP_SCALE = 1.3
@@ -32,6 +35,7 @@ open class BannerView(
             size = Size(width = width, height = 18),
         ) {
             this.styles.textAlignment = TextAlignment.MIDDLE_LEFT
+            this.styles.textFont = UiFont.current
             this.styles.textSize = 18.0
         }
     internal val playerTurn =
@@ -40,6 +44,7 @@ open class BannerView(
             size = Size(width = width, height = 15),
         ) {
             this.styles.textAlignment = TextAlignment.MIDDLE_LEFT
+            this.styles.textFont = UiFont.current
             this.styles.textSize = 15.0
             this.styles.textColor = HUMAN_TURN_COLOR
         }
@@ -116,6 +121,7 @@ open class BannerView(
                 size = Size(width = width, height = 33),
             ) {
                 this.styles.textAlignment = TextAlignment.MIDDLE_CENTER
+                this.styles.textFont = UiFont.current
                 this.styles.textSize = 30.0
             }
     }

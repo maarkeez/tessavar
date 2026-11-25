@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.GAME_TITLE
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.uiVerticalStack
 import korlibs.korge.view.text
@@ -24,7 +25,7 @@ class MenuView(
     }
 
     internal val title =
-        text(text = GAME_TITLE, textSize = TITLE_HEIGHT, color = HudStyle.COIN_MIDDLE) {
+        text(text = GAME_TITLE, font = UiFont.current, textSize = TITLE_HEIGHT, color = HudStyle.COIN_MIDDLE) {
             x = (BUTTON_WIDTH - width) / 2
         }
 

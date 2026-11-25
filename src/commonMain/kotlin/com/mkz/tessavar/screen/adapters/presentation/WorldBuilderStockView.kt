@@ -1,13 +1,16 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.bitmap.Bitmap
-import korlibs.image.color.Colors
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -60,11 +63,13 @@ open class WorldBuilderStockView(
     internal val doneButton: GameButton
 
     init {
-        solidRect(size, Colors["#2b2b2b"])
+        solidRect(size, UiTheme.current.background)
         titleText =
             uiText(text = "", size = Size(width = width, height = TITLE_HEIGHT)) {
                 styles.textSize = 18.0
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
+                styles.textFont = UiFont.current
+                styles.textColor = UiTheme.current.text
             }
         itemList = container { y = TITLE_HEIGHT + SECTION_GAP }
         doneButton =

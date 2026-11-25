@@ -1,5 +1,6 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import com.mkz.tessavar.shared.domain.EventBus
 import com.mkz.tessavar.shared.domain.Subscription
 import com.mkz.tessavar.shared.domain.subscribe
@@ -47,6 +48,8 @@ class StorybookPresenter(
         toolbarView.setDelegate(
             object : ToolbarView.Delegate {
                 override fun languageSelected(languageCode: String) = storybookApi.changeGlobal(StorybookApi.LANGUAGE_GLOBAL, ValueDto.text(languageCode))
+
+                override fun themeSelected(themeId: String) = storybookApi.changeGlobal(StorybookApi.THEME_GLOBAL, ValueDto.text(themeId))
             },
         )
         controlsView.setDelegate(
@@ -84,8 +87,11 @@ class StorybookPresenter(
         val args = storybookApi.searchArgs()
         val languageCode = requireNotNull(storybookApi.searchGlobals().getValue(StorybookApi.LANGUAGE_GLOBAL).text)
         storyContext.messages.selectLanguage(languageCode)
+        val themeId = storybookApi.searchGlobals()[StorybookApi.THEME_GLOBAL]?.text ?: UiTheme.CURRENT.id
+        UiTheme.select(themeId)
         sidebarView.selectStory(story.id)
         toolbarView.display(storyContext.messages.languages(), languageCode)
+        toolbarView.displayThemes(UiTheme.ALL, UiTheme.current.id)
         storyInfoView.display(component, story)
         controlsView.display(component.controls, args)
         displayButtons()

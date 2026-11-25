@@ -1,5 +1,6 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import com.mkz.tessavar.shared.domain.EventBus
 import com.mkz.tessavar.storybook.adapters.storage.InMemoryStorybookRepository
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ControlDto
@@ -101,6 +102,7 @@ class StorybookApi(
             )
 
         const val LANGUAGE_GLOBAL = "language"
+        const val THEME_GLOBAL = "theme"
     }
 
     private val storybookRepository: StorybookRepository = InMemoryStorybookRepository()
@@ -127,8 +129,8 @@ class StorybookApi(
         val languageCodes = context.messages.languages().map { language -> language.code }
         openCatalogue(
             components = components,
-            globalControls = listOf(ControlDto.pick(LANGUAGE_GLOBAL, languageCodes)),
-            defaultGlobals = mapOf(LANGUAGE_GLOBAL to ValueDto.text(languageCodes.first())),
+            globalControls = listOf(ControlDto.pick(LANGUAGE_GLOBAL, languageCodes), ControlDto.pick(THEME_GLOBAL, UiTheme.ALL.map(UiTheme::id))),
+            defaultGlobals = mapOf(LANGUAGE_GLOBAL to ValueDto.text(languageCodes.first()), THEME_GLOBAL to ValueDto.text(UiTheme.CURRENT.id)),
         )
     }
 

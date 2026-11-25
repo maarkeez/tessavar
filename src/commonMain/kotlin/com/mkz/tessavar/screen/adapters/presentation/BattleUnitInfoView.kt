@@ -1,7 +1,8 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
-import korlibs.image.color.Colors
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.color.RGBA
 import korlibs.korge.animate.Animator
 import korlibs.korge.animate.animator
@@ -21,7 +22,7 @@ open class BattleUnitInfoView(
     private val messages: Messages,
 ) : Container() {
     companion object {
-        val MOVEMENT_POINTS_COLOR = Colors.WHITE
+        val MOVEMENT_POINTS_COLOR get() = UiTheme.current.text
         val CAST_POINTS_COLOR = RGBA(0xFF, 0xBB, 0x31)
 
         const val WIDTH = 390.0
@@ -74,7 +75,7 @@ open class BattleUnitInfoView(
 
     internal val header: Container = container { panel(Size(PANEL_WIDTH, HEADER_HEIGHT)).xy(MARGIN, 0.0) }
     internal val unitPortraitView = UnitPortraitView(Size(PORTRAIT_SIZE, PORTRAIT_SIZE), resourcesLoader).addTo(header, MARGIN + 8, 8.0)
-    internal val nameText: Text = header.text("", textSize = NAME_TEXT_SIZE, color = Colors.WHITE) { xy(CONTENT_X, 9.0) }
+    internal val nameText: Text = header.text("", font = UiFont.current, textSize = NAME_TEXT_SIZE, color = UiTheme.current.text) { xy(CONTENT_X, 9.0) }
     internal val remainingSummonDurationView = RemainingSummonDurationView(Size(160, 18), messages).addTo(header, CONTENT_X, 8.0)
     internal val inventoryButton = InventoryButtonView(Size(INVENTORY_BUTTON_SIZE, INVENTORY_BUTTON_SIZE), resourcesLoader).addTo(header, CONTENT_RIGHT - INVENTORY_BUTTON_SIZE, 8.0)
     private val moveCaption: Text = header.caption(UiMessage.HUD_MOVE, CONTENT_X, 39.0)
@@ -262,7 +263,7 @@ open class BattleUnitInfoView(
         text: UiMessage,
         x: Double,
         y: Double,
-    ): Text = text(messages[text], textSize = CAPTION_TEXT_SIZE, color = HudStyle.FAINT) { xy(x, y) }
+    ): Text = text(messages[text], font = UiFont.current, textSize = CAPTION_TEXT_SIZE, color = HudStyle.FAINT) { xy(x, y) }
 
     private fun <T : korlibs.korge.view.View> T.addTo(
         parent: Container,

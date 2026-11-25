@@ -1,7 +1,7 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
 import com.mkz.tessavar.GAME_WINDOW_SIZE
-import korlibs.image.color.Colors
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.color.RGBA
 import korlibs.korge.view.ClipContainer
 import korlibs.korge.view.Container
@@ -21,7 +21,7 @@ open class PhoneFrameView : Container() {
         val SIZE = Size(GAME_WINDOW_SIZE.width + 2 * BEZEL, GAME_WINDOW_SIZE.height + 2 * BEZEL)
         val BEZEL_COLOR = RGBA(0x0A, 0x0A, 0x0A)
 
-        val SCREEN_COLOR = Colors["#2b2b2b"]
+        val SCREEN_COLOR get() = UiTheme.current.background
 
         private const val CORNER_RADIUS = 36.0
     }
@@ -39,6 +39,7 @@ open class PhoneFrameView : Container() {
 
     open fun display(storyView: View) {
         this.storyView?.removeFromParent()
+        screenBackground.color = SCREEN_COLOR
         screen.addChild(storyView)
         storyView.centerOn(screenBackground)
         this.storyView = storyView

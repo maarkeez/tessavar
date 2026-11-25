@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.input.onClick
@@ -22,7 +23,7 @@ class InventorySlotView(
 
         val EQUIPPED_COLOR = RGBA(0xFF, 0xBB, 0x31)
         val SELECTION_COLOR = Colors.WHITE
-        val EMPTY_COLOR = RGBA(0x34, 0x34, 0x34)
+        val EMPTY_COLOR get() = UiTheme.current.emptySlot
 
         private const val FRAME_THICKNESS = 3.0
 

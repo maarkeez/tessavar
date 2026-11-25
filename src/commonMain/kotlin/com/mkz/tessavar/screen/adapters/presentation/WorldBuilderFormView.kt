@@ -1,13 +1,16 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
-import korlibs.image.color.Colors
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.input.onMouseDrag
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -109,12 +112,14 @@ open class WorldBuilderFormView(
     internal val content: Container
 
     init {
-        solidRect(size, Colors["#2b2b2b"])
+        solidRect(size, UiTheme.current.background)
         titleText =
             uiText(text = "", size = Size(width - DONE_WIDTH - 2 * MARGIN, HEADER_HEIGHT - MARGIN)) {
                 x = MARGIN
                 styles.textSize = 18.0
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
+                styles.textFont = UiFont.current
+                styles.textColor = UiTheme.current.text
             }
         doneButton =
             gameButton(label = messages[UiMessage.WORLD_BUILDER_FORM_DONE], size = Size(DONE_WIDTH, HEADER_HEIGHT - 2 * MARGIN)) {
@@ -206,6 +211,8 @@ open class WorldBuilderFormView(
                         x = fieldX - MARGIN + STEP_WIDTH
                         styles.textSize = 15.0
                         styles.textAlignment = TextAlignment.MIDDLE_CENTER
+                        styles.textFont = UiFont.current
+                        styles.textColor = UiTheme.current.text
                     }
                     gameButton(label = ">", size = Size(STEP_WIDTH, ROW_HEIGHT)) {
                         x = fieldX - MARGIN + fieldWidth - STEP_WIDTH
@@ -231,6 +238,8 @@ open class WorldBuilderFormView(
                         x = fieldX - MARGIN + STEP_WIDTH
                         styles.textSize = 15.0
                         styles.textAlignment = TextAlignment.MIDDLE_CENTER
+                        styles.textFont = UiFont.current
+                        styles.textColor = UiTheme.current.text
                     }
                     gameButton(label = "+", size = Size(STEP_WIDTH, ROW_HEIGHT)) {
                         x = fieldX - MARGIN + fieldWidth - STEP_WIDTH
@@ -254,6 +263,8 @@ open class WorldBuilderFormView(
     ) = uiText(text = text, size = Size(width, ROW_HEIGHT)) {
         styles.textSize = textSize
         styles.textAlignment = TextAlignment.MIDDLE_LEFT
+        styles.textFont = UiFont.current
+        styles.textColor = UiTheme.current.text
     }
 
     private fun GameButton.highlight(isHighlighted: Boolean) {

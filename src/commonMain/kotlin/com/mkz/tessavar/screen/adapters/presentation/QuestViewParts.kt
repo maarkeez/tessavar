@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.view.Container
@@ -31,7 +32,7 @@ internal object QuestViewParts {
     fun widthOf(
         content: String,
         textSize: Double,
-    ): Double = Text(content, textSize = textSize).width
+    ): Double = Text(content, font = UiFont.current, textSize = textSize).width
 
     fun fitted(
         content: String,
@@ -68,7 +69,7 @@ internal object QuestViewParts {
             lines.subList(maximumLines, lines.size).clear()
         }
         lines.forEachIndexed { index, line ->
-            text(line, textSize = textSize, color = color) {
+            text(line, font = UiFont.current, textSize = textSize, color = color) {
                 xy(if (isCentered) x + (width - this.width) / 2 else x, y + index * (textSize + LINE_SPACING))
             }
         }

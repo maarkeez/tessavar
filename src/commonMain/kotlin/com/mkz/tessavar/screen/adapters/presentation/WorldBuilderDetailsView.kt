@@ -1,12 +1,15 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
-import korlibs.image.color.Colors
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -47,7 +50,7 @@ open class WorldBuilderDetailsView(
     internal val doneButton: GameButton
 
     init {
-        solidRect(size, Colors["#2b2b2b"])
+        solidRect(size, UiTheme.current.background)
         lateinit var title: UIText
         lateinit var name: UITextInput
         lateinit var author: UITextInput
@@ -57,6 +60,8 @@ open class WorldBuilderDetailsView(
                 uiText(text = messages[UiMessage.WORLD_BUILDER_DETAILS_TITLE], size = Size(width = width, height = 20)) {
                     styles.textSize = 18.0
                     styles.textAlignment = TextAlignment.MIDDLE_LEFT
+                    styles.textFont = UiFont.current
+                    styles.textColor = UiTheme.current.text
                 }
             uiHorizontalStack(padding = 4.0) {
                 label(messages[UiMessage.WORLD_BUILDER_DETAILS_NAME])
@@ -115,5 +120,7 @@ open class WorldBuilderDetailsView(
         uiText(text = text, size = Size(width = LABEL_WIDTH, height = ROW_HEIGHT)) {
             styles.textSize = 15.0
             styles.textAlignment = TextAlignment.MIDDLE_LEFT
+            styles.textFont = UiFont.current
+            styles.textColor = UiTheme.current.text
         }
 }

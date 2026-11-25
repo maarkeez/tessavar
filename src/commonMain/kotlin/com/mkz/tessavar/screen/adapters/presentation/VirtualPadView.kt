@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.input.onClick
@@ -25,13 +26,13 @@ open class VirtualPadView(
         const val ARROW_SIZE = 64.0
 
         private const val ARROW_HALF_SIDE = 16.0
-        private val ARROW_COLOR = RGBA(76, 76, 76)
-        private val ARROW_HELD_COLOR = RGBA(110, 110, 110)
+        private val ARROW_COLOR get() = UiTheme.current.button
+        private val ARROW_HELD_COLOR get() = UiTheme.current.buttonOver
 
         const val BUTTON_SIZE = 64.0
 
-        private val BUTTON_COLOR = RGBA(135, 22, 70)
-        private val BUTTON_PRESSED_COLOR = RGBA(207, 60, 113)
+        private val BUTTON_COLOR get() = UiTheme.current.accent
+        private val BUTTON_PRESSED_COLOR get() = UiTheme.current.accentPressed
         private val BUTTON_BORDER_COLOR = RGBA(79, 21, 7)
 
         private const val ARROWS_LEFT_MARGIN = 8.0
@@ -46,8 +47,8 @@ open class VirtualPadView(
 
         private const val START_CENTER_RATIO = 0.55
         private const val START_BOTTOM_MARGIN = 10.0
-        private val START_COLOR = ARROW_COLOR
-        private val START_PRESSED_COLOR = ARROW_HELD_COLOR
+        private val START_COLOR get() = ARROW_COLOR
+        private val START_PRESSED_COLOR get() = ARROW_HELD_COLOR
     }
 
     enum class Direction(

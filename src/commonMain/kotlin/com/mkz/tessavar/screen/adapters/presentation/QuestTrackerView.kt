@@ -7,7 +7,8 @@ import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.pinGlyph
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.taskGlyph
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.tickDisc
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.widthOf
-import korlibs.image.color.Colors
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.korge.animate.animator
 import korlibs.korge.animate.scaleTo
 import korlibs.korge.input.onClick
@@ -128,7 +129,7 @@ open class QuestTrackerView(
             glyph = null
             tick = null
             countText = null
-            taskText = text(label, textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(LEFT_PADDING, textY) }
+            taskText = text(label, font = UiFont.current, textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(LEFT_PADDING, textY) }
             chevronView = if (isTappable) container { chevron(capsuleWidth - RIGHT_PADDING - CHEVRON_SIZE, (HEIGHT - CHEVRON_SIZE) / 2, CHEVRON_SIZE, HudStyle.MUTED) } else null
         }
     }
@@ -153,8 +154,8 @@ open class QuestTrackerView(
             pin = if (isPinShown) container { pinGlyph(LEFT_PADDING, (HEIGHT - PIN_SIZE) / 2, PIN_SIZE, HudStyle.SELECTION) } else null
             glyph = if (quest.isCompleted) null else container { taskGlyph(task.kind, glyphX, glyphY, GLYPH_SIZE, HudStyle.SELECTION) }
             tick = if (quest.isCompleted) container { tickDisc(glyphX, glyphY, GLYPH_SIZE) } else null
-            taskText = text(label, textSize = TEXT_SIZE, color = if (quest.isCompleted) HudStyle.MUTED else Colors.WHITE) { xy(textX, textY) }
-            countText = count?.let { value -> text(value, textSize = TEXT_SIZE, color = HudStyle.SELECTION) { xy(textX + labelWidth + TEXT_SPACING, textY) } }
+            taskText = text(label, font = UiFont.current, textSize = TEXT_SIZE, color = if (quest.isCompleted) HudStyle.MUTED else UiTheme.current.text) { xy(textX, textY) }
+            countText = count?.let { value -> text(value, font = UiFont.current, textSize = TEXT_SIZE, color = HudStyle.SELECTION) { xy(textX + labelWidth + TEXT_SPACING, textY) } }
             chevronView = if (isTappable) container { chevron(capsuleWidth - RIGHT_PADDING - CHEVRON_SIZE, (HEIGHT - CHEVRON_SIZE) / 2, CHEVRON_SIZE, HudStyle.MUTED) } else null
         }
     }

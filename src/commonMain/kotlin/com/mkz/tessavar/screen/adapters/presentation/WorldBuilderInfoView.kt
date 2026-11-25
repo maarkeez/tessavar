@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
-import korlibs.image.color.Colors
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.color.RGBA
 import korlibs.image.text.TextAlignment
 import korlibs.korge.animate.Animator
@@ -11,6 +12,7 @@ import korlibs.korge.animate.wait
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
 import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.uiText
@@ -34,11 +36,15 @@ open class WorldBuilderInfoView(
     internal val title =
         uiText(text = messages[UiMessage.WORLD_BUILDER_INFO_TITLE], size = Size(width = width, height = 18)) {
             styles.textAlignment = TextAlignment.MIDDLE_LEFT
+            styles.textFont = UiFont.current
+            styles.textColor = UiTheme.current.text
             styles.textSize = 18.0
         }
     internal val subtitle =
         uiText(text = "", size = Size(width = width, height = 15)) {
             styles.textAlignment = TextAlignment.MIDDLE_LEFT
+            styles.textFont = UiFont.current
+            styles.textColor = UiTheme.current.text
             styles.textSize = 15.0
         }
 
@@ -87,6 +93,6 @@ open class WorldBuilderInfoView(
 
     private fun displaySizeText() {
         subtitle.text = sizeText
-        subtitle.styles.textColor = Colors.WHITE
+        subtitle.styles.textColor = UiTheme.current.text
     }
 }

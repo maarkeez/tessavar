@@ -1,7 +1,8 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
-import korlibs.image.color.Colors
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.korge.input.onClick
 import korlibs.korge.view.Container
 import korlibs.korge.view.RoundRect
@@ -95,13 +96,13 @@ open class EffectInfoView(
                 xy(PADDING + (ICON_SLOT_SIZE - bitmap.width * ICON_SCALE) / 2, PADDING + (ICON_SLOT_SIZE - bitmap.height * ICON_SCALE) / 2)
             }
         }
-        nameText = content.text(title(effectInfo), textSize = NAME_TEXT_SIZE, color = Colors.WHITE) { xy(TEXT_X, PADDING + 2) }
+        nameText = content.text(title(effectInfo), font = UiFont.current, textSize = NAME_TEXT_SIZE, color = UiTheme.current.text) { xy(TEXT_X, PADDING + 2) }
         val (words, sentenceHeight) = wrappedWords(sentence(effectInfo), top = SENTENCE_Y)
         sentenceWords = words
         var bottom = SENTENCE_Y + sentenceHeight
         remainingDurationsText =
             remainingDurations(effectInfo)?.let { line ->
-                content.text(line, textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(TEXT_X, bottom + LINE_SPACING) }.also { bottom += LINE_SPACING + TEXT_SIZE }
+                content.text(line, font = UiFont.current, textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(TEXT_X, bottom + LINE_SPACING) }.also { bottom += LINE_SPACING + TEXT_SIZE }
             }
         background.size = Size(panelWidth, maxOf(bottom, PADDING + ICON_SLOT_SIZE) + PADDING)
         visible = true
@@ -147,13 +148,13 @@ open class EffectInfoView(
         top: Double,
     ): Pair<List<Text>, Double> {
         val right = panelWidth - PADDING
-        val space = Text(" ", textSize = TEXT_SIZE).width
+        val space = Text(" ", font = UiFont.current, textSize = TEXT_SIZE).width
         var x = TEXT_X
         var y = top
         val words =
             sentence.split(" ").map { word ->
                 val isNumber = word.any(Char::isDigit)
-                content.text(word, textSize = TEXT_SIZE, color = if (isNumber) HudStyle.SELECTION else Colors.WHITE).also { text ->
+                content.text(word, font = UiFont.current, textSize = TEXT_SIZE, color = if (isNumber) HudStyle.SELECTION else UiTheme.current.text).also { text ->
                     if (x > TEXT_X && x + text.width > right) {
                         x = TEXT_X
                         y += TEXT_SIZE + LINE_SPACING

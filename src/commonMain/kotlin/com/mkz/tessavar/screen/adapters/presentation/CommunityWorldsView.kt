@@ -1,15 +1,17 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
-import korlibs.image.color.Colors
-import korlibs.image.font.DefaultTtfFontAsBitmap
 import korlibs.image.text.RichTextData
 import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.input.onMouseDrag
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
+import korlibs.korge.style.textFont
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiText
@@ -52,11 +54,13 @@ open class CommunityWorldsView(
     internal val titleText: UIText =
         uiText(messages[UiMessage.COMMUNITY_WORLDS_TITLE], size = Size(WIDTH - 2 * PADDING, TITLE_HEIGHT)) {
             styles.textAlignment = TextAlignment.MIDDLE_CENTER
+            styles.textFont = UiFont.current
+            styles.textColor = UiTheme.current.text
             position(PADDING, 0.0)
         }
     internal val emptyText: TextBlock =
         textBlock(
-            RichTextData(messages[UiMessage.COMMUNITY_WORLDS_EMPTY], font = DefaultTtfFontAsBitmap, textSize = EMPTY_TEXT_SIZE, color = Colors.WHITE),
+            RichTextData(messages[UiMessage.COMMUNITY_WORLDS_EMPTY], font = UiFont.current, textSize = EMPTY_TEXT_SIZE, color = UiTheme.current.text),
             align = TextAlignment.MIDDLE_CENTER,
             size = Size(WIDTH - 2 * PADDING, ROW_HEIGHT * 2),
         ) {

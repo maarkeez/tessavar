@@ -1,6 +1,8 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.view.Container
@@ -31,7 +33,7 @@ open class AbilityInfoView(
         internal val ENEMY_COLOR = HudStyle.ENEMY
         internal val ALLY_COLOR = HudStyle.ALLY
         internal val EMPTY_TILE_COLOR = Colors.WHITE
-        private val UNMARKED_COLOR = RGBA(0x2A, 0x2A, 0x40)
+        private val UNMARKED_COLOR get() = UiTheme.current.unmarked
 
         private const val PADDING = 10.0
         private const val SPACING = 8.0
@@ -176,8 +178,8 @@ open class AbilityInfoView(
                 xy(PADDING + (ICON_SLOT_SIZE - bitmap.width * ICON_SCALE) / 2, PADDING + (ICON_SLOT_SIZE - bitmap.height * ICON_SCALE) / 2)
             }
         }
-        nameText = content.text(messages.abilityName(abilityInfo.abilityId), textSize = NAME_TEXT_SIZE, color = Colors.WHITE) { xy(NAME_X, PADDING + 2) }
-        targetingText = content.text(targeting(abilityInfo.targeting), textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(NAME_X, PADDING + 24) }
+        nameText = content.text(messages.abilityName(abilityInfo.abilityId), font = UiFont.current, textSize = NAME_TEXT_SIZE, color = UiTheme.current.text) { xy(NAME_X, PADDING + 2) }
+        targetingText = content.text(targeting(abilityInfo.targeting), font = UiFont.current, textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(NAME_X, PADDING + 24) }
         displayCosts(abilityInfo)
         var cursorY = PADDING + ICON_SLOT_SIZE + SPACING
 
@@ -188,7 +190,7 @@ open class AbilityInfoView(
                 content.roundRect(Size(panelWidth - 2 * PADDING, BANNER_HEIGHT), RectCorners(BANNER_RADIUS), fill = color.withAd(0.16), stroke = color.withAd(0.6), strokeThickness = 1.0) {
                     xy(PADDING, cursorY)
                 }
-            reasonText = content.text(reason, textSize = TEXT_SIZE, color = color) { xy(PADDING + 10, cursorY + (BANNER_HEIGHT - TEXT_SIZE) / 2 - 1) }
+            reasonText = content.text(reason, font = UiFont.current, textSize = TEXT_SIZE, color = color) { xy(PADDING + 10, cursorY + (BANNER_HEIGHT - TEXT_SIZE) / 2 - 1) }
             cursorY += BANNER_HEIGHT + SPACING
         }
 
@@ -306,13 +308,13 @@ open class AbilityInfoView(
     ): Pair<List<Text>, Double> {
         val left = PADDING + BULLET_INDENT
         val right = panelWidth - PADDING - DIAGRAM_SIZE - DIAGRAM_MARGIN
-        val space = Text(" ", textSize = TEXT_SIZE).width
+        val space = Text(" ", font = UiFont.current, textSize = TEXT_SIZE).width
         var x = left
         var y = top
         val words =
             sentence.split(" ").map { word ->
                 val isNumber = word.any(Char::isDigit)
-                content.text(word, textSize = TEXT_SIZE, color = if (isNumber) HudStyle.SELECTION else Colors.WHITE).also { text ->
+                content.text(word, font = UiFont.current, textSize = TEXT_SIZE, color = if (isNumber) HudStyle.SELECTION else UiTheme.current.text).also { text ->
                     if (x > left && x + text.width > right) {
                         x = left
                         y += TEXT_SIZE + LINE_SPACING

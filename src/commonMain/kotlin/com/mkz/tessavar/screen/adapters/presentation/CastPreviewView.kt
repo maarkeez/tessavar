@@ -1,7 +1,8 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.HudStyle.panel
-import korlibs.image.color.Colors
+import com.mkz.tessavar.shared.adapters.presentation.UiFont
+import com.mkz.tessavar.shared.adapters.presentation.UiTheme
 import korlibs.korge.view.Container
 import korlibs.korge.view.Image
 import korlibs.korge.view.Text
@@ -40,8 +41,8 @@ open class CastPreviewView(
             panel(Size(ICON_SLOT_SIZE, ICON_SLOT_SIZE), fill = HudStyle.PANEL_RAISED, radius = HudStyle.SLOT_RADIUS).xy(MARGIN + 6, 6.0)
         }
     internal var abilityIcon: Image? = null
-    internal val abilityNameText: Text = header.text("", textSize = NAME_TEXT_SIZE, color = Colors.WHITE) { xy(NAME_X, 8.0) }
-    internal val casterText: Text = header.text("", textSize = CASTER_TEXT_SIZE, color = HudStyle.MUTED) { xy(NAME_X, 28.0) }
+    internal val abilityNameText: Text = header.text("", font = UiFont.current, textSize = NAME_TEXT_SIZE, color = UiTheme.current.text) { xy(NAME_X, 8.0) }
+    internal val casterText: Text = header.text("", font = UiFont.current, textSize = CASTER_TEXT_SIZE, color = HudStyle.MUTED) { xy(NAME_X, 28.0) }
     internal val manaPill = PillView(color = HudStyle.MANA, glyph = PillView.Glyph.MANA, textSize = MANA_TEXT_SIZE).also(header::addChild)
 
     internal val rowViews = mutableListOf<RecipientPreviewView>()
