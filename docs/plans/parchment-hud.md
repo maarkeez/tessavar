@@ -1,6 +1,6 @@
 # Plan: the parchment HUD
 
-> **Status:** to do.
+> **Status:** in progress: M1 built on `main`, its screenshots still to be approved.
 >
 > **Summary:** Today the HUD is dark: its panels are a dark navy (`HudStyle.PANEL`, `#171725`), the game's background a
 > dark grey (`#2b2b2b`), and its text is KorGE's default sans-serif, which doesn't look like a game. Some text is too
@@ -64,7 +64,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 
 | #  | Milestone  | Done when                                                                                                   | Status | Done in |
 |----|------------|-------------------------------------------------------------------------------------------------------------|--------|---------|
-| M1 | Palette    | Every screen is parchment with dark text, in the default font, and `HudStyleTest` checks the contrast.      | ⬜      |         |
+| M1 | Palette    | Every screen is parchment with dark text, in the default font, and `HudStyleTest` checks the contrast.      | ✅      | 9a1559e |
 | M2 | Fonts      | Every text of the game is in Alegreya SC Bold or Alegreya Medium, and the fonts are credited.               | ⬜      |         |
 | M3 | Text sizes | Every text uses the type scale, none is under 12 px, and no story clips or overlaps text on its screenshot. | ⬜      |         |
 | M4 | Docs       | The ADR is written, and the prototype branch is deleted.                                                    | ⬜      |         |
@@ -138,3 +138,21 @@ Each milestone is a few commits straight on `main`, green on CI.
 - Alegreya SC and Alegreya add about 500 KB to `resources.zip`.
 - The prototype's `UiTheme`, `UiFont` and `?theme=` link stay on the branch `claude/project-thread-gn6k33` until M4
   deletes it, and are not merged.
+
+## Changes while building
+
+- **M1, `HudStyle` in `shared.adapters.presentation`.** It moved there from `screen.adapters.presentation`, as
+  `GameButton` and `BarView` (in `shared`) take their colours from it, and `shared` can't depend on `screen`.
+  `GameButton.GREY`, `LABEL` and the others stay, as names for the `HudStyle` colours.
+- **M1, inks for the texts in a light colour.** Some texts were drawn in a colour too light to read on parchment, so
+  they take a darker ink, and `HudStyleTest` checks them too: the mana texts (the mana pills, "Not enough mana") in
+  `MANA_INK` `#1F5C99` (5.6:1), the cooldown texts in `SELECTION`, a quest completed in `GAIN` instead of `ALLY`, the
+  menu's title in `SELECTION` instead of `COIN_MIDDLE`, the Wishlist label in `TEXT`, and the world builder's error
+  and info messages in `ACCENT_PRESSED` and `MUTED`. `PillView` takes an `ink` for its label and glyph.
+- **M1, the gold of a coin.** `SELECTION` was also the gold of the coins and of the quest markers over the npcs, so a
+  new `HudStyle.COIN` (`#FFD84A`, today's `SELECTION`) keeps them gold.
+- **M1, the world builder's selected tool and the inventory's selected slot.** The selected tool was blue (`#006ACC`)
+  and the selected slot's frame white, which don't fit parchment: they are `ACCENT` and `SELECTION`.
+- **M1, the turn line of the banner.** It is drawn on the background, not on a panel: Human turn in `ACCENT` is 4.1:1
+  and CPU turn in the kept `CPU_TURN_COLOR` 2.7:1 there. Both colours also tint the battlefield, so they stay.
+
