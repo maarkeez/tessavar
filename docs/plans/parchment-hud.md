@@ -1,6 +1,6 @@
 # Plan: the parchment HUD
 
-> **Status:** in progress: M1 built on `main`, its screenshots still to be approved.
+> **Status:** in progress: M1 and M2 built on `main`, their screenshots still to be approved.
 >
 > **Summary:** Today the HUD is dark: its panels are a dark navy (`HudStyle.PANEL`, `#171725`), the game's background a
 > dark grey (`#2b2b2b`), and its text is KorGE's default sans-serif, which doesn't look like a game. Some text is too
@@ -65,7 +65,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 | #  | Milestone  | Done when                                                                                                   | Status | Done in |
 |----|------------|-------------------------------------------------------------------------------------------------------------|--------|---------|
 | M1 | Palette    | Every screen is parchment with dark text, in the default font, and `HudStyleTest` checks the contrast.      | ✅      | 9a1559e |
-| M2 | Fonts      | Every text of the game is in Alegreya SC Bold or Alegreya Medium, and the fonts are credited.               | ⬜      |         |
+| M2 | Fonts      | Every text of the game is in Alegreya SC Bold or Alegreya Medium, and the fonts are credited.               | ✅      | d9ed51b |
 | M3 | Text sizes | Every text uses the type scale, none is under 12 px, and no story clips or overlaps text on its screenshot. | ⬜      |         |
 | M4 | Docs       | The ADR is written, and the prototype branch is deleted.                                                    | ⬜      |         |
 
@@ -155,4 +155,11 @@ Each milestone is a few commits straight on `main`, green on CI.
   and the selected slot's frame white, which don't fit parchment: they are `ACCENT` and `SELECTION`.
 - **M1, the turn line of the banner.** It is drawn on the background, not on a panel: Human turn in `ACCENT` is 4.1:1
   and CPU turn in the kept `CPU_TURN_COLOR` 2.7:1 there. Both colours also tint the battlefield, so they stay.
+- **M2, the fonts' files.** Alegreya Medium is Google Fonts' static instance (from the `@expo-google-fonts/alegreya`
+  package, as the source repository was not reachable), and Alegreya SC Bold the prototype's file. Their bitmap fonts
+  hold the Latin characters and the ellipsis `…`, the only other character the game's text uses.
+- **M2, `HudFonts` in `shared.adapters.presentation`**, beside `HudStyle`, as `GameButton` draws its label with it.
+  It also has `unload()`, for `HudFontsTest` to check the fallback.
+- **M2, the world builder's text inputs** (`UITextInput`) keep KorGE's default font, as they draw their text with a
+  font of their own.
 
