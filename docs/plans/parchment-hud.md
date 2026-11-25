@@ -1,6 +1,6 @@
 # Plan: the parchment HUD
 
-> **Status:** in progress: M1 and M2 built on `main`, their screenshots still to be approved.
+> **Status:** in progress: M1 to M3 built on `main`, their screenshots still to be approved.
 >
 > **Summary:** Today the HUD is dark: its panels are a dark navy (`HudStyle.PANEL`, `#171725`), the game's background a
 > dark grey (`#2b2b2b`), and its text is KorGE's default sans-serif, which doesn't look like a game. Some text is too
@@ -66,7 +66,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 |----|------------|-------------------------------------------------------------------------------------------------------------|--------|---------|
 | M1 | Palette    | Every screen is parchment with dark text, in the default font, and `HudStyleTest` checks the contrast.      | ✅      | 9a1559e |
 | M2 | Fonts      | Every text of the game is in Alegreya SC Bold or Alegreya Medium, and the fonts are credited.               | ✅      | d9ed51b |
-| M3 | Text sizes | Every text uses the type scale, none is under 12 px, and no story clips or overlaps text on its screenshot. | ⬜      |         |
+| M3 | Text sizes | Every text uses the type scale, none is under 12 px, and no story clips or overlaps text on its screenshot. | ✅      | cc3ece2 |
 | M4 | Docs       | The ADR is written, and the prototype branch is deleted.                                                    | ⬜      |         |
 
 ### M1 commits
@@ -162,4 +162,11 @@ Each milestone is a few commits straight on `main`, green on CI.
   It also has `unload()`, for `HudFontsTest` to check the fallback.
 - **M2, the world builder's text inputs** (`UITextInput`) keep KorGE's default font, as they draw their text with a
   font of their own.
-
+- **M3, the sizes.** Each size moved to the nearest step of the scale, never down: the small captions, badges, costs
+  and pills to `CAPTION` (12), the running text and buttons to `BODY` (15), the names to `NAME` (18) and the titles to
+  `TITLE` (22). The `uiText` blocks and the buttons without a size take `BODY`. `TextSizeArchitectureTest` checks both
+  `screen` and `shared` view packages.
+- **M3, the quest detail grows by 12 px**, for its description to keep four lines at the larger size.
+- **M3, long names are cut with an ellipsis** (`QuestViewParts.fitted`) in give gold, the formation and the unit name,
+  where they overlapped their neighbours at the larger sizes. Give gold no longer shrinks a name to fit.
+- **M3, losses in `LOSS`** (`ACCENT`): the pink of a recipient's damage was 2.9:1 on the panel.
