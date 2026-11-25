@@ -7,6 +7,7 @@ import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -57,6 +58,7 @@ open class WorldBuilderResizeView(
         uiVerticalStack(padding = 10.0) {
             title =
                 uiText(text = messages[UiMessage.WORLD_BUILDER_RESIZE_TITLE], size = Size(width = width, height = 20)) {
+                    styles.textColor = HudStyle.TEXT
                     styles.textSize = 18.0
                     styles.textAlignment = TextAlignment.MIDDLE_LEFT
                 }
@@ -113,12 +115,14 @@ open class WorldBuilderResizeView(
         val stepButtons = mutableMapOf<Int, GameButton>()
         uiHorizontalStack(padding = 4.0) {
             uiText(text = label, size = Size(width = LABEL_WIDTH, height = ROW_HEIGHT)) {
+                styles.textColor = HudStyle.TEXT
                 styles.textSize = 15.0
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
             }
             SIZE_STEPS.filter { step -> step < 0 }.forEach { step -> stepButtons[step] = stepButton(step, onStep) }
             value =
                 uiText(text = "", size = Size(width = VALUE_WIDTH, height = ROW_HEIGHT)) {
+                    styles.textColor = HudStyle.TEXT
                     styles.textSize = 15.0
                     styles.textAlignment = TextAlignment.MIDDLE_CENTER
                 }

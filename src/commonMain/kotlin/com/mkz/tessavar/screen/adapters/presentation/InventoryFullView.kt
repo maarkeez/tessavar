@@ -50,6 +50,7 @@ class InventoryFullView(
             }
             leaveButton =
                 uiButton(messages[UiMessage.INVENTORY_FULL_LEAVE]) {
+                    textColor = HudStyle.BUTTON_LABEL
                     width = WIDTH
                     bgColorOut = HudStyle.BUTTON
                     bgColorOver = HudStyle.BUTTON_PRESSED

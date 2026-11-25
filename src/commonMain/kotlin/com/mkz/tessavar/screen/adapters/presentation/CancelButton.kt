@@ -14,6 +14,7 @@ class CancelButton(
 ) : Container() {
     internal val cancelButton: UIButton =
         uiButton {
+            textColor = HudStyle.BUTTON_LABEL
             text = label
             width = buttonWidth
             bgColorOut = HudStyle.BUTTON

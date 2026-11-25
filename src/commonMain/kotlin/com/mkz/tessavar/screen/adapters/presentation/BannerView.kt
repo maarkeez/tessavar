@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.RGBA
 import korlibs.image.text.TextAlignment
 import korlibs.korge.animate.animator
@@ -33,6 +34,7 @@ open class BannerView(
         ) {
             this.styles.textAlignment = TextAlignment.MIDDLE_LEFT
             this.styles.textSize = 18.0
+            this.styles.textColor = HudStyle.TEXT
         }
     internal val playerTurn =
         uiText(
@@ -117,6 +119,7 @@ open class BannerView(
             ) {
                 this.styles.textAlignment = TextAlignment.MIDDLE_CENTER
                 this.styles.textSize = 30.0
+                this.styles.textColor = HudStyle.TEXT
             }
     }
 }

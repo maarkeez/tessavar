@@ -2,7 +2,6 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
-import korlibs.image.color.Colors
 import korlibs.korge.view.Container
 import korlibs.korge.view.Text
 import korlibs.korge.view.text
@@ -34,12 +33,12 @@ class RecipientPreviewView(
     }
 
     internal val unitPortraitView = UnitPortraitView(Size(PORTRAIT_SIZE, PORTRAIT_SIZE), resourcesLoader, portraitScale = 1.0).also { view -> addChild(view.apply { xy(2.0, 2.0) }) }
-    internal val nameText: Text = text("", textSize = NAME_TEXT_SIZE, color = Colors.WHITE) { xy(CONTENT_X, 5.0) }
+    internal val nameText: Text = text("", textSize = NAME_TEXT_SIZE, color = HudStyle.TEXT) { xy(CONTENT_X, 5.0) }
     internal val koPill = PillView(color = HudStyle.ENEMY, solid = true, textSize = KO_TEXT_SIZE).also(::addChild)
     internal val effectsView = EffectsView(resourcesLoader).also(::addChild)
     internal val healthBarView = HealthBarPreviewView(Size(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT)).also { view -> addChild(view.apply { xy(CONTENT_X, 26.0) }) }
     private val manaBarView = ManaBarView(Size(HEALTH_BAR_WIDTH, MANA_BAR_HEIGHT), showValue = false).also { view -> addChild(view.apply { xy(CONTENT_X, 36.0) }) }
-    internal val changeText: Text = text("", textSize = CHANGE_TEXT_SIZE, color = Colors.WHITE) { y = 4.0 }
+    internal val changeText: Text = text("", textSize = CHANGE_TEXT_SIZE, color = HudStyle.TEXT) { y = 4.0 }
 
     fun display(
         battleUnit: BattleUnitInfo,
@@ -57,7 +56,7 @@ class RecipientPreviewView(
                 },
         )
         nameText.text = messages.unitName(battleUnit.unitId)
-        nameText.color = if (isDefeated) HudStyle.MUTED else Colors.WHITE
+        nameText.color = if (isDefeated) HudStyle.MUTED else HudStyle.TEXT
         var x = nameText.x + nameText.width + SPACING
         if (isDefeated) {
             koPill.display(messages[UiMessage.CAST_PREVIEW_DEFEATED])

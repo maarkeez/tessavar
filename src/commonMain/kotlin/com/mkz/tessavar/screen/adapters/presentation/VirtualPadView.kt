@@ -1,7 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
-import korlibs.image.color.Colors
 import korlibs.korge.input.onClick
 import korlibs.korge.input.onDown
 import korlibs.korge.input.onUp
@@ -147,7 +146,7 @@ open class VirtualPadView(
             bgColorOver = ARROW_HELD_COLOR
             background.borderColor = HudStyle.BUTTON_BORDER
             graphics {
-                fill(Colors.WHITE) {
+                fill(HudStyle.BUTTON_LABEL) {
                     val (tip, firstCorner, secondCorner) = triangle(direction)
                     moveTo(tip)
                     lineTo(firstCorner)

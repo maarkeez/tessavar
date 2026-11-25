@@ -81,7 +81,7 @@ open class WorldBuilderMenuView : Container() {
             bgColorOver = HudStyle.BUTTON
             background.borderColor = Colors.TRANSPARENT
             repeat(3) { bar ->
-                solidRect(Size(BAR_WIDTH, BAR_HEIGHT), Colors.WHITE) {
+                solidRect(Size(BAR_WIDTH, BAR_HEIGHT), HudStyle.TEXT) {
                     x = (BUTTON_WIDTH - BAR_WIDTH) / 2
                     y = (BUTTON_HEIGHT - 3 * BAR_HEIGHT - 2 * BAR_GAP) / 2 + bar * (BAR_HEIGHT + BAR_GAP)
                 }
@@ -144,6 +144,7 @@ open class WorldBuilderMenuView : Container() {
                     options.forEach { option ->
                         optionButtons +=
                             uiButton(label = option.label, size = Size(OPTION_WIDTH, OPTION_HEIGHT)) {
+                                textColor = HudStyle.BUTTON_LABEL
                                 bgColorOut = HudStyle.BUTTON
                                 background.borderColor = HudStyle.BUTTON_BORDER
                                 onClick {

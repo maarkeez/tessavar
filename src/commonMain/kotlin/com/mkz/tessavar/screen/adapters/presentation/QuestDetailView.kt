@@ -12,7 +12,6 @@ import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.widthOf
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.wrappedText
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
-import korlibs.image.color.Colors
 import korlibs.korge.view.Container
 import korlibs.korge.view.Text
 import korlibs.korge.view.container
@@ -102,7 +101,7 @@ class QuestDetailView(
         captionText = text(caption, textSize = QuestViewParts.CAPTION_SIZE, color = if (quest.isCompleted) HudStyle.ALLY else HudStyle.FAINT) { xy(TEXT_X, PADDING - 2) }
         repeatablePillView = if (quest.isRepeatable) repeatablePill(TEXT_X + widthOf(caption, QuestViewParts.CAPTION_SIZE) + PILL_SPACING, PILL_Y, messages) else null
         var nameHeight = 0.0
-        nameView = container { nameHeight = wrappedText(quest.name, TEXT_X, NAME_Y, TEXT_WIDTH, NAME_SIZE, Colors.WHITE, maximumLines = NAME_MAXIMUM_LINES) }
+        nameView = container { nameHeight = wrappedText(quest.name, TEXT_X, NAME_Y, TEXT_WIDTH, NAME_SIZE, HudStyle.TEXT, maximumLines = NAME_MAXIMUM_LINES) }
         val descriptionY = NAME_Y + nameHeight + DESCRIPTION_SPACING
         val descriptionLines = ((TARGET_BOTTOM - descriptionY + QuestViewParts.LINE_SPACING) / (DESCRIPTION_SIZE + QuestViewParts.LINE_SPACING)).toInt()
         descriptionView = container { wrappedText(quest.description, TEXT_X, descriptionY, TEXT_WIDTH, DESCRIPTION_SIZE, HudStyle.MUTED, maximumLines = descriptionLines) }
@@ -118,7 +117,7 @@ class QuestDetailView(
         val count = if (isCounted) "${task.defeatsCounted}/${task.requiredDefeats}" else null
         val countWidth = count?.let { value -> widthOf(value, TASK_SIZE) } ?: 0.0
         val taskWidth = TASK_RIGHT - TASK_TEXT_X - if (isCounted) countWidth + COUNT_SPACING else 0.0
-        taskText = text(fitted(task.text, TASK_SIZE, taskWidth), textSize = TASK_SIZE, color = if (quest.isCompleted) HudStyle.MUTED else Colors.WHITE) { xy(TASK_TEXT_X, taskY) }
+        taskText = text(fitted(task.text, TASK_SIZE, taskWidth), textSize = TASK_SIZE, color = if (quest.isCompleted) HudStyle.MUTED else HudStyle.TEXT) { xy(TASK_TEXT_X, taskY) }
         countText = count?.let { value -> text(value, textSize = TASK_SIZE, color = HudStyle.SELECTION) { xy(TASK_RIGHT - countWidth, taskY) } }
         progressBarView = if (isCounted) container { progressBar(TASK_X, bannerY + BAR_OFFSET, BAR_WIDTH, BAR_HEIGHT, task.defeatsCounted, task.requiredDefeats) } else null
     }

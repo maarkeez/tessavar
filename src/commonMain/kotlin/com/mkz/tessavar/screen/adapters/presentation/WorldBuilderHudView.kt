@@ -255,7 +255,7 @@ open class WorldBuilderHudView(
                     visible = false
                     enabled = false
                     stockText =
-                        text(messages[UiMessage.WORLD_BUILDER_HUD_STOCK], textSize = STOCK_LABEL_SIZE, color = Colors.WHITE).also { label ->
+                        text(messages[UiMessage.WORLD_BUILDER_HUD_STOCK], textSize = STOCK_LABEL_SIZE, color = HudStyle.TEXT).also { label ->
                             label.xy(floor((PILL_BUTTON_SIZE - label.width) / 2), floor((PILL_BUTTON_SIZE - label.height) / 2))
                         }
                     onClick { if (enabled) delegate?.stockSelected() }
@@ -357,7 +357,7 @@ open class WorldBuilderHudView(
     open fun displayStock(isEnabled: Boolean) {
         stockButton.enabled = isEnabled
         stockButton.alpha = if (isEnabled) 1.0 else DISABLED_ALPHA
-        stockLabel.color = if (isEnabled) Colors.WHITE else HudStyle.MUTED
+        stockLabel.color = if (isEnabled) HudStyle.TEXT else HudStyle.MUTED
     }
 
     private fun displayPalette(
@@ -447,7 +447,7 @@ open class WorldBuilderHudView(
         width: Double,
     ): UIButton =
         SlotButton(Size(width, TAB_HEIGHT)).addTo(this).apply {
-            text(tabLabel(tab), textSize = TAB_LABEL_SIZE, color = Colors.WHITE).also { label ->
+            text(tabLabel(tab), textSize = TAB_LABEL_SIZE, color = HudStyle.TEXT).also { label ->
                 label.xy(floor((width - label.width) / 2), TAB_HEIGHT - TAB_LABEL_BOTTOM)
             }
             solidRect(Size(width - 2 * UNDERLINE_INSET, UNDERLINE_HEIGHT), HudStyle.SELECTION) {

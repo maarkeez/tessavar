@@ -177,7 +177,7 @@ open class AbilityInfoView(
                 xy(PADDING + (ICON_SLOT_SIZE - bitmap.width * ICON_SCALE) / 2, PADDING + (ICON_SLOT_SIZE - bitmap.height * ICON_SCALE) / 2)
             }
         }
-        nameText = content.text(messages.abilityName(abilityInfo.abilityId), textSize = NAME_TEXT_SIZE, color = Colors.WHITE) { xy(NAME_X, PADDING + 2) }
+        nameText = content.text(messages.abilityName(abilityInfo.abilityId), textSize = NAME_TEXT_SIZE, color = HudStyle.TEXT) { xy(NAME_X, PADDING + 2) }
         targetingText = content.text(targeting(abilityInfo.targeting), textSize = TEXT_SIZE, color = HudStyle.MUTED) { xy(NAME_X, PADDING + 24) }
         displayCosts(abilityInfo)
         var cursorY = PADDING + ICON_SLOT_SIZE + SPACING
@@ -313,7 +313,7 @@ open class AbilityInfoView(
         val words =
             sentence.split(" ").map { word ->
                 val isNumber = word.any(Char::isDigit)
-                content.text(word, textSize = TEXT_SIZE, color = if (isNumber) HudStyle.SELECTION else Colors.WHITE).also { text ->
+                content.text(word, textSize = TEXT_SIZE, color = if (isNumber) HudStyle.SELECTION else HudStyle.TEXT).also { text ->
                     if (x > left && x + text.width > right) {
                         x = left
                         y += TEXT_SIZE + LINE_SPACING

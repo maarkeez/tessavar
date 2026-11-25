@@ -8,7 +8,6 @@ import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.taskGlyph
 import com.mkz.tessavar.screen.adapters.presentation.QuestViewParts.tickDisc
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
-import korlibs.image.color.Colors
 import korlibs.korge.animate.alpha
 import korlibs.korge.animate.animator
 import korlibs.korge.animate.wait
@@ -111,7 +110,7 @@ open class QuestAnnouncementView(
         targetTick = if (isCompleted) container { tickDisc(TARGET_TICK_AT, TARGET_TICK_AT, TARGET_TICK_SIZE) } else null
         val title = messages[if (isCompleted) UiMessage.QUEST_ANNOUNCEMENT_COMPLETED else UiMessage.QUEST_ANNOUNCEMENT_STARTED]
         titleText = text(title, textSize = QuestViewParts.CAPTION_SIZE, color = if (isCompleted) HudStyle.ALLY else HudStyle.SELECTION) { xy(TEXT_X, TITLE_Y) }
-        nameText = text(fitted(quest.name, NAME_SIZE, ANNOUNCEMENT_WIDTH - TEXT_X - RIGHT_PADDING), textSize = NAME_SIZE, color = Colors.WHITE) { xy(TEXT_X, NAME_Y) }
+        nameText = text(fitted(quest.name, NAME_SIZE, ANNOUNCEMENT_WIDTH - TEXT_X - RIGHT_PADDING), textSize = NAME_SIZE, color = HudStyle.TEXT) { xy(TEXT_X, NAME_Y) }
     }
 
     private fun Container.drawGoal(quest: QuestInfo) {

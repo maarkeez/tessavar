@@ -4,7 +4,6 @@ import com.mkz.tessavar.shared.adapters.presentation.GameButton
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle.panel
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
-import korlibs.image.color.Colors
 import korlibs.image.font.DefaultTtfFontAsBitmap
 import korlibs.image.text.RichTextData
 import korlibs.image.text.TextAlignment
@@ -53,7 +52,7 @@ class PrivacyNoticeView(
 
     private val buttonY = PANEL_HEIGHT - PADDING - UIButton.DEFAULT_SIZE.height
 
-    internal val titleText: Text = content.text("", textSize = TITLE_SIZE, color = Colors.WHITE) { xy(PADDING, PADDING) }
+    internal val titleText: Text = content.text("", textSize = TITLE_SIZE, color = HudStyle.TEXT) { xy(PADDING, PADDING) }
 
     internal val bodyText: TextBlock =
         content.textBlock(RichTextData(""), align = TextAlignment.TOP_LEFT, size = Size(PANEL_WIDTH - 2 * PADDING, buttonY - BODY_Y - PADDING)) {

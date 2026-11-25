@@ -82,8 +82,8 @@ open class GiveGoldView(
         private set
     private val giverPortrait = UnitPortraitView(Size(PORTRAIT, PORTRAIT), resourcesLoader, PORTRAIT_SCALE)
     private val receiverPortrait = UnitPortraitView(Size(PORTRAIT, PORTRAIT), resourcesLoader, PORTRAIT_SCALE)
-    internal val giverNameText = Text("", textSize = NAME_SIZE)
-    internal val receiverNameText = Text("", textSize = NAME_SIZE)
+    internal val giverNameText = Text("", textSize = NAME_SIZE, color = HudStyle.TEXT)
+    internal val receiverNameText = Text("", textSize = NAME_SIZE, color = HudStyle.TEXT)
     internal val giverGoldText = Text("", textSize = GOLD_SIZE, color = HudStyle.MUTED)
     internal val receiverGoldText = Text("", textSize = GOLD_SIZE, color = HudStyle.MUTED)
     internal val amountText = Text("", textSize = AMOUNT_SIZE, color = HudStyle.SELECTION)
@@ -98,7 +98,7 @@ open class GiveGoldView(
 
     init {
         panel(Size(WIDTH, HEIGHT))
-        addChild(Text(messages[UiMessage.GIVE_GOLD_TITLE], textSize = TITLE_SIZE).xy(MARGIN, MARGIN - 2))
+        addChild(Text(messages[UiMessage.GIVE_GOLD_TITLE], textSize = TITLE_SIZE, color = HudStyle.TEXT).xy(MARGIN, MARGIN - 2))
         addChild(giverPortrait.xy(GIVER_CENTER - PORTRAIT / 2, PORTRAIT_Y))
         addChild(receiverPortrait.xy(RECEIVER_CENTER - PORTRAIT / 2, PORTRAIT_Y))
         addChild(pointer.xy(0.0, PORTRAIT_Y + (PORTRAIT - POINTER_SIZE) / 2))

@@ -1,6 +1,5 @@
 package com.mkz.tessavar.shared.adapters.presentation
 
-import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.view.Container
@@ -92,7 +91,7 @@ open class PreviewBarView(
     ) {
         value.removeChildren()
         value.visible = showValue
-        val color = Colors.WHITE
+        val color = HudStyle.TEXT
         val from = value.text("$before", textSize = TEXT_SIZE, color = color.withAd(0.7))
         val arrowX = from.width + 4
         val middle = TEXT_SIZE * 0.62

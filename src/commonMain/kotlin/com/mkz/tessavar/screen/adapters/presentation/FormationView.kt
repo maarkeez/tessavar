@@ -5,6 +5,7 @@ import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
 import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiText
 import korlibs.korge.view.Container
@@ -57,6 +58,7 @@ open class FormationView(
         val footerY = HEIGHT - PADDING - BAR_HEIGHT
         hintText =
             uiText("", size = Size(WIDTH - 2 * PADDING, BAR_HEIGHT)) {
+                styles.textColor = HudStyle.TEXT
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
                 position(PADDING, footerY)
             }
@@ -127,6 +129,7 @@ class FormationRowView(
         addChild(portraitView)
         nameText =
             uiText("", size = Size(NAME_WIDTH, size.height)) {
+                styles.textColor = HudStyle.TEXT
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
                 position(nameX, 0.0)
             }

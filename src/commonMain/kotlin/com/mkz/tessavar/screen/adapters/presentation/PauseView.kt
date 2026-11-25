@@ -1,8 +1,10 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.text.TextAlignment
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
 import korlibs.korge.ui.UIText
 import korlibs.korge.ui.uiText
 import korlibs.korge.ui.uiVerticalStack
@@ -45,6 +47,7 @@ open class PauseView(
 
     internal val savedText: UIText =
         uiText(messages[UiMessage.PAUSE_SAVED], size = Size(WIDTH, SAVED_HEIGHT)) {
+            styles.textColor = HudStyle.TEXT
             styles.textAlignment = TextAlignment.MIDDLE_CENTER
             position(0.0, buttonsY + 3 * BUTTON_HEIGHT + 3 * BUTTON_GAP)
             visible = false

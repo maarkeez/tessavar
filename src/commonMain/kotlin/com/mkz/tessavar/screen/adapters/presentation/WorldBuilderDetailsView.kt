@@ -7,6 +7,7 @@ import korlibs.image.text.TextAlignment
 import korlibs.korge.input.onClick
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -55,6 +56,7 @@ open class WorldBuilderDetailsView(
         uiVerticalStack(padding = 10.0) {
             title =
                 uiText(text = messages[UiMessage.WORLD_BUILDER_DETAILS_TITLE], size = Size(width = width, height = 20)) {
+                    styles.textColor = HudStyle.TEXT
                     styles.textSize = 18.0
                     styles.textAlignment = TextAlignment.MIDDLE_LEFT
                 }
@@ -113,6 +115,7 @@ open class WorldBuilderDetailsView(
 
     private fun korlibs.korge.view.Container.label(text: String) =
         uiText(text = text, size = Size(width = LABEL_WIDTH, height = ROW_HEIGHT)) {
+            styles.textColor = HudStyle.TEXT
             styles.textSize = 15.0
             styles.textAlignment = TextAlignment.MIDDLE_LEFT
         }

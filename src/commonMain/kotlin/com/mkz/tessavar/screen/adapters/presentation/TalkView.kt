@@ -30,7 +30,7 @@ open class TalkView(
 
         private val BACKGROUND_COLOR = HudStyle.TALK_BACKGROUND
         private val NAME_COLOR = HudStyle.TALK_NAME
-        private val LINE_COLOR = RGBA(255, 255, 255)
+        private val LINE_COLOR = HudStyle.TEXT
     }
 
     private var onTapped: (() -> Unit)? = null

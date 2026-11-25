@@ -25,6 +25,7 @@ class GiveItemView(
             addChild(messageView)
             cancelButton =
                 uiButton(messages[UiMessage.GIVE_ITEM_CANCEL]) {
+                    textColor = HudStyle.BUTTON_LABEL
                     width = WIDTH
                     bgColorOut = HudStyle.BUTTON
                     bgColorOver = HudStyle.BUTTON_PRESSED

@@ -1,6 +1,5 @@
 package com.mkz.tessavar.shared.adapters.presentation
 
-import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.view.RoundRect
@@ -28,7 +27,7 @@ open class BarView(
 
     internal var track: RoundRect? = null
     internal var fill: RoundRect? = null
-    internal val label: Text = text(text = "", textSize = TEXT_SIZE, color = Colors.WHITE)
+    internal val label: Text = text(text = "", textSize = TEXT_SIZE, color = HudStyle.TEXT)
 
     internal var ratio: Double = 1.0
 

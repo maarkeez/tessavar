@@ -8,6 +8,7 @@ import korlibs.korge.input.onClick
 import korlibs.korge.input.onMouseDrag
 import korlibs.korge.style.styles
 import korlibs.korge.style.textAlignment
+import korlibs.korge.style.textColor
 import korlibs.korge.style.textSize
 import korlibs.korge.ui.UIContainer
 import korlibs.korge.ui.UIText
@@ -112,6 +113,7 @@ open class WorldBuilderFormView(
         solidRect(size, HudStyle.BACKGROUND)
         titleText =
             uiText(text = "", size = Size(width - DONE_WIDTH - 2 * MARGIN, HEADER_HEIGHT - MARGIN)) {
+                styles.textColor = HudStyle.TEXT
                 x = MARGIN
                 styles.textSize = 18.0
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
@@ -203,6 +205,7 @@ open class WorldBuilderFormView(
                         onClick { delegate?.choiceStepped(row.key, -1) }
                     }
                     uiText(text = row.value, size = Size(fieldWidth - 2 * STEP_WIDTH, ROW_HEIGHT)) {
+                        styles.textColor = HudStyle.TEXT
                         x = fieldX - MARGIN + STEP_WIDTH
                         styles.textSize = 15.0
                         styles.textAlignment = TextAlignment.MIDDLE_CENTER
@@ -228,6 +231,7 @@ open class WorldBuilderFormView(
                         onClick { delegate?.stepped(row.key, -1) }
                     }
                     uiText(text = "${row.value}", size = Size(fieldWidth - 2 * STEP_WIDTH, ROW_HEIGHT)) {
+                        styles.textColor = HudStyle.TEXT
                         x = fieldX - MARGIN + STEP_WIDTH
                         styles.textSize = 15.0
                         styles.textAlignment = TextAlignment.MIDDLE_CENTER
@@ -252,6 +256,7 @@ open class WorldBuilderFormView(
         width: Double = LABEL_WIDTH,
         textSize: Double = 14.0,
     ) = uiText(text = text, size = Size(width, ROW_HEIGHT)) {
+        styles.textColor = HudStyle.TEXT
         styles.textSize = textSize
         styles.textAlignment = TextAlignment.MIDDLE_LEFT
     }
