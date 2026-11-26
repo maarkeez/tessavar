@@ -153,7 +153,7 @@ class InventoryPresenterGiveTest {
         callToActionView.displayedItemButtons!!
             .actions
             .map { action -> action.color }
-            .shouldContainExactly(GameButton.GREY, GameButton.GREY, GameButton.GREY, ConfirmButton.COLOR)
+            .shouldContainExactly(GameButton.GREY, GameButton.GREY, GameButton.GREY, PrimaryButton.COLOR)
     }
 
     @Test

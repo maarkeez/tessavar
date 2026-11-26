@@ -9,7 +9,7 @@ import korlibs.korge.ui.UIButton
 import korlibs.korge.ui.uiButton
 import korlibs.korge.view.Container
 
-class ConfirmButton(
+class PrimaryButton(
     label: String,
     buttonWidth: Double = 190.0,
     color: RGBA = COLOR,
@@ -22,7 +22,7 @@ class ConfirmButton(
         val PRESSED_COLOR = HudStyle.ACCENT_PRESSED
     }
 
-    internal val confirmButton: UIButton =
+    internal val primaryButton: UIButton =
         uiButton {
             text = label
             this.textColor = textColor

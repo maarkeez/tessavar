@@ -275,7 +275,7 @@ class ExplorationPresenter(
                 listOf(
                     ButtonRowView.Action(messages[UiMessage.TALK_LEAVE]) { leaveMerchant() },
                     ButtonRowView.Action(messages[UiMessage.TALK_SELL]) { openShop(Mode.SELL) },
-                    ButtonRowView.Action(messages[UiMessage.TALK_BUY], ConfirmButton.COLOR, ConfirmButton.PRESSED_COLOR) { openShop(Mode.BUY) },
+                    ButtonRowView.Action(messages[UiMessage.TALK_BUY], PrimaryButton.COLOR, PrimaryButton.PRESSED_COLOR) { openShop(Mode.BUY) },
                 ),
             )
         }

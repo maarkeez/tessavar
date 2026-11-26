@@ -261,12 +261,12 @@ class CallToActionViewTest : ViewsForTesting() {
                 actions =
                     listOf(
                         ItemButtonsView.Button(label = "Cancel") {},
-                        ItemButtonsView.Button(label = "Consume", color = ConfirmButton.COLOR, pressedColor = ConfirmButton.PRESSED_COLOR) {},
+                        ItemButtonsView.Button(label = "Consume", color = PrimaryButton.COLOR, pressedColor = PrimaryButton.PRESSED_COLOR) {},
                     ),
             )
             // Then
             callToActionView.itemButtonColor("Cancel") shouldBe GameButton.GREY
-            callToActionView.itemButtonColor("Consume") shouldBe ConfirmButton.COLOR
+            callToActionView.itemButtonColor("Consume") shouldBe PrimaryButton.COLOR
         }
 
     @Test
@@ -280,7 +280,7 @@ class CallToActionViewTest : ViewsForTesting() {
             // Then
             callToActionView.discardQuestion() shouldBe "Discard Health Potion? It can't be undone."
             callToActionView.discardQuestionLabels().shouldContainExactly("Back", "Discard")
-            callToActionView.discardQuestionColors().shouldContainExactly(GameButton.GREY, HudStyle.DANGER)
+            callToActionView.discardQuestionColors().shouldContainExactly(GameButton.GREY, HudStyle.DESTRUCTIVE)
         }
 
     @Test
@@ -529,7 +529,7 @@ class CallToActionViewTest : ViewsForTesting() {
             callToActionView.displayConfirmation(cancelLabel = "Cancel", confirmLabel = "Quit to menu", onCancelled = {}, onConfirmed = {})
             // Then
             callToActionView.actionLabels().shouldContainExactly("Cancel", "Quit to menu")
-            callToActionView.actionColor("Quit to menu") shouldBe HudStyle.DANGER
+            callToActionView.actionColor("Quit to menu") shouldBe HudStyle.DESTRUCTIVE
         }
 
     @Test

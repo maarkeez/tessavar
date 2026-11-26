@@ -358,8 +358,8 @@ class ShopPresenterTest {
         // When
         presenter.shopStorageSpaceSelected(1)
         // Then
-        callToActionView.displayedActions!!.last().color shouldBe ConfirmButton.COLOR
-        callToActionView.displayedActions!!.last().pressedColor shouldBe ConfirmButton.PRESSED_COLOR
+        callToActionView.displayedActions!!.last().color shouldBe PrimaryButton.COLOR
+        callToActionView.displayedActions!!.last().pressedColor shouldBe PrimaryButton.PRESSED_COLOR
     }
 
     @Test

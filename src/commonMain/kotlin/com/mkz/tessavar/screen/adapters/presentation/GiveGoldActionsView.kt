@@ -33,7 +33,7 @@ class GiveGoldActionsView(
             onClick { onAll() }
         }
     internal val giveButton: GameButton =
-        gameButton("", buttonSize, color = ConfirmButton.COLOR, overColor = ConfirmButton.PRESSED_COLOR) {
+        gameButton("", buttonSize, color = PrimaryButton.COLOR, overColor = PrimaryButton.PRESSED_COLOR) {
             xy(HudStyle.SCREEN_MARGIN + 2 * (BUTTON_WIDTH + SPACING), 0.0)
             onClick { onGiven() }
         }

@@ -22,7 +22,7 @@ class DiscardQuestionView(
         ButtonRowView(
             listOf(
                 ButtonRowView.Action(messages[UiMessage.ITEM_BUTTONS_BACK], onSelected = onBack),
-                ButtonRowView.Action(messages[UiMessage.ITEM_BUTTONS_DISCARD], HudStyle.DANGER, HudStyle.DANGER_PRESSED, HudStyle.DANGER_LABEL, onSelected = onDiscarded),
+                ButtonRowView.Action(messages[UiMessage.ITEM_BUTTONS_DISCARD], HudStyle.DESTRUCTIVE, HudStyle.DESTRUCTIVE_PRESSED, HudStyle.DESTRUCTIVE_LABEL, onSelected = onDiscarded),
             ),
         )
 

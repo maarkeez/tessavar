@@ -2,8 +2,8 @@ package com.mkz.tessavar.storybook.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.ButtonRowView
 import com.mkz.tessavar.screen.adapters.presentation.CallToActionView
-import com.mkz.tessavar.screen.adapters.presentation.ConfirmButton
 import com.mkz.tessavar.screen.adapters.presentation.ItemButtonsView
+import com.mkz.tessavar.screen.adapters.presentation.PrimaryButton
 import com.mkz.tessavar.screen.adapters.presentation.UiMessage
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ComponentDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ControlDto
@@ -145,7 +145,7 @@ object CallToActionViewStories : StoryBinding {
                                 val label = messages[text]
                                 val onSelected = { context.action("onSelected", label, setArg = dismissed) }
                                 if (text == UiMessage.ITEM_BUTTONS_CONSUME) {
-                                    ItemButtonsView.Button(label, color = ConfirmButton.COLOR, pressedColor = ConfirmButton.PRESSED_COLOR, onSelected = onSelected)
+                                    ItemButtonsView.Button(label, color = PrimaryButton.COLOR, pressedColor = PrimaryButton.PRESSED_COLOR, onSelected = onSelected)
                                 } else {
                                     ItemButtonsView.Button(label = label, onSelected = onSelected)
                                 }

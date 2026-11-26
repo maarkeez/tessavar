@@ -364,7 +364,7 @@ class InventoryPresenter(
         label: String,
         isEnabled: Boolean = true,
         act: () -> Unit,
-    ) = action(label, isEnabled, act).copy(color = ConfirmButton.COLOR, pressedColor = ConfirmButton.PRESSED_COLOR)
+    ) = action(label, isEnabled, act).copy(color = PrimaryButton.COLOR, pressedColor = PrimaryButton.PRESSED_COLOR)
 
     private fun askToDiscard(
         battleUnitId: String,

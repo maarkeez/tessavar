@@ -571,7 +571,7 @@ class QuestPresenterTest {
         confirmDialogView.visible.shouldBeTrue()
         detailView.visible.shouldBeFalse()
         callToActionView.actionLabels().shouldContainExactly("Back", "Abandon")
-        callToActionView.displayedActions!!.last().color shouldBe HudStyle.DANGER
+        callToActionView.displayedActions!!.last().color shouldBe HudStyle.DESTRUCTIVE
         apis.questApi
             .searchQuests()
             .first { quest -> quest.id == "side" }

@@ -47,7 +47,7 @@ class StorybookApi(
                 InventoryButtonViewStories,
                 FinishPlayerTurnViewStories,
                 CancelButtonStories,
-                ConfirmButtonStories,
+                PrimaryButtonStories,
                 CancelAndConfirmViewStories,
                 StorageSpaceViewStories,
                 InventoryViewStories,

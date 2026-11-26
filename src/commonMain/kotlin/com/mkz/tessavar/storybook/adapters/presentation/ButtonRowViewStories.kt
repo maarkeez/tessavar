@@ -1,7 +1,7 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.ButtonRowView
-import com.mkz.tessavar.screen.adapters.presentation.ConfirmButton
+import com.mkz.tessavar.screen.adapters.presentation.PrimaryButton
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ComponentDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ControlDto
@@ -14,7 +14,7 @@ object ButtonRowViewStories : StoryBinding {
     private const val SECOND = "second"
     private const val THIRD = "third"
     private const val LAST_IS_PRIMARY = "lastIsPrimary"
-    private const val LAST_IS_DANGER = "lastIsDanger"
+    private const val LAST_IS_DESTRUCTIVE = "lastIsDestructive"
     private const val LAST_IS_ENABLED = "lastIsEnabled"
 
     private fun story(
@@ -36,7 +36,7 @@ object ButtonRowViewStories : StoryBinding {
                     ControlDto.text(SECOND),
                     ControlDto.text(THIRD),
                     ControlDto.boolean(LAST_IS_PRIMARY),
-                    ControlDto.boolean(LAST_IS_DANGER),
+                    ControlDto.boolean(LAST_IS_DESTRUCTIVE),
                     ControlDto.boolean(LAST_IS_ENABLED),
                 ),
             args =
@@ -45,14 +45,20 @@ object ButtonRowViewStories : StoryBinding {
                     SECOND to ValueDto.text(""),
                     THIRD to ValueDto.text(""),
                     LAST_IS_PRIMARY to ValueDto.boolean(false),
-                    LAST_IS_DANGER to ValueDto.boolean(false),
+                    LAST_IS_DESTRUCTIVE to ValueDto.boolean(false),
                     LAST_IS_ENABLED to ValueDto.boolean(true),
                 ),
             stories =
                 listOf(
                     story("one-button", "One button", "A lone button fills the row, e.g.: Back of the journal."),
                     story("two-buttons", "Two buttons", "Two buttons share it in halves, e.g.: Back and Buy in the shop.", SECOND to ValueDto.text("Buy"), LAST_IS_PRIMARY to ValueDto.boolean(true)),
-                    story("danger", "Danger", "An action that can not be undone, in red, e.g.: Abandon.", SECOND to ValueDto.text("Abandon"), LAST_IS_DANGER to ValueDto.boolean(true)),
+                    story(
+                        "destructive",
+                        "Destructive",
+                        "An action that loses something for good, e.g.: Abandon once asked.",
+                        SECOND to ValueDto.text("Abandon"),
+                        LAST_IS_DESTRUCTIVE to ValueDto.boolean(true),
+                    ),
                     story(
                         "three-buttons",
                         "Three buttons",
@@ -82,8 +88,8 @@ object ButtonRowViewStories : StoryBinding {
                 val isLast = index == labels.lastIndex
                 val onSelected = { context.action("onSelected", label) }
                 when {
-                    isLast && args.boolean(LAST_IS_DANGER) -> ButtonRowView.Action(label, HudStyle.DANGER, HudStyle.DANGER_PRESSED, HudStyle.DANGER_LABEL, onSelected = onSelected)
-                    isLast && args.boolean(LAST_IS_PRIMARY) -> ButtonRowView.Action(label, ConfirmButton.COLOR, ConfirmButton.PRESSED_COLOR, onSelected = onSelected)
+                    isLast && args.boolean(LAST_IS_DESTRUCTIVE) -> ButtonRowView.Action(label, HudStyle.DESTRUCTIVE, HudStyle.DESTRUCTIVE_PRESSED, HudStyle.DESTRUCTIVE_LABEL, onSelected = onSelected)
+                    isLast && args.boolean(LAST_IS_PRIMARY) -> ButtonRowView.Action(label, PrimaryButton.COLOR, PrimaryButton.PRESSED_COLOR, onSelected = onSelected)
                     else -> ButtonRowView.Action(label, isEnabled = !isLast || args.boolean(LAST_IS_ENABLED), onSelected = onSelected)
                 }
             },

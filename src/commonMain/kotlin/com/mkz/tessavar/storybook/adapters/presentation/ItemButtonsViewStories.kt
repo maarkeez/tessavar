@@ -1,7 +1,7 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
-import com.mkz.tessavar.screen.adapters.presentation.ConfirmButton
 import com.mkz.tessavar.screen.adapters.presentation.ItemButtonsView
+import com.mkz.tessavar.screen.adapters.presentation.PrimaryButton
 import com.mkz.tessavar.screen.adapters.presentation.UiMessage
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ComponentDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ControlDto
@@ -90,7 +90,7 @@ object ItemButtonsViewStories : StoryBinding {
                     val label = context.messages[text]
                     val onSelected = { context.action("onSelected", label) }
                     if (text in PRIMARY_BUTTONS) {
-                        ItemButtonsView.Button(label, isEnabled, ConfirmButton.COLOR, ConfirmButton.PRESSED_COLOR, onSelected)
+                        ItemButtonsView.Button(label, isEnabled, PrimaryButton.COLOR, PrimaryButton.PRESSED_COLOR, onSelected)
                     } else {
                         ItemButtonsView.Button(label = label, isEnabled = isEnabled, onSelected = onSelected)
                     }

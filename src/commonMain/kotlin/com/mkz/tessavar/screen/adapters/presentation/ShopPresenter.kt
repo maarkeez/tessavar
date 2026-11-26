@@ -152,7 +152,7 @@ class ShopPresenter(
         val refusal = refusal(buyerId, lootableItemId)
         val (color, pressedColor) =
             when (mode) {
-                Mode.BUY -> ConfirmButton.COLOR to ConfirmButton.PRESSED_COLOR
+                Mode.BUY -> PrimaryButton.COLOR to PrimaryButton.PRESSED_COLOR
                 Mode.SELL -> GameButton.GREY to GameButton.GREY_OVER
             }
         shopView.displayItem(messages.lootableItemName(lootableItem.id), price)

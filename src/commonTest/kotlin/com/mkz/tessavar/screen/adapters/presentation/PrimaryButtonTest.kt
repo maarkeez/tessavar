@@ -7,15 +7,15 @@ import io.kotest.matchers.shouldBe
 import korlibs.korge.tests.ViewsForTesting
 import kotlin.test.Test
 
-class ConfirmButtonTest : ViewsForTesting() {
+class PrimaryButtonTest : ViewsForTesting() {
     @Test
     fun `Init should display confirm text when is initialized`() =
         sharedViewsTest {
             // Given
             // When
-            val confirmButton = ConfirmButton(label = "Confirm", onConfirmed = {})
+            val primaryButton = PrimaryButton(label = "Confirm", onConfirmed = {})
             // Then
-            confirmButton.buttonText() shouldBe "Confirm"
+            primaryButton.buttonText() shouldBe "Confirm"
         }
 
     @Test
@@ -23,20 +23,20 @@ class ConfirmButtonTest : ViewsForTesting() {
         sharedViewsTest {
             // Given
             var confirmed = false
-            val confirmButton = ConfirmButton(label = "Confirm", onConfirmed = { confirmed = true })
-            addChild(confirmButton)
+            val primaryButton = PrimaryButton(label = "Confirm", onConfirmed = { confirmed = true })
+            addChild(primaryButton)
             // When
-            clickConfirm(confirmButton)
+            clickPrimary(primaryButton)
             // Then
             confirmed.shouldBeTrue()
         }
 
     @Test
-    fun `ConfirmButton should write its label in the text color when it is given one`() =
+    fun `PrimaryButton should write its label in the text color when it is given one`() =
         sharedViewsTest {
             // When
-            val confirmButton = ConfirmButton(label = "Wishlist", textColor = HudStyle.PANEL, onConfirmed = {})
+            val primaryButton = PrimaryButton(label = "Wishlist", textColor = HudStyle.PANEL, onConfirmed = {})
             // Then
-            confirmButton.buttonTextColor() shouldBe HudStyle.PANEL
+            primaryButton.buttonTextColor() shouldBe HudStyle.PANEL
         }
 }

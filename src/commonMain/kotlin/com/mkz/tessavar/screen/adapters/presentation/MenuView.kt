@@ -31,7 +31,7 @@ class MenuView(
         }
 
     internal val playNewGameButton =
-        ConfirmButton(label = messages[UiMessage.MENU_PLAY_NEW_GAME], buttonWidth = BUTTON_WIDTH, onConfirmed = { select(onNewGameSelected) })
+        PrimaryButton(label = messages[UiMessage.MENU_PLAY_NEW_GAME], buttonWidth = BUTTON_WIDTH, onConfirmed = { select(onNewGameSelected) })
     internal val loadGameButton =
         CancelButton(label = messages[UiMessage.MENU_LOAD_GAME], buttonWidth = BUTTON_WIDTH, onCancelled = { select(onLoadGameSelected) })
     internal val communityWorldsButton =
@@ -43,7 +43,7 @@ class MenuView(
     internal val privacyButton =
         CancelButton(label = messages[UiMessage.MENU_PRIVACY], buttonWidth = BUTTON_WIDTH, onCancelled = onPrivacySelected)
     internal val wishlistButton =
-        ConfirmButton(
+        PrimaryButton(
             label = messages[UiMessage.MENU_WISHLIST],
             buttonWidth = BUTTON_WIDTH,
             color = HudStyle.COIN_MIDDLE,
@@ -90,13 +90,13 @@ class MenuView(
 
     private fun selectLanguage(languageCode: String) {
         messages.selectLanguage(languageCode)
-        playNewGameButton.confirmButton.text = messages[UiMessage.MENU_PLAY_NEW_GAME]
+        playNewGameButton.primaryButton.text = messages[UiMessage.MENU_PLAY_NEW_GAME]
         loadGameButton.cancelButton.text = messages[UiMessage.MENU_LOAD_GAME]
         communityWorldsButton.cancelButton.text = messages[UiMessage.MENU_COMMUNITY_WORLDS]
         buildWorldButton.cancelButton.text = messages[UiMessage.MENU_BUILD_WORLD]
         languageButton.cancelButton.text = messages[UiMessage.MENU_LANGUAGE]
         privacyButton.cancelButton.text = messages[UiMessage.MENU_PRIVACY]
-        wishlistButton.confirmButton.text = messages[UiMessage.MENU_WISHLIST]
+        wishlistButton.primaryButton.text = messages[UiMessage.MENU_WISHLIST]
         displayLanguages(isDisplayed = false)
     }
 }

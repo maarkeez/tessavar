@@ -728,8 +728,8 @@ class ExplorationPresenterTest {
         // When
         talkToTheMerchant()
         // Then
-        callToActionView.displayedActions!!.map { action -> action.color }.shouldContainExactly(GameButton.GREY, GameButton.GREY, ConfirmButton.COLOR)
-        callToActionView.displayedActions!!.last().pressedColor shouldBe ConfirmButton.PRESSED_COLOR
+        callToActionView.displayedActions!!.map { action -> action.color }.shouldContainExactly(GameButton.GREY, GameButton.GREY, PrimaryButton.COLOR)
+        callToActionView.displayedActions!!.last().pressedColor shouldBe PrimaryButton.PRESSED_COLOR
     }
 
     @Test

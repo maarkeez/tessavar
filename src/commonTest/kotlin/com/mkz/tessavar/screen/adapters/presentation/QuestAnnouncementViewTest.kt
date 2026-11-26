@@ -116,7 +116,7 @@ class QuestAnnouncementViewTest : ViewsForTesting() {
             addChild(announcementView)
             announcementView.display(Moment.COMPLETED, completedQuestInfo())
             // When
-            clickConfirm(button)
+            clickPrimary(button)
             // Then
             confirms shouldBe 1
         }

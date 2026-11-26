@@ -42,7 +42,7 @@ open class PauseView(
 
     private var delegate: Delegate? = null
 
-    internal val resumeButton = ConfirmButton(label = messages[UiMessage.PAUSE_RESUME], buttonWidth = BUTTON_WIDTH, onConfirmed = { delegate?.pauseResumeSelected() })
+    internal val resumeButton = PrimaryButton(label = messages[UiMessage.PAUSE_RESUME], buttonWidth = BUTTON_WIDTH, onConfirmed = { delegate?.pauseResumeSelected() })
     internal val saveButton = CancelButton(label = messages[UiMessage.PAUSE_SAVE], buttonWidth = BUTTON_WIDTH, onCancelled = { delegate?.pauseSaveSelected() })
     internal val quitButton = CancelButton(label = messages[UiMessage.PAUSE_QUIT], buttonWidth = BUTTON_WIDTH, onCancelled = { delegate?.pauseQuitSelected() })
 

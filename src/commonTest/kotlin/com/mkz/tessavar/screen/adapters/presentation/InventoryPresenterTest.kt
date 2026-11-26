@@ -365,11 +365,11 @@ class InventoryPresenterTest {
         // When
         clickStorageSpace(0)
         // Then
-        colorsOfItemButtons().shouldContainExactly(GameButton.GREY, GameButton.GREY, ConfirmButton.COLOR)
+        colorsOfItemButtons().shouldContainExactly(GameButton.GREY, GameButton.GREY, PrimaryButton.COLOR)
         callToActionView.displayedItemButtons!!
             .actions
             .last()
-            .pressedColor shouldBe ConfirmButton.PRESSED_COLOR
+            .pressedColor shouldBe PrimaryButton.PRESSED_COLOR
     }
 
     @Test
@@ -380,7 +380,7 @@ class InventoryPresenterTest {
         // When
         clickStorageSpace(0)
         // Then
-        colorsOfItemButtons().shouldContainExactly(GameButton.GREY, GameButton.GREY, ConfirmButton.COLOR)
+        colorsOfItemButtons().shouldContainExactly(GameButton.GREY, GameButton.GREY, PrimaryButton.COLOR)
     }
 
     @Test
@@ -393,7 +393,7 @@ class InventoryPresenterTest {
         // When
         clickStorageSpace(0)
         // Then
-        colorsOfItemButtons().shouldContainExactly(GameButton.GREY, GameButton.GREY, ConfirmButton.COLOR)
+        colorsOfItemButtons().shouldContainExactly(GameButton.GREY, GameButton.GREY, PrimaryButton.COLOR)
     }
 
     @Test

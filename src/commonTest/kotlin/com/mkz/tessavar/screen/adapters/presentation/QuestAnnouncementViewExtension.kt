@@ -27,4 +27,4 @@ fun QuestAnnouncementView.displayedItemSlots(): Int = rewardView?.children.orEmp
 
 fun QuestAnnouncementView.isTargetTicked(): Boolean = targetTick != null
 
-fun Container.buttonUnderTheAnnouncement(onConfirmed: () -> Unit): ConfirmButton = ConfirmButton("Confirm", 200.0, onConfirmed = onConfirmed).addTo(this).xy(100.0, 70.0)
+fun Container.buttonUnderTheAnnouncement(onConfirmed: () -> Unit): PrimaryButton = PrimaryButton("Confirm", 200.0, onConfirmed = onConfirmed).addTo(this).xy(100.0, 70.0)

@@ -2,8 +2,8 @@ package com.mkz.tessavar.shared.adapters.e2e
 
 import com.mkz.tessavar.STORYBOOK_WINDOW_SIZE
 import com.mkz.tessavar.screen.adapters.presentation.ButtonRowView
-import com.mkz.tessavar.screen.adapters.presentation.ConfirmButton
 import com.mkz.tessavar.screen.adapters.presentation.HealthBarView
+import com.mkz.tessavar.screen.adapters.presentation.PrimaryButton
 import com.mkz.tessavar.screen.adapters.presentation.ShopView
 import com.mkz.tessavar.screen.adapters.presentation.clickStorageSpace
 import com.mkz.tessavar.screen.adapters.presentation.footerPrice
@@ -201,7 +201,7 @@ class StorybookEndToEndTest : ViewsForTesting(windowSize = STORYBOOK_WINDOW_SIZE
             // Then
             val rowView = stage.phoneFrameView()?.displayedView() as ButtonRowView
             rowView.buttons.map { button -> button.text }.shouldContainExactly("Leave", "Sell", "Buy")
-            rowView.buttons.map { button -> button.bgColorOut }.shouldContainExactly(GameButton.GREY, GameButton.GREY, ConfirmButton.COLOR)
+            rowView.buttons.map { button -> button.bgColorOut }.shouldContainExactly(GameButton.GREY, GameButton.GREY, PrimaryButton.COLOR)
         }
 
     @Test

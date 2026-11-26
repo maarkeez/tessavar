@@ -76,11 +76,11 @@ class ButtonRowViewTest : ViewsForTesting() {
                 ButtonRowView(
                     listOf(
                         ButtonRowView.Action("Back") {},
-                        ButtonRowView.Action("Quit to menu", HudStyle.DANGER, HudStyle.DANGER_PRESSED, HudStyle.DANGER_LABEL) {},
+                        ButtonRowView.Action("Quit to menu", HudStyle.DESTRUCTIVE, HudStyle.DESTRUCTIVE_PRESSED, HudStyle.DESTRUCTIVE_LABEL) {},
                     ),
                 )
             addChild(rowView)
             // Then
-            rowView.buttons.map { button -> button.textColor }.shouldContainExactly(GameButton.LABEL, HudStyle.DANGER_LABEL)
+            rowView.buttons.map { button -> button.textColor }.shouldContainExactly(GameButton.LABEL, HudStyle.DESTRUCTIVE_LABEL)
         }
 }

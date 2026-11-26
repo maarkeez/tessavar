@@ -10,7 +10,7 @@ import kotlin.math.abs
 
 fun Stage.menuView(): MenuView? = descendants().filterIsInstance<MenuView>().firstOrNull()
 
-fun MenuView.playNewGameLabel(): String = playNewGameButton.confirmButton.text
+fun MenuView.playNewGameLabel(): String = playNewGameButton.primaryButton.text
 
 fun MenuView.loadGameLabel(): String = loadGameButton.cancelButton.text
 
@@ -20,7 +20,7 @@ suspend fun ViewsForTesting.clickCommunityWorlds(menuView: MenuView) = clickOn(m
 
 fun MenuView.buildWorldLabel(): String = buildWorldButton.cancelButton.text
 
-suspend fun ViewsForTesting.clickPlayNewGame(menuView: MenuView) = clickOn(menuView.playNewGameButton.confirmButton)
+suspend fun ViewsForTesting.clickPlayNewGame(menuView: MenuView) = clickOn(menuView.playNewGameButton.primaryButton)
 
 suspend fun ViewsForTesting.clickLoadGame(menuView: MenuView) = clickOn(menuView.loadGameButton.cancelButton)
 
@@ -45,9 +45,9 @@ fun MenuView.privacyLabel(): String = privacyButton.cancelButton.text
 
 suspend fun ViewsForTesting.clickPrivacy(menuView: MenuView) = clickOn(menuView.privacyButton.cancelButton)
 
-fun MenuView.wishlistLabel(): String = wishlistButton.confirmButton.text
+fun MenuView.wishlistLabel(): String = wishlistButton.primaryButton.text
 
-suspend fun ViewsForTesting.clickWishlist(menuView: MenuView) = clickOn(menuView.wishlistButton.confirmButton)
+suspend fun ViewsForTesting.clickWishlist(menuView: MenuView) = clickOn(menuView.wishlistButton.primaryButton)
 
 fun MenuView.titleText(): String = title.text
 
