@@ -1,9 +1,17 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.clickOn
+import com.mkz.tessavar.shared.adapters.presentation.descendants
 import com.mkz.tessavar.shared.adapters.presentation.isFaded
+import com.mkz.tessavar.shared.adapters.presentation.sidesIn
 import korlibs.image.color.RGBA
 import korlibs.korge.tests.ViewsForTesting
+import korlibs.korge.ui.UIButton
+
+fun CallToActionView.buttonSides(): Pair<Double, Double> {
+    val sides = requireNotNull(callToAction).descendants().filterIsInstance<UIButton>().map { button -> button.sidesIn(this) }
+    return sides.minOf { side -> side.first } to sides.maxOf { side -> side.second }
+}
 
 fun CallToActionView.isDisplayingFinishPlayerTurn(): Boolean = visible && callToAction is FinishPlayerTurnView
 

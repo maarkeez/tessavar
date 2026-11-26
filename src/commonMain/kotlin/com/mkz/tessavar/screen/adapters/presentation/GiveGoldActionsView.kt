@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.korge.input.onClick
 import korlibs.korge.ui.UIButton
@@ -15,7 +16,7 @@ class GiveGoldActionsView(
     onGiven: () -> Unit,
 ) : Container() {
     companion object {
-        private const val WIDTH = 390.0
+        private const val WIDTH = HudStyle.CONTENT_WIDTH
         private const val SPACING = 10.0
         private const val BUTTON_WIDTH = (WIDTH - 2 * SPACING) / 3
     }
@@ -23,16 +24,17 @@ class GiveGoldActionsView(
     private val buttonSize = Size(BUTTON_WIDTH, UIButton.DEFAULT_SIZE.height)
     internal val cancelButton: GameButton =
         gameButton(messages[UiMessage.GIVE_GOLD_CANCEL], buttonSize) {
+            xy(HudStyle.SCREEN_MARGIN, 0.0)
             onClick { onCancelled() }
         }
     internal val allButton: GameButton =
         gameButton(messages[UiMessage.GIVE_GOLD_ALL], buttonSize) {
-            xy(BUTTON_WIDTH + SPACING, 0.0)
+            xy(HudStyle.SCREEN_MARGIN + BUTTON_WIDTH + SPACING, 0.0)
             onClick { onAll() }
         }
     internal val giveButton: GameButton =
         gameButton("", buttonSize, color = ConfirmButton.COLOR, overColor = ConfirmButton.PRESSED_COLOR) {
-            xy(2 * (BUTTON_WIDTH + SPACING), 0.0)
+            xy(HudStyle.SCREEN_MARGIN + 2 * (BUTTON_WIDTH + SPACING), 0.0)
             onClick { onGiven() }
         }
 

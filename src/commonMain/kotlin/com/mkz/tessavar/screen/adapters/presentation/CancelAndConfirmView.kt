@@ -1,5 +1,6 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import korlibs.image.color.RGBA
 import korlibs.korge.ui.uiHorizontalStack
 import korlibs.korge.ui.uiSpacing
@@ -14,14 +15,20 @@ class CancelAndConfirmView(
     confirmColor: RGBA = ConfirmButton.COLOR,
     confirmPressedColor: RGBA = ConfirmButton.PRESSED_COLOR,
 ) : Container() {
-    internal val cancelButton = CancelButton(label = cancelLabel, onCancelled = { onCancelled() })
-    internal val confirmButton = ConfirmButton(label = confirmLabel, color = confirmColor, pressedColor = confirmPressedColor, onConfirmed = { onConfirmed() })
+    companion object {
+        private const val SPACING = 10.0
+        private const val BUTTON_WIDTH = (HudStyle.CONTENT_WIDTH - SPACING) / 2
+    }
+
+    internal val cancelButton = CancelButton(label = cancelLabel, buttonWidth = BUTTON_WIDTH, onCancelled = { onCancelled() })
+    internal val confirmButton = ConfirmButton(label = confirmLabel, buttonWidth = BUTTON_WIDTH, color = confirmColor, pressedColor = confirmPressedColor, onConfirmed = { onConfirmed() })
 
     init {
         val layout =
             uiHorizontalStack {
+                x = HudStyle.SCREEN_MARGIN
                 addChild(cancelButton)
-                uiSpacing(Size(10, 0))
+                uiSpacing(Size(SPACING, 0.0))
                 addChild(confirmButton)
             }
         addChild(layout)

@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.color.RGBA
 import korlibs.korge.input.onClick
@@ -13,7 +14,7 @@ class ButtonRowView(
     actions: List<Action>,
 ) : Container() {
     companion object {
-        private const val WIDTH = 390.0
+        private const val WIDTH = HudStyle.CONTENT_WIDTH
         private const val SPACING = 10.0
     }
 
@@ -32,7 +33,7 @@ class ButtonRowView(
         buttons =
             actions.mapIndexed { index, action ->
                 gameButton(action.label, Size(buttonWidth, UIButton.DEFAULT_SIZE.height), action.color, action.pressedColor) {
-                    xy(index * (buttonWidth + SPACING), 0.0)
+                    xy(HudStyle.SCREEN_MARGIN + index * (buttonWidth + SPACING), 0.0)
                     enabled = action.isEnabled
                     onClick { if (action.isEnabled) action.onSelected() }
                 }

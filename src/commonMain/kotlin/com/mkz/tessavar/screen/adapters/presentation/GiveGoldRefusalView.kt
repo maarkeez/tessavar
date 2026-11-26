@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.korge.input.onClick
 import korlibs.korge.ui.UIButton
@@ -14,7 +15,7 @@ class GiveGoldRefusalView(
     onDismissed: () -> Unit,
 ) : Container() {
     companion object {
-        private const val WIDTH = 390.0
+        private const val WIDTH = HudStyle.CONTENT_WIDTH
     }
 
     internal val messageView = UnitNameView(Size(WIDTH, 16))
@@ -22,6 +23,7 @@ class GiveGoldRefusalView(
 
     init {
         uiVerticalStack(padding = 4.0) {
+            x = HudStyle.SCREEN_MARGIN
             addChild(messageView)
             okButton =
                 gameButton(okLabel, Size(WIDTH, UIButton.DEFAULT_SIZE.height)) {

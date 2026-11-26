@@ -12,7 +12,7 @@ class DiscardQuestionView(
     onDiscarded: () -> Unit,
 ) : Container() {
     companion object {
-        private const val WIDTH = 390.0
+        private const val WIDTH = HudStyle.CONTENT_WIDTH
         private const val LINE_HEIGHT = 16.0
         private const val SPACING = 4.0
     }
@@ -27,7 +27,7 @@ class DiscardQuestionView(
         )
 
     init {
-        addChild(questionView)
+        addChild(questionView.xy(HudStyle.SCREEN_MARGIN, 0.0))
         addChild(rowView.xy(0.0, LINE_HEIGHT + SPACING))
         questionView.display(messages[UiMessage.ITEM_BUTTONS_DISCARD_QUESTION, "item" to itemName])
     }

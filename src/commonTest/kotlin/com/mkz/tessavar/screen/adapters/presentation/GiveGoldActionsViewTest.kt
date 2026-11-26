@@ -5,6 +5,7 @@ import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.doubles.plusOrMinus
 import io.kotest.matchers.shouldBe
 import korlibs.korge.tests.ViewsForTesting
 import kotlin.test.Test
@@ -26,6 +27,16 @@ class GiveGoldActionsViewTest : ViewsForTesting() {
             actionsView.giveLabel() shouldBe "Give 120 G"
             actionsView.isAllEnabled().shouldBeFalse()
             actionsView.isAllFaded().shouldBeTrue()
+        }
+
+    @Test
+    fun `Buttons should lay out 12 px in from each side of the screen`() =
+        sharedViewsTest {
+            // When
+            val actionsView = GiveGoldActionsView(MessagesMother.messages(), onCancelled = {}, onAll = {}, onGiven = {})
+            // Then
+            actionsView.buttonSides().first shouldBe 12.0
+            actionsView.buttonSides().second shouldBe (378.0 plusOrMinus 0.001)
         }
 
     @Test

@@ -260,8 +260,8 @@ msgstr "Inventario lleno"
 
 #. {item}: the name of the item found. {sellPrice}: its sell price, e.g.: 5 G.
 msgctxt "ui.inventoryFull.message"
-msgid "Tap an item to discard for: {item} ({sellPrice})"
-msgstr "Toca un objeto a descartar por: {item} ({sellPrice})"
+msgid "Discard an item for: {item} ({sellPrice})"
+msgstr "Descarta un objeto por: {item} ({sellPrice})"
 
 #. Leaves the item found on the ground.
 msgctxt "ui.inventoryFull.leave"

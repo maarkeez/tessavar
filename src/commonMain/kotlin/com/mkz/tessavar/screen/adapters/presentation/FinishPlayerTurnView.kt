@@ -12,7 +12,8 @@ class FinishPlayerTurnView(
     onPlayerTurnFinished: () -> Unit,
 ) : Container() {
     internal val button =
-        gameButton(messages[UiMessage.FINISH_PLAYER_TURN], Size(390.0, UIButton.DEFAULT_SIZE.height), color = HudStyle.ACCENT, overColor = HudStyle.ACCENT_PRESSED) {
+        gameButton(messages[UiMessage.FINISH_PLAYER_TURN], Size(HudStyle.CONTENT_WIDTH, UIButton.DEFAULT_SIZE.height), color = HudStyle.ACCENT, overColor = HudStyle.ACCENT_PRESSED) {
+            x = HudStyle.SCREEN_MARGIN
             onClick {
                 onPlayerTurnFinished()
             }

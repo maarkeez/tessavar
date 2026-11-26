@@ -254,7 +254,7 @@ msgstr ""
 
 #. {item}: the name of the item found. {sellPrice}: its sell price, e.g.: 5 G.
 msgctxt "ui.inventoryFull.message"
-msgid "Tap an item to discard for: {item} ({sellPrice})"
+msgid "Discard an item for: {item} ({sellPrice})"
 msgstr ""
 
 #. Leaves the item found on the ground.

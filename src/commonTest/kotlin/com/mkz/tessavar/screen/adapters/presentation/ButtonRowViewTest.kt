@@ -13,16 +13,17 @@ import kotlin.math.abs
 import kotlin.test.Test
 
 class ButtonRowViewTest : ViewsForTesting() {
-    private val rowWidth = 390.0
+    private val margin = 12.0
+    private val rowWidth = 366.0
     private val spacing = 10.0
 
     @Test
-    fun `ButtonRowView should fill the row when it has one action`() =
+    fun `ButtonRowView should fill the row between the screen margins when it has one action`() =
         sharedViewsTest {
             // When
             val rowView = ButtonRowView(listOf(ButtonRowView.Action("Back") {}))
             // Then
-            rowView.buttons.single().x shouldBe 0.0
+            rowView.buttons.single().x shouldBe margin
             rowView.buttons.single().width shouldBe rowWidth
         }
 
@@ -32,8 +33,8 @@ class ButtonRowViewTest : ViewsForTesting() {
             // When
             val rowView = ButtonRowView(listOf(ButtonRowView.Action("Back") {}, ButtonRowView.Action("Abandon") {}))
             // Then
-            rowView.buttons.map { button -> button.x }.shouldContainExactly(0.0, 200.0)
-            rowView.buttons.map { button -> button.width }.shouldContainExactly(190.0, 190.0)
+            rowView.buttons.map { button -> button.x }.shouldContainExactly(12.0, 200.0)
+            rowView.buttons.map { button -> button.width }.shouldContainExactly(178.0, 178.0)
         }
 
     @Test
@@ -43,8 +44,8 @@ class ButtonRowViewTest : ViewsForTesting() {
             val rowView = ButtonRowView(listOf("Leave", "Sell", "Buy").map { label -> ButtonRowView.Action(label) {} })
             // Then
             val last = rowView.buttons.last()
-            abs(last.x + last.width - rowWidth) shouldBeLessThan 0.001
-            abs(rowView.buttons[1].x - rowView.buttons[0].width - spacing) shouldBeLessThan 0.001
+            abs(last.x + last.width - (margin + rowWidth)) shouldBeLessThan 0.001
+            abs(rowView.buttons[1].x - rowView.buttons[0].x - rowView.buttons[0].width - spacing) shouldBeLessThan 0.001
         }
 
     @Test

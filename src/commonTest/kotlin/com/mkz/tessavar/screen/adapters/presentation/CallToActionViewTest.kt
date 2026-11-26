@@ -7,6 +7,7 @@ import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.doubles.plusOrMinus
 import io.kotest.matchers.shouldBe
 import korlibs.korge.tests.ViewsForTesting
 import kotlin.test.Test
@@ -178,6 +179,19 @@ class CallToActionViewTest : ViewsForTesting() {
         }
 
     @Test
+    fun `DisplayItemButtons should lay the item buttons out 12 px in from each side of the screen when they are displayed`() =
+        sharedViewsTest {
+            // Given
+            val callToActionView = CallToActionView(MessagesMother.messages())
+            val actions = listOf("Equip", "Discard", "Cancel").map { label -> ItemButtonsView.Button(label = label) {} }
+            // When
+            callToActionView.displayItemButtons(itemName = "Hammer", itemSellPrice = 50, actions = actions)
+            // Then
+            callToActionView.buttonSides().first shouldBe 12.0
+            callToActionView.buttonSides().second shouldBe (378.0 plusOrMinus 0.001)
+        }
+
+    @Test
     fun `DisplayItemButtons should run the action and display the finish turn again when an item button is clicked`() =
         sharedViewsTest {
             // Given
@@ -224,6 +238,17 @@ class CallToActionViewTest : ViewsForTesting() {
         }
 
     @Test
+    fun `DisplayGiveItem should lay cancel out 12 px in from each side of the screen when it is displayed`() =
+        sharedViewsTest {
+            // Given
+            val callToActionView = CallToActionView(MessagesMother.messages())
+            // When
+            callToActionView.displayGiveItem(itemName = "Hammer", onCancelled = {})
+            // Then
+            callToActionView.buttonSides() shouldBe (12.0 to 378.0)
+        }
+
+    @Test
     fun `DisplayItemButtons should display an action in the colour it is given, and grey by default`() =
         sharedViewsTest {
             // Given
@@ -259,6 +284,17 @@ class CallToActionViewTest : ViewsForTesting() {
         }
 
     @Test
+    fun `DisplayDiscardQuestion should lay back and discard out 12 px in from each side of the screen when it is displayed`() =
+        sharedViewsTest {
+            // Given
+            val callToActionView = CallToActionView(MessagesMother.messages(), loadedResourcesLoader())
+            // When
+            callToActionView.displayDiscardQuestion(itemName = "Health Potion", onBack = {}, onDiscarded = {})
+            // Then
+            callToActionView.buttonSides() shouldBe (12.0 to 378.0)
+        }
+
+    @Test
     fun `DisplayDiscardQuestion should call the answer, staying displayed, when a button is clicked`() =
         sharedViewsTest {
             // Given
@@ -286,7 +322,7 @@ class CallToActionViewTest : ViewsForTesting() {
             clickLeaveIt(callToActionView)
             // Then
             callToActionView.isDisplayingInventoryFull().shouldBeTrue()
-            callToActionView.inventoryFullMessage() shouldBe "Tap an item to discard for: Health Potion (10 G)"
+            callToActionView.inventoryFullMessage() shouldBe "Discard an item for: Health Potion (10 G)"
             callToActionView.isFoundItemIconDisplayed().shouldBeTrue()
             left.shouldBeTrue()
         }
@@ -371,6 +407,28 @@ class CallToActionViewTest : ViewsForTesting() {
             // Then
             callToActionView.giveGoldLabel() shouldBe "Give 120 G"
             callToActionView.isGiveAllEnabled().shouldBeFalse()
+        }
+
+    @Test
+    fun `DisplayInventoryFull should lay its buttons out 12 px in from each side of the screen when it is displayed`() =
+        sharedViewsTest {
+            // Given
+            val callToActionView = CallToActionView(MessagesMother.messages(), loadedResourcesLoader())
+            // When
+            callToActionView.displayInventoryFull(foundItemName = "Health Potion", foundItemSellPrice = 10, foundItemId = "health-potion", onLeft = {})
+            // Then
+            callToActionView.buttonSides() shouldBe (12.0 to 378.0)
+        }
+
+    @Test
+    fun `DisplayGiveGoldRefusal should lay ok out 12 px in from each side of the screen when it is displayed`() =
+        sharedViewsTest {
+            // Given
+            val callToActionView = CallToActionView(MessagesMother.messages())
+            // When
+            callToActionView.displayGiveGoldRefusal("No gold to give", onDismissed = {})
+            // Then
+            callToActionView.buttonSides() shouldBe (12.0 to 378.0)
         }
 
     @Test

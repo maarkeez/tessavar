@@ -15,7 +15,7 @@ class GiveItemView(
     onCancelled: () -> Unit,
 ) : Container() {
     companion object {
-        private const val WIDTH = 390.0
+        private const val WIDTH = HudStyle.CONTENT_WIDTH
     }
 
     internal val messageView = UnitNameView(Size(WIDTH, 16))
@@ -23,6 +23,7 @@ class GiveItemView(
 
     init {
         uiVerticalStack(padding = 4.0) {
+            x = HudStyle.SCREEN_MARGIN
             addChild(messageView)
             cancelButton =
                 uiButton(messages[UiMessage.GIVE_ITEM_CANCEL]) {

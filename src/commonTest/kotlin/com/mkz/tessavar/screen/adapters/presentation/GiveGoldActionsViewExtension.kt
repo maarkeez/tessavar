@@ -1,7 +1,10 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.isFaded
+import com.mkz.tessavar.shared.adapters.presentation.sidesIn
 import korlibs.korge.ui.UIButton
+
+fun GiveGoldActionsView.buttonSides(): Pair<Double, Double> = cancelButton.sidesIn(this).first to giveButton.sidesIn(this).second
 
 fun GiveGoldActionsView.giveLabel(): String = giveButton.text
 

@@ -19,6 +19,15 @@ class FinishPlayerTurnViewTest : ViewsForTesting() {
         }
 
     @Test
+    fun `Init should lay finish turn out 12 px in from each side of the screen when is initialized`() =
+        sharedViewsTest {
+            // When
+            val finishPlayerTurnView = FinishPlayerTurnView(MessagesMother.messages(), onPlayerTurnFinished = {})
+            // Then
+            finishPlayerTurnView.buttonSides() shouldBe (12.0 to 378.0)
+        }
+
+    @Test
     fun `ButtonClick should finish turn when button is clicked`() =
         sharedViewsTest {
             // Given

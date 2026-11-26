@@ -22,7 +22,7 @@ class InventoryFullView(
     onLeft: () -> Unit,
 ) : Container() {
     companion object {
-        private const val WIDTH = 390.0
+        private const val WIDTH = HudStyle.CONTENT_WIDTH
         private const val ICON_SIZE = 32.0
         private const val ICON_SPACING = 8.0
     }
@@ -34,6 +34,7 @@ class InventoryFullView(
 
     init {
         uiVerticalStack(padding = 6.0) {
+            x = HudStyle.SCREEN_MARGIN
             uiHorizontalStack(padding = ICON_SPACING) {
                 val iconBox = UIContainer(Size(ICON_SIZE, ICON_SIZE))
                 resourcesLoader.bitmapOrNull("lootableItem/$foundItemId.png")?.let { itemBitmap ->

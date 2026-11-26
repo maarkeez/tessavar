@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.color.RGBA
 import korlibs.korge.input.onClick
@@ -18,7 +19,7 @@ class ItemButtonsView(
     actions: List<Button>,
 ) : Container() {
     companion object {
-        private const val WIDTH = 390.0
+        private const val WIDTH = HudStyle.CONTENT_WIDTH
         private const val SPACING = 10.0
     }
 
@@ -36,6 +37,7 @@ class ItemButtonsView(
 
     init {
         uiVerticalStack(padding = 4.0) {
+            x = HudStyle.SCREEN_MARGIN
             val nameLine = UIContainer(Size(WIDTH, 16))
             nameLine.addChild(itemNameView)
             itemSellPriceView.alignTextToRight()
