@@ -1,6 +1,6 @@
 # Plan: essences that teach the punches
 
-> **Status:** to do.
+> **Status:** built on `main` in c5555fec, the screenshots still to be approved.
 >
 > **Summary:** Burn, stun and soak, the effects that interact since the
 > [effect interactions plan](effect-interactions.md), are only cast by CPU battle units: the fire bat's Fireball, the
