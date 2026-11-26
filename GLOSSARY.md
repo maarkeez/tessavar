@@ -556,8 +556,9 @@ _Avoid_: Carry, hold
 An item taking a storage space of an inventory, equipped or not.
 
 **Storage space**:
-The place one stored item takes in an inventory.
-_Avoid_: Room, slot, capacity
+The place one stored item takes in an inventory, shown as one box of the inventory and of the shop, where the box also
+shows an item of a merchant's stock.
+_Avoid_: Room, slot, inventory slot, capacity, cell
 
 **Maximum storage space**:
 How many items an inventory can store.
