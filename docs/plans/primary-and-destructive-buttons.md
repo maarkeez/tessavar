@@ -1,6 +1,6 @@
 # Plan: Tell the primary button from the destructive button
 
-> **Status:** built on `main`, the screenshots of M2 still to be approved.
+> **Status:** built on `main`, M3 still to do.
 >
 > **Summary:** Since the [parchment HUD](parchment-hud.md), the primary button is the deep red `HudStyle.ACCENT`,
 > `#A8322D`, while the destructive button kept the old red `HudStyle.DANGER`, `#D32F2F`: two reds a little apart in
