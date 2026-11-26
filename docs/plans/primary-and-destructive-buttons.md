@@ -1,6 +1,6 @@
 # Plan: Tell the primary button from the destructive button
 
-> **Status:** built on `main`, M3 still to do.
+> **Status:** done.
 >
 > **Summary:** Since the [parchment HUD](parchment-hud.md), the primary button is the deep red `HudStyle.ACCENT`,
 > `#A8322D`, while the destructive button kept the old red `HudStyle.DANGER`, `#D32F2F`: two reds a little apart in
@@ -53,7 +53,7 @@ Each milestone is a few commits straight on `main`, green on CI, but M1, which s
 |----|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
 | M1 | Prototype               | The looks are Storybook globals on `prototype/button-colours`, their screenshots are on an Artifact page, and the user has picked the destructive button's look. | ✅      | adeac5d3 |
 | M2 | Light orange            | The game draws every destructive button light orange with a dark ink label, Abandon of the quest detail is brown, and the after screenshots are approved. | ✅      | bb3b9245 |
-| M3 | Renames                 | No name in the code calls a primary button a confirm button, or a destructive button a danger.                                                    | ⬜      |         |
+| M3 | Renames                 | No name in the code calls a primary button a confirm button, or a destructive button a danger.                                                    | ✅      | 6968ffed |
 
 ### M1 commits
 
@@ -141,3 +141,6 @@ The story's description becomes "An action that loses something for good, e.g.: 
   takes a dark label, which `ButtonRowView.Action` and `gameButton` now carry.
 - **Fewer screenshots.** The destructive stories show no primary button, so the first round's page shows their 3 styles
   once, not once per primary colour: 29 of the 65 screenshots taken.
+- **The button inside `PrimaryButton`** is renamed too, from `confirmButton` to `primaryButton`, and the test helper
+  that taps a primary button from `clickConfirm` to `clickPrimary`, while `CancelAndConfirmView.confirmButton` and the
+  `clickConfirm` of the Cancel and Confirm of a cast keep their names, as they name the Confirm action.
