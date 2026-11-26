@@ -1,6 +1,6 @@
 # Plan: Keep the shadows of the inventory, the shop and the call to action off the screen edges
 
-> **Status:** built on `main` up to M1, the screenshots of M1 still to be approved.
+> **Status:** built on `main`, the screenshots of M1 still to be approved.
 >
 > **Summary:** The inventory, the shop and every view of the call to action are as wide as the game window, 390 px, and
 > start at its first column. So the window cuts off the shadow `UIButton` draws around each of their boxes and buttons
@@ -57,7 +57,7 @@ Each milestone is a few commits straight on `main`, green on CI.
 | #  | Milestone      | Done when                                                                                                                 | Status | Done in  |
 |----|----------------|---------------------------------------------------------------------------------------------------------------------------|--------|----------|
 | M1 | Screen margin  | The inventory, the shop and the call to action sit 12 px in from each side, their shadows whole, approved on screenshots. | ✅      | 3983f36c |
-| M2 | Storage spaces | No name of the inventory, the shop or their stories calls a storage space a slot.                                         | ⬜      |          |
+| M2 | Storage spaces | No name of the inventory, the shop or their stories calls a storage space a slot.                                         | ✅      | 48983087 |
 
 ### M1 commits
 
@@ -185,3 +185,8 @@ The test page objects and fakes follow, e.g.: `slotCount()` and `slotBitmaps()` 
 - **M1, the tests.** The views' tests read the sides of their boxes and buttons with `View.sidesIn`, a new helper of the
   shared `ViewExtension`, and `CallToActionView.buttonSides()` reads them over every button the call to action shows.
   `ShopViewTest` also checks the arrows, and `CancelAndConfirmViewTest` the 178 px of Cancel and Confirm.
+- **M2, beyond the inventory and the shop.** The rename also reaches the names that quote them: the `shopSlotSelected`
+  sample actions of `RecordActionTest`, `SearchActionsTest` and `ActionsViewTest`, the `screen-inventory-slot` sample
+  ids of `StorybookTest`, the example of `how-to-add-a-story.md`, and the `selectedSlot` arg and the shop's click of the
+  storybook skill, whose second storage space is now at (406, 409). `clickSlot` and `loadSlot` of the save slots, and
+  `SLOT_RADIUS`, keep their names.
