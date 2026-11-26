@@ -51,7 +51,7 @@ Each milestone is a few commits straight on `main`, green on CI, but M1, which s
 
 | #  | Milestone               | Done when                                                                                                                                         | Status | Done in |
 |----|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
-| M1 | Prototype               | The looks are Storybook globals on `prototype/button-colours`, their screenshots are on an Artifact page, and the user has picked the destructive button's look. | ⬜      |         |
+| M1 | Prototype               | The looks are Storybook globals on `prototype/button-colours`, their screenshots are on an Artifact page, and the user has picked the destructive button's look. | ✅      | adeac5d3 |
 | M2 | Light orange            | The game draws every destructive button light orange with a dark ink label, Abandon of the quest detail is brown, and the after screenshots are approved. | ⬜      |         |
 | M3 | Renames                 | No name in the code calls a primary button a confirm button, or a destructive button a danger.                                                    | ⬜      |         |
 
