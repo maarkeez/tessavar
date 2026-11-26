@@ -1205,6 +1205,15 @@ _Avoid_: Flash, pulse
 
 #### Buttons
 
+**Primary button**:
+A button for the action the player most likely wants next, such as Confirm of a cast, Finish turn or Buy.
+_Avoid_: Confirm button, accent button, main button
+
+**Destructive button**:
+A button that loses something for good when tapped, such as Discard, Abandon, Quit or Overwrite once the player is
+asked to confirm, but not the button that only asks.
+_Avoid_: Danger button, delete button, red button
+
 **Disabled**:
 Said of a button shown faded, as it can't be tapped now, such as Discard for an equipped item.
 _Avoid_: Greyed out, inactive
