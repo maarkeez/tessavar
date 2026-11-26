@@ -57,9 +57,9 @@ class StormBatClip : OpenGlViewsForTesting() {
 
     private val northOfTheAlchemistRow = 20
     private val northOfTheAlchemistColumn = 18
-    private val westOfThePondColumn = 17
-    private val eastOfThePondColumn = 18
-    private val pondRow = 19
+    private val pondColumn = 17
+    private val northOfThePondRow = 18
+    private val southOfThePondRow = 19
     private val soakHold = 1500.milliseconds
     private val battleTimeout = 30.seconds
 
@@ -103,12 +103,12 @@ class StormBatClip : OpenGlViewsForTesting() {
                 waitFor(hold)
                 views.saveStill("storm-bat-tracker")
                 clickArrow(virtualPadView()!!, Direction.WEST)
-                waitUntil { battlefieldView()!!.hasBattleUnitAt(northOfTheAlchemistRow, westOfThePondColumn) }
+                waitUntil { battlefieldView()!!.hasBattleUnitAt(northOfTheAlchemistRow, pondColumn) }
                 clickArrow(virtualPadView()!!, Direction.NORTH)
-                waitUntil { battlefieldView()!!.hasBattleUnitAt(pondRow, westOfThePondColumn) }
+                waitUntil { battlefieldView()!!.hasBattleUnitAt(southOfThePondRow, pondColumn) }
                 waitFor(soakHold)
-                clickArrow(virtualPadView()!!, Direction.EAST)
-                waitUntil { battlefieldView()!!.hasBattleUnitAt(pondRow, eastOfThePondColumn) }
+                clickArrow(virtualPadView()!!, Direction.NORTH)
+                waitUntil { battlefieldView()!!.hasBattleUnitAt(northOfThePondRow, pondColumn) }
                 waitUntil(timeout = battleTimeout) { battleUnitInfoView()?.displayedEffectIds().orEmpty().containsAll(listOf("soak", "stun-long")) }
                 val battleUnitInfoView = battleUnitInfoView()!!
                 waitFor(1500.milliseconds)
