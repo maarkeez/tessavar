@@ -83,8 +83,8 @@ One table per npc. An npc stands at most once in a world.
 `herbalist` and `viking` are recruitable: they join the party, as the units `herbalist` and `viking-warrior`. They are
 never a quest giver nor the npc of a talk task.
 
-Lootable item ids: `bee-essence`, `hammer`, `health-elixir`, `health-potion`, `iron-hammer`, `mana-elixir`,
-`mana-potion`, `rune-hammer`, `teleport-essence`.
+Lootable item ids: `bee-essence`, `fire-punch-essence`, `hammer`, `health-elixir`, `health-potion`, `iron-hammer`,
+`mana-elixir`, `mana-potion`, `rune-hammer`, `teleport-essence`, `thunder-punch-essence`, `water-punch-essence`.
 
 ## Occupied tiles
 

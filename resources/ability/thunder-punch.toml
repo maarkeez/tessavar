@@ -1,0 +1,15 @@
+manaCost = 10
+cooldown = 2
+targeting = "ADJACENT_ENEMY"
+
+[[effects]]
+effectId = "light-physical-damage"
+target = "TARGETED_BATTLE_UNIT"
+
+[[effects]]
+effectId = "stun"
+target = "TARGETED_BATTLE_UNIT"
+
+[[effects]]
+effectId = "stun-long-if-soaked"
+target = "TARGETED_BATTLE_UNIT"

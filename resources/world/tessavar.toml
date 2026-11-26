@@ -167,7 +167,7 @@ column = 20
 id = "alchemist"
 row = 21
 column = 18
-stock = ["health-potion", "mana-potion", "health-elixir", "mana-elixir", "teleport-essence"]
+stock = ["health-potion", "mana-potion", "health-elixir", "mana-elixir", "teleport-essence", "fire-punch-essence", "thunder-punch-essence", "water-punch-essence"]
 
 [[npcs]]
 id = "blacksmith"

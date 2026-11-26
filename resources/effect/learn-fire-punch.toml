@@ -1,0 +1,6 @@
+[outcome]
+type = "LEARN_ABILITY"
+abilityId = "fire-punch"
+
+[timing]
+type = "IMMEDIATELY"

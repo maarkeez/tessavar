@@ -1,0 +1,15 @@
+manaCost = 10
+cooldown = 1
+targeting = "ADJACENT_ENEMY"
+
+[[effects]]
+effectId = "light-physical-damage"
+target = "TARGETED_BATTLE_UNIT"
+
+[[effects]]
+effectId = "burn"
+target = "TARGETED_BATTLE_UNIT"
+
+[[effects]]
+effectId = "venom-spread-if-venom"
+target = "TARGETED_BATTLE_UNIT"

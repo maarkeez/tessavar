@@ -1283,6 +1283,10 @@ msgctxt "ability.cleave.name"
 msgid "Cleave"
 msgstr ""
 
+msgctxt "ability.fire-punch.name"
+msgid "Fire Punch"
+msgstr ""
+
 msgctxt "ability.fireball.name"
 msgid "Fireball"
 msgstr ""
@@ -1323,12 +1327,24 @@ msgctxt "ability.thunder.name"
 msgid "Thunder"
 msgstr ""
 
+msgctxt "ability.thunder-punch.name"
+msgid "Thunder Punch"
+msgstr ""
+
 msgctxt "ability.venom-strike.name"
 msgid "Venom Strike"
 msgstr ""
 
+msgctxt "ability.water-punch.name"
+msgid "Water Punch"
+msgstr ""
+
 msgctxt "lootableItem.bee-essence.name"
 msgid "Bee Essence"
+msgstr ""
+
+msgctxt "lootableItem.fire-punch-essence.name"
+msgid "Fire Punch Essence"
 msgstr ""
 
 msgctxt "lootableItem.hammer.name"
@@ -1363,13 +1379,21 @@ msgctxt "lootableItem.teleport-essence.name"
 msgid "Teleport Essence"
 msgstr ""
 
+msgctxt "lootableItem.thunder-punch-essence.name"
+msgid "Thunder Punch Essence"
+msgstr ""
+
+msgctxt "lootableItem.water-punch-essence.name"
+msgid "Water Punch Essence"
+msgstr ""
+
 msgctxt "npc.alchemist.name"
 msgid "Alchemist"
 msgstr ""
 
 #. What the npc says when no quest has a line for it.
 msgctxt "npc.alchemist.line"
-msgid "Potions, elixirs, and an essence that bends space. What will it be?"
+msgid "Potions, elixirs, and essences that bend space or wake a fist. What will it be?"
 msgstr ""
 
 msgctxt "npc.blacksmith.name"
