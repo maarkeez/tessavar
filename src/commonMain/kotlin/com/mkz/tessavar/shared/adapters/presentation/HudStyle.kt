@@ -39,7 +39,7 @@ object HudStyle {
 
     val ROW = RGBA(0xE6, 0xD6, 0xB2)
     val SELECTED_ROW = RGBA(0xF2, 0xCF, 0x7E)
-    val EMPTY_SLOT = RGBA(0xDD, 0xCB, 0xA4)
+    val EMPTY_STORAGE_SPACE = RGBA(0xDD, 0xCB, 0xA4)
     val UNMARKED = RGBA(0xD8, 0xC6, 0x9E)
 
     val TALK_BACKGROUND = PANEL

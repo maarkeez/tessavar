@@ -49,7 +49,7 @@ class StorybookApi(
                 CancelButtonStories,
                 ConfirmButtonStories,
                 CancelAndConfirmViewStories,
-                InventorySlotViewStories,
+                StorageSpaceViewStories,
                 InventoryViewStories,
                 GoldButtonViewStories,
                 ItemButtonsViewStories,

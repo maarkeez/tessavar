@@ -2,7 +2,7 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneResourcesLoaderMother.loadedResourcesLoader
 import com.mkz.tessavar.screen.adapters.presentation.InventoryView.Owner
-import com.mkz.tessavar.screen.adapters.presentation.InventoryView.Slot
+import com.mkz.tessavar.screen.adapters.presentation.InventoryView.StorageSpace
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
@@ -14,13 +14,13 @@ import kotlin.test.Test
 
 class InventoryViewTest : ViewsForTesting() {
     private class RecordingDelegate : InventoryView.Delegate {
-        val selectedSlots = mutableListOf<Int>()
+        val selectedStorageSpaces = mutableListOf<Int>()
         val steps = mutableListOf<Int>()
         var isClosed = false
         var goldSelections = 0
 
-        override fun slotSelected(index: Int) {
-            selectedSlots += index
+        override fun storageSpaceSelected(index: Int) {
+            selectedStorageSpaces += index
         }
 
         override fun inventoryOwnerStepped(step: Int) {
@@ -37,7 +37,7 @@ class InventoryViewTest : ViewsForTesting() {
     }
 
     @Test
-    fun `Init should display the inventory title and 12 empty slots when is initialized`() =
+    fun `Init should display the inventory title and 12 empty storage spaces when is initialized`() =
         sharedViewsTest {
             // Given
             // When
@@ -45,8 +45,8 @@ class InventoryViewTest : ViewsForTesting() {
             // Then
             inventoryView.titleText() shouldBe "Inventory"
             inventoryView.arrowsVisible().shouldBeFalse()
-            inventoryView.slotCount() shouldBe 12
-            inventoryView.slotBitmaps().all { bitmap -> bitmap == null }.shouldBeTrue()
+            inventoryView.storageSpaceCount() shouldBe 12
+            inventoryView.storageSpaceBitmaps().all { bitmap -> bitmap == null }.shouldBeTrue()
         }
 
     @Test
@@ -56,7 +56,7 @@ class InventoryViewTest : ViewsForTesting() {
             val inventoryView = InventoryView(loadedResourcesLoader(), MessagesMother.messages())
             // Then
             inventoryView.rowSides() shouldContainExactly listOf(12.0 to 378.0, 12.0 to 378.0)
-            inventoryView.slotWidths().all { width -> width == 56.0 }.shouldBeTrue()
+            inventoryView.storageSpaceWidths().all { width -> width == 56.0 }.shouldBeTrue()
         }
 
     @Test
@@ -69,15 +69,15 @@ class InventoryViewTest : ViewsForTesting() {
         }
 
     @Test
-    fun `Display should display the stored items in order followed by the empty slots when is displayed`() =
+    fun `Display should display the stored items in order followed by the empty storage spaces when is displayed`() =
         sharedViewsTest {
             // Given
             val resourcesLoader = loadedResourcesLoader()
             val inventoryView = InventoryView(resourcesLoader, MessagesMother.messages())
             // When
-            inventoryView.display(listOf(Slot("hammer", isEquipped = false), Slot("health-potion", isEquipped = false)), gold = 0)
+            inventoryView.display(listOf(StorageSpace("hammer", isEquipped = false), StorageSpace("health-potion", isEquipped = false)), gold = 0)
             // Then
-            inventoryView.slotBitmaps().take(3).shouldContainExactly(
+            inventoryView.storageSpaceBitmaps().take(3).shouldContainExactly(
                 resourcesLoader.bitmap("lootableItem/hammer.png"),
                 resourcesLoader.bitmap("lootableItem/health-potion.png"),
                 null,
@@ -90,7 +90,7 @@ class InventoryViewTest : ViewsForTesting() {
             // Given
             val inventoryView = InventoryView(loadedResourcesLoader(), MessagesMother.messages())
             // When
-            inventoryView.display(listOf(Slot("hammer", isEquipped = false)), gold = 120)
+            inventoryView.display(listOf(StorageSpace("hammer", isEquipped = false)), gold = 120)
             // Then
             inventoryView.titleText() shouldBe "Inventory"
             inventoryView.goldText() shouldBe "120 G"
@@ -102,50 +102,50 @@ class InventoryViewTest : ViewsForTesting() {
             // Given
             val inventoryView = InventoryView(loadedResourcesLoader(), MessagesMother.messages())
             // When
-            inventoryView.display(listOf(Slot("health-potion", isEquipped = false), Slot("hammer", isEquipped = true)), gold = 0)
+            inventoryView.display(listOf(StorageSpace("health-potion", isEquipped = false), StorageSpace("hammer", isEquipped = true)), gold = 0)
             // Then
-            inventoryView.equippedSlotIndexes().shouldContainExactly(1)
+            inventoryView.equippedStorageSpaceIndexes().shouldContainExactly(1)
         }
 
     @Test
-    fun `Display should clear the selected slot when is displayed again`() =
+    fun `Display should clear the selected storage space when is displayed again`() =
         sharedViewsTest {
             // Given
             val inventoryView = InventoryView(loadedResourcesLoader(), MessagesMother.messages())
-            inventoryView.display(listOf(Slot("hammer", isEquipped = false)), gold = 0)
-            inventoryView.selectSlot(0)
+            inventoryView.display(listOf(StorageSpace("hammer", isEquipped = false)), gold = 0)
+            inventoryView.selectStorageSpace(0)
             // When
-            inventoryView.display(listOf(Slot("hammer", isEquipped = true)), gold = 0)
+            inventoryView.display(listOf(StorageSpace("hammer", isEquipped = true)), gold = 0)
             // Then
-            inventoryView.selectedSlotIndexes().shouldBeEmpty()
+            inventoryView.selectedStorageSpaceIndexes().shouldBeEmpty()
         }
 
     @Test
-    fun `SelectSlot should frame only the selected slot when another slot was selected`() =
+    fun `SelectStorageSpace should frame only the selected storage space when another one was selected`() =
         sharedViewsTest {
             // Given
             val inventoryView = InventoryView(loadedResourcesLoader(), MessagesMother.messages())
-            inventoryView.display(listOf(Slot("hammer", isEquipped = false), Slot("health-potion", isEquipped = false)), gold = 0)
-            inventoryView.selectSlot(0)
+            inventoryView.display(listOf(StorageSpace("hammer", isEquipped = false), StorageSpace("health-potion", isEquipped = false)), gold = 0)
+            inventoryView.selectStorageSpace(0)
             // When
-            inventoryView.selectSlot(1)
+            inventoryView.selectStorageSpace(1)
             // Then
-            inventoryView.selectedSlotIndexes().shouldContainExactly(1)
+            inventoryView.selectedStorageSpaceIndexes().shouldContainExactly(1)
         }
 
     @Test
-    fun `SlotClick should notify the delegate with the slot when a slot is clicked`() =
+    fun `StorageSpaceClick should notify the delegate with the storage space when one is clicked`() =
         sharedViewsTest {
             // Given
             val delegate = RecordingDelegate()
             val inventoryView = InventoryView(loadedResourcesLoader(), MessagesMother.messages())
             inventoryView.setDelegate(delegate)
-            inventoryView.display(listOf(Slot("hammer", isEquipped = false), Slot("health-potion", isEquipped = false)), gold = 0)
+            inventoryView.display(listOf(StorageSpace("hammer", isEquipped = false), StorageSpace("health-potion", isEquipped = false)), gold = 0)
             addChild(inventoryView)
             // When
-            clickSlot(inventoryView, 1)
+            clickStorageSpace(inventoryView, 1)
             // Then
-            delegate.selectedSlots.shouldContainExactly(1)
+            delegate.selectedStorageSpaces.shouldContainExactly(1)
         }
 
     @Test
@@ -283,7 +283,7 @@ class InventoryViewTest : ViewsForTesting() {
             val delegate = RecordingDelegate()
             val inventoryView = InventoryView(loadedResourcesLoader(), MessagesMother.messages())
             inventoryView.setDelegate(delegate)
-            inventoryView.display(listOf(Slot("hammer", isEquipped = false)), gold = 0, owner = Owner(name = "Viking", partyIndex = 1, partySize = 3, canGiveGold = true))
+            inventoryView.display(listOf(StorageSpace("hammer", isEquipped = false)), gold = 0, owner = Owner(name = "Viking", partyIndex = 1, partySize = 3, canGiveGold = true))
             addChild(inventoryView)
             // When
             swipeInventoryWhileItIsDisplayedAgain(inventoryView, dx = 100.0)
@@ -292,20 +292,20 @@ class InventoryViewTest : ViewsForTesting() {
         }
 
     @Test
-    fun `Swipe should notify the delegate of the direction, without selecting a slot`() =
+    fun `Swipe should notify the delegate of the direction, without selecting a storage space`() =
         sharedViewsTest {
             // Given
             val delegate = RecordingDelegate()
             val inventoryView = InventoryView(loadedResourcesLoader(), MessagesMother.messages())
             inventoryView.setDelegate(delegate)
-            inventoryView.display(listOf(Slot("hammer", isEquipped = false)), gold = 0, owner = Owner(name = "Viking", partyIndex = 1, partySize = 3, canGiveGold = true))
+            inventoryView.display(listOf(StorageSpace("hammer", isEquipped = false)), gold = 0, owner = Owner(name = "Viking", partyIndex = 1, partySize = 3, canGiveGold = true))
             addChild(inventoryView)
             // When
             swipeInventory(inventoryView, dx = -100.0)
             swipeInventory(inventoryView, dx = 100.0)
             // Then
             delegate.steps.shouldContainExactly(-1, 1)
-            delegate.selectedSlots.shouldBeEmpty()
+            delegate.selectedStorageSpaces.shouldBeEmpty()
         }
 
     @Test

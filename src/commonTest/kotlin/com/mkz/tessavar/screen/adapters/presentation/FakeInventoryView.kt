@@ -3,12 +3,12 @@ package com.mkz.tessavar.screen.adapters.presentation
 class FakeInventoryView : InventoryView(GameSceneResourcesLoader(), MessagesMother.messages()) {
     var delegate: Delegate? = null
         private set
-    val displayedSlots = mutableListOf<List<Slot>>()
+    val displayedStorageSpaces = mutableListOf<List<StorageSpace>>()
     var displayedGold: Int? = null
         private set
     var displayedOwner: Owner? = null
         private set
-    var selectedSlot: Int? = null
+    var selectedStorageSpace: Int? = null
         private set
 
     override fun setDelegate(delegate: Delegate) {
@@ -16,17 +16,17 @@ class FakeInventoryView : InventoryView(GameSceneResourcesLoader(), MessagesMoth
     }
 
     override fun display(
-        slots: List<Slot>,
+        storageSpaces: List<StorageSpace>,
         gold: Int,
         owner: Owner?,
     ) {
-        displayedSlots += slots
+        displayedStorageSpaces += storageSpaces
         displayedGold = gold
         displayedOwner = owner
-        selectedSlot = null
+        selectedStorageSpace = null
     }
 
-    override fun selectSlot(index: Int?) {
-        selectedSlot = index
+    override fun selectStorageSpace(index: Int?) {
+        selectedStorageSpace = index
     }
 }

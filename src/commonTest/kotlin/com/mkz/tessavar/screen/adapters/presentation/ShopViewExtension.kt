@@ -7,23 +7,23 @@ import korlibs.image.bitmap.Bitmap
 import korlibs.korge.tests.ViewsForTesting
 import korlibs.korge.view.Image
 
-fun ShopView.rowSides(): List<Pair<Double, Double>> = slotViews.chunked(ShopView.SLOTS_PER_ROW).map { row -> row.first().sidesIn(this).first to row.last().sidesIn(this).second }
+fun ShopView.rowSides(): List<Pair<Double, Double>> = storageSpaceViews.chunked(ShopView.STORAGE_SPACES_PER_ROW).map { row -> row.first().sidesIn(this).first to row.last().sidesIn(this).second }
 
-fun ShopView.slotWidths(): List<Double> = slotViews.map { slotView -> slotView.getBounds(this).width }
+fun ShopView.storageSpaceWidths(): List<Double> = storageSpaceViews.map { storageSpaceView -> storageSpaceView.getBounds(this).width }
 
 fun ShopView.arrowSides(): Pair<Double, Double> = previousBuyerButton.sidesIn(this).first to nextBuyerButton.sidesIn(this).second
 
-fun ShopView.slotCount(): Int = slotViews.size
+fun ShopView.storageSpaceCount(): Int = storageSpaceViews.size
 
-fun ShopView.slotBitmaps(): List<Bitmap?> = slotViews.map { slotView -> (slotView.findViewByName(InventorySlotView.ITEM) as? Image)?.bitmap?.base }
+fun ShopView.storageSpaceBitmaps(): List<Bitmap?> = storageSpaceViews.map { storageSpaceView -> (storageSpaceView.findViewByName(StorageSpaceView.ITEM) as? Image)?.bitmap?.base }
 
-fun ShopView.equippedSlotIndexes(): List<Int> = slotViews.indices.filter { index -> slotViews[index].findViewByName(InventorySlotView.EQUIPPED_FRAME) != null }
+fun ShopView.equippedStorageSpaceIndexes(): List<Int> = storageSpaceViews.indices.filter { index -> storageSpaceViews[index].findViewByName(StorageSpaceView.EQUIPPED_FRAME) != null }
 
-fun ShopView.dimmedSlotIndexes(): List<Int> = slotViews.indices.filter { index -> slotViews[index].isDimmed }
+fun ShopView.dimmedStorageSpaceIndexes(): List<Int> = storageSpaceViews.indices.filter { index -> storageSpaceViews[index].isDimmed }
 
-fun ShopView.itemAlphas(): List<Double?> = slotViews.map { slotView -> (slotView.findViewByName(InventorySlotView.ITEM) as? Image)?.alpha }
+fun ShopView.itemAlphas(): List<Double?> = storageSpaceViews.map { storageSpaceView -> (storageSpaceView.findViewByName(StorageSpaceView.ITEM) as? Image)?.alpha }
 
-fun ShopView.selectedSlotIndexes(): List<Int> = slotViews.indices.filter { index -> slotViews[index].findViewByName(InventorySlotView.SELECTION_FRAME) != null }
+fun ShopView.selectedStorageSpaceIndexes(): List<Int> = storageSpaceViews.indices.filter { index -> storageSpaceViews[index].findViewByName(StorageSpaceView.SELECTION_FRAME) != null }
 
 fun ShopView.buyerText(): String = buyerText.text
 
@@ -39,18 +39,18 @@ fun ShopView.footerBottom(): Double = itemNameText.y + itemNameText.height
 
 fun ShopView.isLaidOut(): Boolean {
     val header = buyerText.getGlobalBounds()
-    val slots = slotViews.first().getGlobalBounds()
+    val storageSpaces = storageSpaceViews.first().getGlobalBounds()
     val footer = itemNameText.getGlobalBounds()
-    return header.bottom <= slots.top &&
-        slotViews.last().getGlobalBounds().bottom <= footer.top &&
+    return header.bottom <= storageSpaces.top &&
+        storageSpaceViews.last().getGlobalBounds().bottom <= footer.top &&
         previousBuyerButton.getGlobalBounds().right <= header.left &&
         nextBuyerButton.getGlobalBounds().left >= header.right
 }
 
-suspend fun ViewsForTesting.clickSlot(
+suspend fun ViewsForTesting.clickStorageSpace(
     shopView: ShopView,
     index: Int,
-) = clickOn(shopView.slotViews[index])
+) = clickOn(shopView.storageSpaceViews[index])
 
 suspend fun ViewsForTesting.clickPreviousBuyer(shopView: ShopView) = clickOn(shopView.previousBuyerButton)
 
@@ -61,7 +61,7 @@ suspend fun ViewsForTesting.swipeShop(
     dx: Double,
 ) {
     val start =
-        shopView.slotViews
+        shopView.storageSpaceViews
             .first()
             .getGlobalBounds()
             .center

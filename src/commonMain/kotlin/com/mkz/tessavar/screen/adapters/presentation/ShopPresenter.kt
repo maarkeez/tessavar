@@ -32,8 +32,8 @@ class ShopPresenter(
     private var partyMemberIds: List<String> = emptyList()
     private var buyerIndex = 0
     private var mode = Mode.BUY
-    private var displayedSlots: List<ShopView.Slot> = emptyList()
-    private var selectedSlotIndex: Int? = null
+    private var displayedStorageSpaces: List<ShopView.StorageSpace> = emptyList()
+    private var selectedStorageSpaceIndex: Int? = null
     private var onBack: (() -> Unit)? = null
 
     val isOpen: Boolean get() = merchant != null
@@ -74,8 +74,8 @@ class ShopPresenter(
         if (merchant == null) return
         merchant = null
         partyMemberIds = emptyList()
-        displayedSlots = emptyList()
-        selectedSlotIndex = null
+        displayedStorageSpaces = emptyList()
+        selectedStorageSpaceIndex = null
         shopView.visible = false
         battlefieldView.resetTiles()
     }
@@ -86,9 +86,9 @@ class ShopPresenter(
         val merchant = merchant ?: return
         val buyerId = buyerId() ?: return
         val inventory = inventoryApi.searchInventoryByBattleUnitId(buyerId)
-        displayedSlots =
+        displayedStorageSpaces =
             when (mode) {
-                Mode.BUY -> merchant.stock.map { lootableItemId -> ShopView.Slot(lootableItemId, isEquipped = false, isTradeable = refusal(buyerId, lootableItemId) == null) }
+                Mode.BUY -> merchant.stock.map { lootableItemId -> ShopView.StorageSpace(lootableItemId, isEquipped = false, isTradeable = refusal(buyerId, lootableItemId) == null) }
                 Mode.SELL -> {
                     val equippedItems =
                         inventory
@@ -97,7 +97,7 @@ class ShopPresenter(
                             .orEmpty()
                             .toMutableList()
                     inventory?.storedItems.orEmpty().map { lootableItemId ->
-                        ShopView.Slot(lootableItemId, isEquipped = equippedItems.remove(lootableItemId), isTradeable = refusal(buyerId, lootableItemId) == null)
+                        ShopView.StorageSpace(lootableItemId, isEquipped = equippedItems.remove(lootableItemId), isTradeable = refusal(buyerId, lootableItemId) == null)
                     }
                 }
             }
@@ -110,7 +110,7 @@ class ShopPresenter(
                 partyIndex = buyerIndex,
                 partySize = partyMemberIds.size,
             )
-        shopView.display(slots = displayedSlots, buyer = buyer)
+        shopView.display(storageSpaces = displayedStorageSpaces, buyer = buyer)
         clearSelection()
     }
 
@@ -123,12 +123,12 @@ class ShopPresenter(
     }
 
     private fun clearSelection() {
-        selectedSlotIndex = null
-        shopView.selectSlot(null)
+        selectedStorageSpaceIndex = null
+        shopView.selectStorageSpace(null)
         shopView.displayHint(
             when {
                 mode == Mode.BUY -> messages[UiMessage.SHOP_TAP_TO_BUY]
-                displayedSlots.isEmpty() -> messages[UiMessage.SHOP_NOTHING_TO_SELL]
+                displayedStorageSpaces.isEmpty() -> messages[UiMessage.SHOP_NOTHING_TO_SELL]
                 else -> messages[UiMessage.SHOP_TAP_TO_SELL]
             },
         )
@@ -137,18 +137,18 @@ class ShopPresenter(
 
     private fun backAction() = ButtonRowView.Action(messages[UiMessage.SHOP_BACK]) { whenIdle { onBack?.invoke() } }
 
-    private fun selectItem(slotIndex: Int) {
+    private fun selectItem(storageSpaceIndex: Int) {
         val buyerId = buyerId() ?: return
-        if (slotIndex == selectedSlotIndex) return clearSelection()
-        val lootableItemId = displayedSlots.getOrNull(slotIndex)?.lootableItemId ?: return clearSelection()
+        if (storageSpaceIndex == selectedStorageSpaceIndex) return clearSelection()
+        val lootableItemId = displayedStorageSpaces.getOrNull(storageSpaceIndex)?.lootableItemId ?: return clearSelection()
         val lootableItem = lootableItemApi.searchLootableItemById(lootableItemId) ?: return
         val (price, actionLabel) =
             when (mode) {
                 Mode.BUY -> lootableItem.price to messages[UiMessage.SHOP_BUY]
                 Mode.SELL -> (lootableItemApi.searchSellPrice(lootableItemId) ?: return) to messages[UiMessage.SHOP_SELL]
             }
-        selectedSlotIndex = slotIndex
-        shopView.selectSlot(slotIndex)
+        selectedStorageSpaceIndex = storageSpaceIndex
+        shopView.selectStorageSpace(storageSpaceIndex)
         val refusal = refusal(buyerId, lootableItemId)
         val (color, pressedColor) =
             when (mode) {
@@ -184,7 +184,7 @@ class ShopPresenter(
 
     private fun trade() {
         val buyerId = buyerId() ?: return
-        val lootableItemId = selectedSlotIndex?.let { slotIndex -> displayedSlots.getOrNull(slotIndex) }?.lootableItemId ?: return
+        val lootableItemId = selectedStorageSpaceIndex?.let { storageSpaceIndex -> displayedStorageSpaces.getOrNull(storageSpaceIndex) }?.lootableItemId ?: return
         if (refusal(buyerId, lootableItemId) != null) return
         when (mode) {
             Mode.BUY -> inventoryApi.buyItem(buyerId, lootableItemId)
@@ -197,9 +197,9 @@ class ShopPresenter(
         keepsSelection: Boolean,
     ) {
         if (!isOpen || battleUnitId != buyerId()) return
-        val selectedSlot = selectedSlotIndex
+        val selectedStorageSpace = selectedStorageSpaceIndex
         displayShop()
-        if (keepsSelection && selectedSlot != null) selectItem(selectedSlot)
+        if (keepsSelection && selectedStorageSpace != null) selectItem(selectedStorageSpace)
     }
 
     private fun switchBuyer(partyIndex: Int) =
@@ -216,7 +216,7 @@ class ShopPresenter(
         if (!timeline.isPlaying && isOpen) action()
     }
 
-    override fun shopSlotSelected(index: Int) = whenIdle { timeline.play { selectItem(index) } }
+    override fun shopStorageSpaceSelected(index: Int) = whenIdle { timeline.play { selectItem(index) } }
 
     override fun shopBuyerStepped(step: Int) = switchBuyer(buyerIndex + step)
 }

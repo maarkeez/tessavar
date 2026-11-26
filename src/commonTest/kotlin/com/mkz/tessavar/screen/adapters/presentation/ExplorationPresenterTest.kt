@@ -829,7 +829,7 @@ class ExplorationPresenterTest {
         createPresenter()
         startExploring()
         openTheShop()
-        shopPresenter.shopSlotSelected(0)
+        shopPresenter.shopStorageSpaceSelected(0)
         // When
         callToActionView.chooseAction("Back")
         eventBus.dispatch()
@@ -879,7 +879,7 @@ class ExplorationPresenterTest {
         createPresenter()
         startExploring()
         openTheShop()
-        shopPresenter.shopSlotSelected(0)
+        shopPresenter.shopStorageSpaceSelected(0)
         // When
         eventBus.publish(PartyEvent.ExplorationInterrupted(playerId = "human"))
         eventBus.dispatch()

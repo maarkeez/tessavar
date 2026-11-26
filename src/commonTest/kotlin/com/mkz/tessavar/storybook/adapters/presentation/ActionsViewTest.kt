@@ -63,10 +63,10 @@ class ActionsViewTest : ViewsForTesting() {
             val actionsView = newActionsView()
             addChild(actionsView)
             // When
-            actionsView.display((9 downTo 0).map { index -> ActionDto(name = "shopSlotSelected", arguments = listOf(index.toString())) })
+            actionsView.display((9 downTo 0).map { index -> ActionDto(name = "shopStorageSpaceSelected", arguments = listOf(index.toString())) })
             // Then
             actionsView.titleText() shouldBe "Actions (10)"
-            actionsView.actionTexts().shouldContainExactly((9 downTo 5).map { index -> "shopSlotSelected($index)" })
+            actionsView.actionTexts().shouldContainExactly((9 downTo 5).map { index -> "shopStorageSpaceSelected($index)" })
             actionsView.isListedTopDown().shouldBeTrue()
         }
 

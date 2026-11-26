@@ -50,8 +50,8 @@ class InventoryPresenter(
 ) : InventoryView.Delegate,
     GiveGoldView.Delegate {
     private var displayedBattleUnitId: String? = null
-    private var displayedSlots: List<InventoryView.Slot> = emptyList()
-    private var selectedSlotIndex: Int? = null
+    private var displayedStorageSpaces: List<InventoryView.StorageSpace> = emptyList()
+    private var selectedStorageSpaceIndex: Int? = null
 
     private var foundItem: FoundItem? = null
     private var choice: CompletableDeferred<Unit>? = null
@@ -73,7 +73,7 @@ class InventoryPresenter(
 
     private data class Giving(
         val giverBattleUnitId: String,
-        val slotIndex: Int,
+        val storageSpaceIndex: Int,
         val lootableItemId: String,
         val receivers: Map<PositionDto, String>,
     )
@@ -171,10 +171,10 @@ class InventoryPresenter(
         battleUnitSelector = selector
     }
 
-    private fun slotsOf(battleUnitId: String): List<InventoryView.Slot> {
+    private fun storageSpacesOf(battleUnitId: String): List<InventoryView.StorageSpace> {
         val inventory = inventoryApi.searchInventoryByBattleUnitId(battleUnitId) ?: return emptyList()
         val equippedItems = inventory.equippedItems.values.toMutableList()
-        return inventory.storedItems.map { lootableItemId -> InventoryView.Slot(lootableItemId, isEquipped = equippedItems.remove(lootableItemId)) }
+        return inventory.storedItems.map { lootableItemId -> InventoryView.StorageSpace(lootableItemId, isEquipped = equippedItems.remove(lootableItemId)) }
     }
 
     private fun goldOf(battleUnitId: String): Int = inventoryApi.searchInventoryByBattleUnitId(battleUnitId)?.gold ?: 0
@@ -192,34 +192,34 @@ class InventoryPresenter(
     }
 
     private fun openInventory(battleUnitId: String) {
-        val slots = slotsOf(battleUnitId)
+        val storageSpaces = storageSpacesOf(battleUnitId)
         val gold = goldOf(battleUnitId)
         val owner = ownerOf(battleUnitId)
-        timeline.play { displayInventory(battleUnitId, slots, gold, owner) }
+        timeline.play { displayInventory(battleUnitId, storageSpaces, gold, owner) }
     }
 
     private fun displayInventory(
         battleUnitId: String,
-        slots: List<InventoryView.Slot>,
+        storageSpaces: List<InventoryView.StorageSpace>,
         gold: Int,
         owner: InventoryView.Owner?,
     ) {
         displayedBattleUnitId = battleUnitId
-        displayedSlots = slots
-        selectedSlotIndex = null
-        inventoryView.display(slots, gold, owner)
+        displayedStorageSpaces = storageSpaces
+        selectedStorageSpaceIndex = null
+        inventoryView.display(storageSpaces, gold, owner)
         hudView.displayInventoryView()
     }
 
     private fun refreshInventory(battleUnitId: String) {
-        val slots = slotsOf(battleUnitId)
+        val storageSpaces = storageSpacesOf(battleUnitId)
         val gold = goldOf(battleUnitId)
         val owner = ownerOf(battleUnitId)
         timeline.play {
             if (displayedBattleUnitId != battleUnitId) return@play
-            displayedSlots = slots
-            selectedSlotIndex = null
-            inventoryView.display(slots, gold, owner)
+            displayedStorageSpaces = storageSpaces
+            selectedStorageSpaceIndex = null
+            inventoryView.display(storageSpaces, gold, owner)
         }
     }
 
@@ -236,9 +236,9 @@ class InventoryPresenter(
     private fun clearDisplayedInventory() {
         giving = null
         displayedBattleUnitId = null
-        displayedSlots = emptyList()
-        if (selectedSlotIndex != null || isReadingGoldRefusal || givingGold != null) callToActionView.dismiss()
-        selectedSlotIndex = null
+        displayedStorageSpaces = emptyList()
+        if (selectedStorageSpaceIndex != null || isReadingGoldRefusal || givingGold != null) callToActionView.dismiss()
+        selectedStorageSpaceIndex = null
         isReadingGoldRefusal = false
         givingGold = null
     }
@@ -248,7 +248,7 @@ class InventoryPresenter(
         val battleUnitId = found.event.battleUnitId
         foundItem = found
         choice = pendingChoice
-        displayInventory(battleUnitId, slotsOf(battleUnitId), goldOf(battleUnitId), ownerOf(battleUnitId))
+        displayInventory(battleUnitId, storageSpacesOf(battleUnitId), goldOf(battleUnitId), ownerOf(battleUnitId))
         displayFoundItem(found)
         pendingChoice.await()
     }
@@ -272,25 +272,25 @@ class InventoryPresenter(
 
     private fun askToDiscardFor(
         found: FoundItem,
-        slotIndex: Int,
+        storageSpaceIndex: Int,
     ) {
-        val slot = displayedSlots.getOrNull(slotIndex) ?: return
-        if (slot.isEquipped) return
-        selectedSlotIndex = slotIndex
-        inventoryView.selectSlot(slotIndex)
+        val storageSpace = displayedStorageSpaces.getOrNull(storageSpaceIndex) ?: return
+        if (storageSpace.isEquipped) return
+        selectedStorageSpaceIndex = storageSpaceIndex
+        inventoryView.selectStorageSpace(storageSpaceIndex)
         callToActionView.displayDiscardQuestion(
-            itemName = messages.lootableItemName(slot.lootableItemId),
+            itemName = messages.lootableItemName(storageSpace.lootableItemId),
             onBack = {
                 clearDiscardSelection()
                 displayFoundItem(found)
             },
-            onDiscarded = { discardFor(found.event, slot.lootableItemId) },
+            onDiscarded = { discardFor(found.event, storageSpace.lootableItemId) },
         )
     }
 
     private fun clearDiscardSelection() {
-        selectedSlotIndex = null
-        inventoryView.selectSlot(null)
+        selectedStorageSpaceIndex = null
+        inventoryView.selectStorageSpace(null)
     }
 
     private fun discardFor(
@@ -303,47 +303,47 @@ class InventoryPresenter(
         completeChoice()
     }
 
-    private fun selectItem(slotIndex: Int) {
+    private fun selectItem(storageSpaceIndex: Int) {
         val battleUnitId = displayedBattleUnitId ?: return
-        val slot = displayedSlots.getOrNull(slotIndex) ?: return
+        val storageSpace = displayedStorageSpaces.getOrNull(storageSpaceIndex) ?: return
         if (!canUseInventoryOf(battleUnitId)) return
-        val lootableItem = lootableItemApi.searchLootableItemById(slot.lootableItemId) ?: return
-        val sellPrice = lootableItemApi.searchSellPrice(slot.lootableItemId) ?: return
-        val isItemEquipped = displayedSlots.any { displayedSlot -> displayedSlot.lootableItemId == slot.lootableItemId && displayedSlot.isEquipped }
+        val lootableItem = lootableItemApi.searchLootableItemById(storageSpace.lootableItemId) ?: return
+        val sellPrice = lootableItemApi.searchSellPrice(storageSpace.lootableItemId) ?: return
+        val isItemEquipped = displayedStorageSpaces.any { displayedStorageSpace -> displayedStorageSpace.lootableItemId == storageSpace.lootableItemId && displayedStorageSpace.isEquipped }
         val actions =
             buildList {
                 add(action(messages[UiMessage.ITEM_BUTTONS_CANCEL]) {})
                 add(
-                    ItemButtonsView.Button(label = messages[UiMessage.ITEM_BUTTONS_DISCARD], isEnabled = !slot.isEquipped) {
-                        if (!timeline.isPlaying) askToDiscard(battleUnitId, slotIndex, slot.lootableItemId, messages.lootableItemName(lootableItem.id))
+                    ItemButtonsView.Button(label = messages[UiMessage.ITEM_BUTTONS_DISCARD], isEnabled = !storageSpace.isEquipped) {
+                        if (!timeline.isPlaying) askToDiscard(battleUnitId, storageSpaceIndex, storageSpace.lootableItemId, messages.lootableItemName(lootableItem.id))
                     },
                 )
                 if (isExploring()) {
-                    val refusal = inventoryApi.searchGiveItemRefusal(battleUnitId, slot.lootableItemId)
+                    val refusal = inventoryApi.searchGiveItemRefusal(battleUnitId, storageSpace.lootableItemId)
                     add(
                         ItemButtonsView.Button(label = giveLabel(refusal), isEnabled = refusal == null) {
-                            if (!timeline.isPlaying) startGiving(battleUnitId, slotIndex, slot.lootableItemId, messages.lootableItemName(lootableItem.id))
+                            if (!timeline.isPlaying) startGiving(battleUnitId, storageSpaceIndex, storageSpace.lootableItemId, messages.lootableItemName(lootableItem.id))
                         },
                     )
                 }
                 when (lootableItem.lootType.type) {
                     CONSUMABLE ->
                         add(
-                            primaryAction(messages[UiMessage.ITEM_BUTTONS_CONSUME], isEnabled = inventoryApi.canConsumeItem(battleUnitId, slot.lootableItemId)) {
-                                inventoryApi.consumeItem(battleUnitId, slot.lootableItemId)
+                            primaryAction(messages[UiMessage.ITEM_BUTTONS_CONSUME], isEnabled = inventoryApi.canConsumeItem(battleUnitId, storageSpace.lootableItemId)) {
+                                inventoryApi.consumeItem(battleUnitId, storageSpace.lootableItemId)
                             },
                         )
                     EQUIPPABLE ->
-                        if (slot.isEquipped) {
-                            add(primaryAction(messages[UiMessage.ITEM_BUTTONS_UNEQUIP]) { inventoryApi.unequipItem(battleUnitId, slot.lootableItemId) })
+                        if (storageSpace.isEquipped) {
+                            add(primaryAction(messages[UiMessage.ITEM_BUTTONS_UNEQUIP]) { inventoryApi.unequipItem(battleUnitId, storageSpace.lootableItemId) })
                         } else {
-                            add(primaryAction(messages[UiMessage.ITEM_BUTTONS_EQUIP], isEnabled = !isItemEquipped) { inventoryApi.equipItem(battleUnitId, slot.lootableItemId) })
+                            add(primaryAction(messages[UiMessage.ITEM_BUTTONS_EQUIP], isEnabled = !isItemEquipped) { inventoryApi.equipItem(battleUnitId, storageSpace.lootableItemId) })
                         }
                 }
             }
         timeline.play {
-            selectedSlotIndex = slotIndex
-            inventoryView.selectSlot(slotIndex)
+            selectedStorageSpaceIndex = storageSpaceIndex
+            inventoryView.selectStorageSpace(storageSpaceIndex)
             callToActionView.displayItemButtons(itemName = messages.lootableItemName(lootableItem.id), itemSellPrice = sellPrice, actions = actions)
         }
     }
@@ -355,8 +355,8 @@ class InventoryPresenter(
     ) = ItemButtonsView.Button(label = label, isEnabled = isEnabled) {
         if (!timeline.isPlaying) act()
         timeline.play {
-            selectedSlotIndex = null
-            inventoryView.selectSlot(null)
+            selectedStorageSpaceIndex = null
+            inventoryView.selectStorageSpace(null)
         }
     }
 
@@ -368,21 +368,21 @@ class InventoryPresenter(
 
     private fun askToDiscard(
         battleUnitId: String,
-        slotIndex: Int,
+        storageSpaceIndex: Int,
         lootableItemId: String,
         itemName: String,
     ) {
         timeline.play {
             callToActionView.displayDiscardQuestion(
                 itemName = itemName,
-                onBack = { whenIdle { selectItem(slotIndex) } },
+                onBack = { whenIdle { selectItem(storageSpaceIndex) } },
                 onDiscarded = {
                     whenIdle {
                         inventoryApi.discardItem(battleUnitId, lootableItemId)
                         callToActionView.dismiss()
                         timeline.play {
-                            selectedSlotIndex = null
-                            inventoryView.selectSlot(null)
+                            selectedStorageSpaceIndex = null
+                            inventoryView.selectStorageSpace(null)
                         }
                     }
                 },
@@ -399,7 +399,7 @@ class InventoryPresenter(
 
     private fun startGiving(
         giverBattleUnitId: String,
-        slotIndex: Int,
+        storageSpaceIndex: Int,
         lootableItemId: String,
         itemName: String,
     ) {
@@ -410,7 +410,7 @@ class InventoryPresenter(
                 .toMap()
         if (receivers.isEmpty()) return
         timeline.play {
-            giving = Giving(giverBattleUnitId = giverBattleUnitId, slotIndex = slotIndex, lootableItemId = lootableItemId, receivers = receivers)
+            giving = Giving(giverBattleUnitId = giverBattleUnitId, storageSpaceIndex = storageSpaceIndex, lootableItemId = lootableItemId, receivers = receivers)
             battlefieldView.resetTiles()
             battlefieldView.dimTilesExcept(BattlefieldMapper.positions(receivers.keys))
             callToActionView.displayGiveItem(itemName = itemName, onCancelled = { if (!timeline.isPlaying) cancelGiving() })
@@ -424,14 +424,14 @@ class InventoryPresenter(
             giving = null
             restoreGiverSelection(giverPosition)
         }
-        selectItem(current.slotIndex)
+        selectItem(current.storageSpaceIndex)
     }
 
     private fun finishGiving(giverPosition: PositionDto?) {
         if (giving == null) return
         giving = null
-        selectedSlotIndex = null
-        inventoryView.selectSlot(null)
+        selectedStorageSpaceIndex = null
+        inventoryView.selectStorageSpace(null)
         callToActionView.dismiss()
         restoreGiverSelection(giverPosition)
     }
@@ -446,8 +446,8 @@ class InventoryPresenter(
     private fun abandonGiving() {
         if (giving == null) return
         giving = null
-        selectedSlotIndex = null
-        inventoryView.selectSlot(null)
+        selectedStorageSpaceIndex = null
+        inventoryView.selectStorageSpace(null)
         callToActionView.dismiss()
         battlefieldView.resetTiles()
     }
@@ -474,7 +474,7 @@ class InventoryPresenter(
         } else {
             val message = refusalMessage(refusal) ?: return
             timeline.play {
-                clearSelectedSlot()
+                clearSelectedStorageSpace()
                 isReadingGoldRefusal = true
                 callToActionView.displayGiveGoldRefusal(message, onDismissed = { isReadingGoldRefusal = false })
             }
@@ -489,9 +489,9 @@ class InventoryPresenter(
             GiveGoldRefusalDto.GOLD_FULL -> messages[UiMessage.GIVE_GOLD_GOLD_FULL]
         }
 
-    private fun clearSelectedSlot() {
-        selectedSlotIndex = null
-        inventoryView.selectSlot(null)
+    private fun clearSelectedStorageSpace() {
+        selectedStorageSpaceIndex = null
+        inventoryView.selectStorageSpace(null)
     }
 
     private fun goldReceiversOf(giverBattleUnitId: String): List<GoldReceiver> =
@@ -506,7 +506,7 @@ class InventoryPresenter(
         if (receivers.isEmpty()) return
         val current = GivingGold(giverBattleUnitId, giverGold = goldOf(giverBattleUnitId), receivers = receivers, receiverIndex = 0, amount = 1)
         timeline.play {
-            clearSelectedSlot()
+            clearSelectedStorageSpace()
             isReadingGoldRefusal = false
             givingGold = current
             displayGivingGold(current)
@@ -569,7 +569,7 @@ class InventoryPresenter(
     private fun displayInventoryButtonAgain(giverBattleUnitId: String) {
         givingGold = null
         callToActionView.dismiss()
-        displayInventory(giverBattleUnitId, slotsOf(giverBattleUnitId), goldOf(giverBattleUnitId), ownerOf(giverBattleUnitId))
+        displayInventory(giverBattleUnitId, storageSpacesOf(giverBattleUnitId), goldOf(giverBattleUnitId), ownerOf(giverBattleUnitId))
     }
 
     private fun abandonGivingGold() {
@@ -644,7 +644,7 @@ class InventoryPresenter(
         if (!timeline.isPlaying && choice == null && giving == null && givingGold == null && switchingTo == null) action()
     }
 
-    override fun slotSelected(index: Int) {
+    override fun storageSpaceSelected(index: Int) {
         val found = foundItem
         if (found != null) {
             askToDiscardFor(found, index)

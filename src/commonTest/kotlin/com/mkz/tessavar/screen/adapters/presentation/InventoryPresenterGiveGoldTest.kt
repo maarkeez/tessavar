@@ -173,13 +173,13 @@ class InventoryPresenterGiveGoldTest {
         scene.eventBus.dispatch()
         scene.inventoryView.delegate
             .shouldNotBeNull()
-            .slotSelected(0)
+            .storageSpaceSelected(0)
         scene.eventBus.dispatch()
-        scene.inventoryView.selectedSlot shouldBe 0
+        scene.inventoryView.selectedStorageSpace shouldBe 0
         // When
         scene.tapGold()
         // Then
-        scene.inventoryView.selectedSlot.shouldBeNull()
+        scene.inventoryView.selectedStorageSpace.shouldBeNull()
         scene.callToActionView.displayedItemButtons.shouldBeNull()
     }
 
@@ -230,7 +230,7 @@ class InventoryPresenterGiveGoldTest {
         scene.eventBus.dispatch()
         scene.inventoryView.delegate
             .shouldNotBeNull()
-            .slotSelected(0)
+            .storageSpaceSelected(0)
         scene.eventBus.dispatch()
         scene.callToActionView.displayedItemButtons
             .shouldNotBeNull()
@@ -427,7 +427,7 @@ class InventoryPresenterGiveGoldTest {
     }
 
     @Test
-    fun `The inventory should ignore its slots, arrows and close while the panel is on show`() {
+    fun `The inventory should ignore its storage spaces, arrows and close while the panel is on show`() {
         // Given
         val scene = Scene()
         scene.openPanel()
@@ -435,7 +435,7 @@ class InventoryPresenterGiveGoldTest {
         // When
         scene.inventoryView.delegate
             .shouldNotBeNull()
-            .slotSelected(0)
+            .storageSpaceSelected(0)
         scene.inventoryView.delegate
             .shouldNotBeNull()
             .inventoryOwnerStepped(1)

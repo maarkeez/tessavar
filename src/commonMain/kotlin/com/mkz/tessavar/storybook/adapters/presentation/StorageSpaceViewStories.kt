@@ -1,6 +1,6 @@
 package com.mkz.tessavar.storybook.adapters.presentation
 
-import com.mkz.tessavar.screen.adapters.presentation.InventorySlotView
+import com.mkz.tessavar.screen.adapters.presentation.StorageSpaceView
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ComponentDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.ControlDto
 import com.mkz.tessavar.storybook.domain.Storybook.Dto.StoryDto
@@ -8,7 +8,7 @@ import com.mkz.tessavar.storybook.domain.Storybook.Dto.ValueDto
 import korlibs.korge.view.View
 import korlibs.math.geom.Size
 
-object InventorySlotViewStories : StoryBinding {
+object StorageSpaceViewStories : StoryBinding {
     private val SIZE = Size(60, 60)
 
     private const val NO_ITEM = "none"
@@ -19,15 +19,15 @@ object InventorySlotViewStories : StoryBinding {
     private const val DIMMED = "dimmed"
     private const val SELECTED = "selected"
 
-    private val empty = StoryDto(id = "screen-inventory-slot--empty", name = "Empty", description = "A storage space with no item.", args = mapOf(ITEM to ValueDto.text(NO_ITEM)))
-    private val stored = StoryDto(id = "screen-inventory-slot--stored", name = "Stored", description = "A storage space holding an item.", args = emptyMap())
+    private val empty = StoryDto(id = "screen-storage-space--empty", name = "Empty", description = "A storage space with no item.", args = mapOf(ITEM to ValueDto.text(NO_ITEM)))
+    private val stored = StoryDto(id = "screen-storage-space--stored", name = "Stored", description = "A storage space holding an item.", args = emptyMap())
     private val equipped =
-        StoryDto(id = "screen-inventory-slot--equipped", name = "Equipped", description = "An item the battle unit wears, framed in gold.", args = mapOf(EQUIPPED to ValueDto.boolean(true)))
+        StoryDto(id = "screen-storage-space--equipped", name = "Equipped", description = "An item the battle unit wears, framed in gold.", args = mapOf(EQUIPPED to ValueDto.boolean(true)))
     private val selected =
-        StoryDto(id = "screen-inventory-slot--selected", name = "Selected", description = "The slot tapped last, framed in dark gold.", args = mapOf(SELECTED to ValueDto.boolean(true)))
+        StoryDto(id = "screen-storage-space--selected", name = "Selected", description = "The storage space tapped last, framed in dark gold.", args = mapOf(SELECTED to ValueDto.boolean(true)))
     private val dimmed =
         StoryDto(
-            id = "screen-inventory-slot--dimmed",
+            id = "screen-storage-space--dimmed",
             name = "Dimmed",
             description = "An item that can not be traded in the shop, e.g.: one the buyer can not afford.",
             args =
@@ -38,9 +38,9 @@ object InventorySlotViewStories : StoryBinding {
 
     override fun component(context: StoryContext) =
         ComponentDto(
-            id = "screen-inventory-slot",
+            id = "screen-storage-space",
             group = "Screen",
-            title = "Inventory slot",
+            title = "Storage space",
             description = "One storage space of the inventory and the shop: empty, or the icon of the item it holds.",
             controls =
                 listOf(
@@ -57,7 +57,7 @@ object InventorySlotViewStories : StoryBinding {
         args: Args,
         context: StoryContext,
     ): View =
-        InventorySlotView(SIZE, context.resourcesLoader).apply {
+        StorageSpaceView(SIZE, context.resourcesLoader).apply {
             display(lootableItemId = args.text(ITEM).takeUnless { it == NO_ITEM }, isEquipped = args.boolean(EQUIPPED), isDimmed = args.boolean(DIMMED))
             if (args.boolean(SELECTED)) select()
         }

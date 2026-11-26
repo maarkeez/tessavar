@@ -37,7 +37,7 @@ import com.mkz.tessavar.screen.adapters.presentation.isSavedShown
 import com.mkz.tessavar.screen.adapters.presentation.menuView
 import com.mkz.tessavar.screen.adapters.presentation.pauseView
 import com.mkz.tessavar.screen.adapters.presentation.saveSlotsView
-import com.mkz.tessavar.screen.adapters.presentation.slotBitmaps
+import com.mkz.tessavar.screen.adapters.presentation.storageSpaceBitmaps
 import com.mkz.tessavar.screen.adapters.presentation.talkView
 import com.mkz.tessavar.screen.adapters.presentation.titleText
 import com.mkz.tessavar.screen.adapters.presentation.virtualPadView
@@ -69,7 +69,7 @@ class InventoryEndToEndTest : ViewsForTesting(windowSize = GAME_WINDOW_SIZE) {
             waitUntil { inventoryView() != null }
             // Then
             val inventoryView = inventoryView().shouldNotBeNull()
-            withClue("Expected the 12 slots of the knight inventory to be empty") { inventoryView.slotBitmaps() shouldBe List(12) { null } }
+            withClue("Expected the 12 storage spaces of the knight inventory to be empty") { inventoryView.storageSpaceBitmaps() shouldBe List(12) { null } }
             clickClose(inventoryView)
             waitUntil { hudView()?.isDisplayingBattleUnitInfo() == true }
             withClue("Expected the knight info to be displayed again once the inventory is closed") { hudView()?.isDisplayingBattleUnitInfo()?.shouldBeTrue() }

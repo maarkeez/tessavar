@@ -15,7 +15,7 @@ object ShopViewStories : StoryBinding {
     private const val BUY_PRICE = 50
     private const val SELL_PRICE = 25
 
-    private const val NO_SLOT = "none"
+    private const val NO_STORAGE_SPACE = "none"
 
     private const val MODE = "mode"
     private const val BUYER = "buyer"
@@ -23,7 +23,7 @@ object ShopViewStories : StoryBinding {
     private const val INVENTORY_USED = "inventoryUsed"
     private const val BUYER_INDEX = "buyerIndex"
     private const val ITEMS = "items"
-    private const val SELECTED_SLOT = "selectedSlot"
+    private const val SELECTED_STORAGE_SPACE = "selectedStorageSpace"
     private const val REFUSAL = "refusal"
 
     private enum class Refusal { NONE, NOT_ENOUGH_GOLD, INVENTORY_FULL, EQUIPPED, GOLD_FULL }
@@ -34,21 +34,21 @@ object ShopViewStories : StoryBinding {
             id = "screen-shop--buy-item-selected",
             name = "Buy, item selected",
             description = "An item tapped, framed in dark gold, with its name and its price.",
-            args = mapOf(SELECTED_SLOT to ValueDto.text("1")),
+            args = mapOf(SELECTED_STORAGE_SPACE to ValueDto.text("1")),
         )
     private val buyNotEnoughGold =
         StoryDto(
             id = "screen-shop--buy-not-enough-gold",
             name = "Buy, not enough gold",
             description = "A buyer that can not afford the items: they are dimmed.",
-            args = mapOf(GOLD to ValueDto.int(20), REFUSAL to ValueDto.text(Refusal.NOT_ENOUGH_GOLD.name), SELECTED_SLOT to ValueDto.text("0")),
+            args = mapOf(GOLD to ValueDto.int(20), REFUSAL to ValueDto.text(Refusal.NOT_ENOUGH_GOLD.name), SELECTED_STORAGE_SPACE to ValueDto.text("0")),
         )
     private val buyInventoryFull =
         StoryDto(
             id = "screen-shop--buy-inventory-full",
             name = "Buy, inventory full",
             description = "A buyer with no storage space left in its inventory: the items are dimmed.",
-            args = mapOf(INVENTORY_USED to ValueDto.int(INVENTORY_SIZE), REFUSAL to ValueDto.text(Refusal.INVENTORY_FULL.name), SELECTED_SLOT to ValueDto.text("0")),
+            args = mapOf(INVENTORY_USED to ValueDto.int(INVENTORY_SIZE), REFUSAL to ValueDto.text(Refusal.INVENTORY_FULL.name), SELECTED_STORAGE_SPACE to ValueDto.text("0")),
         )
     private val sell = StoryDto(id = "screen-shop--sell", name = "Sell", description = "The buyer's own items, before one is tapped.", args = mapOf(MODE to ValueDto.text(ShopView.Mode.SELL.name)))
     private val sellEquipped =
@@ -56,14 +56,20 @@ object ShopViewStories : StoryBinding {
             id = "screen-shop--sell-equipped",
             name = "Sell, equipped",
             description = "Items the buyer wears, framed in gold: they are dimmed.",
-            args = mapOf(MODE to ValueDto.text(ShopView.Mode.SELL.name), REFUSAL to ValueDto.text(Refusal.EQUIPPED.name), SELECTED_SLOT to ValueDto.text("0")),
+            args = mapOf(MODE to ValueDto.text(ShopView.Mode.SELL.name), REFUSAL to ValueDto.text(Refusal.EQUIPPED.name), SELECTED_STORAGE_SPACE to ValueDto.text("0")),
         )
     private val sellInventoryFull =
         StoryDto(
             id = "screen-shop--sell-inventory-full",
             name = "Sell, inventory full",
-            description = "A full inventory can still sell: the last item tapped, its sell price under the slots.",
-            args = mapOf(MODE to ValueDto.text(ShopView.Mode.SELL.name), ITEMS to ValueDto.int(INVENTORY_SIZE), INVENTORY_USED to ValueDto.int(INVENTORY_SIZE), SELECTED_SLOT to ValueDto.text("11")),
+            description = "A full inventory can still sell: the last item tapped, its sell price under the storage spaces.",
+            args =
+                mapOf(
+                    MODE to ValueDto.text(ShopView.Mode.SELL.name),
+                    ITEMS to ValueDto.int(INVENTORY_SIZE),
+                    INVENTORY_USED to ValueDto.int(INVENTORY_SIZE),
+                    SELECTED_STORAGE_SPACE to ValueDto.text("11"),
+                ),
         )
     private val sellNothing =
         StoryDto(
@@ -88,8 +94,8 @@ object ShopViewStories : StoryBinding {
                     ControlDto.int(GOLD, minimum = 0, maximum = GOLD_LIMIT),
                     ControlDto.int(INVENTORY_USED, minimum = 0, maximum = INVENTORY_SIZE),
                     ControlDto.int(BUYER_INDEX, minimum = 0, maximum = PARTY_SIZE - 1),
-                    ControlDto.int(ITEMS, minimum = 0, maximum = ShopView.SLOTS),
-                    ControlDto.pick(SELECTED_SLOT, listOf(NO_SLOT) + (0 until ShopView.SLOTS).map { index -> index.toString() }),
+                    ControlDto.int(ITEMS, minimum = 0, maximum = ShopView.STORAGE_SPACES),
+                    ControlDto.pick(SELECTED_STORAGE_SPACE, listOf(NO_STORAGE_SPACE) + (0 until ShopView.STORAGE_SPACES).map { index -> index.toString() }),
                     ControlDto.pick(REFUSAL, Refusal.entries.map { refusal -> refusal.name }),
                 ),
             args =
@@ -100,7 +106,7 @@ object ShopViewStories : StoryBinding {
                     INVENTORY_USED to ValueDto.int(4),
                     BUYER_INDEX to ValueDto.int(0),
                     ITEMS to ValueDto.int(4),
-                    SELECTED_SLOT to ValueDto.text(NO_SLOT),
+                    SELECTED_STORAGE_SPACE to ValueDto.text(NO_STORAGE_SPACE),
                     REFUSAL to ValueDto.text(Refusal.NONE.name),
                 ),
             stories = listOf(buy, buyItemSelected, buyNotEnoughGold, buyInventoryFull, sell, sellEquipped, sellInventoryFull, sellNothing),
@@ -114,14 +120,14 @@ object ShopViewStories : StoryBinding {
         val refusal = Refusal.valueOf(args.text(REFUSAL))
         val itemIds = context.lootableItemIds()
         val items = List(args.int(ITEMS)) { index -> itemIds[index % itemIds.size] }
-        val selectedSlot = args.text(SELECTED_SLOT).toIntOrNull()?.takeIf { index -> index in items.indices }
+        val selectedStorageSpace = args.text(SELECTED_STORAGE_SPACE).toIntOrNull()?.takeIf { index -> index in items.indices }
         val buyerIndex = args.int(BUYER_INDEX)
         return ShopView(context.resourcesLoader, context.messages).apply {
             setDelegate(
                 object : ShopView.Delegate {
-                    override fun shopSlotSelected(index: Int) {
-                        val selected = index.takeIf { index in items.indices && index != selectedSlot }
-                        context.action("shopSlotSelected", index, setArg = SELECTED_SLOT to ValueDto.text(selected?.toString() ?: NO_SLOT))
+                    override fun shopStorageSpaceSelected(index: Int) {
+                        val selected = index.takeIf { index in items.indices && index != selectedStorageSpace }
+                        context.action("shopStorageSpaceSelected", index, setArg = SELECTED_STORAGE_SPACE to ValueDto.text(selected?.toString() ?: NO_STORAGE_SPACE))
                     }
 
                     override fun shopBuyerStepped(step: Int) {
@@ -131,7 +137,7 @@ object ShopViewStories : StoryBinding {
                 },
             )
             display(
-                slots = items.map { item -> ShopView.Slot(item, isEquipped = refusal == Refusal.EQUIPPED, isTradeable = refusal == Refusal.NONE) },
+                storageSpaces = items.map { item -> ShopView.StorageSpace(item, isEquipped = refusal == Refusal.EQUIPPED, isTradeable = refusal == Refusal.NONE) },
                 buyer =
                     ShopView.Buyer(
                         name = args.text(BUYER),
@@ -142,11 +148,11 @@ object ShopViewStories : StoryBinding {
                         partySize = PARTY_SIZE,
                     ),
             )
-            if (selectedSlot == null) {
+            if (selectedStorageSpace == null) {
                 displayHint(context.messages[hintOf(mode, items)])
             } else {
-                selectSlot(selectedSlot)
-                displayItem(itemName = context.messages.lootableItemName(items[selectedSlot]), itemPrice = if (mode == ShopView.Mode.BUY) BUY_PRICE else SELL_PRICE)
+                selectStorageSpace(selectedStorageSpace)
+                displayItem(itemName = context.messages.lootableItemName(items[selectedStorageSpace]), itemPrice = if (mode == ShopView.Mode.BUY) BUY_PRICE else SELL_PRICE)
             }
         }
     }

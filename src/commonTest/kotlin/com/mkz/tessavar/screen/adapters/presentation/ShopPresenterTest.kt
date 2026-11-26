@@ -83,7 +83,7 @@ class ShopPresenterTest {
     private fun reopenToSellTheVikingsHammer(beforeReopening: () -> Unit = {}) {
         openTheShop()
         presenter.shopBuyerStepped(1)
-        presenter.shopSlotSelected(1)
+        presenter.shopStorageSpaceSelected(1)
         trade()
         presenter.close()
         beforeReopening()
@@ -121,13 +121,13 @@ class ShopPresenterTest {
     }
 
     @Test
-    fun `ShopSlotSelected should display the item price, and Buy disabled reading why when the buyer can not afford it`() {
+    fun `ShopStorageSpaceSelected should display the item price, and Buy disabled reading why when the buyer can not afford it`() {
         // Given
         openTheShop()
         // When
-        presenter.shopSlotSelected(1)
+        presenter.shopStorageSpaceSelected(1)
         // Then
-        shopView.selectedSlotIndexes().shouldContainExactly(1)
+        shopView.selectedStorageSpaceIndexes().shouldContainExactly(1)
         shopView.footerText() shouldBe "Hammer"
         shopView.footerPrice() shouldBe "50 G"
         action() shouldBe ("Not enough gold" to false)
@@ -138,53 +138,53 @@ class ShopPresenterTest {
         // When
         openTheShop()
         // Then
-        shopView.dimmedSlotIndexes().shouldContainExactly(1)
+        shopView.dimmedStorageSpaceIndexes().shouldContainExactly(1)
         // When
         presenter.shopBuyerStepped(1)
         // Then
-        shopView.dimmedSlotIndexes().shouldBeEmpty()
+        shopView.dimmedStorageSpaceIndexes().shouldBeEmpty()
     }
 
     @Test
-    fun `ShopSlotSelected should clear the selection and display the hint again when an empty slot is selected`() {
+    fun `ShopStorageSpaceSelected should clear the selection and display the hint again when an empty storage space is selected`() {
         // Given
         openTheShop()
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         // When
-        presenter.shopSlotSelected(5)
+        presenter.shopStorageSpaceSelected(5)
         // Then
-        shopView.selectedSlotIndexes().shouldBeEmpty()
+        shopView.selectedStorageSpaceIndexes().shouldBeEmpty()
         shopView.footerText() shouldBe "Tap an item to buy"
         action().shouldBeNull()
     }
 
     @Test
-    fun `ShopSlotSelected should clear the selection when the selected item is selected again`() {
+    fun `ShopStorageSpaceSelected should clear the selection when the selected item is selected again`() {
         // Given
         openTheShop()
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         // When
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         // Then
-        shopView.selectedSlotIndexes().shouldBeEmpty()
+        shopView.selectedStorageSpaceIndexes().shouldBeEmpty()
         shopView.footerText() shouldBe "Tap an item to buy"
         // When
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         // Then
-        shopView.selectedSlotIndexes().shouldContainExactly(0)
+        shopView.selectedStorageSpaceIndexes().shouldContainExactly(0)
     }
 
     @Test
     fun `ShopBuyerStepped should switch the buyer, clear the selection, dim every tile but the new buyer's and the merchant's, and scroll to it`() {
         // Given
         openTheShop()
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         // When
         presenter.shopBuyerStepped(1)
         // Then
         shopView.buyerText() shouldBe "Viking · 100 G · Inventory 0/12"
         shopView.arrowsEnabled() shouldBe (true to false)
-        shopView.selectedSlotIndexes().shouldBeEmpty()
+        shopView.selectedStorageSpaceIndexes().shouldBeEmpty()
         action().shouldBeNull()
         battlefieldView.tilesNotDimmed.last() shouldBe setOf(vikingTile, merchantTile)
         battlefieldView.scrolledToTiles.last() shouldBe vikingTile
@@ -210,26 +210,26 @@ class ShopPresenterTest {
         // Given
         openTheShop()
         presenter.shopBuyerStepped(1)
-        presenter.shopSlotSelected(1)
+        presenter.shopStorageSpaceSelected(1)
         // When
         trade()
         // Then
         shopView.buyerText() shouldBe "Viking · 50 G · Inventory 1/12"
-        shopView.selectedSlotIndexes().shouldContainExactly(1)
+        shopView.selectedStorageSpaceIndexes().shouldContainExactly(1)
         action() shouldBe ("Buy" to true)
         // When
         trade()
         // Then
         shopView.buyerText() shouldBe "Viking · 0 G · Inventory 2/12"
         action() shouldBe ("Not enough gold" to false)
-        shopView.dimmedSlotIndexes().shouldContainExactly(0, 1)
+        shopView.dimmedStorageSpaceIndexes().shouldContainExactly(0, 1)
     }
 
     @Test
     fun `ShopActionSelected should do nothing when the buyer can not afford the item`() {
         // Given
         openTheShop()
-        presenter.shopSlotSelected(1)
+        presenter.shopStorageSpaceSelected(1)
         // When
         trade()
         // Then
@@ -241,10 +241,10 @@ class ShopPresenterTest {
         // When
         reopenToSellTheVikingsHammer()
         // Then
-        shopView.selectedSlotIndexes().shouldBeEmpty()
+        shopView.selectedStorageSpaceIndexes().shouldBeEmpty()
         shopView.footerText() shouldBe "Tap an item to sell"
         // When
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         // Then
         shopView.footerText() shouldBe "Hammer"
     }
@@ -261,7 +261,7 @@ class ShopPresenterTest {
     fun `ShopActionSelected should sell the item for half the price and clear the selection`() {
         // Given
         reopenToSellTheVikingsHammer()
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         // Then
         shopView.footerPrice() shouldBe "25 G"
         action() shouldBe ("Sell" to true)
@@ -269,7 +269,7 @@ class ShopPresenterTest {
         trade()
         // Then
         shopView.buyerText() shouldBe "Viking · 75 G · Inventory 0/12"
-        shopView.selectedSlotIndexes().shouldBeEmpty()
+        shopView.selectedStorageSpaceIndexes().shouldBeEmpty()
         shopView.footerText() shouldBe "Nothing to sell"
     }
 
@@ -281,22 +281,22 @@ class ShopPresenterTest {
             eventBus.dispatch()
         }
         // When
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         // Then
-        shopView.equippedSlotIndexes().shouldContainExactly(0)
-        shopView.dimmedSlotIndexes().shouldContainExactly(0)
+        shopView.equippedStorageSpaceIndexes().shouldContainExactly(0)
+        shopView.dimmedStorageSpaceIndexes().shouldContainExactly(0)
         action() shouldBe ("Equipped" to false)
     }
 
     @Test
-    fun `ShopSlotSelected should do nothing while the scene plays the previous steps`() {
+    fun `ShopStorageSpaceSelected should do nothing while the scene plays the previous steps`() {
         // Given
         openTheShop()
         timeline.playLongStep()
         // When
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         // Then
-        shopView.selectedSlotIndexes().shouldBeEmpty()
+        shopView.selectedStorageSpaceIndexes().shouldBeEmpty()
     }
 
     @Test
@@ -317,7 +317,7 @@ class ShopPresenterTest {
     fun `Close should hide the shop and restore the tiles`() {
         // Given
         openTheShop()
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         val resetTilesCount = battlefieldView.resetTilesCount
         // When
         presenter.close()
@@ -341,7 +341,7 @@ class ShopPresenterTest {
         openTheShop()
         presenter.shopBuyerStepped(1)
         // When
-        presenter.shopSlotSelected(1)
+        presenter.shopStorageSpaceSelected(1)
         // Then
         callToActionView.actionLabels().shouldContainExactly("Back", "Buy")
         callToActionView.displayedActions!!
@@ -356,7 +356,7 @@ class ShopPresenterTest {
         openTheShop()
         presenter.shopBuyerStepped(1)
         // When
-        presenter.shopSlotSelected(1)
+        presenter.shopStorageSpaceSelected(1)
         // Then
         callToActionView.displayedActions!!.last().color shouldBe ConfirmButton.COLOR
         callToActionView.displayedActions!!.last().pressedColor shouldBe ConfirmButton.PRESSED_COLOR
@@ -367,7 +367,7 @@ class ShopPresenterTest {
         // Given
         reopenToSellTheVikingsHammer()
         // When
-        presenter.shopSlotSelected(0)
+        presenter.shopStorageSpaceSelected(0)
         // Then
         callToActionView.displayedActions!!.last().color shouldBe GameButton.GREY
         callToActionView.displayedActions!!.last().pressedColor shouldBe GameButton.GREY_OVER
@@ -378,7 +378,7 @@ class ShopPresenterTest {
         // Given
         openTheShop()
         // When
-        presenter.shopSlotSelected(1)
+        presenter.shopStorageSpaceSelected(1)
         // Then
         callToActionView.actionLabels().shouldContainExactly("Back", "Not enough gold")
         callToActionView.displayedActions!!

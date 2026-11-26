@@ -21,20 +21,20 @@ class RecordActionTest {
         // Given
         storybookRepository.save(storybook())
         // When
-        recordAction(name = "shopSlotSelected", arguments = listOf("3"))
+        recordAction(name = "shopStorageSpaceSelected", arguments = listOf("3"))
         // Then
         storybookRepository
             .search()
             ?.toDto()
             ?.actions
-            ?.shouldContainExactly(ActionDto(name = "shopSlotSelected", arguments = listOf("3")))
-        eventBus.shouldHavePublishedEvents(ActionRecorded(storyId = "screen-health-bar--full", actionName = "shopSlotSelected"))
+            ?.shouldContainExactly(ActionDto(name = "shopStorageSpaceSelected", arguments = listOf("3")))
+        eventBus.shouldHavePublishedEvents(ActionRecorded(storyId = "screen-health-bar--full", actionName = "shopStorageSpaceSelected"))
     }
 
     @Test
     fun `should do nothing when the catalogue is not open`() {
         // When
-        recordAction(name = "shopSlotSelected", arguments = listOf("3"))
+        recordAction(name = "shopStorageSpaceSelected", arguments = listOf("3"))
         // Then
         storybookRepository.search().shouldBeNull()
         eventBus.shouldNotHavePublishedEvents()

@@ -12,10 +12,10 @@ import korlibs.korge.view.image
 import korlibs.korge.view.solidRect
 import korlibs.math.geom.Size
 
-class InventorySlotView(
-    private val slotSize: Size,
+class StorageSpaceView(
+    private val storageSpaceSize: Size,
     private val resourcesLoader: GameSceneResourcesLoader,
-) : UIButton(slotSize) {
+) : UIButton(storageSpaceSize) {
     companion object {
         const val ITEM = "ITEM"
         const val EQUIPPED_FRAME = "EQUIPPED_FRAME"
@@ -23,7 +23,7 @@ class InventorySlotView(
 
         val EQUIPPED_COLOR = RGBA(0xFF, 0xBB, 0x31)
         val SELECTION_COLOR = HudStyle.SELECTION
-        val EMPTY_COLOR = HudStyle.EMPTY_SLOT
+        val EMPTY_COLOR = HudStyle.EMPTY_STORAGE_SPACE
 
         private const val FRAME_THICKNESS = 3.0
 
@@ -54,14 +54,14 @@ class InventorySlotView(
         findViewByName(EQUIPPED_FRAME)?.removeFromParent()
         unselect()
         this.isDimmed = lootableItemId != null && isDimmed
-        val slot = this
+        val storageSpace = this
         lootableItemId?.let { resourcesLoader.bitmapOrNull("lootableItem/$it.png") }?.let { itemBitmap ->
-            slot.image(itemBitmap) {
+            storageSpace.image(itemBitmap) {
                 name = ITEM
                 smoothing = false
                 scale = 3.0
                 alpha = if (isDimmed) DIMMED_ALPHA else 1.0
-                centerOn(slot)
+                centerOn(storageSpace)
             }
         }
         if (isEquipped) addFrame(EQUIPPED_FRAME, EQUIPPED_COLOR, inset = 0.0)
@@ -80,8 +80,8 @@ class InventorySlotView(
         color: RGBA,
         inset: Double,
     ) {
-        val width = slotSize.width - 2 * inset
-        val height = slotSize.height - 2 * inset
+        val width = storageSpaceSize.width - 2 * inset
+        val height = storageSpaceSize.height - 2 * inset
         container {
             name = frameName
             x = inset

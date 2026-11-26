@@ -1,7 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneResourcesLoaderMother.loadedResourcesLoader
-import com.mkz.tessavar.screen.adapters.presentation.ShopView.Slot
+import com.mkz.tessavar.screen.adapters.presentation.ShopView.StorageSpace
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -13,13 +13,13 @@ import kotlin.test.Test
 
 class ShopViewTest : ViewsForTesting() {
     private class RecordingDelegate : ShopView.Delegate {
-        val selectedSlots = mutableListOf<Int>()
+        val selectedStorageSpaces = mutableListOf<Int>()
         val steps = mutableListOf<Int>()
         var actions = 0
         var isBackSelected = false
 
-        override fun shopSlotSelected(index: Int) {
-            selectedSlots += index
+        override fun shopStorageSpaceSelected(index: Int) {
+            selectedStorageSpaces += index
         }
 
         override fun shopBuyerStepped(step: Int) {
@@ -30,18 +30,18 @@ class ShopViewTest : ViewsForTesting() {
     private val knight = ShopView.Buyer(name = "Knight", gold = 20, usedStorageSpace = 11, maximumStorageSpace = 12, partyIndex = 1, partySize = 3)
 
     private fun ShopView.displayMerchant(
-        slots: List<Slot> = listOf(Slot("mana-potion", isEquipped = false, isTradeable = true), Slot("hammer", isEquipped = false, isTradeable = true)),
+        storageSpaces: List<StorageSpace> = listOf(StorageSpace("mana-potion", isEquipped = false, isTradeable = true), StorageSpace("hammer", isEquipped = false, isTradeable = true)),
         buyer: ShopView.Buyer = knight,
-    ) = display(slots = slots, buyer = buyer)
+    ) = display(storageSpaces = storageSpaces, buyer = buyer)
 
     @Test
-    fun `Init should display 12 empty slots, under the header and above the line of the item, spread over the panel`() =
+    fun `Init should display 12 empty storage spaces, under the header and above the line of the item, spread over the panel`() =
         sharedViewsTest {
             // When
             val shopView = ShopView(loadedResourcesLoader(), MessagesMother.messages())
             // Then
-            shopView.slotCount() shouldBe 12
-            shopView.slotBitmaps().all { bitmap -> bitmap == null }.shouldBeTrue()
+            shopView.storageSpaceCount() shouldBe 12
+            shopView.storageSpaceBitmaps().all { bitmap -> bitmap == null }.shouldBeTrue()
             shopView.isLaidOut().shouldBeTrue()
             shopView.footerBottom() shouldBe 269.0
         }
@@ -53,12 +53,12 @@ class ShopViewTest : ViewsForTesting() {
             val shopView = ShopView(loadedResourcesLoader(), MessagesMother.messages())
             // Then
             shopView.rowSides() shouldContainExactly listOf(12.0 to 378.0, 12.0 to 378.0)
-            shopView.slotWidths().all { width -> width == 56.0 }.shouldBeTrue()
+            shopView.storageSpaceWidths().all { width -> width == 56.0 }.shouldBeTrue()
             shopView.arrowSides() shouldBe (12.0 to 378.0)
         }
 
     @Test
-    fun `Display should display the items in order followed by the empty slots`() =
+    fun `Display should display the items in order followed by the empty storage spaces`() =
         sharedViewsTest {
             // Given
             val resourcesLoader = loadedResourcesLoader()
@@ -66,7 +66,7 @@ class ShopViewTest : ViewsForTesting() {
             // When
             shopView.displayMerchant()
             // Then
-            shopView.slotBitmaps().take(3).shouldContainExactly(
+            shopView.storageSpaceBitmaps().take(3).shouldContainExactly(
                 resourcesLoader.bitmap("lootableItem/mana-potion.png"),
                 resourcesLoader.bitmap("lootableItem/hammer.png"),
                 null,
@@ -79,9 +79,9 @@ class ShopViewTest : ViewsForTesting() {
             // Given
             val shopView = ShopView(loadedResourcesLoader(), MessagesMother.messages())
             // When
-            shopView.displayMerchant(slots = listOf(Slot("health-potion", isEquipped = false, isTradeable = true), Slot("hammer", isEquipped = true, isTradeable = false)))
+            shopView.displayMerchant(storageSpaces = listOf(StorageSpace("health-potion", isEquipped = false, isTradeable = true), StorageSpace("hammer", isEquipped = true, isTradeable = false)))
             // Then
-            shopView.equippedSlotIndexes().shouldContainExactly(1)
+            shopView.equippedStorageSpaceIndexes().shouldContainExactly(1)
         }
 
     @Test
@@ -90,15 +90,15 @@ class ShopViewTest : ViewsForTesting() {
             // Given
             val shopView = ShopView(loadedResourcesLoader(), MessagesMother.messages())
             // When
-            shopView.displayMerchant(slots = listOf(Slot("health-potion", isEquipped = false, isTradeable = true), Slot("hammer", isEquipped = false, isTradeable = false)))
+            shopView.displayMerchant(storageSpaces = listOf(StorageSpace("health-potion", isEquipped = false, isTradeable = true), StorageSpace("hammer", isEquipped = false, isTradeable = false)))
             // Then
-            shopView.dimmedSlotIndexes().shouldContainExactly(1)
+            shopView.dimmedStorageSpaceIndexes().shouldContainExactly(1)
             shopView.itemAlphas()[0] shouldBe 1.0
-            shopView.itemAlphas()[1]!! shouldBe (InventorySlotView.DIMMED_ALPHA plusOrMinus 0.001)
+            shopView.itemAlphas()[1]!! shouldBe (StorageSpaceView.DIMMED_ALPHA plusOrMinus 0.001)
             // When
-            shopView.displayMerchant(slots = listOf(Slot("hammer", isEquipped = false, isTradeable = true)))
+            shopView.displayMerchant(storageSpaces = listOf(StorageSpace("hammer", isEquipped = false, isTradeable = true)))
             // Then
-            shopView.dimmedSlotIndexes().shouldBeEmpty()
+            shopView.dimmedStorageSpaceIndexes().shouldBeEmpty()
         }
 
     @Test
@@ -132,20 +132,20 @@ class ShopViewTest : ViewsForTesting() {
         }
 
     @Test
-    fun `SelectSlot should frame only the selected slot, or none when no slot is selected`() =
+    fun `SelectStorageSpace should frame only the selected storage space, or none when none is selected`() =
         sharedViewsTest {
             // Given
             val shopView = ShopView(loadedResourcesLoader(), MessagesMother.messages())
             shopView.displayMerchant()
-            shopView.selectSlot(0)
+            shopView.selectStorageSpace(0)
             // When
-            shopView.selectSlot(1)
+            shopView.selectStorageSpace(1)
             // Then
-            shopView.selectedSlotIndexes().shouldContainExactly(1)
+            shopView.selectedStorageSpaceIndexes().shouldContainExactly(1)
             // When
-            shopView.selectSlot(null)
+            shopView.selectStorageSpace(null)
             // Then
-            shopView.selectedSlotIndexes().shouldBeEmpty()
+            shopView.selectedStorageSpaceIndexes().shouldBeEmpty()
         }
 
     @Test
@@ -174,22 +174,22 @@ class ShopViewTest : ViewsForTesting() {
     }
 
     @Test
-    fun `Click should notify the delegate of the selected slot and the arrows`() =
+    fun `Click should notify the delegate of the selected storage space and the arrows`() =
         sharedViewsTest {
             // Given
             val delegate = RecordingDelegate()
             val shopView = newShopView(delegate)
             // When
-            clickSlot(shopView, 1)
+            clickStorageSpace(shopView, 1)
             clickPreviousBuyer(shopView)
             clickNextBuyer(shopView)
             // Then
-            delegate.selectedSlots.shouldContainExactly(1)
+            delegate.selectedStorageSpaces.shouldContainExactly(1)
             delegate.steps.shouldContainExactly(-1, 1)
         }
 
     @Test
-    fun `Swipe should notify the delegate of the direction, without selecting a slot`() =
+    fun `Swipe should notify the delegate of the direction, without selecting a storage space`() =
         sharedViewsTest {
             // Given
             val delegate = RecordingDelegate()
@@ -199,7 +199,7 @@ class ShopViewTest : ViewsForTesting() {
             swipeShop(shopView, dx = 100.0)
             // Then
             delegate.steps.shouldContainExactly(-1, 1)
-            delegate.selectedSlots.shouldBeEmpty()
+            delegate.selectedStorageSpaces.shouldBeEmpty()
         }
 
     @Test

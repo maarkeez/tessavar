@@ -7,7 +7,7 @@ description: Opens a story of the game's Storybook (the views of the game shown 
 
 The Storybook is the game itself, started on another page: `/storybook/` instead of `/`. It shows one view of the game
 at a time, a story, in a phone frame, with its controls and actions on the right. A link opens exactly one state, e.g.:
-`/storybook/?story=screen-shop--sell&args=gold:0;selectedSlot:1&globals=language:es`. See
+`/storybook/?story=screen-shop--sell&args=gold:0;selectedStorageSpace:1&globals=language:es`. See
 [ADR 0008](../../../docs/adr/0008-in-game-storybook.md) for why it is part of the game, and
 [How to add a story](../../../docs/testing/how-to-add-a-story.md) to add one.
 
@@ -26,7 +26,7 @@ grep -oE '"[a-z]+(-[a-z0-9]+)*--[a-z0-9-]+"' src/commonTest/kotlin/com/mkz/tessa
 
 A story id is `<component id>--<story>`, e.g.: `screen-shop--sell`. The arg names are the control names of the
 component, in its `<View>Stories` binding under `src/commonMain/kotlin/com/mkz/tessavar/storybook/adapters/presentation/`
-(e.g.: `gold`, `selectedSlot` in `ShopViewStories.kt`). The only global is `language` (`en`, `es`, ...).
+(e.g.: `gold`, `selectedStorageSpace` in `ShopViewStories.kt`). The only global is `language` (`en`, `es`, ...).
 
 ## 2. Build and serve it
 
@@ -93,11 +93,11 @@ Steps run in order after the story has rendered, each one waiting briefly for th
 | `--shot <png>`    | Saves a screenshot now, besides the last one.                                              |
 | `--zoom <button>` | Taps a button of the zoom bar, at the bottom right of the screen: `out` (`-`), `in` (`+`), `fit` or `phone`, which fills the screen with the phone. |
 
-For example, selecting the second slot of the shop, renaming the buyer, and clearing the actions:
+For example, selecting the second storage space of the shop, renaming the buyer, and clearing the actions:
 
 ```shell
 node tools/storybook/screenshot.cjs 'story=screen-shop--sell' \
-  --click 400,407 --shot build/storybook/slot-selected.png \
+  --click 406,409 --shot build/storybook/storage-space-selected.png \
   --click 1037,440 --replace 'Sir Mage' \
   --click 1180,757 --out build/storybook/renamed.png
 ```

@@ -31,24 +31,28 @@ fun InventoryView.isTitleLaidOut(): Boolean {
         nextOwnerButton.getGlobalBounds().right < closeButton.getGlobalBounds().left
 }
 
-fun InventoryView.rowSides(): List<Pair<Double, Double>> = slotViews.chunked(InventoryView.SLOTS_PER_ROW).map { row -> row.first().sidesIn(this).first to row.last().sidesIn(this).second }
+fun InventoryView.rowSides(): List<Pair<Double, Double>> =
+    storageSpaceViews.chunked(InventoryView.STORAGE_SPACES_PER_ROW).map { row ->
+        row.first().sidesIn(this).first to
+            row.last().sidesIn(this).second
+    }
 
-fun InventoryView.slotWidths(): List<Double> = slotViews.map { slotView -> slotView.getBounds(this).width }
+fun InventoryView.storageSpaceWidths(): List<Double> = storageSpaceViews.map { storageSpaceView -> storageSpaceView.getBounds(this).width }
 
 fun InventoryView.closeSides(): Pair<Double, Double> = closeButton.sidesIn(this)
 
-fun InventoryView.slotCount(): Int = slotViews.size
+fun InventoryView.storageSpaceCount(): Int = storageSpaceViews.size
 
-fun InventoryView.slotBitmaps(): List<Bitmap?> = slotViews.map { slotView -> (slotView.findViewByName(InventorySlotView.ITEM) as? Image)?.bitmap?.base }
+fun InventoryView.storageSpaceBitmaps(): List<Bitmap?> = storageSpaceViews.map { storageSpaceView -> (storageSpaceView.findViewByName(StorageSpaceView.ITEM) as? Image)?.bitmap?.base }
 
-fun InventoryView.equippedSlotIndexes(): List<Int> = slotViews.indices.filter { index -> slotViews[index].findViewByName(InventorySlotView.EQUIPPED_FRAME) != null }
+fun InventoryView.equippedStorageSpaceIndexes(): List<Int> = storageSpaceViews.indices.filter { index -> storageSpaceViews[index].findViewByName(StorageSpaceView.EQUIPPED_FRAME) != null }
 
-fun InventoryView.selectedSlotIndexes(): List<Int> = slotViews.indices.filter { index -> slotViews[index].findViewByName(InventorySlotView.SELECTION_FRAME) != null }
+fun InventoryView.selectedStorageSpaceIndexes(): List<Int> = storageSpaceViews.indices.filter { index -> storageSpaceViews[index].findViewByName(StorageSpaceView.SELECTION_FRAME) != null }
 
-suspend fun ViewsForTesting.clickSlot(
+suspend fun ViewsForTesting.clickStorageSpace(
     inventoryView: InventoryView,
     index: Int,
-) = clickOn(inventoryView.slotViews[index])
+) = clickOn(inventoryView.storageSpaceViews[index])
 
 suspend fun ViewsForTesting.clickClose(inventoryView: InventoryView) = clickOn(inventoryView.closeButton)
 
@@ -63,7 +67,7 @@ suspend fun ViewsForTesting.swipeInventory(
     dx: Double,
 ) {
     val start =
-        inventoryView.slotViews
+        inventoryView.storageSpaceViews
             .first()
             .getGlobalBounds()
             .center
@@ -79,7 +83,7 @@ suspend fun ViewsForTesting.swipeInventoryWhileItIsDisplayedAgain(
     dx: Double,
 ) {
     val start =
-        inventoryView.slotViews
+        inventoryView.storageSpaceViews
             .first()
             .getGlobalBounds()
             .center

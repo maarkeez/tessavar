@@ -14,11 +14,11 @@ class SearchActionsTest {
     @Test
     fun `should return the actions recorded, the newest first, when the catalogue is open`() {
         // Given
-        storybookRepository.save(storybook().recordAction("shopSlotSelected", listOf("3")).recordAction("shopBackSelected", emptyList()))
+        storybookRepository.save(storybook().recordAction("shopStorageSpaceSelected", listOf("3")).recordAction("shopBackSelected", emptyList()))
         // When
         val actions = searchActions()
         // Then
-        actions.shouldContainExactly(ActionDto(name = "shopBackSelected", arguments = emptyList()), ActionDto(name = "shopSlotSelected", arguments = listOf("3")))
+        actions.shouldContainExactly(ActionDto(name = "shopBackSelected", arguments = emptyList()), ActionDto(name = "shopStorageSpaceSelected", arguments = listOf("3")))
     }
 
     @Test

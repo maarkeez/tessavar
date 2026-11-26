@@ -27,10 +27,10 @@ open class ShopView(
     private val messages: Messages,
 ) : Container() {
     companion object {
-        const val SLOTS = 12
-        const val SLOTS_PER_ROW = 6
-        private const val SLOT_SIZE = 56.0
-        private const val SLOT_SPACING = 6.0
+        const val STORAGE_SPACES = 12
+        const val STORAGE_SPACES_PER_ROW = 6
+        private const val STORAGE_SPACE_SIZE = 56.0
+        private const val STORAGE_SPACE_SPACING = 6.0
         private const val SCREEN_WIDTH = HudStyle.CONTENT_WIDTH + 2 * HudStyle.SCREEN_MARGIN
         private const val WIDTH = HudStyle.CONTENT_WIDTH
         private const val LEFT = HudStyle.SCREEN_MARGIN
@@ -39,15 +39,15 @@ open class ShopView(
         private const val HEIGHT = 300.0
 
         private const val GAP = 29.0
-        private const val SLOTS_Y = GAP + BAR_HEIGHT + GAP
-        private const val ITEM_Y = SLOTS_Y + 2 * SLOT_SIZE + SLOT_SPACING + GAP
+        private const val STORAGE_SPACES_Y = GAP + BAR_HEIGHT + GAP
+        private const val ITEM_Y = STORAGE_SPACES_Y + 2 * STORAGE_SPACE_SIZE + STORAGE_SPACE_SPACING + GAP
 
         const val SWIPE_THRESHOLD = 40.0
     }
 
     enum class Mode { BUY, SELL }
 
-    data class Slot(
+    data class StorageSpace(
         val lootableItemId: String,
         val isEquipped: Boolean,
         val isTradeable: Boolean,
@@ -63,7 +63,7 @@ open class ShopView(
     )
 
     interface Delegate {
-        fun shopSlotSelected(index: Int)
+        fun shopStorageSpaceSelected(index: Int)
 
         fun shopBuyerStepped(step: Int)
     }
@@ -72,17 +72,17 @@ open class ShopView(
     internal lateinit var previousBuyerButton: GameButton
     internal lateinit var nextBuyerButton: GameButton
     internal lateinit var buyerText: UIText
-    internal val slotViews: List<InventorySlotView> = List(SLOTS) { InventorySlotView(Size(SLOT_SIZE, SLOT_SIZE), resourcesLoader) }
+    internal val storageSpaceViews: List<StorageSpaceView> = List(STORAGE_SPACES) { StorageSpaceView(Size(STORAGE_SPACE_SIZE, STORAGE_SPACE_SIZE), resourcesLoader) }
     internal lateinit var itemNameText: UIText
     internal lateinit var itemPriceText: UIText
 
     init {
         solidRect(Size(SCREEN_WIDTH, HEIGHT), Colors.TRANSPARENT)
         addChild(header().position(LEFT, GAP))
-        slotViews.chunked(SLOTS_PER_ROW).forEachIndexed { rowIndex, rowSlots ->
-            rowSlots.forEachIndexed { columnIndex, slotView ->
-                addChild(slotView)
-                slotView.position(LEFT + columnIndex * (SLOT_SIZE + SLOT_SPACING), SLOTS_Y + rowIndex * (SLOT_SIZE + SLOT_SPACING))
+        storageSpaceViews.chunked(STORAGE_SPACES_PER_ROW).forEachIndexed { rowIndex, rowStorageSpaces ->
+            rowStorageSpaces.forEachIndexed { columnIndex, storageSpaceView ->
+                addChild(storageSpaceView)
+                storageSpaceView.position(LEFT + columnIndex * (STORAGE_SPACE_SIZE + STORAGE_SPACE_SPACING), STORAGE_SPACES_Y + rowIndex * (STORAGE_SPACE_SIZE + STORAGE_SPACE_SPACING))
             }
         }
         itemNameText =
@@ -101,7 +101,7 @@ open class ShopView(
                 styles.textAlignment = TextAlignment.MIDDLE_RIGHT
                 position(LEFT, ITEM_Y)
             }
-        slotViews.forEachIndexed { index, slotView -> slotView.setOnSelected { delegate?.shopSlotSelected(index) } }
+        storageSpaceViews.forEachIndexed { index, storageSpaceView -> storageSpaceView.setOnSelected { delegate?.shopStorageSpaceSelected(index) } }
         onSwipe(threshold = SWIPE_THRESHOLD) { swipe ->
             when (swipe.direction) {
                 SwipeDirection.LEFT -> swiped(-1)
@@ -120,12 +120,12 @@ open class ShopView(
     }
 
     open fun display(
-        slots: List<Slot>,
+        storageSpaces: List<StorageSpace>,
         buyer: Buyer,
     ) {
-        slotViews.forEachIndexed { index, slotView ->
-            val slot = slots.getOrNull(index)
-            slotView.display(lootableItemId = slot?.lootableItemId, isEquipped = slot?.isEquipped ?: false, isDimmed = slot?.isTradeable == false)
+        storageSpaceViews.forEachIndexed { index, storageSpaceView ->
+            val storageSpace = storageSpaces.getOrNull(index)
+            storageSpaceView.display(lootableItemId = storageSpace?.lootableItemId, isEquipped = storageSpace?.isEquipped ?: false, isDimmed = storageSpace?.isTradeable == false)
         }
         val inventory =
             if (buyer.usedStorageSpace >= buyer.maximumStorageSpace) {
@@ -136,11 +136,11 @@ open class ShopView(
         buyerText.text = messages[UiMessage.SHOP_BUYER, "name" to buyer.name, "gold" to messages.gold(buyer.gold), "inventory" to inventory]
         previousBuyerButton.enabled = buyer.partyIndex > 0
         nextBuyerButton.enabled = buyer.partyIndex < buyer.partySize - 1
-        selectSlot(null)
+        selectStorageSpace(null)
     }
 
-    open fun selectSlot(index: Int?) {
-        slotViews.forEachIndexed { slotIndex, slotView -> if (slotIndex == index) slotView.select() else slotView.unselect() }
+    open fun selectStorageSpace(index: Int?) {
+        storageSpaceViews.forEachIndexed { storageSpaceIndex, storageSpaceView -> if (storageSpaceIndex == index) storageSpaceView.select() else storageSpaceView.unselect() }
     }
 
     open fun displayHint(hint: String) {

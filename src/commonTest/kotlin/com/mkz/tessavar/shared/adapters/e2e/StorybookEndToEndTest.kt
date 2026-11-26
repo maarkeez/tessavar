@@ -5,9 +5,9 @@ import com.mkz.tessavar.screen.adapters.presentation.ButtonRowView
 import com.mkz.tessavar.screen.adapters.presentation.ConfirmButton
 import com.mkz.tessavar.screen.adapters.presentation.HealthBarView
 import com.mkz.tessavar.screen.adapters.presentation.ShopView
-import com.mkz.tessavar.screen.adapters.presentation.clickSlot
+import com.mkz.tessavar.screen.adapters.presentation.clickStorageSpace
 import com.mkz.tessavar.screen.adapters.presentation.footerPrice
-import com.mkz.tessavar.screen.adapters.presentation.selectedSlotIndexes
+import com.mkz.tessavar.screen.adapters.presentation.selectedStorageSpaceIndexes
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
 import com.mkz.tessavar.shared.adapters.presentation.clickOn
 import com.mkz.tessavar.shared.adapters.presentation.labelText
@@ -158,7 +158,7 @@ class StorybookEndToEndTest : ViewsForTesting(windowSize = STORYBOOK_WINDOW_SIZE
         }
 
     @Test
-    fun `should record the callbacks of the view of the selected story, and select the slot tapped through its arg, when the shop is tapped`() =
+    fun `should record the callbacks of the view of the selected story, and select the storage space tapped through its arg, when the shop is tapped`() =
         sharedViewsTest {
             // Given
             val storyLocation = FakeStoryLocation(requestedStoryId = "screen-shop--buy")
@@ -166,14 +166,14 @@ class StorybookEndToEndTest : ViewsForTesting(windowSize = STORYBOOK_WINDOW_SIZE
             waitUntil { displayedShopView() != null }
             val shopView = requireNotNull(displayedShopView())
             // When
-            clickSlot(shopView, 2)
+            clickStorageSpace(shopView, 2)
             // Then
-            waitUntil { displayedShopView()?.selectedSlotIndexes() == listOf(2) }
-            displayedShopView()?.selectedSlotIndexes().shouldContainExactly(2)
+            waitUntil { displayedShopView()?.selectedStorageSpaceIndexes() == listOf(2) }
+            displayedShopView()?.selectedStorageSpaceIndexes().shouldContainExactly(2)
             displayedShopView()?.footerPrice() shouldBe "50 G"
-            stage.actionsView()?.actionTexts().shouldContainExactly("shopSlotSelected(2)")
-            stage.controlsView()?.displayedValue("selectedSlot") shouldBe "2"
-            storyLocation.keptLocations.last().args shouldBe mapOf("selectedSlot" to "2")
+            stage.actionsView()?.actionTexts().shouldContainExactly("shopStorageSpaceSelected(2)")
+            stage.controlsView()?.displayedValue("selectedStorageSpace") shouldBe "2"
+            storyLocation.keptLocations.last().args shouldBe mapOf("selectedStorageSpace" to "2")
         }
 
     @Test

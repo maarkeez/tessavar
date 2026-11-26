@@ -73,7 +73,7 @@ One control per value the view is displayed with, named as the view names it, wi
   `ValueDto.int(3)`.
 - **Item ids**: use `context.lootableItemIds()`, the items that have an image, for a pick control or the items of a
   view, never a list written by hand. A pick that may be empty adds an option of its own, e.g.: `none` for an empty
-  slot.
+  storage space.
 - **Plain data only**: the binding feeds the view the plain data it displays, never a domain object or a use case of
   another subdomain, which the architecture tests forbid.
 - **They must fit**: the Controls panel may take at most `ControlsView.MAXIMUM_HEIGHT` (384), about 8 rows. An enum
@@ -88,8 +88,8 @@ Actions:
 ```kotlin
 setDelegate(
     object : ShopView.Delegate {
-        override fun shopSlotSelected(index: Int) =
-            context.action("shopSlotSelected", index, setArg = SELECTED_SLOT to ValueDto.text("$index"))
+        override fun shopStorageSpaceSelected(index: Int) =
+            context.action("shopStorageSpaceSelected", index, setArg = SELECTED_STORAGE_SPACE to ValueDto.text("$index"))
 
         override fun shopBuyerStepped(step: Int) = context.action("shopBuyerStepped", step)
     },
@@ -98,7 +98,7 @@ setDelegate(
 
 A view that takes lambdas instead of a `Delegate` passes lambdas calling `context.action(...)`.
 
-`setArg` maps the callback to an arg change, as the game would react, e.g.: tapping a slot selects it. Only map to a
+`setArg` maps the callback to an arg change, as the game would react, e.g.: tapping a storage space selects it. Only map to a
 value the control accepts: a value outside the options of a pick, or the range of an int, fails. When there is none,
 map to nothing (`setArg = null`), e.g.: stepping past the last party member.
 

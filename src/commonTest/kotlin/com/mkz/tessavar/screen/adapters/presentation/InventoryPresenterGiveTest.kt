@@ -17,7 +17,7 @@ import com.mkz.tessavar.player.domain.Player.Dto.PlayerTypeDto.HUMAN
 import com.mkz.tessavar.player.domain.PlayerMother.player
 import com.mkz.tessavar.screen.adapters.presentation.FakeBattlefieldView.BattleUnitAt
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneTimelineMother.gameSceneTimeline
-import com.mkz.tessavar.screen.adapters.presentation.InventoryView.Slot
+import com.mkz.tessavar.screen.adapters.presentation.InventoryView.StorageSpace
 import com.mkz.tessavar.screen.adapters.presentation.selection.domain.Selection.Dto.TileDto
 import com.mkz.tessavar.screen.adapters.presentation.selection.domain.SelectionEvent
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
@@ -111,7 +111,7 @@ class InventoryPresenterGiveTest {
         publish(SelectionEvent.BattleUnitSelected(tile = TileDto(1, 1), battleUnitId = "knight-1", walkingRange = emptySet()))
         battleUnitInfoView.onInventoryButtonSelected.shouldNotBeNull().invoke()
         eventBus.dispatch()
-        inventoryView.delegate.shouldNotBeNull().slotSelected(0)
+        inventoryView.delegate.shouldNotBeNull().storageSpaceSelected(0)
         eventBus.dispatch()
     }
 
@@ -208,8 +208,8 @@ class InventoryPresenterGiveTest {
         isTaken.shouldBeTrue()
         storedItems("knight-1").shouldContainExactly("health-potion")
         storedItems("viking-1").shouldContainExactly("hammer")
-        inventoryView.displayedSlots.last().shouldContainExactly(Slot("health-potion", isEquipped = false))
-        inventoryView.selectedSlot.shouldBeNull()
+        inventoryView.displayedStorageSpaces.last().shouldContainExactly(StorageSpace("health-potion", isEquipped = false))
+        inventoryView.selectedStorageSpace.shouldBeNull()
         callToActionView.displayedGiveItem.shouldBeNull()
         battlefieldView.blinkedBattleUnits.last() shouldBe BattleUnitAt(row = 1, column = 2, unitId = "viking")
         battlefieldView.tileSelections.last() shouldBe knightTile
@@ -241,18 +241,18 @@ class InventoryPresenterGiveTest {
     }
 
     @Test
-    fun `Give should ignore the inventory's slots and close until the item is given or cancelled`() {
+    fun `Give should ignore the inventory's storage spaces and close until the item is given or cancelled`() {
         // Given
         loot("knight-1", "hammer")
         loot("knight-1", "health-potion")
         selectKnightFirstItem()
         clickGive()
         // When
-        inventoryView.delegate.shouldNotBeNull().slotSelected(1)
+        inventoryView.delegate.shouldNotBeNull().storageSpaceSelected(1)
         inventoryView.delegate.shouldNotBeNull().inventoryClosed()
         eventBus.dispatch()
         // Then
-        inventoryView.selectedSlot shouldBe 0
+        inventoryView.selectedStorageSpace shouldBe 0
         callToActionView.displayedGiveItem.shouldNotBeNull()
     }
 

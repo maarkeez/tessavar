@@ -25,7 +25,7 @@ import com.mkz.tessavar.player.domain.PlayerMother.player
 import com.mkz.tessavar.screen.adapters.presentation.FakeHudView.Display
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneTimelineMother.gameSceneTimeline
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneTimelineMother.playLongStep
-import com.mkz.tessavar.screen.adapters.presentation.InventoryView.Slot
+import com.mkz.tessavar.screen.adapters.presentation.InventoryView.StorageSpace
 import com.mkz.tessavar.screen.adapters.presentation.selection.domain.Selection.Dto.TileDto
 import com.mkz.tessavar.screen.adapters.presentation.selection.domain.SelectionEvent
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
@@ -146,8 +146,8 @@ class InventoryPresenterTest {
         return TileDto(row = tile.row, column = tile.column)
     }
 
-    private fun clickSlot(index: Int) {
-        inventoryView.delegate.shouldNotBeNull().slotSelected(index)
+    private fun clickStorageSpace(index: Int) {
+        inventoryView.delegate.shouldNotBeNull().storageSpaceSelected(index)
         eventBus.dispatch()
     }
 
@@ -230,7 +230,7 @@ class InventoryPresenterTest {
         // When
         openKnightInventory()
         // Then
-        inventoryView.displayedSlots.last().shouldContainExactly(Slot("health-potion", isEquipped = false), Slot("hammer", isEquipped = true))
+        inventoryView.displayedStorageSpaces.last().shouldContainExactly(StorageSpace("health-potion", isEquipped = false), StorageSpace("hammer", isEquipped = true))
         inventoryView.displayedGold shouldBe 20
         hudView.displays.last() shouldBe Display.INVENTORY
     }
@@ -262,7 +262,7 @@ class InventoryPresenterTest {
         // When
         loot("knight-1", "hammer")
         // Then
-        inventoryView.displayedSlots.last().shouldContainExactly(Slot("hammer", isEquipped = false))
+        inventoryView.displayedStorageSpaces.last().shouldContainExactly(StorageSpace("hammer", isEquipped = false))
     }
 
     @Test
@@ -271,9 +271,9 @@ class InventoryPresenterTest {
         loot("knight-1", "health-potion")
         openKnightInventory()
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
-        inventoryView.selectedSlot shouldBe 0
+        inventoryView.selectedStorageSpace shouldBe 0
         val itemButtons = callToActionView.displayedItemButtons.shouldNotBeNull()
         itemButtons.itemName shouldBe "Health Potion"
         itemButtons.itemSellPrice shouldBe 5
@@ -286,7 +286,7 @@ class InventoryPresenterTest {
         loot("knight-1", "teleport-essence")
         openKnightInventory()
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         val itemButtons = callToActionView.displayedItemButtons.shouldNotBeNull()
         itemButtons.actions.map { action -> action.label to action.isEnabled }.shouldContainExactly("Cancel" to true, "Discard" to true, "Consume" to true)
@@ -298,7 +298,7 @@ class InventoryPresenterTest {
         loot("knight-1", "bee-essence")
         openKnightInventory()
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         val itemButtons = callToActionView.displayedItemButtons.shouldNotBeNull()
         itemButtons.actions.map { action -> action.label to action.isEnabled }.shouldContainExactly("Cancel" to true, "Discard" to true, "Consume" to false)
@@ -310,7 +310,7 @@ class InventoryPresenterTest {
         loot("knight-1", "hammer")
         openKnightInventory()
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         val itemButtons = callToActionView.displayedItemButtons.shouldNotBeNull()
         itemButtons.actions.map { action -> action.label to action.isEnabled }.shouldContainExactly("Cancel" to true, "Discard" to true, "Equip" to true)
@@ -323,7 +323,7 @@ class InventoryPresenterTest {
         apis.inventoryApi.equipItem(battleUnitId = "knight-1", lootableItemId = "hammer")
         openKnightInventory()
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         callToActionView.displayedItemButtons.shouldNotBeNull().itemSellPrice shouldBe 25
     }
@@ -336,7 +336,7 @@ class InventoryPresenterTest {
         eventBus.dispatch()
         openKnightInventory()
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         val itemButtons = callToActionView.displayedItemButtons.shouldNotBeNull()
         itemButtons.actions.map { action -> action.label to action.isEnabled }.shouldContainExactly("Cancel" to true, "Discard" to false, "Unequip" to true)
@@ -351,7 +351,7 @@ class InventoryPresenterTest {
         eventBus.dispatch()
         openKnightInventory()
         // When
-        clickSlot(1)
+        clickStorageSpace(1)
         // Then
         val itemButtons = callToActionView.displayedItemButtons.shouldNotBeNull()
         itemButtons.actions.map { action -> action.label to action.isEnabled }.shouldContainExactly("Cancel" to true, "Discard" to true, "Equip" to false)
@@ -363,7 +363,7 @@ class InventoryPresenterTest {
         loot("knight-1", "health-potion")
         openKnightInventory()
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         colorsOfItemButtons().shouldContainExactly(GameButton.GREY, GameButton.GREY, ConfirmButton.COLOR)
         callToActionView.displayedItemButtons!!
@@ -378,7 +378,7 @@ class InventoryPresenterTest {
         loot("knight-1", "hammer")
         openKnightInventory()
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         colorsOfItemButtons().shouldContainExactly(GameButton.GREY, GameButton.GREY, ConfirmButton.COLOR)
     }
@@ -388,10 +388,10 @@ class InventoryPresenterTest {
         // Given
         loot("knight-1", "hammer")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         clickItemAction("Equip")
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         colorsOfItemButtons().shouldContainExactly(GameButton.GREY, GameButton.GREY, ConfirmButton.COLOR)
     }
@@ -401,13 +401,13 @@ class InventoryPresenterTest {
         // Given
         loot("knight-1", "health-potion")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         // When
         clickItemAction("Discard")
         // Then
         callToActionView.displayedDiscardQuestion.shouldNotBeNull().itemName shouldBe "Health Potion"
         callToActionView.displayedItemButtons.shouldBeNull()
-        inventoryView.selectedSlot shouldBe 0
+        inventoryView.selectedStorageSpace shouldBe 0
         apis.inventoryApi.searchInventoryByBattleUnitId("knight-1")?.storedItems shouldBe listOf("health-potion")
     }
 
@@ -416,14 +416,14 @@ class InventoryPresenterTest {
         // Given
         loot("knight-1", "health-potion")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         clickItemAction("Discard")
         // When
         answerDiscardQuestion { onDiscarded() }
         // Then
         apis.inventoryApi.searchInventoryByBattleUnitId("knight-1")?.storedItems shouldBe emptyList()
-        inventoryView.displayedSlots.last().shouldBeEmpty()
-        inventoryView.selectedSlot.shouldBeNull()
+        inventoryView.displayedStorageSpaces.last().shouldBeEmpty()
+        inventoryView.selectedStorageSpace.shouldBeNull()
         callToActionView.displayedDiscardQuestion.shouldBeNull()
     }
 
@@ -432,14 +432,14 @@ class InventoryPresenterTest {
         // Given
         loot("knight-1", "health-potion")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         clickItemAction("Discard")
         // When
         answerDiscardQuestion { onBack() }
         // Then
         callToActionView.displayedDiscardQuestion.shouldBeNull()
         callToActionView.displayedItemButtons.shouldNotBeNull().itemName shouldBe "Health Potion"
-        inventoryView.selectedSlot shouldBe 0
+        inventoryView.selectedStorageSpace shouldBe 0
         apis.inventoryApi.searchInventoryByBattleUnitId("knight-1")?.storedItems shouldBe listOf("health-potion")
     }
 
@@ -449,14 +449,14 @@ class InventoryPresenterTest {
         loot("knight-1", "health-potion")
         loot("knight-1", "hammer")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         clickItemAction("Discard")
         // When
-        clickSlot(1)
+        clickStorageSpace(1)
         // Then
         callToActionView.displayedDiscardQuestion.shouldBeNull()
         callToActionView.displayedItemButtons.shouldNotBeNull().itemName shouldBe "Hammer"
-        inventoryView.selectedSlot shouldBe 1
+        inventoryView.selectedStorageSpace shouldBe 1
         apis.inventoryApi.searchInventoryByBattleUnitId("knight-1")?.storedItems shouldBe listOf("health-potion", "hammer")
     }
 
@@ -465,7 +465,7 @@ class InventoryPresenterTest {
         // Given
         loot("knight-1", "health-potion")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         clickItemAction("Discard")
         // When
         inventoryView.delegate.shouldNotBeNull().inventoryClosed()
@@ -480,12 +480,12 @@ class InventoryPresenterTest {
         // Given
         loot("knight-1", "health-potion")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         // When
         clickItemAction("Consume")
         // Then
-        inventoryView.displayedSlots.last().shouldBeEmpty()
-        inventoryView.selectedSlot.shouldBeNull()
+        inventoryView.displayedStorageSpaces.last().shouldBeEmpty()
+        inventoryView.selectedStorageSpace.shouldBeNull()
         callToActionView.displayedItemButtons.shouldBeNull()
     }
 
@@ -494,11 +494,11 @@ class InventoryPresenterTest {
         // Given
         loot("knight-1", "hammer")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         // When
         clickItemAction("Equip")
         // Then
-        inventoryView.displayedSlots.last().shouldContainExactly(Slot("hammer", isEquipped = true))
+        inventoryView.displayedStorageSpaces.last().shouldContainExactly(StorageSpace("hammer", isEquipped = true))
         apis.battleUnitApi.searchBattleUnitById("knight-1")?.maximumHealth shouldBe 120
     }
 
@@ -507,11 +507,11 @@ class InventoryPresenterTest {
         // Given
         loot("knight-1", "health-potion")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         // When
         clickItemAction("Cancel")
         // Then
-        inventoryView.selectedSlot.shouldBeNull()
+        inventoryView.selectedStorageSpace.shouldBeNull()
         apis.inventoryApi
             .searchInventoryByBattleUnitId("knight-1")
             ?.storedItems
@@ -523,7 +523,7 @@ class InventoryPresenterTest {
         // Given
         loot("knight-1", "hammer")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         clickItemAction("Equip")
         // When
         inventoryView.delegate.shouldNotBeNull().inventoryClosed()
@@ -542,7 +542,7 @@ class InventoryPresenterTest {
         findWhileFull("hammer")
         // Then
         hudView.displays.last() shouldBe Display.INVENTORY
-        inventoryView.displayedSlots.last().size shouldBe 12
+        inventoryView.displayedStorageSpaces.last().size shouldBe 12
         val inventoryFull = callToActionView.displayedInventoryFull.shouldNotBeNull()
         inventoryFull.foundItemName shouldBe "Hammer"
         inventoryFull.foundItemSellPrice shouldBe 25
@@ -556,11 +556,11 @@ class InventoryPresenterTest {
         fillKnightInventoryWithHealthPotions()
         findWhileFull("hammer")
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         callToActionView.displayedDiscardQuestion.shouldNotBeNull().itemName shouldBe "Health Potion"
         callToActionView.displayedInventoryFull.shouldBeNull()
-        inventoryView.selectedSlot shouldBe 0
+        inventoryView.selectedStorageSpace shouldBe 0
         apis.inventoryApi.searchInventoryByBattleUnitId("knight-1")?.storedItems shouldBe List(12) { "health-potion" }
         timeline.isPlaying.shouldBeTrue()
     }
@@ -570,13 +570,13 @@ class InventoryPresenterTest {
         // Given
         fillKnightInventoryWithHealthPotions()
         findWhileFull("hammer")
-        clickSlot(0)
+        clickStorageSpace(0)
         // When
         answerDiscardQuestion { onBack() }
         // Then
         callToActionView.displayedInventoryFull.shouldNotBeNull().foundItemName shouldBe "Hammer"
         callToActionView.displayedDiscardQuestion.shouldBeNull()
-        inventoryView.selectedSlot.shouldBeNull()
+        inventoryView.selectedStorageSpace.shouldBeNull()
         apis.inventoryApi.searchInventoryByBattleUnitId("knight-1")?.storedItems shouldBe List(12) { "health-potion" }
         timeline.isPlaying.shouldBeTrue()
     }
@@ -586,12 +586,12 @@ class InventoryPresenterTest {
         // Given
         fillKnightInventoryWithHealthPotions()
         findWhileFull("hammer")
-        clickSlot(0)
+        clickStorageSpace(0)
         // When
-        clickSlot(3)
+        clickStorageSpace(3)
         // Then
         callToActionView.displayedDiscardQuestion.shouldNotBeNull()
-        inventoryView.selectedSlot shouldBe 3
+        inventoryView.selectedStorageSpace shouldBe 3
         timeline.isPlaying.shouldBeTrue()
     }
 
@@ -600,16 +600,16 @@ class InventoryPresenterTest {
         // Given
         loot("knight-1", "hammer")
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         clickItemAction("Equip")
         repeat(11) { loot("knight-1", "health-potion") }
         findWhileFull("hammer")
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         callToActionView.displayedDiscardQuestion.shouldBeNull()
         callToActionView.displayedInventoryFull.shouldNotBeNull()
-        inventoryView.selectedSlot.shouldBeNull()
+        inventoryView.selectedStorageSpace.shouldBeNull()
     }
 
     @Test
@@ -617,12 +617,12 @@ class InventoryPresenterTest {
         // Given
         fillKnightInventoryWithHealthPotions()
         findWhileFull("hammer")
-        clickSlot(0)
+        clickStorageSpace(0)
         // When
         answerDiscardQuestion { onDiscarded() }
         // Then
         callToActionView.displayedDiscardQuestion.shouldBeNull()
-        inventoryView.selectedSlot.shouldBeNull()
+        inventoryView.selectedStorageSpace.shouldBeNull()
         apis.inventoryApi.searchInventoryByBattleUnitId("knight-1")?.storedItems shouldBe List(11) { "health-potion" } + "hammer"
         apis.lootDropApi.searchDroppedItems()[LootDrop.Dto.PositionDto(1, 2)].shouldBeNull()
         callToActionView.displayedInventoryFull.shouldBeNull()
@@ -665,7 +665,7 @@ class InventoryPresenterTest {
         eventBus.dispatch()
         openKnightInventory()
         // When
-        clickSlot(0)
+        clickStorageSpace(0)
         // Then
         callToActionView.displayedItemButtons.shouldBeNull()
     }
@@ -683,10 +683,10 @@ class InventoryPresenterTest {
             .isFinished
             .shouldBeTrue()
         openKnightInventory()
-        clickSlot(0)
+        clickStorageSpace(0)
         // When
         clickItemAction("Consume")
         // Then
-        inventoryView.displayedSlots.last().shouldBeEmpty()
+        inventoryView.displayedStorageSpaces.last().shouldBeEmpty()
     }
 }

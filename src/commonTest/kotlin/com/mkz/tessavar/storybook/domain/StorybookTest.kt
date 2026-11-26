@@ -27,9 +27,9 @@ class StorybookTest {
     private val full = story(id = "screen-health-bar--full", name = "Full")
     private val empty = story(id = "screen-health-bar--empty", name = "Empty", args = mapOf("remaining" to ValueDto.int(0)))
     private val healthBar = component(id = "screen-health-bar", stories = listOf(full, empty))
-    private val inventorySlot =
+    private val storageSpace =
         component(
-            id = "screen-inventory-slot",
+            id = "screen-storage-space",
             controls =
                 listOf(
                     ControlDto.boolean("equipped"),
@@ -48,7 +48,7 @@ class StorybookTest {
                     "item" to ValueDto.text("health-potion"),
                     "frame" to ValueDto.text("FFBB31"),
                 ),
-            stories = listOf(story(id = "screen-inventory-slot--stored")),
+            stories = listOf(story(id = "screen-storage-space--stored")),
         )
 
     private fun create(
@@ -216,7 +216,7 @@ class StorybookTest {
         // Given
         val args = mapOf("equipped" to "true", "size" to "45", "mode" to "SELL", "label" to "Iron hammer", "item" to "none", "frame" to "ff375f")
         // When
-        val storybook = create(listOf(inventorySlot), location(storyId = "screen-inventory-slot--stored", args = args))
+        val storybook = create(listOf(storageSpace), location(storyId = "screen-storage-space--stored", args = args))
         // Then
         storybook.toDto().args shouldBe
             mapOf(
@@ -234,9 +234,9 @@ class StorybookTest {
         // Given
         val args = mapOf("equipped" to "yes", "size" to "91", "mode" to "RENT", "item" to "sword", "frame" to "red", "unknown" to "1")
         // When
-        val storybook = create(listOf(inventorySlot), location(storyId = "screen-inventory-slot--stored", args = args))
+        val storybook = create(listOf(storageSpace), location(storyId = "screen-storage-space--stored", args = args))
         // Then
-        storybook.toDto().args shouldBe inventorySlot.args
+        storybook.toDto().args shouldBe storageSpace.args
     }
 
     @Test
@@ -363,7 +363,7 @@ class StorybookTest {
     @Test
     fun `ChangeArg should accept a value of every control type when its control accepts it`() {
         // Given
-        val storybook = storybook(components = listOf(inventorySlot))
+        val storybook = storybook(components = listOf(storageSpace))
         val args =
             mapOf(
                 "equipped" to ValueDto.boolean(true),
@@ -401,7 +401,7 @@ class StorybookTest {
     @Test
     fun `ChangeArg should fail when a color is not a hex in upper case`() {
         // When
-        val result = runCatching { storybook(components = listOf(inventorySlot)).changeArg("frame", ValueDto.text("ff375f")) }
+        val result = runCatching { storybook(components = listOf(storageSpace)).changeArg("frame", ValueDto.text("ff375f")) }
         // Then
         result.exceptionOrNull().shouldBeTypeOf<StorybookError.InvalidValue>()
     }
@@ -409,7 +409,7 @@ class StorybookTest {
     @Test
     fun `ChangeArg should fail when the value is not an option of its control`() {
         // When
-        val result = runCatching { storybook(components = listOf(inventorySlot)).changeArg("mode", ValueDto.text("RENT")) }
+        val result = runCatching { storybook(components = listOf(storageSpace)).changeArg("mode", ValueDto.text("RENT")) }
         // Then
         result.exceptionOrNull().shouldBeTypeOf<StorybookError.InvalidValue>()
     }
@@ -478,7 +478,7 @@ class StorybookTest {
     fun `ToLocation should keep the story, the args changed from its own in the order of their controls, and the globals changed from their defaults`() {
         // Given
         val storybook =
-            storybook(components = listOf(inventorySlot))
+            storybook(components = listOf(storageSpace))
                 .changeArg("frame", ValueDto.text("FF375F"))
                 .changeArg("equipped", ValueDto.boolean(true))
                 .changeArg("size", ValueDto.int(45))
@@ -487,7 +487,7 @@ class StorybookTest {
         // When
         val location = storybook.toLocation()
         // Then
-        location shouldBe location(storyId = "screen-inventory-slot--stored", args = mapOf("equipped" to "true", "frame" to "FF375F"), globals = mapOf("language" to "es"))
+        location shouldBe location(storyId = "screen-storage-space--stored", args = mapOf("equipped" to "true", "frame" to "FF375F"), globals = mapOf("language" to "es"))
     }
 
     @Test
@@ -503,41 +503,41 @@ class StorybookTest {
     @Test
     fun `RecordAction should record the action as the newest one and publish the action recorded`() {
         // Given
-        val storybook = storybook(components = listOf(healthBar)).recordAction("shopSlotSelected", listOf("3")).pullEvents().second
+        val storybook = storybook(components = listOf(healthBar)).recordAction("shopStorageSpaceSelected", listOf("3")).pullEvents().second
         // When
         val (events, recordedStorybook) = storybook.recordAction("shopBuyerStepped", listOf("-1")).pullEvents()
         // Then
-        recordedStorybook.toDto().actions.shouldContainExactly(ActionDto(name = "shopBuyerStepped", arguments = listOf("-1")), ActionDto(name = "shopSlotSelected", arguments = listOf("3")))
+        recordedStorybook.toDto().actions.shouldContainExactly(ActionDto(name = "shopBuyerStepped", arguments = listOf("-1")), ActionDto(name = "shopStorageSpaceSelected", arguments = listOf("3")))
         events.shouldContainExactly(ActionRecorded(storyId = "screen-health-bar--full", actionName = "shopBuyerStepped"))
     }
 
     @Test
     fun `RecordAction should keep only the newest actions when the most actions are recorded`() {
         // Given
-        val storybook = (1..Storybook.MAXIMUM_ACTIONS).fold(storybook()) { recorded, index -> recorded.recordAction("shopSlotSelected", listOf(index.toString())) }
+        val storybook = (1..Storybook.MAXIMUM_ACTIONS).fold(storybook()) { recorded, index -> recorded.recordAction("shopStorageSpaceSelected", listOf(index.toString())) }
         // When
         val recordedStorybook = storybook.recordAction("shopBackSelected", emptyList())
         // Then
         val actions = recordedStorybook.toDto().actions
         actions.size shouldBe Storybook.MAXIMUM_ACTIONS
         actions.first() shouldBe ActionDto(name = "shopBackSelected", arguments = emptyList())
-        actions.last() shouldBe ActionDto(name = "shopSlotSelected", arguments = listOf("2"))
+        actions.last() shouldBe ActionDto(name = "shopStorageSpaceSelected", arguments = listOf("2"))
     }
 
     @Test
     fun `RecordAction should keep the actions when an arg of the selected story is changed`() {
         // Given
-        val storybook = storybook(components = listOf(healthBar)).recordAction("shopSlotSelected", listOf("3"))
+        val storybook = storybook(components = listOf(healthBar)).recordAction("shopStorageSpaceSelected", listOf("3"))
         // When
         val changedStorybook = storybook.changeArg("remaining", ValueDto.int(3))
         // Then
-        changedStorybook.toDto().actions.shouldContainExactly(ActionDto(name = "shopSlotSelected", arguments = listOf("3")))
+        changedStorybook.toDto().actions.shouldContainExactly(ActionDto(name = "shopStorageSpaceSelected", arguments = listOf("3")))
     }
 
     @Test
     fun `SelectStory should show the story with no actions when actions of the selected story were recorded`() {
         // Given
-        val storybook = storybook(components = listOf(healthBar)).recordAction("shopSlotSelected", listOf("3"))
+        val storybook = storybook(components = listOf(healthBar)).recordAction("shopStorageSpaceSelected", listOf("3"))
         // When
         val selectedStorybook = storybook.selectStory("screen-health-bar--empty")
         // Then
@@ -547,7 +547,7 @@ class StorybookTest {
     @Test
     fun `ClearActions should empty the actions recorded and publish the actions cleared when actions were recorded`() {
         // Given
-        val storybook = storybook(components = listOf(healthBar)).recordAction("shopSlotSelected", listOf("3")).pullEvents().second
+        val storybook = storybook(components = listOf(healthBar)).recordAction("shopStorageSpaceSelected", listOf("3")).pullEvents().second
         // When
         val (events, clearedStorybook) = storybook.clearActions().pullEvents()
         // Then

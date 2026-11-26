@@ -14,7 +14,7 @@ import com.mkz.tessavar.screen.adapters.presentation.FakeHudView.Display
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneTimelineMother.gameSceneTimeline
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneTimelineMother.playLongStep
 import com.mkz.tessavar.screen.adapters.presentation.InventoryView.Owner
-import com.mkz.tessavar.screen.adapters.presentation.InventoryView.Slot
+import com.mkz.tessavar.screen.adapters.presentation.InventoryView.StorageSpace
 import com.mkz.tessavar.screen.adapters.presentation.selection.domain.Selection.Dto.TileDto
 import com.mkz.tessavar.screen.adapters.presentation.selection.domain.SelectionEvent
 import com.mkz.tessavar.shared.adapters.presentation.SubdomainApis
@@ -140,7 +140,7 @@ class InventoryPresenterSwitchTest {
         step(1)
         // Then
         selectedBattleUnitIds.shouldContainExactly("viking-1")
-        inventoryView.displayedSlots.last().shouldContainExactly(Slot("health-potion", isEquipped = false))
+        inventoryView.displayedStorageSpaces.last().shouldContainExactly(StorageSpace("health-potion", isEquipped = false))
         inventoryView.displayedGold shouldBe 30
         inventoryView.displayedOwner shouldBe Owner(name = "Viking", partyIndex = 1, partySize = 3, canGiveGold = true)
         hudView.displays.last() shouldBe Display.INVENTORY
@@ -184,7 +184,7 @@ class InventoryPresenterSwitchTest {
         // Given
         loot("knight-1", "health-potion")
         openInventoryOf("knight-1")
-        inventoryView.delegate.shouldNotBeNull().slotSelected(0)
+        inventoryView.delegate.shouldNotBeNull().storageSpaceSelected(0)
         eventBus.dispatch()
         callToActionView.displayedItemButtons
             .shouldNotBeNull()
@@ -204,13 +204,13 @@ class InventoryPresenterSwitchTest {
         openInventoryOf("knight-1")
         step(1)
         hudView.displays.clear()
-        val displayCount = inventoryView.displayedSlots.size
+        val displayCount = inventoryView.displayedStorageSpaces.size
         // When
         val mageTile = apis.battlefieldApi.searchPosition("mage-1").shouldNotBeNull()
         eventBus.publish(SelectionEvent.BattleUnitSelected(tile = TileDto(mageTile.row, mageTile.column), battleUnitId = "mage-1", walkingRange = emptySet()))
         eventBus.dispatch()
         // Then
         hudView.displays.shouldBeEmpty()
-        inventoryView.displayedSlots.size shouldBe displayCount
+        inventoryView.displayedStorageSpaces.size shouldBe displayCount
     }
 }

@@ -22,10 +22,10 @@ open class InventoryView(
     private val messages: Messages,
 ) : Container() {
     companion object {
-        const val SLOTS = 12
-        const val SLOTS_PER_ROW = 6
-        private const val SLOT_SIZE = 56.0
-        private const val SLOT_SPACING = 6.0
+        const val STORAGE_SPACES = 12
+        const val STORAGE_SPACES_PER_ROW = 6
+        private const val STORAGE_SPACE_SIZE = 56.0
+        private const val STORAGE_SPACE_SPACING = 6.0
         private const val SCREEN_WIDTH = HudStyle.CONTENT_WIDTH + 2 * HudStyle.SCREEN_MARGIN
         private const val WIDTH = HudStyle.CONTENT_WIDTH
         private const val PADDING = 10.0
@@ -37,12 +37,12 @@ open class InventoryView(
         private const val TEXT_HEIGHT = 20.0
 
         private const val TEXT_WIDTH = TITLE_LINE_WIDTH - 2 * ARROW_WIDTH - 3 * TITLE_SPACING
-        private const val HEIGHT = BAR_HEIGHT + 2 * SLOT_SIZE + SLOT_SPACING + PADDING
+        private const val HEIGHT = BAR_HEIGHT + 2 * STORAGE_SPACE_SIZE + STORAGE_SPACE_SPACING + PADDING
 
         const val SWIPE_THRESHOLD = 40.0
     }
 
-    data class Slot(
+    data class StorageSpace(
         val lootableItemId: String,
         val isEquipped: Boolean,
     )
@@ -55,7 +55,7 @@ open class InventoryView(
     )
 
     interface Delegate {
-        fun slotSelected(index: Int)
+        fun storageSpaceSelected(index: Int)
 
         fun inventoryOwnerStepped(step: Int)
 
@@ -73,7 +73,7 @@ open class InventoryView(
     internal lateinit var goldView: UnitNameView
     internal lateinit var goldButton: GoldButtonView
     internal lateinit var closeButton: GameButton
-    internal val slotViews: List<InventorySlotView> = List(SLOTS) { InventorySlotView(Size(SLOT_SIZE, SLOT_SIZE), resourcesLoader) }
+    internal val storageSpaceViews: List<StorageSpaceView> = List(STORAGE_SPACES) { StorageSpaceView(Size(STORAGE_SPACE_SIZE, STORAGE_SPACE_SIZE), resourcesLoader) }
 
     init {
         solidRect(Size(SCREEN_WIDTH, HEIGHT), Colors.TRANSPARENT)
@@ -83,15 +83,15 @@ open class InventoryView(
                 addChild(titleLine())
                 closeButton = button(messages[UiMessage.INVENTORY_CLOSE], CLOSE_WIDTH) { delegate?.inventoryClosed() }
             }
-            slotViews.chunked(SLOTS_PER_ROW).forEachIndexed { rowIndex, rowSlots ->
-                if (rowIndex > 0) uiSpacing(Size(0.0, SLOT_SPACING - PADDING))
-                val row = UIContainer(Size(WIDTH, SLOT_SIZE))
-                rowSlots.forEachIndexed { columnIndex, slotView -> slotView.x = columnIndex * (SLOT_SIZE + SLOT_SPACING) }
-                rowSlots.forEach(row::addChild)
+            storageSpaceViews.chunked(STORAGE_SPACES_PER_ROW).forEachIndexed { rowIndex, rowStorageSpaces ->
+                if (rowIndex > 0) uiSpacing(Size(0.0, STORAGE_SPACE_SPACING - PADDING))
+                val row = UIContainer(Size(WIDTH, STORAGE_SPACE_SIZE))
+                rowStorageSpaces.forEachIndexed { columnIndex, storageSpaceView -> storageSpaceView.x = columnIndex * (STORAGE_SPACE_SIZE + STORAGE_SPACE_SPACING) }
+                rowStorageSpaces.forEach(row::addChild)
                 addChild(row)
             }
         }
-        slotViews.forEachIndexed { index, slotView -> slotView.setOnSelected { delegate?.slotSelected(index) } }
+        storageSpaceViews.forEachIndexed { index, storageSpaceView -> storageSpaceView.setOnSelected { delegate?.storageSpaceSelected(index) } }
         onDown { isPressedSinceDisplayed = true }
         onSwipe(threshold = SWIPE_THRESHOLD) { swipe ->
             if (!isPressedSinceDisplayed) return@onSwipe
@@ -113,21 +113,21 @@ open class InventoryView(
     }
 
     open fun display(
-        slots: List<Slot>,
+        storageSpaces: List<StorageSpace>,
         gold: Int,
         owner: Owner? = null,
     ) {
         isPressedSinceDisplayed = false
         displayTitle(owner)
         displayGold(gold, owner)
-        slotViews.forEachIndexed { index, slotView ->
-            val slot = slots.getOrNull(index)
-            slotView.display(lootableItemId = slot?.lootableItemId, isEquipped = slot?.isEquipped ?: false)
+        storageSpaceViews.forEachIndexed { index, storageSpaceView ->
+            val storageSpace = storageSpaces.getOrNull(index)
+            storageSpaceView.display(lootableItemId = storageSpace?.lootableItemId, isEquipped = storageSpace?.isEquipped ?: false)
         }
     }
 
-    open fun selectSlot(index: Int?) {
-        slotViews.forEachIndexed { slotIndex, slotView -> if (slotIndex == index) slotView.select() else slotView.unselect() }
+    open fun selectStorageSpace(index: Int?) {
+        storageSpaceViews.forEachIndexed { storageSpaceIndex, storageSpaceView -> if (storageSpaceIndex == index) storageSpaceView.select() else storageSpaceView.unselect() }
     }
 
     private fun displayGold(

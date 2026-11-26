@@ -149,7 +149,7 @@ object HudViewStories : StoryBinding {
             InventoryView(context.resourcesLoader, context.messages).apply {
                 setDelegate(
                     object : InventoryView.Delegate {
-                        override fun slotSelected(index: Int) = context.action("slotSelected", index)
+                        override fun storageSpaceSelected(index: Int) = context.action("storageSpaceSelected", index)
 
                         override fun inventoryOwnerStepped(step: Int) = context.action("inventoryOwnerStepped", step)
 
@@ -158,7 +158,7 @@ object HudViewStories : StoryBinding {
                         override fun goldSelected() = context.action("goldSelected")
                     },
                 )
-                display(slots = List(ITEMS) { index -> InventoryView.Slot(itemIds[index % itemIds.size], isEquipped = false) }, gold = GOLD)
+                display(storageSpaces = List(ITEMS) { index -> InventoryView.StorageSpace(itemIds[index % itemIds.size], isEquipped = false) }, gold = GOLD)
             }
         val giveGoldView =
             GiveGoldView(context.resourcesLoader, context.messages).apply {
