@@ -12,6 +12,7 @@ class GameButton(
     label: String,
     color: RGBA = GREY,
     overColor: RGBA = GREY_OVER,
+    private val labelColor: RGBA = LABEL,
 ) : UIButton(size, label) {
     companion object {
         val GREY: RGBA = HudStyle.BUTTON
@@ -28,6 +29,7 @@ class GameButton(
         bgColorOver = overColor
         bgColorDisabled = DISABLED
         background.borderColor = BORDER
+        textColor = labelColor
         applyHudFont()
     }
 
@@ -40,7 +42,7 @@ class GameButton(
     ) {
         super.updatedUIButton(down, over, enable, pos, immediate)
         val isDisabled = enable == false || !enabled
-        textColor = if (isDisabled) DISABLED_LABEL else LABEL
+        textColor = if (isDisabled) DISABLED_LABEL else labelColor
         background.borderColor = if (isDisabled) DISABLED_BORDER else BORDER
     }
 }
@@ -50,5 +52,6 @@ fun Container.gameButton(
     size: Size,
     color: RGBA = GameButton.GREY,
     overColor: RGBA = GameButton.GREY_OVER,
+    labelColor: RGBA = GameButton.LABEL,
     block: GameButton.() -> Unit = {},
-): GameButton = GameButton(size, label, color, overColor).addTo(this).apply(block)
+): GameButton = GameButton(size, label, color, overColor, labelColor).addTo(this).apply(block)

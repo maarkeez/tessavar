@@ -82,7 +82,7 @@ object ButtonRowViewStories : StoryBinding {
                 val isLast = index == labels.lastIndex
                 val onSelected = { context.action("onSelected", label) }
                 when {
-                    isLast && args.boolean(LAST_IS_DANGER) -> ButtonRowView.Action(label, HudStyle.DANGER, HudStyle.DANGER_PRESSED, onSelected = onSelected)
+                    isLast && args.boolean(LAST_IS_DANGER) -> ButtonRowView.Action(label, HudStyle.DANGER, HudStyle.DANGER_PRESSED, HudStyle.DANGER_LABEL, onSelected = onSelected)
                     isLast && args.boolean(LAST_IS_PRIMARY) -> ButtonRowView.Action(label, ConfirmButton.COLOR, ConfirmButton.PRESSED_COLOR, onSelected = onSelected)
                     else -> ButtonRowView.Action(label, isEnabled = !isLast || args.boolean(LAST_IS_ENABLED), onSelected = onSelected)
                 }

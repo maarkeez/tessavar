@@ -142,7 +142,7 @@ open class CallToActionView(
         displayButtons(
             listOf(
                 ButtonRowView.Action(cancelLabel, onSelected = onCancelled),
-                ButtonRowView.Action(confirmLabel, HudStyle.DANGER, HudStyle.DANGER_PRESSED, onSelected = onConfirmed),
+                ButtonRowView.Action(confirmLabel, HudStyle.DANGER, HudStyle.DANGER_PRESSED, HudStyle.DANGER_LABEL, onSelected = onConfirmed),
             ),
         )
     }

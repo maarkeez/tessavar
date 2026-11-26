@@ -22,6 +22,7 @@ class ButtonRowView(
         val label: String,
         val color: RGBA = GameButton.GREY,
         val pressedColor: RGBA = GameButton.GREY_OVER,
+        val labelColor: RGBA = GameButton.LABEL,
         val isEnabled: Boolean = true,
         val onSelected: () -> Unit,
     )
@@ -32,7 +33,7 @@ class ButtonRowView(
         val buttonWidth = (WIDTH - SPACING * (actions.size - 1)) / actions.size
         buttons =
             actions.mapIndexed { index, action ->
-                gameButton(action.label, Size(buttonWidth, UIButton.DEFAULT_SIZE.height), action.color, action.pressedColor) {
+                gameButton(action.label, Size(buttonWidth, UIButton.DEFAULT_SIZE.height), action.color, action.pressedColor, action.labelColor) {
                     xy(HudStyle.SCREEN_MARGIN + index * (buttonWidth + SPACING), 0.0)
                     enabled = action.isEnabled
                     onClick { if (action.isEnabled) action.onSelected() }

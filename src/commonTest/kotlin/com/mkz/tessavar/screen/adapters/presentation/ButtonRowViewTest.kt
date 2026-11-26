@@ -1,5 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
+import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.clickOn
 import com.mkz.tessavar.shared.adapters.presentation.isFaded
 import com.mkz.tessavar.shared.adapters.presentation.sharedViewsTest
@@ -64,5 +66,21 @@ class ButtonRowViewTest : ViewsForTesting() {
                 .shouldBeFalse()
             (rowView.buttons.single().isFaded()) shouldBe true
             selected.shouldBeEmpty()
+        }
+
+    @Test
+    fun `ButtonRowView should draw an action's label in its label colour when it is given one`() =
+        sharedViewsTest {
+            // When
+            val rowView =
+                ButtonRowView(
+                    listOf(
+                        ButtonRowView.Action("Back") {},
+                        ButtonRowView.Action("Quit to menu", HudStyle.DANGER, HudStyle.DANGER_PRESSED, HudStyle.DANGER_LABEL) {},
+                    ),
+                )
+            addChild(rowView)
+            // Then
+            rowView.buttons.map { button -> button.textColor }.shouldContainExactly(GameButton.LABEL, HudStyle.DANGER_LABEL)
         }
 }
