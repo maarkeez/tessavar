@@ -22,8 +22,8 @@ tiles = [
     ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void"],
     ["void",   "void",   "sand",   "sand",   "grass",  "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "grass",  "sand",   "sand",   "void",   "void"],
     ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "water",  "water",  "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void"],
-    ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "water",  "water",  "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void"],
-    ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void"],
+    ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "water",  "water",  "sand",   "sand",   "sand",   "sand",   "water",  "water",  "sand",   "sand",   "sand",   "void",   "void"],
+    ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "water",  "water",  "sand",   "sand",   "sand",   "void",   "void"],
     ["void",   "void",   "sand",   "sand",   "grass",  "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "grass",  "sand",   "sand",   "void",   "void"],
     ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void"],
     ["void",   "void",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "sand",   "void",   "void"],
@@ -149,6 +149,20 @@ playerId = "player-two"
 row = 13
 column = 20
 
+[[battleUnits]]
+id = "pond-storm-bat"
+unitId = "storm-bat"
+playerId = "player-two"
+row = 15
+column = 19
+
+[[battleUnits]]
+id = "pond-water-bat"
+unitId = "water-bat"
+playerId = "player-two"
+row = 16
+column = 20
+
 [[npcs]]
 id = "alchemist"
 row = 21
@@ -253,6 +267,30 @@ text = "Defeat 2 Rats"
 
 [quests.reward]
 gold = 20
+
+[[quests]]
+id = "storm-in-a-bottle"
+type = "SIDE"
+questGiverNpcId = "alchemist"
+name = "Storm in a Bottle"
+description = "The Alchemist wants the spark of the storm bat nesting by the village pond."
+lines = { start = "A storm bat nests by the pond. Its spark is worth more than anything on my shelf. Bring it down, but stay out of the water when it casts!", reminder = "The storm bat still nests by the pond, right next to my shop. Bring it down, and stay out of the water when it casts!", completed = "Potions, elixirs, and now a storm in a bottle, thanks to you. What will it be?" }
+
+[[quests.tasks]]
+type = "DEFEAT"
+unitId = "storm-bat"
+requiredDefeats = 1
+text = "Defeat 1 Storm Bat"
+
+[[quests.tasks]]
+type = "TALK"
+npcId = "alchemist"
+text = "Talk to the Alchemist"
+line = "You brought it down! Its spark will keep for years in a bottle. Here is your gold, and an elixir to restore your mana."
+
+[quests.reward]
+gold = 30
+lootableItemIds = ["mana-elixir"]
 
 [[quests]]
 id = "the-blacksmiths-errand"

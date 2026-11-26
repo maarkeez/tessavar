@@ -6,6 +6,7 @@ import com.mkz.tessavar.localization.adapters.resources.ResourcesLocalizationLoa
 import com.mkz.tessavar.localization.adapters.resources.ResourcesLocalizationLoader.Companion.TRANSLATION_CATALOG_EXTENSION
 import com.mkz.tessavar.localization.adapters.resources.TestCatalogs
 import com.mkz.tessavar.localization.domain.Localization
+import com.mkz.tessavar.npc.adapters.resources.ResourcesNpcLoader
 import com.mkz.tessavar.quest.adapters.resources.ResourcesQuestLoader
 import com.mkz.tessavar.quest.domain.Quest
 import com.mkz.tessavar.quest.domain.Quest.Dto.TaskDto
@@ -82,7 +83,7 @@ class LocalizationResourcesTest {
         }
 
     @Test
-    fun `should have an own line in the source catalog for every npc that gives no side quest`() =
+    fun `should have an own line in the source catalog for every npc that gives no side quest in a world it stands in`() =
         runTest {
             val missing = npcOwnLineKeys().filter { key -> key !in sourceEntries }
             withClue("Own lines of the npcs missing from $SOURCE_FILE_NAME: $missing") { missing.shouldBeEmpty() }
@@ -172,8 +173,6 @@ class LocalizationResourcesTest {
                 fileName.removeSuffix(".toml") to ResourcesQuestLoader(ResourcesBundle.root["world/$fileName"]).also { loader -> loader.initResources() }.loadQuests()
             }
 
-    private suspend fun quests(): List<Quest.Dto> = worldQuests().values.flatten()
-
     private suspend fun worldQuestTexts(): Map<String, String?> =
         worldQuests()
             .flatMap { (worldId, quests) ->
@@ -207,15 +206,27 @@ class LocalizationResourcesTest {
             }.toSet()
 
     private suspend fun npcOwnLineKeys(): Set<String> {
-        val questGiverNpcIds = quests().mapNotNull { quest -> quest.questGiverNpcId }.toSet()
+        val questGiverNpcIdsByWorld = worldQuests().mapValues { (_, quests) -> quests.mapNotNull { quest -> quest.questGiverNpcId }.toSet() }
+        val placedNpcIdsByWorld = worldNpcIds()
+        val npcIdsWithNoSideQuestSomewhere = placedNpcIdsByWorld.flatMap { (worldId, npcIds) -> npcIds - questGiverNpcIdsByWorld[worldId].orEmpty() }.toSet()
+        val placedNpcIds = placedNpcIdsByWorld.values.flatten().toSet()
         return ResourcesBundle.root["npc"]
             .listNames()
             .filter { fileName -> fileName.endsWith(".toml") }
             .map { fileName -> fileName.removeSuffix(".toml") }
-            .filter { npcId -> npcId !in questGiverNpcIds }
+            .filter { npcId -> npcId !in placedNpcIds || npcId in npcIdsWithNoSideQuestSomewhere }
             .map { npcId -> "npc.$npcId.line" }
             .toSet()
     }
+
+    private suspend fun worldNpcIds(): Map<String, Set<String>> =
+        ResourcesBundle.root["world"]
+            .listNames()
+            .filter { fileName -> fileName.endsWith(".toml") }
+            .associate { fileName ->
+                val npcs = ResourcesNpcLoader(worldFile = ResourcesBundle.root["world/$fileName"]).also { loader -> loader.initResources() }.loadNpcs()
+                fileName.removeSuffix(".toml") to npcs.map { npc -> npc.id }.toSet()
+            }
 
     private fun placeholders(text: String): Set<String> = placeholder.findAll(text).map { match -> match.groupValues[1] }.toSet()
 }

@@ -1382,6 +1382,11 @@ msgctxt "npc.blacksmith.name"
 msgid "Blacksmith"
 msgstr "Herrera"
 
+#. What the npc says when no quest has a line for it.
+msgctxt "npc.blacksmith.line"
+msgid "Fresh from the forge! A sturdy hammer keeps you standing for longer."
+msgstr "¡Recién salido de la forja! Un buen martillo os mantiene en pie más tiempo."
+
 msgctxt "npc.elder.name"
 msgid "Elder"
 msgstr "Anciano"
@@ -1530,6 +1535,46 @@ msgstr "Dos ratas, viajeros, en los campos del sur. Mis flechas se quedan aquí,
 msgctxt "world.tessavar.quest.rats-in-the-fields.line.startAgain"
 msgid "Well done, travellers. But the rats are back in the southern fields, as always. Thin them out again: same task, same gold."
 msgstr "Bien hecho, viajeros. Pero las ratas han vuelto a los campos del sur, como siempre. Ahuyentadlas otra vez: misma tarea, mismo oro."
+
+#. The name of a quest.
+msgctxt "world.tessavar.quest.storm-in-a-bottle.name"
+msgid "Storm in a Bottle"
+msgstr "Tormenta embotellada"
+
+#. What a quest is about, displayed when it starts and in its detail.
+msgctxt "world.tessavar.quest.storm-in-a-bottle.description"
+msgid "The Alchemist wants the spark of the storm bat nesting by the village pond."
+msgstr "En la tienda de alquimia quieren la chispa del murciélago de tormenta que anida junto al estanque del pueblo."
+
+#. A task of a quest, by its place in the series of tasks, as a whole sentence.
+msgctxt "world.tessavar.quest.storm-in-a-bottle.task.0"
+msgid "Defeat 1 Storm Bat"
+msgstr "Derrota 1 Murciélago de tormenta"
+
+#. A task of a quest, by its place in the series of tasks, as a whole sentence.
+msgctxt "world.tessavar.quest.storm-in-a-bottle.task.1"
+msgid "Talk to the Alchemist"
+msgstr "Vuelve a la tienda de alquimia"
+
+#. What the quest giver says in the talk that starts the quest.
+msgctxt "world.tessavar.quest.storm-in-a-bottle.line.start"
+msgid "A storm bat nests by the pond. Its spark is worth more than anything on my shelf. Bring it down, but stay out of the water when it casts!"
+msgstr "Un murciélago de tormenta anida junto al estanque. Su chispa vale más que cualquier cosa de mis estantes. Derribadlo, ¡pero no os metáis en el agua cuando lance su hechizo!"
+
+#. What the quest giver says while the quest is active and the talk does none of its talk tasks.
+msgctxt "world.tessavar.quest.storm-in-a-bottle.line.reminder"
+msgid "The storm bat still nests by the pond, right next to my shop. Bring it down, and stay out of the water when it casts!"
+msgstr "El murciélago de tormenta sigue anidando junto al estanque, al lado de mi tienda. Derribadlo, ¡y no os metáis en el agua cuando lance su hechizo!"
+
+#. What the npc of a talk task says in the talk that does it, by the place of the task in the series of tasks.
+msgctxt "world.tessavar.quest.storm-in-a-bottle.line.task.1"
+msgid "You brought it down! Its spark will keep for years in a bottle. Here is your gold, and an elixir to restore your mana."
+msgstr "¡Lo habéis derribado! Su chispa se conservará años en una botella. Aquí tenéis vuestro oro, y un elixir para recuperar el maná."
+
+#. What the quest giver says once the quest is completed.
+msgctxt "world.tessavar.quest.storm-in-a-bottle.line.completed"
+msgid "Potions, elixirs, and now a storm in a bottle, thanks to you. What will it be?"
+msgstr "Pociones, elixires, y ahora una tormenta embotellada, gracias a vosotros. ¿Qué va a ser?"
 
 #. The name of a quest.
 msgctxt "world.tessavar.quest.the-blacksmiths-errand.name"
