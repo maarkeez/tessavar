@@ -1,6 +1,6 @@
 # Plan: Centre the labels of the buttons on their capitals
 
-> **Status:** to do.
+> **Status:** built on `main` in 2102233, its screenshots still to be approved.
 >
 > **Summary:** Since the HUD moved to Alegreya ([ADR 0024](../adr/0024-parchment-hud-with-alegreya.md), the
 > [parchment HUD plan](parchment-hud.md)), every button draws its label low: on the main menu, Play new game, Load
@@ -74,3 +74,19 @@ are.
 - A text size set on a button after `applyHudFont`, through `UIButton.textSize`, keeps the lift of the earlier size.
   No caller does it today.
 - Like the rest of the parchment HUD, it is checked on Storybook screenshots, not on a real phone.
+
+## Changes while building
+
+- **The ascent is the font's top.** KorGE's `BitmapFont` reports the font's top, 1065 units, as its ascent, not 1016.
+  So the capitals were 3.1 px low at `HudStyle.BODY`, not 2.8, and `labelLift` is about 3.1 px at 15 and 4.6 px at 22.
+  `labelLift` reads the ascent from `HudFonts.TITLE`, so it was already right.
+- **The capital height comes from the TTF.** `HudFonts.load` reads it once from `alegreya-sc-bold.ttf`, as the top of
+  `H` at 1000 units, 649. The `BitmapFont`'s and the TTF's glyph metrics at the label's size are rounded to whole
+  pixels, which would be off by up to half a pixel.
+- **The label moves by `textView.y`, not by padding.** Bottom padding shrinks the height `RichTextData.place` fits the
+  lines in, which a two-line label, such as a save slot's in its 48 px row, needs. `applyHudFont` sets
+  `textView.y = -labelLift(textSize)` instead, which `UIButton` never resets.
+- **No comment over `applyHudFont`.** `CommentArchitectureTest` allows no comment in the source files. The reason is in
+  `labelLift`'s name and in this plan.
+- **The measurement is in the page object.** `ViewTestPageObjectArchitectureTest` forbids a views test to import view
+  classes, so `GameButton.labelBaseline()` in `GameButtonExtension.kt` lays the label out for the tests.
