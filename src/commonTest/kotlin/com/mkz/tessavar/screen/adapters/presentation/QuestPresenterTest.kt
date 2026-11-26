@@ -24,6 +24,7 @@ import com.mkz.tessavar.save.domain.SaveEvent.GameLoaded
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneTimelineMother.gameSceneTimeline
 import com.mkz.tessavar.screen.adapters.presentation.GameSceneTimelineMother.playLongStep
 import com.mkz.tessavar.screen.adapters.presentation.QuestAnnouncementView.Moment
+import com.mkz.tessavar.shared.adapters.presentation.GameButton
 import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.SubdomainApis
 import com.mkz.tessavar.terrain.domain.TerrainMother.terrainThatCanBeOccupied
@@ -450,7 +451,7 @@ class QuestPresenterTest {
     }
 
     @Test
-    fun `questJournalSelected should display Back and Abandon when it is an active side quest`() {
+    fun `questJournalSelected should display Back and Abandon as ordinary buttons when it is an active side quest`() {
         // Given
         val apis = apis(mainQuest(id = questId), sideQuest(id = "side"))
         val presenter = apis.presenterWithASideQuestOpen()
@@ -458,7 +459,7 @@ class QuestPresenterTest {
         presenter.questJournalSelected("side")
         // Then
         callToActionView.actionLabels().shouldContainExactly("Back", "Abandon")
-        callToActionView.displayedActions!!.last().color shouldBe HudStyle.DANGER
+        callToActionView.displayedActions!!.map { action -> action.color }.shouldContainExactly(GameButton.GREY, GameButton.GREY)
     }
 
     @Test

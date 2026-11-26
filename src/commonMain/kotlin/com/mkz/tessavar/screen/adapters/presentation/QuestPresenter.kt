@@ -17,7 +17,6 @@ import com.mkz.tessavar.quest.domain.QuestEvent.QuestStarted
 import com.mkz.tessavar.quest.domain.QuestEvent.TaskCompleted
 import com.mkz.tessavar.save.domain.SaveEvent.GameLoaded
 import com.mkz.tessavar.screen.adapters.presentation.QuestAnnouncementView.Moment
-import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.domain.EventBus
 import com.mkz.tessavar.shared.domain.Subscription
 import com.mkz.tessavar.shared.domain.subscribe
@@ -212,7 +211,7 @@ class QuestPresenter(
         listOfNotNull(
             backAction { detailBackSelected() },
             if (!quest.isMain && !quest.isCompleted) {
-                ButtonRowView.Action(messages[UiMessage.QUEST_ABANDON], HudStyle.DANGER, HudStyle.DANGER_PRESSED) { abandonSelected(quest) }
+                ButtonRowView.Action(messages[UiMessage.QUEST_ABANDON]) { abandonSelected(quest) }
             } else {
                 null
             },
