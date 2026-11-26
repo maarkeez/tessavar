@@ -1,6 +1,6 @@
 # Plan: Keep the shadows of the inventory, the shop and the call to action off the screen edges
 
-> **Status:** built on `main`, the screenshots of M1 still to be approved.
+> **Status:** done.
 >
 > **Summary:** The inventory, the shop and every view of the call to action are as wide as the game window, 390 px, and
 > start at its first column. So the window cuts off the shadow `UIButton` draws around each of their boxes and buttons
