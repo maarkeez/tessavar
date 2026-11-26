@@ -1,6 +1,6 @@
 # Plan: Centre the labels of the buttons on their capitals
 
-> **Status:** built on `main` in 2102233, its screenshots still to be approved.
+> **Status:** done on `main` in 2102233, approved on screenshots.
 >
 > **Summary:** Since the HUD moved to Alegreya ([ADR 0024](../adr/0024-parchment-hud-with-alegreya.md), the
 > [parchment HUD plan](parchment-hud.md)), every button draws its label low: on the main menu, Play new game, Load
