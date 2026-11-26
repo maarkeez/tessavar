@@ -1,7 +1,7 @@
 # Plan: the parchment HUD
 
-> **Status:** in progress: M1 to M3 built on `main`, their screenshots still to be approved, and M4's ADR written,
-> with the prototype branch still to be deleted.
+> **Status:** in progress: M1 to M3 done on `main`, approved on screenshots, and M4's ADR written, with the
+> prototype branch still to be deleted.
 >
 > **Summary:** Today the HUD is dark: its panels are a dark navy (`HudStyle.PANEL`, `#171725`), the game's background a
 > dark grey (`#2b2b2b`), and its text is KorGE's default sans-serif, which doesn't look like a game. Some text is too
