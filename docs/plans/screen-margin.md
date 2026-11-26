@@ -1,6 +1,6 @@
 # Plan: Keep the shadows of the inventory, the shop and the call to action off the screen edges
 
-> **Status:** to do.
+> **Status:** built on `main` up to M1, the screenshots of M1 still to be approved.
 >
 > **Summary:** The inventory, the shop and every view of the call to action are as wide as the game window, 390 px, and
 > start at its first column. So the window cuts off the shadow `UIButton` draws around each of their boxes and buttons
@@ -54,10 +54,10 @@ E.g.: where the boxes and buttons sit across the 390 px of the screen:
 
 Each milestone is a few commits straight on `main`, green on CI.
 
-| #  | Milestone      | Done when                                                                                                                 | Status | Done in |
-|----|----------------|---------------------------------------------------------------------------------------------------------------------------|--------|---------|
-| M1 | Screen margin  | The inventory, the shop and the call to action sit 12 px in from each side, their shadows whole, approved on screenshots. | ⬜      |         |
-| M2 | Storage spaces | No name of the inventory, the shop or their stories calls a storage space a slot.                                        | ⬜      |         |
+| #  | Milestone      | Done when                                                                                                                 | Status | Done in  |
+|----|----------------|---------------------------------------------------------------------------------------------------------------------------|--------|----------|
+| M1 | Screen margin  | The inventory, the shop and the call to action sit 12 px in from each side, their shadows whole, approved on screenshots. | ✅      | 3983f36c |
+| M2 | Storage spaces | No name of the inventory, the shop or their stories calls a storage space a slot.                                         | ⬜      |          |
 
 ### M1 commits
 
@@ -174,3 +174,14 @@ The test page objects and fakes follow, e.g.: `slotCount()` and `slotBitmaps()` 
 - The selection and equipped frames stay square over the rounded boxes.
 - The inventory is 8 px shorter, which leaves 8 px more under it in the HUD.
 - Like the rest of the parchment HUD, it is checked on Storybook screenshots, not on a real phone.
+
+## Changes while building
+
+- **M1, the inventory full message.** Beside the 32 px icon and its 8 px gap, the message of `InventoryFullView` gets
+  326 px instead of 350, and `Tap an item to discard for: Health Potion (10 G)` needs 331 px, so it ended in `…`. The
+  Spanish one already did, at 365 px. A line of its own does not fit, as the call to action has 82 px under the HUD. So
+  the message is shorter in both languages, as agreed with the user: `Discard an item for: {item} ({sellPrice})` and
+  `Descarta un objeto por: {item} ({sellPrice})`.
+- **M1, the tests.** The views' tests read the sides of their boxes and buttons with `View.sidesIn`, a new helper of the
+  shared `ViewExtension`, and `CallToActionView.buttonSides()` reads them over every button the call to action shows.
+  `ShopViewTest` also checks the arrows, and `CancelAndConfirmViewTest` the 178 px of Cancel and Confirm.
