@@ -2,9 +2,16 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.clickOn
 import com.mkz.tessavar.shared.adapters.presentation.isFaded
+import com.mkz.tessavar.shared.adapters.presentation.sidesIn
 import korlibs.image.bitmap.Bitmap
 import korlibs.korge.tests.ViewsForTesting
 import korlibs.korge.view.Image
+
+fun ShopView.rowSides(): List<Pair<Double, Double>> = slotViews.chunked(ShopView.SLOTS_PER_ROW).map { row -> row.first().sidesIn(this).first to row.last().sidesIn(this).second }
+
+fun ShopView.slotWidths(): List<Double> = slotViews.map { slotView -> slotView.getBounds(this).width }
+
+fun ShopView.arrowSides(): Pair<Double, Double> = previousBuyerButton.sidesIn(this).first to nextBuyerButton.sidesIn(this).second
 
 fun ShopView.slotCount(): Int = slotViews.size
 

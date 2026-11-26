@@ -2,6 +2,7 @@ package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.clickOn
 import com.mkz.tessavar.shared.adapters.presentation.isFaded
+import com.mkz.tessavar.shared.adapters.presentation.sidesIn
 import korlibs.image.bitmap.Bitmap
 import korlibs.korge.tests.ViewsForTesting
 import korlibs.korge.view.Image
@@ -29,6 +30,12 @@ fun InventoryView.isTitleLaidOut(): Boolean {
         nextOwnerButton.getGlobalBounds().left >= gold.right &&
         nextOwnerButton.getGlobalBounds().right < closeButton.getGlobalBounds().left
 }
+
+fun InventoryView.rowSides(): List<Pair<Double, Double>> = slotViews.chunked(InventoryView.SLOTS_PER_ROW).map { row -> row.first().sidesIn(this).first to row.last().sidesIn(this).second }
+
+fun InventoryView.slotWidths(): List<Double> = slotViews.map { slotView -> slotView.getBounds(this).width }
+
+fun InventoryView.closeSides(): Pair<Double, Double> = closeButton.sidesIn(this)
 
 fun InventoryView.slotCount(): Int = slotViews.size
 

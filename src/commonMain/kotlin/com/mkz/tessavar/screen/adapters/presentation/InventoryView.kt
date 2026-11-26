@@ -1,6 +1,7 @@
 package com.mkz.tessavar.screen.adapters.presentation
 
 import com.mkz.tessavar.shared.adapters.presentation.GameButton
+import com.mkz.tessavar.shared.adapters.presentation.HudStyle
 import com.mkz.tessavar.shared.adapters.presentation.gameButton
 import korlibs.image.color.Colors
 import korlibs.korge.input.SwipeDirection
@@ -23,9 +24,10 @@ open class InventoryView(
     companion object {
         const val SLOTS = 12
         const val SLOTS_PER_ROW = 6
-        private const val SLOT_SIZE = 60.0
+        private const val SLOT_SIZE = 56.0
         private const val SLOT_SPACING = 6.0
-        private const val WIDTH = SLOTS_PER_ROW * SLOT_SIZE + (SLOTS_PER_ROW - 1) * SLOT_SPACING
+        private const val SCREEN_WIDTH = HudStyle.CONTENT_WIDTH + 2 * HudStyle.SCREEN_MARGIN
+        private const val WIDTH = HudStyle.CONTENT_WIDTH
         private const val PADDING = 10.0
         private const val BAR_HEIGHT = 32.0
         private const val CLOSE_WIDTH = 80.0
@@ -74,8 +76,9 @@ open class InventoryView(
     internal val slotViews: List<InventorySlotView> = List(SLOTS) { InventorySlotView(Size(SLOT_SIZE, SLOT_SIZE), resourcesLoader) }
 
     init {
-        solidRect(Size(WIDTH, HEIGHT), Colors.TRANSPARENT)
+        solidRect(Size(SCREEN_WIDTH, HEIGHT), Colors.TRANSPARENT)
         uiVerticalStack(padding = PADDING) {
+            x = HudStyle.SCREEN_MARGIN
             uiHorizontalStack {
                 addChild(titleLine())
                 closeButton = button(messages[UiMessage.INVENTORY_CLOSE], CLOSE_WIDTH) { delegate?.inventoryClosed() }

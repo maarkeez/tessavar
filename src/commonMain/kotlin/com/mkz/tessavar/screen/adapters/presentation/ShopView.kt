@@ -29,14 +29,16 @@ open class ShopView(
     companion object {
         const val SLOTS = 12
         const val SLOTS_PER_ROW = 6
-        private const val SLOT_SIZE = 60.0
+        private const val SLOT_SIZE = 56.0
         private const val SLOT_SPACING = 6.0
-        private const val WIDTH = SLOTS_PER_ROW * SLOT_SIZE + (SLOTS_PER_ROW - 1) * SLOT_SPACING
+        private const val SCREEN_WIDTH = HudStyle.CONTENT_WIDTH + 2 * HudStyle.SCREEN_MARGIN
+        private const val WIDTH = HudStyle.CONTENT_WIDTH
+        private const val LEFT = HudStyle.SCREEN_MARGIN
         private const val BAR_HEIGHT = 32.0
         private const val ARROW_WIDTH = 40.0
         private const val HEIGHT = 300.0
 
-        private const val GAP = 27.0
+        private const val GAP = 29.0
         private const val SLOTS_Y = GAP + BAR_HEIGHT + GAP
         private const val ITEM_Y = SLOTS_Y + 2 * SLOT_SIZE + SLOT_SPACING + GAP
 
@@ -75,12 +77,12 @@ open class ShopView(
     internal lateinit var itemPriceText: UIText
 
     init {
-        solidRect(Size(WIDTH, HEIGHT), Colors.TRANSPARENT)
-        addChild(header().position(0.0, GAP))
+        solidRect(Size(SCREEN_WIDTH, HEIGHT), Colors.TRANSPARENT)
+        addChild(header().position(LEFT, GAP))
         slotViews.chunked(SLOTS_PER_ROW).forEachIndexed { rowIndex, rowSlots ->
             rowSlots.forEachIndexed { columnIndex, slotView ->
                 addChild(slotView)
-                slotView.position(columnIndex * (SLOT_SIZE + SLOT_SPACING), SLOTS_Y + rowIndex * (SLOT_SIZE + SLOT_SPACING))
+                slotView.position(LEFT + columnIndex * (SLOT_SIZE + SLOT_SPACING), SLOTS_Y + rowIndex * (SLOT_SIZE + SLOT_SPACING))
             }
         }
         itemNameText =
@@ -89,7 +91,7 @@ open class ShopView(
                 styles.textFont = HudFonts.TITLE
                 styles.textSize = HudStyle.BODY
                 styles.textAlignment = TextAlignment.MIDDLE_LEFT
-                position(0.0, ITEM_Y)
+                position(LEFT, ITEM_Y)
             }
         itemPriceText =
             uiText("", size = Size(WIDTH, BAR_HEIGHT)) {
@@ -97,7 +99,7 @@ open class ShopView(
                 styles.textFont = HudFonts.TITLE
                 styles.textSize = HudStyle.BODY
                 styles.textAlignment = TextAlignment.MIDDLE_RIGHT
-                position(0.0, ITEM_Y)
+                position(LEFT, ITEM_Y)
             }
         slotViews.forEachIndexed { index, slotView -> slotView.setOnSelected { delegate?.shopSlotSelected(index) } }
         onSwipe(threshold = SWIPE_THRESHOLD) { swipe ->

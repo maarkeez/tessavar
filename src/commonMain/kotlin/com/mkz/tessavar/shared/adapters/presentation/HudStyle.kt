@@ -80,6 +80,9 @@ object HudStyle {
     const val PANEL_RADIUS = 10.0
     const val SLOT_RADIUS = 8.0
 
+    const val SCREEN_MARGIN = 12.0
+    const val CONTENT_WIDTH = 390.0 - 2 * SCREEN_MARGIN
+
     fun Container.panel(
         size: Size,
         fill: RGBA = PANEL,

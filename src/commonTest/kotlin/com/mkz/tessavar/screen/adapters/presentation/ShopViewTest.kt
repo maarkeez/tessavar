@@ -43,7 +43,18 @@ class ShopViewTest : ViewsForTesting() {
             shopView.slotCount() shouldBe 12
             shopView.slotBitmaps().all { bitmap -> bitmap == null }.shouldBeTrue()
             shopView.isLaidOut().shouldBeTrue()
-            shopView.footerBottom() shouldBe 271.0
+            shopView.footerBottom() shouldBe 269.0
+        }
+
+    @Test
+    fun `Init should lay the boxes and the arrows out 12 px in from each side of the screen`() =
+        sharedViewsTest {
+            // When
+            val shopView = ShopView(loadedResourcesLoader(), MessagesMother.messages())
+            // Then
+            shopView.rowSides() shouldContainExactly listOf(12.0 to 378.0, 12.0 to 378.0)
+            shopView.slotWidths().all { width -> width == 56.0 }.shouldBeTrue()
+            shopView.arrowSides() shouldBe (12.0 to 378.0)
         }
 
     @Test

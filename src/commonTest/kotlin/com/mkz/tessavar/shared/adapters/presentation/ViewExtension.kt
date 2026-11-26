@@ -23,6 +23,8 @@ fun Container.addChildScaled(
     container().also { scaled -> scaled.scale = scale }.addChild(view)
 }
 
+fun View.sidesIn(root: View): Pair<Double, Double> = getBounds(root).let { bounds -> bounds.left to bounds.right }
+
 fun View.isShown(): Boolean = generateSequence(this) { it.parent }.all { it.visible && it.alpha > 0 }
 
 fun View.descendants(): List<View> = listOf(this) + (this as? korlibs.korge.view.Container)?.children.orEmpty().flatMap { it.descendants() }

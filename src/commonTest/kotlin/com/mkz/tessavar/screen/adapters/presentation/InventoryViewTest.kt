@@ -50,6 +50,25 @@ class InventoryViewTest : ViewsForTesting() {
         }
 
     @Test
+    fun `Init should lay the boxes out 12 px in from each side of the screen, 56 px wide, when is initialized`() =
+        sharedViewsTest {
+            // When
+            val inventoryView = InventoryView(loadedResourcesLoader(), MessagesMother.messages())
+            // Then
+            inventoryView.rowSides() shouldContainExactly listOf(12.0 to 378.0, 12.0 to 378.0)
+            inventoryView.slotWidths().all { width -> width == 56.0 }.shouldBeTrue()
+        }
+
+    @Test
+    fun `Init should keep close 12 px in from the right side of the screen when is initialized`() =
+        sharedViewsTest {
+            // When
+            val inventoryView = InventoryView(loadedResourcesLoader(), MessagesMother.messages())
+            // Then
+            inventoryView.closeSides() shouldBe (298.0 to 378.0)
+        }
+
+    @Test
     fun `Display should display the stored items in order followed by the empty slots when is displayed`() =
         sharedViewsTest {
             // Given
